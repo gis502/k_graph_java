@@ -14,7 +14,7 @@ import com.ruoyi.common.xss.Xss;
 
 /**
  * 用户对象 sys_user
- * 
+ *
  * @author ruoyi
  */
 public class SysUser extends BaseEntity
@@ -89,6 +89,18 @@ public class SysUser extends BaseEntity
 
     /** 角色ID */
     private Long roleId;
+    /**
+     * 导表权限组JSon
+     */
+    private String fileIds;
+
+    public String getFileIds() {
+        return fileIds;
+    }
+
+    public void setFileIds(String fileIds) {
+        this.fileIds = fileIds;
+    }
 
     public SysUser()
     {

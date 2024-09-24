@@ -30,6 +30,11 @@
             <version>RELEASE</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-geometry</artifactId>
+            <version>2.5.0</version>
+        </dependency>
 
     </dependencies>
 
