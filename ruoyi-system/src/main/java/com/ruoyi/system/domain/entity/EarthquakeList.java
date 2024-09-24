@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import org.postgis.Point;
 import java.util.Date;
 import lombok.Data;
 
@@ -35,7 +36,7 @@ public class EarthquakeList {
      * 地震发生地理位置
      */
     @TableField(value = "geom")
-    private Object geom;
+    private Point geom;
 
     /**
      * 发震时间

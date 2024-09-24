@@ -20,4 +20,7 @@ public class ExcelFile {
 
     @TableField(value = "file_column")
     private String fileColumn;
+
+    @TableField(value = "file_flag")
+    private String fileFlag;
 }
