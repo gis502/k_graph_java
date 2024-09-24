@@ -1,10 +1,9 @@
 package com.ruoyi.web.controller.system;
 
+
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.service.EarthquakeListService;
 import org.springframework.web.bind.annotation.*;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.service.EarthquakeListService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +27,11 @@ public class EarthquakeListController {
 
     @PostMapping("queryAllEq")
     public List<EarthquakeList> queryAllEq() {
+        return earthquakeListService.list();
+    }
+
+    @GetMapping("getLatesteq")
+    public List<EarthquakeList> getLatesteq() {
         return earthquakeListService.list();
     }
 
