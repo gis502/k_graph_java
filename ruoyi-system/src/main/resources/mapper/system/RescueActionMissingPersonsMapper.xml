@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RescueActionMissingPersonsMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.RescueActionMissingPersons">
+    <!--@mbg.generated-->
+    <!--@Table rescue_action_missing_persons-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="missing_location" jdbcType="VARCHAR" property="missingLocation" />
+    <result column="new_missing_count" jdbcType="INTEGER" property="newMissingCount" />
+    <result column="total_missing_count" jdbcType="INTEGER" property="totalMissingCount" />
+    <result column="missing_reason" jdbcType="VARCHAR" property="missingReason" />
+    <result column="search_team" jdbcType="VARCHAR" property="searchTeam" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+    <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, missing_location, new_missing_count, total_missing_count, missing_reason, search_team, 
+    contact_person, contact_phone, record_time
+  </sql>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DamLakeMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.DamLake">
+    <!--@mbg.generated-->
+    <!--@Table dam_lake-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="river_system" jdbcType="VARCHAR" property="riverSystem" />
+    <result column="dam_scale_length" jdbcType="VARCHAR" property="damScaleLength" />
+    <result column="dam_scale_width" jdbcType="VARCHAR" property="damScaleWidth" />
+    <result column="dam_scale_height" jdbcType="VARCHAR" property="damScaleHeight" />
+    <result column="estimated_danger" jdbcType="VARCHAR" property="estimatedDanger" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="response_team" jdbcType="VARCHAR" property="responseTeam" />
+    <result column="response_measures" jdbcType="VARCHAR" property="responseMeasures" />
+    <result column="initial_disposal_phase" jdbcType="VARCHAR" property="initialDisposalPhase" />
+    <result column="start_disposal_date" jdbcType="TIMESTAMP" property="startDisposalDate" />
+    <result column="expected_completion_date" jdbcType="TIMESTAMP" property="expectedCompletionDate" />
+    <result column="actual_completion_date" jdbcType="TIMESTAMP" property="actualCompletionDate" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+    <result column="estimated_storage_capacity" jdbcType="VARCHAR" property="estimatedStorageCapacity" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, river_system, dam_scale_length, dam_scale_width, dam_scale_height, estimated_danger, 
+    area, response_team, response_measures, initial_disposal_phase, start_disposal_date, 
+    expected_completion_date, actual_completion_date, contact_person, contact_phone, 
+    estimated_storage_capacity
+  </sql>
+</mapper>

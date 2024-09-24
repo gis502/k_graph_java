@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.EmergencySheltersMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.EmergencyShelters">
+    <!--@mbg.generated-->
+    <!--@Table emergency_shelters-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="unique_identifier" jdbcType="VARCHAR" property="uniqueIdentifier" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="shelter_type_name" jdbcType="VARCHAR" property="shelterTypeName" />
+    <result column="area" jdbcType="NUMERIC" property="area" />
+    <result column="capacity" jdbcType="INTEGER" property="capacity" />
+    <result column="level_name" jdbcType="VARCHAR" property="levelName" />
+    <result column="secret_level" jdbcType="VARCHAR" property="secretLevel" />
+    <result column="administrative_division" jdbcType="VARCHAR" property="administrativeDivision" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="person_in_charge" jdbcType="VARCHAR" property="personInCharge" />
+    <result column="emergency_phone" jdbcType="VARCHAR" property="emergencyPhone" />
+    <result column="emergency_mobile" jdbcType="VARCHAR" property="emergencyMobile" />
+    <result column="affiliated_organization" jdbcType="VARCHAR" property="affiliatedOrganization" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="design_service_life" jdbcType="NUMERIC" property="designServiceLife" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="seismic_intensity" jdbcType="VARCHAR" property="seismicIntensity" />
+    <result column="data_source_unit" jdbcType="VARCHAR" property="dataSourceUnit" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="geometry  " jdbcType="OTHER" property="geometry" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, unique_identifier, "name", shelter_type_name, area, capacity, level_name, secret_level, 
+    administrative_division, address, person_in_charge, emergency_phone, emergency_mobile, 
+    affiliated_organization, start_time, design_service_life, description, seismic_intensity, 
+    data_source_unit, remarks, "geometry  "
+  </sql>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DebrisFlowMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.DebrisFlow">
+    <!--@mbg.generated-->
+    <!--@Table debris_flow-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="river_slope" jdbcType="NUMERIC" property="riverSlope" />
+    <result column="vegetation_coverage" jdbcType="VARCHAR" property="vegetationCoverage" />
+    <result column="flow_speed" jdbcType="NUMERIC" property="flowSpeed" />
+    <result column="area" jdbcType="NUMERIC" property="area" />
+    <result column="average_thickness" jdbcType="NUMERIC" property="averageThickness" />
+    <result column="material_composition" jdbcType="VARCHAR" property="materialComposition" />
+    <result column="current_stability_status" jdbcType="VARCHAR" property="currentStabilityStatus" />
+    <result column="casualties" jdbcType="VARCHAR" property="casualties" />
+    <result column="threatened_objects" jdbcType="VARCHAR" property="threatenedObjects" />
+    <result column="disposal_team" jdbcType="VARCHAR" property="disposalTeam" />
+    <result column="disposal_measures" jdbcType="VARCHAR" property="disposalMeasures" />
+    <result column="initial_disposal_phase" jdbcType="VARCHAR" property="initialDisposalPhase" />
+    <result column="start_disposal_time" jdbcType="TIMESTAMP" property="startDisposalTime" />
+    <result column="estimated_completion_time" jdbcType="TIMESTAMP" property="estimatedCompletionTime" />
+    <result column="actual_completion_time" jdbcType="TIMESTAMP" property="actualCompletionTime" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, river_slope, vegetation_coverage, flow_speed, area, average_thickness, material_composition, 
+    current_stability_status, casualties, threatened_objects, disposal_team, disposal_measures, 
+    initial_disposal_phase, start_disposal_time, estimated_completion_time, actual_completion_time, 
+    contact_person, contact_phone
+  </sql>
+</mapper>

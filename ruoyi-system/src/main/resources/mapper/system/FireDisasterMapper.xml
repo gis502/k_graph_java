@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FireDisasterMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.FireDisaster">
+    <!--@mbg.generated-->
+    <!--@Table fire_disaster-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="fire_type" jdbcType="VARCHAR" property="fireType" />
+    <result column="fire_level" jdbcType="VARCHAR" property="fireLevel" />
+    <result column="casualties" jdbcType="VARCHAR" property="casualties" />
+    <result column="response_team" jdbcType="VARCHAR" property="responseTeam" />
+    <result column="response_measures" jdbcType="VARCHAR" property="responseMeasures" />
+    <result column="initial_response_phase" jdbcType="VARCHAR" property="initialResponsePhase" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="expected_completion_date" jdbcType="TIMESTAMP" property="expectedCompletionDate" />
+    <result column="actual_completion_date" jdbcType="TIMESTAMP" property="actualCompletionDate" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, company_name, fire_type, fire_level, casualties, response_team, response_measures, 
+    initial_response_phase, start_date, expected_completion_date, actual_completion_date, 
+    contact_person, contact_phone
+  </sql>
+</mapper>

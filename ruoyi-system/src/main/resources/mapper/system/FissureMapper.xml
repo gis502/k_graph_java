@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FissureMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.Fissure">
+    <!--@mbg.generated-->
+    <!--@Table fissure-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="length" jdbcType="NUMERIC" property="length" />
+    <result column="width" jdbcType="NUMERIC" property="width" />
+    <result column="depth" jdbcType="NUMERIC" property="depth" />
+    <result column="activity_status" jdbcType="VARCHAR" property="activityStatus" />
+    <result column="casualties" jdbcType="VARCHAR" property="casualties" />
+    <result column="threatened_objects" jdbcType="VARCHAR" property="threatenedObjects" />
+    <result column="disposal_team" jdbcType="VARCHAR" property="disposalTeam" />
+    <result column="disposal_measures" jdbcType="VARCHAR" property="disposalMeasures" />
+    <result column="initial_disposal_stage" jdbcType="VARCHAR" property="initialDisposalStage" />
+    <result column="start_disposal_date" jdbcType="TIMESTAMP" property="startDisposalDate" />
+    <result column="expected_completion_date" jdbcType="TIMESTAMP" property="expectedCompletionDate" />
+    <result column="actual_completion_date" jdbcType="TIMESTAMP" property="actualCompletionDate" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, "length", width, "depth", activity_status, casualties, threatened_objects, 
+    disposal_team, disposal_measures, initial_disposal_stage, start_disposal_date, expected_completion_date, 
+    actual_completion_date, contact_person, contact_phone
+  </sql>
+</mapper>

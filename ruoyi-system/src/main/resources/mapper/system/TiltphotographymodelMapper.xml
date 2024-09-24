@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TiltphotographymodelMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.Tiltphotographymodel">
+    <!--@mbg.generated-->
+    <!--@Table tiltphotographymodel-->
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="rz" jdbcType="INTEGER" property="rz" />
+    <result column="tz" jdbcType="INTEGER" property="tz" />
+    <result column="time" jdbcType="VARCHAR" property="time" />
+    <result column="modelid" jdbcType="VARCHAR" property="modelid" />
+    <result column="rze" jdbcType="SMALLINT" property="rze" />
+    <result column="tze" jdbcType="SMALLINT" property="tze" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    "name", "path", rz, tz, "time", modelid, rze, tze
+  </sql>
+</mapper>

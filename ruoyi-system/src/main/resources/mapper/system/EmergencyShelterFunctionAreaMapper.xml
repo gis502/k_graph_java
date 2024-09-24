@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.EmergencyShelterFunctionAreaMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.EmergencyShelterFunctionArea">
+    <!--@mbg.generated-->
+    <!--@Table emergency_shelter_function_area-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="shelter_name" jdbcType="VARCHAR" property="shelterName" />
+    <result column="shelter_level" jdbcType="VARCHAR" property="shelterLevel" />
+    <result column="shelter_function" jdbcType="VARCHAR" property="shelterFunction" />
+    <result column="shelter_type" jdbcType="VARCHAR" property="shelterType" />
+    <result column="shelter_capacity" jdbcType="VARCHAR" property="shelterCapacity" />
+    <result column="management_unit" jdbcType="VARCHAR" property="managementUnit" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, shelter_name, shelter_level, shelter_function, shelter_type, shelter_capacity, 
+    management_unit, contact_person, contact_phone
+  </sql>
+</mapper>

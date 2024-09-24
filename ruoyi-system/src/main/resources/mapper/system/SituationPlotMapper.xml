@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SituationPlotMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.SituationPlot">
+    <!--@mbg.generated-->
+    <!--@Table situation_plot-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_id" jdbcType="VARCHAR" property="earthquakeId" />
+    <result column="plot_id" jdbcType="VARCHAR" property="plotId" />
+    <result column="drawtype" jdbcType="VARCHAR" property="drawtype" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="severity" jdbcType="VARCHAR" property="severity" />
+    <result column="plot_type" jdbcType="VARCHAR" property="plotType" />
+    <result column="angle" jdbcType="NUMERIC" property="angle" />
+    <result column="creation_time" jdbcType="TIMESTAMP" property="creationTime" />
+    <result column="elevation" jdbcType="NUMERIC" property="elevation" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="is_deleted" jdbcType="BOOLEAN" property="isDeleted" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_id, plot_id, drawtype, icon, severity, plot_type, angle, creation_time, 
+    elevation, end_time, is_deleted, geom
+  </sql>
+</mapper>

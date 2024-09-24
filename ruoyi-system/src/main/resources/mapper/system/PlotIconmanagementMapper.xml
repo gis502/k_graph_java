@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PlotIconmanagementMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.PlotIconmanagement">
+    <!--@mbg.generated-->
+    <!--@Table plot_iconmanagement-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="describe" jdbcType="VARCHAR" property="describe" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="plottype" jdbcType="VARCHAR" property="plottype" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, "name", "describe", "type", plottype, img
+  </sql>
+</mapper>

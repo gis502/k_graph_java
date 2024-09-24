@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.NewsMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.News">
+    <!--@mbg.generated-->
+    <!--@Table news-->
+    <id column="id" jdbcType="OTHER" property="id" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="publish_time" jdbcType="TIMESTAMP" property="publishTime" />
+    <result column="earthquake_id" jdbcType="VARCHAR" property="earthquakeId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="source_name" jdbcType="VARCHAR" property="sourceName" />
+    <result column="source_logo" jdbcType="OTHER" property="sourceLogo" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, url, title, publish_time, earthquake_id, content, image, source_name, source_logo
+  </sql>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AftershockInformationMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.AftershockInformation">
+    <!--@mbg.generated-->
+    <!--@Table aftershock_information-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_identifier" jdbcType="VARCHAR" property="earthquakeIdentifier" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+    <result column="total_aftershocks" jdbcType="INTEGER" property="totalAftershocks" />
+    <result column="magnitude_3_3_9" jdbcType="INTEGER" property="magnitude339" />
+    <result column="magnitude_4_4_9" jdbcType="INTEGER" property="magnitude449" />
+    <result column="magnitude_5_5_9" jdbcType="INTEGER" property="magnitude559" />
+    <result column="system_insert_time" jdbcType="TIMESTAMP" property="systemInsertTime" />
+    <result column="submission_deadline" jdbcType="TIMESTAMP" property="submissionDeadline" />
+    <result column="affected_area" jdbcType="VARCHAR" property="affectedArea" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="aftershock_distribution" jdbcType="VARCHAR" property="aftershockDistribution" />
+    <result column="earthquake_intensity" jdbcType="DOUBLE" property="earthquakeIntensity" />
+    <result column="duration" jdbcType="VARCHAR" property="duration" />
+    <result column="affected_range" jdbcType="VARCHAR" property="affectedRange" />
+    <result column="relationship_with_mainshock" jdbcType="VARCHAR" property="relationshipWithMainshock" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_identifier, earthquake_name, total_aftershocks, magnitude_3_3_9, 
+    magnitude_4_4_9, magnitude_5_5_9, system_insert_time, submission_deadline, affected_area, 
+    earthquake_time, aftershock_distribution, earthquake_intensity, duration, affected_range, 
+    relationship_with_mainshock
+  </sql>
+</mapper>

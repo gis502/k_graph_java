@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DisasterReliefSupplyDepotMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.DisasterReliefSupplyDepot">
+    <!--@mbg.generated-->
+    <!--@Table disaster_relief_supply_depot-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="depot_name" jdbcType="VARCHAR" property="depotName" />
+    <result column="depot_location" jdbcType="VARCHAR" property="depotLocation" />
+    <result column="depot_level" jdbcType="VARCHAR" property="depotLevel" />
+    <result column="material_type" jdbcType="VARCHAR" property="materialType" />
+    <result column="management_unit" jdbcType="VARCHAR" property="managementUnit" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, depot_name, depot_location, depot_level, material_type, management_unit, contact_person, 
+    contact_phone
+  </sql>
+</mapper>

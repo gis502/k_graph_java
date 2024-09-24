@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CasualtyReportMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.CasualtyReport">
+    <!--@mbg.generated-->
+    <!--@Table casualty_report-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_identifier" jdbcType="VARCHAR" property="earthquakeIdentifier" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+    <result column="affected_area_name" jdbcType="VARCHAR" property="affectedAreaName" />
+    <result column="system_insert_time" jdbcType="TIMESTAMP" property="systemInsertTime" />
+    <result column="newly_deceased" jdbcType="INTEGER" property="newlyDeceased" />
+    <result column="newly_missing" jdbcType="INTEGER" property="newlyMissing" />
+    <result column="newly_injured" jdbcType="INTEGER" property="newlyInjured" />
+    <result column="total_deceased" jdbcType="INTEGER" property="totalDeceased" />
+    <result column="total_missing" jdbcType="INTEGER" property="totalMissing" />
+    <result column="total_injured" jdbcType="INTEGER" property="totalInjured" />
+    <result column="submission_deadline" jdbcType="TIMESTAMP" property="submissionDeadline" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="affected_population" jdbcType="INTEGER" property="affectedPopulation" />
+    <result column="affected_county_district" jdbcType="VARCHAR" property="affectedCountyDistrict" />
+    <result column="injury_degree" jdbcType="VARCHAR" property="injuryDegree" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="cause" jdbcType="VARCHAR" property="cause" />
+    <result column="site_nature" jdbcType="VARCHAR" property="siteNature" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="ethnicity" jdbcType="VARCHAR" property="ethnicity" />
+    <result column="casualty_type" jdbcType="VARCHAR" property="casualtyType" />
+    <result column="death_count" jdbcType="INTEGER" property="deathCount" />
+    <result column="infection_count" jdbcType="INTEGER" property="infectionCount" />
+    <result column="transmission_path" jdbcType="VARCHAR" property="transmissionPath" />
+    <result column="poisoning_count" jdbcType="INTEGER" property="poisoningCount" />
+    <result column="event_id" jdbcType="VARCHAR" property="eventId" />
+    <result column="measures_taken" jdbcType="VARCHAR" property="measuresTaken" />
+    <result column="suspected_count" jdbcType="INTEGER" property="suspectedCount" />
+    <result column="critical_count" jdbcType="INTEGER" property="criticalCount" />
+    <result column="poisoned_count" jdbcType="INTEGER" property="poisonedCount" />
+    <result column="transferred_count" jdbcType="INTEGER" property="transferredCount" />
+    <result column="direct_economic_loss" jdbcType="NUMERIC" property="directEconomicLoss" />
+    <result column="indirect_economic_loss" jdbcType="NUMERIC" property="indirectEconomicLoss" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_identifier, earthquake_name, affected_area_name, system_insert_time, 
+    newly_deceased, newly_missing, newly_injured, total_deceased, total_missing, total_injured, 
+    submission_deadline, earthquake_time, affected_population, affected_county_district, 
+    injury_degree, quantity, cause, site_nature, age, gender, ethnicity, casualty_type, 
+    death_count, infection_count, transmission_path, poisoning_count, event_id, measures_taken, 
+    suspected_count, critical_count, poisoned_count, transferred_count, direct_economic_loss, 
+    indirect_economic_loss
+  </sql>
+</mapper>

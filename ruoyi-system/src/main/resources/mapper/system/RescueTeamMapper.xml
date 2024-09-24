@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RescueTeamMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.RescueTeam">
+    <!--@mbg.generated-->
+    <!--@Table rescue_team-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="team_name" jdbcType="VARCHAR" property="teamName" />
+    <result column="station_province" jdbcType="VARCHAR" property="stationProvince" />
+    <result column="station_city" jdbcType="VARCHAR" property="stationCity" />
+    <result column="station_county" jdbcType="VARCHAR" property="stationCounty" />
+    <result column="personnel_count" jdbcType="INTEGER" property="personnelCount" />
+    <result column="team_nature" jdbcType="VARCHAR" property="teamNature" />
+    <result column="team_type" jdbcType="VARCHAR" property="teamType" />
+    <result column="departure_date" jdbcType="TIMESTAMP" property="departureDate" />
+    <result column="estimated_arrival_date" jdbcType="TIMESTAMP" property="estimatedArrivalDate" />
+    <result column="planned_rescue_area" jdbcType="VARCHAR" property="plannedRescueArea" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+    <result column="on_standby" jdbcType="VARCHAR" property="onStandby" />
+    <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
+    <result column="eqid" jdbcType="VARCHAR" property="eqid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, team_name, station_province, station_city, station_county, personnel_count, 
+    team_nature, team_type, departure_date, estimated_arrival_date, planned_rescue_area, 
+    contact_person, contact_phone, on_standby, record_time, eqid
+  </sql>
+</mapper>

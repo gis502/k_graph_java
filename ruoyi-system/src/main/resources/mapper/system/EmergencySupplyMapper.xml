@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.EmergencySupplyMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.EmergencySupply">
+    <!--@mbg.generated-->
+    <!--@Table emergency_supply-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="material_id" jdbcType="VARCHAR" property="materialId" />
+    <result column="material_type_name" jdbcType="VARCHAR" property="materialTypeName" />
+    <result column="material_name" jdbcType="VARCHAR" property="materialName" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="specification" jdbcType="VARCHAR" property="specification" />
+    <result column="storage_location" jdbcType="VARCHAR" property="storageLocation" />
+    <result column="person_in_charge" jdbcType="VARCHAR" property="personInCharge" />
+    <result column="emergency_phone" jdbcType="VARCHAR" property="emergencyPhone" />
+    <result column="emergency_mobile" jdbcType="VARCHAR" property="emergencyMobile" />
+    <result column="supervising_unit_address" jdbcType="VARCHAR" property="supervisingUnitAddress" />
+    <result column="shelf_life" jdbcType="VARCHAR" property="shelfLife" />
+    <result column="expiration_date" jdbcType="VARCHAR" property="expirationDate" />
+    <result column="transportation_mode" jdbcType="VARCHAR" property="transportationMode" />
+    <result column="departure_station" jdbcType="VARCHAR" property="departureStation" />
+    <result column="location" jdbcType="OTHER" property="location" />
+    <result column="organization_name" jdbcType="VARCHAR" property="organizationName" />
+    <result column="confidentiality_level_name" jdbcType="VARCHAR" property="confidentialityLevelName" />
+    <result column="level_name" jdbcType="VARCHAR" property="levelName" />
+    <result column="administrative_division_name" jdbcType="VARCHAR" property="administrativeDivisionName" />
+    <result column="data_source_unit_name" jdbcType="VARCHAR" property="dataSourceUnitName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, material_id, material_type_name, material_name, quantity, unit, description, 
+    specification, storage_location, person_in_charge, emergency_phone, emergency_mobile, 
+    supervising_unit_address, shelf_life, expiration_date, transportation_mode, departure_station, 
+    "location", organization_name, confidentiality_level_name, level_name, administrative_division_name, 
+    data_source_unit_name
+  </sql>
+</mapper>

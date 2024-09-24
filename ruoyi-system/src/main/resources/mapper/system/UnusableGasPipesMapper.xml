@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UnusableGasPipesMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.UnusableGasPipes">
+    <!--@mbg.generated-->
+    <!--@Table unusable_gas_pipes-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="supply_area" jdbcType="VARCHAR" property="supplyArea" />
+    <result column="pipe_type" jdbcType="VARCHAR" property="pipeType" />
+    <result column="management_unit" jdbcType="VARCHAR" property="managementUnit" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+    <result column="image" jdbcType="OTHER" property="image" />
+    <result column="timestamp" jdbcType="TIMESTAMP" property="timestamp" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+    <result column="damage_description" jdbcType="VARCHAR" property="damageDescription" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, supply_area, pipe_type, management_unit, contact_person, contact_phone, image, 
+    "timestamp", geom, damage_description
+  </sql>
+</mapper>

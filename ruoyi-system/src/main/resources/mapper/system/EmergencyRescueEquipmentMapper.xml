@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.EmergencyRescueEquipmentMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.EmergencyRescueEquipment">
+    <!--@mbg.generated-->
+    <!--@Table emergency_rescue_equipment-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="county" jdbcType="VARCHAR" property="county" />
+    <result column="total_items" jdbcType="INTEGER" property="totalItems" />
+    <result column="infrared_detector" jdbcType="INTEGER" property="infraredDetector" />
+    <result column="optical_detector" jdbcType="INTEGER" property="opticalDetector" />
+    <result column="hydraulic_expansion_pliers" jdbcType="INTEGER" property="hydraulicExpansionPliers" />
+    <result column="hydraulic_cutting_pliers" jdbcType="INTEGER" property="hydraulicCuttingPliers" />
+    <result column="rock_drill" jdbcType="INTEGER" property="rockDrill" />
+    <result column="pry_bar" jdbcType="INTEGER" property="pryBar" />
+    <result column="rebar_cutter" jdbcType="INTEGER" property="rebarCutter" />
+    <result column="manual_hydraulic_jack" jdbcType="INTEGER" property="manualHydraulicJack" />
+    <result column="glow_stick" jdbcType="INTEGER" property="glowStick" />
+    <result column="fuel" jdbcType="NUMERIC" property="fuel" />
+    <result column="tension_wire" jdbcType="INTEGER" property="tensionWire" />
+    <result column="rescue_rope" jdbcType="NUMERIC" property="rescueRope" />
+    <result column="rope_thrower" jdbcType="INTEGER" property="ropeThrower" />
+    <result column="folding_ladder" jdbcType="INTEGER" property="foldingLadder" />
+    <result column="shovel_pick_hook_fork_hammer" jdbcType="INTEGER" property="shovelPickHookForkHammer" />
+    <result column="folding_shovel" jdbcType="INTEGER" property="foldingShovel" />
+    <result column="whistle" jdbcType="INTEGER" property="whistle" />
+    <result column="helmet" jdbcType="INTEGER" property="helmet" />
+    <result column="rain_boots" jdbcType="INTEGER" property="rainBoots" />
+    <result column="gloves" jdbcType="INTEGER" property="gloves" />
+    <result column="lifeline" jdbcType="NUMERIC" property="lifeline" />
+    <result column="drainage_pump" jdbcType="INTEGER" property="drainagePump" />
+    <result column="wind_fire_extinguisher" jdbcType="INTEGER" property="windFireExtinguisher" />
+    <result column="shovel" jdbcType="INTEGER" property="shovel" />
+    <result column="life_jacket" jdbcType="INTEGER" property="lifeJacket" />
+    <result column="lifebuoy" jdbcType="INTEGER" property="lifebuoy" />
+    <result column="warning_tape" jdbcType="NUMERIC" property="warningTape" />
+    <result column="walkie_talkie" jdbcType="INTEGER" property="walkieTalkie" />
+    <result column="megaphone" jdbcType="INTEGER" property="megaphone" />
+    <result column="gong" jdbcType="INTEGER" property="gong" />
+    <result column="headlamp" jdbcType="INTEGER" property="headlamp" />
+    <result column="portable_light" jdbcType="INTEGER" property="portableLight" />
+    <result column="first_aid_kit" jdbcType="INTEGER" property="firstAidKit" />
+    <result column="excavator" jdbcType="INTEGER" property="excavator" />
+    <result column="loader" jdbcType="INTEGER" property="loader" />
+    <result column="water_pump" jdbcType="INTEGER" property="waterPump" />
+    <result column="relay_water_pump" jdbcType="INTEGER" property="relayWaterPump" />
+    <result column="mobile_water_bag" jdbcType="INTEGER" property="mobileWaterBag" />
+    <result column="backpack_sprayer" jdbcType="INTEGER" property="backpackSprayer" />
+    <result column="chainsaw" jdbcType="INTEGER" property="chainsaw" />
+    <result column="hose" jdbcType="NUMERIC" property="hose" />
+    <result column="fire_truck" jdbcType="INTEGER" property="fireTruck" />
+    <result column="other" jdbcType="VARCHAR" property="other" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+    <result column="insertion_time" jdbcType="TIMESTAMP" property="insertionTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, county, total_items, infrared_detector, optical_detector, hydraulic_expansion_pliers, 
+    hydraulic_cutting_pliers, rock_drill, pry_bar, rebar_cutter, manual_hydraulic_jack, 
+    glow_stick, fuel, tension_wire, rescue_rope, rope_thrower, folding_ladder, shovel_pick_hook_fork_hammer, 
+    folding_shovel, whistle, helmet, rain_boots, gloves, lifeline, drainage_pump, wind_fire_extinguisher, 
+    shovel, life_jacket, lifebuoy, warning_tape, walkie_talkie, megaphone, gong, headlamp, 
+    portable_light, first_aid_kit, excavator, loader, water_pump, relay_water_pump, mobile_water_bag, 
+    backpack_sprayer, chainsaw, hose, fire_truck, other, address, geom, contact_person, 
+    contact_phone, insertion_time
+  </sql>
+</mapper>

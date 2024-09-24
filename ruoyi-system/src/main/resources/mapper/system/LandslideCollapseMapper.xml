@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LandslideCollapseMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.LandslideCollapse">
+    <!--@mbg.generated-->
+    <!--@Table landslide_collapse-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="length_m" jdbcType="NUMERIC" property="lengthM" />
+    <result column="width_m" jdbcType="NUMERIC" property="widthM" />
+    <result column="average_thickness_m" jdbcType="NUMERIC" property="averageThicknessM" />
+    <result column="volume_m3" jdbcType="NUMERIC" property="volumeM3" />
+    <result column="current_stability_status" jdbcType="VARCHAR" property="currentStabilityStatus" />
+    <result column="casualties" jdbcType="VARCHAR" property="casualties" />
+    <result column="threatened_objects" jdbcType="VARCHAR" property="threatenedObjects" />
+    <result column="disposal_team" jdbcType="VARCHAR" property="disposalTeam" />
+    <result column="disposal_measures" jdbcType="VARCHAR" property="disposalMeasures" />
+    <result column="initial_disposal_phase" jdbcType="VARCHAR" property="initialDisposalPhase" />
+    <result column="initial_disposal_start_date" jdbcType="TIMESTAMP" property="initialDisposalStartDate" />
+    <result column="initial_disposal_estimated_end_date" jdbcType="TIMESTAMP" property="initialDisposalEstimatedEndDate" />
+    <result column="initial_disposal_actual_end_date" jdbcType="TIMESTAMP" property="initialDisposalActualEndDate" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, length_m, width_m, average_thickness_m, volume_m3, current_stability_status, 
+    casualties, threatened_objects, disposal_team, disposal_measures, initial_disposal_phase, 
+    initial_disposal_start_date, initial_disposal_estimated_end_date, initial_disposal_actual_end_date, 
+    contact_person, contact_phone
+  </sql>
+</mapper>

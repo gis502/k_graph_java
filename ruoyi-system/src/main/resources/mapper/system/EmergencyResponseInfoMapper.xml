@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.EmergencyResponseInfoMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.EmergencyResponseInfo">
+    <!--@mbg.generated-->
+    <!--@Table emergency_response_info-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="response_time" jdbcType="TIMESTAMP" property="responseTime" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="eqid" jdbcType="VARCHAR" property="eqid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, response_time, unit, "level", "status", eqid
+  </sql>
+</mapper>

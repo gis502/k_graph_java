@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UnpassableTunnelMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.UnpassableTunnel">
+    <!--@mbg.generated-->
+    <!--@Table unpassable_tunnel-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="tunnel_name" jdbcType="VARCHAR" property="tunnelName" />
+    <result column="line" jdbcType="VARCHAR" property="line" />
+    <result column="tunnel_type" jdbcType="VARCHAR" property="tunnelType" />
+    <result column="casualties" jdbcType="VARCHAR" property="casualties" />
+    <result column="damage_form" jdbcType="VARCHAR" property="damageForm" />
+    <result column="response_team" jdbcType="VARCHAR" property="responseTeam" />
+    <result column="response_measures" jdbcType="VARCHAR" property="responseMeasures" />
+    <result column="initial_response_stage" jdbcType="VARCHAR" property="initialResponseStage" />
+    <result column="start_response_date" jdbcType="TIMESTAMP" property="startResponseDate" />
+    <result column="expected_completion_date" jdbcType="TIMESTAMP" property="expectedCompletionDate" />
+    <result column="actual_completion_date" jdbcType="TIMESTAMP" property="actualCompletionDate" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, tunnel_name, line, tunnel_type, casualties, damage_form, response_team, response_measures, 
+    initial_response_stage, start_response_date, expected_completion_date, actual_completion_date, 
+    contact_person, contact_phone
+  </sql>
+</mapper>

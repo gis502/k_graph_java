@@ -23,6 +23,14 @@
             <artifactId>ruoyi-common</artifactId>
         </dependency>
 
+        <!--lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
 
 </project>

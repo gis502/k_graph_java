@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.NuclearPollutionMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.NuclearPollution">
+    <!--@mbg.generated-->
+    <!--@Table nuclear_pollution-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="disposal_team" jdbcType="VARCHAR" property="disposalTeam" />
+    <result column="disposal_measure" jdbcType="VARCHAR" property="disposalMeasure" />
+    <result column="initial_disposal_stage" jdbcType="VARCHAR" property="initialDisposalStage" />
+    <result column="start_disposal_date" jdbcType="TIMESTAMP" property="startDisposalDate" />
+    <result column="estimated_completion_date" jdbcType="TIMESTAMP" property="estimatedCompletionDate" />
+    <result column="actual_completion_date" jdbcType="TIMESTAMP" property="actualCompletionDate" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, disposal_team, disposal_measure, initial_disposal_stage, start_disposal_date, 
+    estimated_completion_date, actual_completion_date, contact_person, contact_phone
+  </sql>
+</mapper>

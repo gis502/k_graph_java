@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DisasterReliefSuppliesMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.DisasterReliefSupplies">
+    <!--@mbg.generated-->
+    <!--@Table disaster_relief_supplies-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="county" jdbcType="VARCHAR" property="county" />
+    <result column="storage_points_count" jdbcType="INTEGER" property="storagePointsCount" />
+    <result column="total_items_count" jdbcType="INTEGER" property="totalItemsCount" />
+    <result column="tents" jdbcType="INTEGER" property="tents" />
+    <result column="quilts" jdbcType="INTEGER" property="quilts" />
+    <result column="other_blankets" jdbcType="INTEGER" property="otherBlankets" />
+    <result column="cotton_clothing" jdbcType="INTEGER" property="cottonClothing" />
+    <result column="cotton_coats" jdbcType="INTEGER" property="cottonCoats" />
+    <result column="other_clothing" jdbcType="INTEGER" property="otherClothing" />
+    <result column="blankets" jdbcType="INTEGER" property="blankets" />
+    <result column="folding_beds" jdbcType="INTEGER" property="foldingBeds" />
+    <result column="bunk_beds" jdbcType="INTEGER" property="bunkBeds" />
+    <result column="tarpaulins" jdbcType="INTEGER" property="tarpaulins" />
+    <result column="moisture_proof_pads" jdbcType="INTEGER" property="moistureProofPads" />
+    <result column="generators" jdbcType="INTEGER" property="generators" />
+    <result column="lighting_fixtures" jdbcType="INTEGER" property="lightingFixtures" />
+    <result column="lighting_sets" jdbcType="INTEGER" property="lightingSets" />
+    <result column="flashlights" jdbcType="INTEGER" property="flashlights" />
+    <result column="raincoats" jdbcType="INTEGER" property="raincoats" />
+    <result column="rain_boots" jdbcType="INTEGER" property="rainBoots" />
+    <result column="other_equipment" jdbcType="INTEGER" property="otherEquipment" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+    <result column="insert_time" jdbcType="TIMESTAMP" property="insertTime" />
+    <result column="other" jdbcType="VARCHAR" property="other" />
+    <result column="relief_families_box" jdbcType="INTEGER" property="reliefFamiliesBox" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, county, storage_points_count, total_items_count, tents, quilts, other_blankets, 
+    cotton_clothing, cotton_coats, other_clothing, blankets, folding_beds, bunk_beds, 
+    tarpaulins, moisture_proof_pads, generators, lighting_fixtures, lighting_sets, flashlights, 
+    raincoats, rain_boots, other_equipment, address, geom, contact_person, contact_phone, 
+    insert_time, other, relief_families_box
+  </sql>
+</mapper>

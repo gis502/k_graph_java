@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ExcelFileMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.ExcelFile">
+    <!--@mbg.generated-->
+    <!--@Table excel_file-->
+    <id column="id" jdbcType="SMALLINT" property="id" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_column" jdbcType="VARCHAR" property="fileColumn" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, file_name, file_column
+  </sql>
+</mapper>

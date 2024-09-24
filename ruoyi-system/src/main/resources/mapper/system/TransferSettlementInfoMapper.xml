@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TransferSettlementInfoMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.TransferSettlementInfo">
+    <!--@mbg.generated-->
+    <!--@Table transfer_settlement_info-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+    <result column="transfer_id" jdbcType="VARCHAR" property="transferId" />
+    <result column="earthquake_id" jdbcType="VARCHAR" property="earthquakeId" />
+    <result column="earthquake_area_name" jdbcType="VARCHAR" property="earthquakeAreaName" />
+    <result column="emergency_shelters" jdbcType="INTEGER" property="emergencyShelters" />
+    <result column="temporary_shelters" jdbcType="INTEGER" property="temporaryShelters" />
+    <result column="newly_transferred" jdbcType="INTEGER" property="newlyTransferred" />
+    <result column="cumulative_transferred" jdbcType="INTEGER" property="cumulativeTransferred" />
+    <result column="centralized_settlement" jdbcType="INTEGER" property="centralizedSettlement" />
+    <result column="distributed_settlement" jdbcType="INTEGER" property="distributedSettlement" />
+    <result column="reporting_deadline" jdbcType="TIMESTAMP" property="reportingDeadline" />
+    <result column="system_inserttime" jdbcType="TIMESTAMP" property="systemInserttime" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_name, transfer_id, earthquake_id, earthquake_area_name, emergency_shelters, 
+    temporary_shelters, newly_transferred, cumulative_transferred, centralized_settlement, 
+    distributed_settlement, reporting_deadline, system_inserttime, earthquake_time
+  </sql>
+</mapper>
