@@ -1,16 +1,18 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.locationtech.jts.geom.Geometry;
+import com.ruoyi.system.domain.EarthquakeList;
 
 import java.util.List;
 
-public interface EarthquakeListService extends IService<EarthquakeList>{
+public interface EarthquakeListService extends IService<EarthquakeList> {
+    public int addEq(EarthquakeList eq);
+    public int deleteEq(String eqid);
+    public int updateEq(EarthquakeList eq);
+    public List<EarthquakeList> selectAllEq();
+    public List<EarthquakeList> selectKeyEq();
+    public List<EarthquakeList> selectLatestEq();
 
     List<String> getExcelUploadEarthquake();
 
-    List<EarthquakeList> getEarthquakesWithinDistance(Geometry point, double v);
-
-    List<EarthquakeList> selectAllEq();
 }

@@ -4,8 +4,42 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ruoyi.system.mapper.EarthquakeListMapper">
-    <select id="selectAllEq" resultType="com.ruoyi.system.domain.entity.EarthquakeList">
-        select * from earthquake_list ORDER BY occurrence_time DESC
-    </select>
 
+  <select id="selectAllEq" resultType="com.ruoyi.system.domain.EarthquakeList">
+    select * from earthquake_list ORDER BY time DESC
+  </select>
+
+  <!-- 查询4.5级以上地震数据 -->
+  <select id="selectKeyEq" resultType="com.ruoyi.system.domain.EarthquakeList">
+    SELECT *
+    FROM earthquake_list
+    WHERE CAST(magnitude AS DECIMAL) >= 4.5
+      AND time != (SELECT MAX(time) FROM earthquake_list)
+    ORDER BY time DESC
+  </select>
+
+
+  <!-- 查询最新地震数据 -->
+  <select id="selectLatestEq" resultType="com.ruoyi.system.domain.EarthquakeList">
+    SELECT *
+    FROM earthquake_list
+    ORDER BY time DESC
+      LIMIT 1
+  </select>
+
+
+  <insert id="addEq">
+    insert into earthquake_list (eqid,earthquake_name,occurrence_time,magnitude,depth)
+    values (#{eqid}, #{earthquake_name}, #{occurrence_time}, #{magnitude}, #{longitude}, #{latitude},#{depth})
+  </insert>
+
+  <delete id="deleteEq">
+    delete from earthquake_list where eqid=#{eqid}
+  </delete>
+
+  <update id="updateEq" parameterType="com.ruoyi.system.domain.EarthquakeList">
+    update earthquake_list
+    set earthquake_name = #{earthquake_name}, occurrence_time = #{occurrence_time}, magnitude = #{magnitude}, depth = #{depth}
+    where eqid = #{eqid}
+  </update>
 </mapper>

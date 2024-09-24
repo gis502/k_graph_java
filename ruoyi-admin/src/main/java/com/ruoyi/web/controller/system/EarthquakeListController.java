@@ -1,52 +1,45 @@
 package com.ruoyi.web.controller.system;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.ruoyi.system.domain.dto.EqFormDto;
-import com.ruoyi.system.domain.dto.GeometryDTO;
-import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ruoyi.system.domain.EarthquakeList;
 import com.ruoyi.system.service.EarthquakeListService;
-import org.locationtech.jts.geom.Point;
+import com.ruoyi.web.controller.common.EqQueryDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.ruoyi.common.annotation.Log;
-import javax.annotation.Resource;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import com.ruoyi.common.enums.BusinessType;
 
 @RestController
 @RequestMapping("/system")
 public class EarthquakeListController {
-    @Resource
+    @Autowired
     private EarthquakeListService earthquakeListService;
 
-    @GetMapping("/getExcelUploadEarthquake")
-    public List<String> selectEarthquakeList() {
-        List<String> data = earthquakeListService.getExcelUploadEarthquake();
+    @PostMapping("/addEq")
+    public int addPlotIcon(@RequestBody EarthquakeList eq) {
+        int data = earthquakeListService.addEq(eq);
         return data;
     }
 
-    @GetMapping("/geteq")
+    @GetMapping("/deleteEq")
+    public int deleteEq(String eqid) {
+        int data = earthquakeListService.deleteEq(eqid);
+        return data;
+    }
+
+    @PostMapping("/updateEq")
+    public int updateEq(@RequestBody EarthquakeList eq) {
+        int data = earthquakeListService.updateEq(eq);
+        return data;
+    }
+
+    @GetMapping("/getEq")
     public List<EarthquakeList> selectAllEq() {
-        return earthquakeListService.selectAllEq();
-    }
-
-    @GetMapping("getLatesteq")
-    public List<EarthquakeList> getLatesteq() {
-        return earthquakeListService.list();
-    }
-
-//    @GetMapping("/geteq")
-//    public List<EarthquakeList> selectAllEq() {
-////        List<EqList> data = eqListService.list();
-//        List<EarthquakeList> data = earthquakeListService.selectAllEq();
-//        return data;
-//    }
-
-    @PostMapping("queryEqById")
-    public EarthquakeList queryEqById(@RequestParam(value = "id") String id) {
-        return earthquakeListService.getById(id);
+        List<EarthquakeList> data = earthquakeListService.selectAllEq();
+        return data;
     }
 
     @GetMapping("/queryEq")
@@ -55,21 +48,21 @@ public class EarthquakeListController {
         QueryWrapper.like(EarthquakeList::getEarthquakeName, queryValue)
                 .or().like(EarthquakeList::getMagnitude, queryValue)
                 .or().like(EarthquakeList::getDepth, queryValue)
-                .or().apply("to_char(occurrence_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%")
+                .or().apply("to_char(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%")
                 .orderByDesc(EarthquakeList::getOccurrenceTime);
         return earthquakeListService.list(QueryWrapper);
     }
 
     @PostMapping("/fromEq")
-    public List<EarthquakeList> fromEq(@RequestBody EqFormDto queryDTO) {
+    public List<EarthquakeList> fromEq(@RequestBody EqQueryDTO queryDTO) {
         LambdaQueryWrapper<EarthquakeList> QueryWrapper = new LambdaQueryWrapper<>();
 
-        if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
-            QueryWrapper.like(EarthquakeList::getEarthquakeName, queryDTO.getEarthquakeName());
+        if (queryDTO.getPosition() != null && !queryDTO.getPosition().isEmpty()) {
+            QueryWrapper.like(EarthquakeList::getEarthquakeName, queryDTO.getPosition());
         }
-        if (queryDTO.getOccurrenceTime() != null && !queryDTO.getOccurrenceTime().isEmpty()) {
+        if (queryDTO.getTime() != null && !queryDTO.getTime().isEmpty()) {
             // 解析时间范围字符串
-            String[] timeRange = queryDTO.getOccurrenceTime().split(" 至 ");
+            String[] timeRange = queryDTO.getTime().split(" 至 ");
             if (timeRange.length == 2) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -106,23 +99,31 @@ public class EarthquakeListController {
     }
 
 
-    @PostMapping("saveEq")
-    @Log(title = "地震信息", businessType = BusinessType.INSERT)
-    public boolean saveEq(@RequestBody EarthquakeList earthquakeList) {
-        return earthquakeListService.save(earthquakeList);
+    @GetMapping("/getKeyEq")
+    public List<EarthquakeList> selectKeyEq() {
+        List<EarthquakeList> data = earthquakeListService.selectKeyEq();
+        return data;
     }
 
-    @RequestMapping("deleteEqById")
-    @Log(title = "地震信息", businessType = BusinessType.DELETE)
-    public boolean deleteEqById(@RequestParam(value = "id") String id) {
-        return earthquakeListService.removeById(id);
+    @GetMapping("/getLatesteq")
+    public List<EarthquakeList> selectLatestEq() {
+        List<EarthquakeList> data = earthquakeListService.selectLatestEq();
+        return data;
     }
 
-    @PostMapping("/nearby")
-    public List<EarthquakeList> getNearbyEarthquakes(@RequestBody GeometryDTO geometryDTO) {
-        Point point = geometryDTO.getPoint();
-        return earthquakeListService.getEarthquakesWithinDistance(point, 1000.0);
+    //获取完整的地震列表
+    @GetMapping("/getExcelUploadEarthquake")
+    public List<String> selectearthquakeList() {
+        List<String> data = earthquakeListService.getExcelUploadEarthquake();
+        return data;
     }
 
+    @PostMapping("/geteqbyid")
+    public EarthquakeList selectEqByID(@RequestParam String eqid) {
+        QueryWrapper<EarthquakeList> earthquakeListQueryWrapper = new QueryWrapper<>();
+        earthquakeListQueryWrapper.eq("eqid", eqid);
+        EarthquakeList one = earthquakeListService.getOne(earthquakeListQueryWrapper);
+        return one;
+    }
 
 }
