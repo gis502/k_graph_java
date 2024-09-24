@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.postgis.Point;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -42,7 +44,7 @@ public class EarthquakeList {
      * 发震时间
      */
     @TableField(value = "occurrence_time")
-    private Date occurrenceTime;
+    private LocalDateTime occurrenceTime;
 
     /**
      * 震级

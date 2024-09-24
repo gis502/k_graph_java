@@ -83,5 +83,137 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="cleanOperLog">
         truncate table sys_oper_log
     </update>
+	<select id="getMessageByDay" resultType="com.ruoyi.system.domain.SysOperLog">
+		SELECT sol.*,
+		su.phonenumber
+		FROM sys_oper_log sol
+		JOIN
+		sys_user su ON sol.oper_name = su.user_name
+		WHERE DATE_TRUNC('day', sol.oper_time) = CURRENT_DATE
+		AND sol.title LIKE '%导入数据%'
+		<!-- 根据 username 动态调整查询逻辑 -->
+		<if test="username != 'admin'">
+			AND sol.oper_name = #{username}
+		</if>
+		<if test="requestParams != null and requestParams != ''">
+			AND (
+			su.phonenumber LIKE concat('%', #{requestParams}, '%')
+			OR sol.oper_name LIKE concat('%', #{requestParams}, '%')
+			OR sol.dept_name LIKE concat('%', #{requestParams}, '%')
+			OR sol.json_result LIKE concat('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+			)
+		</if>
+		ORDER BY sol.oper_time DESC
+	</select>
+
+	<select id="getMessageByWeek" resultType="com.ruoyi.system.domain.SysOperLog">
+		SELECT sol.*,
+		su.phonenumber
+		FROM sys_oper_log sol
+		JOIN
+		sys_user su ON sol.oper_name = su.user_name
+		WHERE sol.oper_time >= CURRENT_DATE - INTERVAL '7 days'
+		AND sol.title LIKE '%导入数据%'
+		<!-- 根据 username 动态调整查询逻辑 -->
+		<if test="username != 'admin'">
+			AND sol.oper_name = #{username}
+		</if>
+		<if test="requestParams != null and requestParams != ''">
+			AND (
+			su.phonenumber LIKE concat('%', #{requestParams}, '%')
+			OR sol.oper_name LIKE concat('%', #{requestParams}, '%')
+			OR sol.dept_name LIKE concat('%', #{requestParams}, '%')
+			OR sol.json_result LIKE concat('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+			)
+		</if>
+		ORDER BY sol.oper_time DESC
+	</select>
+
+	<select id="getMessageByMonth" resultType="com.ruoyi.system.domain.SysOperLog">
+		SELECT sol.*,
+		su.phonenumber
+		FROM sys_oper_log sol
+		JOIN sys_user su ON sol.oper_name = su.user_name
+		WHERE sol.oper_time >= NOW() - INTERVAL '1 month'
+		AND sol.title LIKE '%导入数据%'
+		<!-- 根据 username 动态调整查询逻辑 -->
+		<if test="username != 'admin'">
+			AND sol.oper_name = #{username}
+		</if>
+		<if test="requestParams != null and requestParams != ''">
+			AND (
+			su.phonenumber LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.oper_name LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.dept_name LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.json_result LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+			)
+		</if>
+		ORDER BY sol.oper_time DESC
+	</select>
+
+	<select id="getMessageByThreeMonth" resultType="com.ruoyi.system.domain.SysOperLog">
+		SELECT sol.*,
+		su.phonenumber
+		FROM sys_oper_log sol
+		JOIN sys_user su ON sol.oper_name = su.user_name
+		WHERE sol.oper_time >= NOW() - INTERVAL '3 months'
+		AND sol.title LIKE '%导入数据%'
+		<!-- 根据 username 动态调整查询逻辑 -->
+		<if test="username != 'admin'">
+			AND sol.oper_name = #{username}
+		</if>
+		<if test="requestParams != null and requestParams != ''">
+			AND (
+			su.phonenumber LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.oper_name LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.dept_name LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.json_result LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+
+			)
+		</if>
+		ORDER BY sol.oper_time DESC
+	</select>
+
+	<select id="getMessageByYear" resultType="com.ruoyi.system.domain.SysOperLog">
+		SELECT sol.*,
+		su.phonenumber
+		FROM sys_oper_log sol
+		JOIN sys_user su ON sol.oper_name = su.user_name
+		WHERE sol.oper_time >= NOW() - INTERVAL '1 year'
+		AND sol.title LIKE '%导入数据%'
+		<!-- 根据 username 动态调整查询逻辑 -->
+		<if test="username != 'admin'">
+			AND sol.oper_name = #{username}
+		</if>
+		<if test="requestParams != null and requestParams != ''">
+			AND (
+			su.phonenumber LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.oper_name LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.dept_name LIKE CONCAT('%', #{requestParams}, '%')
+			OR sol.json_result LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+			)
+		</if>
+		ORDER BY sol.oper_time DESC
+	</select>
 
 </mapper>
