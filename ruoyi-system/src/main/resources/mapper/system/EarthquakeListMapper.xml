@@ -1,24 +1,45 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.ruoyi.system.mapper.EarthquakeListMapper">
-  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.EarthquakeList">
-    <!--@mbg.generated-->
-    <!--@Table earthquake_list-->
-    <id column="eqid" jdbcType="OTHER" property="eqid" />
-    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
-    <result column="providing_department" jdbcType="VARCHAR" property="providingDepartment" />
-    <result column="geom" jdbcType="OTHER" property="geom" />
-    <result column="occurrence_time" jdbcType="TIMESTAMP" property="occurrenceTime" />
-    <result column="magnitude" jdbcType="VARCHAR" property="magnitude" />
-    <result column="depth" jdbcType="VARCHAR" property="depth" />
-    <result column="intensity" jdbcType="VARCHAR" property="intensity" />
-    <result column="epicenter_name" jdbcType="VARCHAR" property="epicenterName" />
-    <result column="city" jdbcType="VARCHAR" property="city" />
-    <result column="province" jdbcType="VARCHAR" property="province" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    eqid, earthquake_name, providing_department, geom, occurrence_time, magnitude, "depth", 
-    intensity, epicenter_name, city, province
-  </sql>
+
+  <select id="selectAllEq" resultType="com.ruoyi.system.domain.EarthquakeList">
+    select * from earthquake_list ORDER BY time DESC
+  </select>
+
+  <!-- 查询4.5级以上地震数据 -->
+  <select id="selectKeyEq" resultType="com.ruoyi.system.domain.EarthquakeList">
+    SELECT *
+    FROM earthquake_list
+    WHERE CAST(magnitude AS DECIMAL) >= 4.5
+      AND time != (SELECT MAX(time) FROM earthquake_list)
+    ORDER BY time DESC
+  </select>
+
+
+  <!-- 查询最新地震数据 -->
+  <select id="selectLatestEq" resultType="com.ruoyi.system.domain.EarthquakeList">
+    SELECT *
+    FROM earthquake_list
+    ORDER BY time DESC
+      LIMIT 1
+  </select>
+
+
+  <insert id="addEq">
+    insert into earthquake_list (eqid,earthquake_name,occurrence_time,magnitude,depth)
+    values (#{eqid}, #{earthquake_name}, #{occurrence_time}, #{magnitude}, #{longitude}, #{latitude},#{depth})
+  </insert>
+
+  <delete id="deleteEq">
+    delete from earthquake_list where eqid=#{eqid}
+  </delete>
+
+  <update id="updateEq" parameterType="com.ruoyi.system.domain.EarthquakeList">
+    update earthquake_list
+    set earthquake_name = #{earthquake_name}, occurrence_time = #{occurrence_time}, magnitude = #{magnitude}, depth = #{depth}
+    where eqid = #{eqid}
+  </update>
 </mapper>
