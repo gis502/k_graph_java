@@ -2,9 +2,7 @@ package com.ruoyi.system.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
-import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.CasualtyReport;
-import com.ruoyi.system.mapper.AftershockInformationMapper;
 import com.ruoyi.system.mapper.CasualtyReportMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
 
