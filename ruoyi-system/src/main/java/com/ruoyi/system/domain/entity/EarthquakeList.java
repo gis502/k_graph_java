@@ -47,6 +47,12 @@ public class EarthquakeList {
     @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
     private Geometry geom;
 
+    @TableField(exist = false) // Indicates no corresponding database column
+    private Double longitude;
+
+    @TableField(exist = false) // Indicates no corresponding database column
+    private Double latitude;
+
     /**
      * 发震时间
      */
@@ -88,4 +94,16 @@ public class EarthquakeList {
      */
     @TableField(value = "province")
     private String province;
+
+    // 设置 geom 时提取经纬度
+    public void setGeom(Geometry geom) {
+        this.geom = geom;
+        if (geom != null) {
+            this.longitude = geom.getCoordinate().x;
+            this.latitude = geom.getCoordinate().y;
+        } else {
+            this.longitude = null;
+            this.latitude = null;
+        }
+    }
 }
