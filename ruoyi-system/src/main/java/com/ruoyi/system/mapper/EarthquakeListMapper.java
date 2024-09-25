@@ -13,4 +13,8 @@ import java.util.List;
 public interface EarthquakeListMapper extends BaseMapper<EarthquakeList> {
     @Select("SELECT * FROM earthquake_list WHERE ST_DWithin(geom, #{point}, #{distance})")
     List<EarthquakeList> selectWithinDistance(@Param("point") Geometry point, @Param("distance") double distance);
+
+    @Select("SELECT * FROM earthquake_list WHERE eqid = CAST(#{eqId} AS UUID)")
+    List<EarthquakeList> findEarthquakeIdByTimeAndPosition(@Param("eqId") String eqId);
+
 }
