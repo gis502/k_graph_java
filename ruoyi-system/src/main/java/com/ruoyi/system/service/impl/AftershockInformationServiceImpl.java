@@ -9,12 +9,16 @@ import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AftershockInformation;
@@ -34,11 +38,11 @@ import java.util.stream.Collectors;
 public class AftershockInformationServiceImpl extends
         ServiceImpl<AftershockInformationMapper, AftershockInformation>
         implements AftershockInformationService, DataExportStrategy {
+    @Autowired
+    private AftershockInformationMapper aftershockInformationMapper;
     @Override
     public IPage<AftershockInformation> getPage(RequestBTO requestBTO) {
-        Page<AftershockInformation>
-                aftershockInformation =
-                new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        Page<AftershockInformation> aftershockInformation = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         String requestParam = requestBTO.getRequestParams();
         LambdaQueryWrapper<AftershockInformation> queryWrapper =
                 Wrappers.lambdaQuery(AftershockInformation.class)
@@ -89,6 +93,28 @@ public class AftershockInformationServiceImpl extends
         }
         return list;
     }
+
+    /**
+     * 获取最新余震数据
+     * @param eqid
+     * @return
+     */
+    @Override
+    public Map<String, Integer> getLatestAftershockMagnitude(String eqid) {
+        Map<String, Integer> aftershockData = aftershockInformationMapper.getLatestAftershockData(eqid);
+        // 检查数据是否为 null 或空
+        if (aftershockData == null || aftershockData.isEmpty()) {
+            // 返回默认值
+            aftershockData = new HashMap<>();
+            aftershockData.put("magnitude_3_0_to_3_9", 0);
+            aftershockData.put("magnitude_4_0_to_4_9", 0);
+            aftershockData.put("magnitude_5_0_to_5_9", 0);
+        }
+        System.out.println("------------------------------------------");
+        System.out.println(aftershockData);
+        return aftershockData;
+    }
+
 
 
     @Resource
