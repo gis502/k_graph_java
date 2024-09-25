@@ -34,8 +34,9 @@ server:
 # 日志配置
 logging:
   level:
-    com.ruoyi: debug
-    org.springframework: warn
+    com.ruoyi: debug         # 自定义包的日志级别
+    org.springframework: warn  # Spring Framework 的日志级别
+    root: INFO               # 根日志级别
 
 # 用户配置
 user:

@@ -15,6 +15,10 @@ import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -56,7 +60,6 @@ public class ExcelController {
         // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
         String fileName = URLEncoder.encode("地震数据信息统计表", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-//
         EasyExcel.write(response.getOutputStream(), clazz)
                 .includeColumnFiledNames(Arrays.asList(RequestBTO.getFields()))
                 .sheet("地震数据信息统计表")

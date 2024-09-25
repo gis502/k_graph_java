@@ -1,12 +1,17 @@
 package com.ruoyi.system.domain.entity;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.math.BigDecimal;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
     * 震后生成-地震灾情信息-人员伤亡表（用户上传数据）
@@ -18,7 +23,7 @@ public class CasualtyReport {
      * 唯一标识UUID
      */
     @TableId(value = "uuid", type = IdType.NONE)
-    private Object uuid;
+    private String uuid;
 
     /**
      * 地震标识，标识地震事件的唯一标识符
@@ -29,73 +34,91 @@ public class CasualtyReport {
     /**
      * 地震名称，地震的描述性名称
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "地震名称"})
     @TableField(value = "earthquake_name")
     private String earthquakeName;
 
     /**
      * 震区名称，受影响地区的名称
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "震区名称"})
     @TableField(value = "affected_area_name")
     private String affectedAreaName;
 
     /**
      * 系统插入时间，记录被系统创建的时间
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "系统插入时间"})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "system_insert_time")
-    private Date systemInsertTime;
+    private LocalDateTime systemInsertTime;
 
     /**
      * 新增遇难人数，新报告的遇难者数量
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "新增遇难人数"})
     @TableField(value = "newly_deceased")
     private Integer newlyDeceased;
 
     /**
      * 新增失联人数，新报告的失联者数量
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "新增失联人数"})
     @TableField(value = "newly_missing")
     private Integer newlyMissing;
 
     /**
      * 新增受伤人数，新报告的受伤者数量
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "新增受伤人数"})
     @TableField(value = "newly_injured")
     private Integer newlyInjured;
 
     /**
      * 累计遇难人数，所有报告的遇难者总数
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "累计遇难人数"})
     @TableField(value = "total_deceased")
     private Integer totalDeceased;
 
     /**
      * 累计失联人数，所有报告的失联者总数
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "累计失联人数"})
     @TableField(value = "total_missing")
     private Integer totalMissing;
 
     /**
      * 累计受伤人数，所有报告的受伤者总数
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "累计受伤人数"})
     @TableField(value = "total_injured")
     private Integer totalInjured;
 
     /**
      * 填报截止时间，报告提交的最终期限
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "填报截止时间"})
+    @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "submission_deadline")
     private Date submissionDeadline;
 
     /**
      * 地震时间，地震发生的具体时间
      */
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "地震时间"})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "earthquake_time")
-    private Date earthquakeTime;
+    @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime earthquakeTime;
 
     /**
      * 受灾人数，受影响的总人口数量
      */
     @TableField(value = "affected_population")
+    @ExcelProperty(value = {"震情灾情-人员伤亡", "受灾人数"})
     private Integer affectedPopulation;
 
     /**
