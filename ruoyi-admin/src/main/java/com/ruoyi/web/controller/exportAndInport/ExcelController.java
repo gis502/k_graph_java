@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,8 +23,10 @@ import java.util.List;
  * @author 方
  */
 @RequestMapping("/excel")
+@RestController
 @RequiredArgsConstructor
 public class ExcelController {
+
     private final DataExportStrategyContext dataExportStrategyContext;
 
     @PostMapping("/getData")
@@ -43,7 +46,6 @@ public class ExcelController {
         // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
         String fileName = URLEncoder.encode("地震数据信息统计表", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-//
         EasyExcel.write(response.getOutputStream(), clazz)
                 .includeColumnFiledNames(Arrays.asList(RequestBTO.getFields()))
                 .sheet("地震数据信息统计表")
