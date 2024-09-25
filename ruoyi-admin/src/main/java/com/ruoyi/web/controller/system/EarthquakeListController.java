@@ -1,8 +1,11 @@
 package com.ruoyi.web.controller.system;
 
 
+import com.ruoyi.system.domain.dto.GeometryDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.service.EarthquakeListService;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,8 +43,21 @@ public class EarthquakeListController {
         return earthquakeListService.getById(id);
     }
 
+    @PostMapping("saveEq")
+    public boolean saveEq(@RequestBody EarthquakeList earthquakeList) {
+        return earthquakeListService.save(earthquakeList);
+    }
+
     @RequestMapping("deleteEqById")
     public boolean deleteEqById(@RequestParam(value = "id") String id) {
         return earthquakeListService.removeById(id);
     }
+
+    @PostMapping("/nearby")
+    public List<EarthquakeList> getNearbyEarthquakes(@RequestBody GeometryDTO geometryDTO) {
+        Point point = geometryDTO.getPoint();
+        return earthquakeListService.getEarthquakesWithinDistance(point, 1000.0);
+    }
+
+
 }

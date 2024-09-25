@@ -108,6 +108,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+  type-handlers-package: com.ruoyi.system.domain.handler
 
 # PageHelper分页插件
 pagehelper:
