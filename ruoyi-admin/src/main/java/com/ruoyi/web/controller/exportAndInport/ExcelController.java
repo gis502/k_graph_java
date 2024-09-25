@@ -8,8 +8,10 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AftershockInformation;
+import com.ruoyi.system.domain.entity.CasualtyReport;
 import com.ruoyi.system.mapper.SysOperLogMapper;
 import com.ruoyi.system.service.impl.AftershockInformationServiceImpl;
+import com.ruoyi.system.service.impl.CasualtyReportServiceImpl;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,10 @@ public class ExcelController {
 
     @Resource
     private AftershockInformationServiceImpl aftershockInformationServiceImpl;
+    @Resource
+    private CasualtyReportServiceImpl caseCacheServiceImpl;
+
+
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
         return AjaxResult.success(dataExportStrategyContext.getStrategy(requestBTO.getFlag()).getPage(requestBTO));
@@ -98,8 +104,11 @@ public class ExcelController {
         System.out.println(eqId);
         try {
             if (filename.equals("震情伤亡-震情灾情统计表")) {
-                List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcel(file, userName,eqId);
+                List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName,eqId);
                 return R.ok(yaanAftershockStatistics);
+            } if (filename.equals("震情伤亡-人员伤亡统计表")) {
+                List<CasualtyReport> yaanCasualties = caseCacheServiceImpl.importExcelCasualtyReport(file, userName,eqId);
+                return R.ok(yaanCasualties);
             }
             else {
                 return R.fail("上传文件名称错误");

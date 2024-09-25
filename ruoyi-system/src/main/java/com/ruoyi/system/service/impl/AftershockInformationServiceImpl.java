@@ -94,7 +94,7 @@ public class AftershockInformationServiceImpl extends
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
     @Override
-    public List<AftershockInformation> importExcel(MultipartFile file, String userName, String eqId) throws IOException {
+    public List<AftershockInformation> importExcelAftershockInformation(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
         // 读取总行数（略过表头）
         int totalRows = WorkbookFactory.create(inputStream).getSheetAt(0).getPhysicalNumberOfRows() - 4;

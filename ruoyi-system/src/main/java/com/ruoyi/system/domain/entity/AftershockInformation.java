@@ -23,7 +23,7 @@ public class AftershockInformation {
      * 序号，自增主键
      */
     @TableId(value = "uuid", type = IdType.NONE)
-    private Object uuid;
+    private String uuid;
 
     /**
      * 地震标识，标识地震事件的唯一标识符

@@ -8,6 +8,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface AftershockInformationService extends IService<AftershockInformation>{
-    List<AftershockInformation> importExcel(MultipartFile file, String userName, String eqName) throws IOException;
+    List<AftershockInformation> importExcelAftershockInformation(MultipartFile file, String userName, String eqName) throws IOException;
 
 }
