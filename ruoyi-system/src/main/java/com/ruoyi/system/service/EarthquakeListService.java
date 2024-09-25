@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface EarthquakeListService extends IService<EarthquakeList>{
 
-
     List<String> getExcelUploadEarthquake();
 }

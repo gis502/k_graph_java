@@ -1,18 +1,20 @@
 package com.ruoyi.web.controller.exportAndInport;
 
 import com.alibaba.excel.EasyExcel;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.mapper.SysOperLogMapper;
+import com.ruoyi.system.service.impl.AftershockInformationServiceImpl;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -27,12 +29,16 @@ import java.util.List;
  * @author 方
  */
 @RequestMapping("/excel")
+@RestController
 @RequiredArgsConstructor
 public class ExcelController {
     private final DataExportStrategyContext dataExportStrategyContext;
 
     @Resource
     private SysOperLogMapper sysOperLogMapper;
+
+    @Resource
+    private AftershockInformationServiceImpl aftershockInformationServiceImpl;
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
         return AjaxResult.success(dataExportStrategyContext.getStrategy(requestBTO.getFlag()).getPage(requestBTO));
@@ -81,6 +87,24 @@ public class ExcelController {
                 break;
         }
         return R.ok(message);
+    }
+
+    @PostMapping("/importExcel/{userName}&{filename}&{eqId}")
+    @Log(title = "导入数据", businessType = BusinessType.IMPORT)
+    public R getAfterShockStatistics(@RequestParam("file") MultipartFile file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String filename, @PathVariable(value = "eqId") String eqId) throws IOException {
+        System.out.println(eqId);
+        try {
+            if (filename.equals("震情伤亡-震情灾情统计表")) {
+                List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcel(file, userName,eqId);
+                return R.ok(yaanAftershockStatistics);
+            }
+            else {
+                return R.fail("上传文件名称错误");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.fail("操作失败: " + e.getMessage());
+        }
     }
 
 

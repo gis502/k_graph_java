@@ -28,8 +28,10 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
         List<String> result = new ArrayList<>();
 
         for (EarthquakeList eq : eqLists) {
+            String eqid = eq.getEqid().toString();
             String combined =  eq.getOccurrenceTime().format(formatter).toString().replace("T", " ")+ " "+eq.getEarthquakeName() + "  " +"震级：" +eq.getMagnitude();
-            result.add(combined);
+            String resultString = eqid + " - " + combined; // 使用 "-" 或其他分隔符连接
+            result.add(resultString);
         }
         return result;
     }
