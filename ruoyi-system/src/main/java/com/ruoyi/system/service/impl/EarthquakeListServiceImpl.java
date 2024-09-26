@@ -41,4 +41,5 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
     public List<EarthquakeList> getEarthquakesWithinDistance(Geometry point, double distance) {
         return earthquakeListMapper.selectWithinDistance(point, distance);
     }
+
 }
