@@ -9,9 +9,11 @@ import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.CasualtyReport;
+import com.ruoyi.system.domain.entity.TransferSettlementInfo;
 import com.ruoyi.system.mapper.SysOperLogMapper;
 import com.ruoyi.system.service.impl.AftershockInformationServiceImpl;
 import com.ruoyi.system.service.impl.CasualtyReportServiceImpl;
+import com.ruoyi.system.service.impl.TransferSettlementInfoServiceImpl;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +49,9 @@ public class ExcelController {
     private AftershockInformationServiceImpl aftershockInformationServiceImpl;
     @Resource
     private CasualtyReportServiceImpl caseCacheServiceImpl;
+
+    @Resource
+    private TransferSettlementInfoServiceImpl transferSettlementInfoServiceImpl;
 
 
     @PostMapping("/getData")
@@ -109,6 +114,10 @@ public class ExcelController {
             } if (filename.equals("震情伤亡-人员伤亡统计表")) {
                 List<CasualtyReport> yaanCasualties = caseCacheServiceImpl.importExcelCasualtyReport(file, userName,eqId);
                 return R.ok(yaanCasualties);
+            }
+            if (filename.equals("震情伤亡-转移安置统计表")) {
+                List<TransferSettlementInfo> YaanRelocationResettlementDisasterReliefGroup=transferSettlementInfoServiceImpl.importExcelTransferSettlementInfo(file, userName,eqId);
+                return R.ok(YaanRelocationResettlementDisasterReliefGroup);
             }
             else {
                 return R.fail("上传文件名称错误");

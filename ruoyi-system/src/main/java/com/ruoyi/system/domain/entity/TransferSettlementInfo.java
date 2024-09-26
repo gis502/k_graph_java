@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
@@ -40,9 +43,16 @@ public class TransferSettlementInfo {
     private String earthquakeId;
 
     /**
+     * 震级，地震 Richter 震级
+     */
+    @ExcelProperty({"转移安置信息", "震级"})
+    @TableField(value = "magnitude")
+    private String magnitude;
+
+    /**
      * 震区名称
      */
-    @ExcelProperty(value = {"转移安置信息", "震区名称"})
+    @ExcelProperty(value = {"转移安置信息", "震区（县/区）"})
     @TableField(value = "earthquake_area_name")
     private String earthquakeAreaName;
 
@@ -91,10 +101,10 @@ public class TransferSettlementInfo {
     /**
      * 填报截止时间
      */
-    @ExcelProperty(value = {"转移安置信息", "填报截止时间"})
+    @ExcelProperty(value = {"转移安置信息", "统计截止时间"})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "reporting_deadline")
-    private Date reportingDeadline;
+    private LocalDateTime reportingDeadline;
 
     /**
      * 系统插入时间
@@ -102,7 +112,7 @@ public class TransferSettlementInfo {
     @ExcelProperty(value = {"转移安置信息", "系统插入时间"})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "system_inserttime")
-    private Date systemInserttime;
+    private LocalDateTime systemInserttime;
 
     /**
      * 地震时间
@@ -110,5 +120,12 @@ public class TransferSettlementInfo {
     @ExcelProperty(value = {"转移安置信息", "地震时间"})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "earthquake_time")
-    private Date earthquakeTime;
+    private LocalDateTime earthquakeTime;
+
+
+    public LocalDateTime getSystemInserttime() {
+        return systemInserttime != null ? systemInserttime.truncatedTo(ChronoUnit.SECONDS) : null;
+    }
 }
+
+

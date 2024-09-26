@@ -11,6 +11,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
@@ -29,6 +30,7 @@ public class CasualtyReport {
      * 地震标识，标识地震事件的唯一标识符
      */
     @TableField(value = "earthquake_identifier")
+    @ExcelProperty({"人员伤亡", "地震标识"})
     private String earthquakeIdentifier;
 
     /**
@@ -47,7 +49,7 @@ public class CasualtyReport {
     /**
      * 震区名称，受影响地区的名称
      */
-    @ExcelProperty(value = {"人员伤亡", "震区名称"})
+    @ExcelProperty(value = {"人员伤亡", "震区（县/区）"})
     @TableField(value = "affected_area_name")
     private String affectedAreaName;
 
@@ -63,49 +65,49 @@ public class CasualtyReport {
     /**
      * 新增遇难人数，新报告的遇难者数量
      */
-    @ExcelProperty(value = {"人员伤亡", "新增遇难人数"})
+    @ExcelProperty(value = {"人员伤亡", "新增遇难（人）"})
     @TableField(value = "newly_deceased")
     private Integer newlyDeceased;
 
     /**
      * 新增失联人数，新报告的失联者数量
      */
-    @ExcelProperty(value = {"人员伤亡", "新增失联人数"})
+    @ExcelProperty(value = {"人员伤亡", "新增失联（人）"})
     @TableField(value = "newly_missing")
     private Integer newlyMissing;
 
     /**
      * 新增受伤人数，新报告的受伤者数量
      */
-    @ExcelProperty(value = {"人员伤亡", "新增受伤人数"})
+    @ExcelProperty(value = {"人员伤亡", "新增受伤（人）"})
     @TableField(value = "newly_injured")
     private Integer newlyInjured;
 
     /**
      * 累计遇难人数，所有报告的遇难者总数
      */
-    @ExcelProperty(value = {"人员伤亡", "累计遇难人数"})
+    @ExcelProperty(value = {"人员伤亡", "累计遇难（人）"})
     @TableField(value = "total_deceased")
     private Integer totalDeceased;
 
     /**
      * 累计失联人数，所有报告的失联者总数
      */
-    @ExcelProperty(value = {"人员伤亡", "累计失联人数"})
+    @ExcelProperty(value = {"人员伤亡", "累计失联（人）"})
     @TableField(value = "total_missing")
     private Integer totalMissing;
 
     /**
      * 累计受伤人数，所有报告的受伤者总数
      */
-    @ExcelProperty(value = {"人员伤亡", "累计受伤人数"})
+    @ExcelProperty(value = {"人员伤亡", "累计受伤（人）"})
     @TableField(value = "total_injured")
     private Integer totalInjured;
 
     /**
      * 填报截止时间，报告提交的最终期限
      */
-    @ExcelProperty(value = {"人员伤亡", "填报截止时间"})
+    @ExcelProperty(value = {"人员伤亡", "统计截止时间"})
     @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "submission_deadline")
@@ -119,6 +121,10 @@ public class CasualtyReport {
     @TableField(value = "earthquake_time")
     @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime earthquakeTime;
+
+    public LocalDateTime getSystemInsertTime() {
+        return systemInsertTime != null ? systemInsertTime.truncatedTo(ChronoUnit.SECONDS) : null;
+    }
 
     /**
      * 受灾人数，受影响的总人口数量
