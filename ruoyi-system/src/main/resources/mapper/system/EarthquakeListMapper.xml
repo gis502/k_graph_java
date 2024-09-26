@@ -7,4 +7,5 @@
     <select id="selectAllEq" resultType="com.ruoyi.system.domain.entity.EarthquakeList">
         select * from earthquake_list ORDER BY occurrence_time DESC
     </select>
+
 </mapper>

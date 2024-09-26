@@ -1,6 +1,9 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.system.service.AftershockInformationService;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+@Data
 @RestController
 @RequestMapping("/system")
 public class AftershockInformationController {
@@ -21,7 +25,8 @@ public class AftershockInformationController {
 
     @GetMapping("/getLatestAftershockMagnitude")
     public ResponseEntity<Map<String, Integer>> getLatestAftershockData(@RequestParam("eqid") String eqid) {
-
+        System.out.println("===========================================");
+        System.out.println(eqid);
         // 使用 eqid 获取数据
         Map<String, Integer> aftershockData = aftershockInformationService.getLatestAftershockMagnitude(eqid);
 

@@ -33,6 +33,13 @@ public class EarthquakeListController {
         return earthquakeListService.list();
     }
 
+    @GetMapping("/geteq")
+    public List<EarthquakeList> selectAllEq() {
+//        List<EqList> data = eqListService.list();
+        List<EarthquakeList> data = earthquakeListService.selectAllEq();
+        return data;
+    }
+
     @PostMapping("queryEqById")
     public EarthquakeList queryEqById(@RequestParam(value = "id") String id) {
         return earthquakeListService.getById(id);
