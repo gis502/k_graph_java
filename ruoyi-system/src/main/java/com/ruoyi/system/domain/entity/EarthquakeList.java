@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.postgis.Point;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -36,13 +38,13 @@ public class EarthquakeList {
      * 地震发生地理位置
      */
     @TableField(value = "geom")
-    private Point geom;
+    private String geom;
 
     /**
      * 发震时间
      */
     @TableField(value = "occurrence_time")
-    private Date occurrenceTime;
+    private LocalDateTime occurrenceTime;
 
     /**
      * 震级
@@ -79,4 +81,10 @@ public class EarthquakeList {
      */
     @TableField(value = "province")
     private String province;
+
+    @TableField(exist = false)
+    private Double longitude; // 经度
+
+    @TableField(exist = false)
+    private Double latitude;  // 纬度
 }
