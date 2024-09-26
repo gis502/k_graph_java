@@ -5,29 +5,30 @@
 
 <mapper namespace="com.ruoyi.system.mapper.EarthquakeListMapper">
 
-  <select id="selectAllEq" resultType="com.ruoyi.system.domain.EarthquakeList">
-    select * from earthquake_list ORDER BY time DESC
+  <select id="selectAllEq" resultType="com.ruoyi.system.domain.entity.EarthquakeList">
+    SELECT eqid, earthquake_name, ST_X(geom) AS longitude,ST_Y(geom) AS latitude, occurrence_time, magnitude, depth, intensity, epicenter_name, city, province
+    from earthquake_list
+    ORDER BY occurrence_time DESC
   </select>
 
   <!-- 查询4.5级以上地震数据 -->
-  <select id="selectKeyEq" resultType="com.ruoyi.system.domain.EarthquakeList">
+  <select id="selectKeyEq" resultType="com.ruoyi.system.domain.entity.EarthquakeList">
     SELECT *
     FROM earthquake_list
     WHERE CAST(magnitude AS DECIMAL) >= 4.5
-      AND time != (SELECT MAX(time) FROM earthquake_list)
-    ORDER BY time DESC
+      AND occurrence_time != (SELECT MAX(occurrence_time) FROM earthquake_list)
+    ORDER BY occurrence_time DESC
   </select>
 
 
   <!-- 查询最新地震数据 -->
-  <select id="selectLatestEq" resultType="com.ruoyi.system.domain.EarthquakeList">
+  <select id="selectLatestEq" resultType="com.ruoyi.system.domain.entity.EarthquakeList">
     SELECT *
     FROM earthquake_list
-    ORDER BY time DESC
+    ORDER BY occurrence_time DESC
       LIMIT 1
   </select>
-
-
+  
   <insert id="addEq">
     insert into earthquake_list (eqid,earthquake_name,occurrence_time,magnitude,depth)
     values (#{eqid}, #{earthquake_name}, #{occurrence_time}, #{magnitude}, #{longitude}, #{latitude},#{depth})
@@ -37,7 +38,7 @@
     delete from earthquake_list where eqid=#{eqid}
   </delete>
 
-  <update id="updateEq" parameterType="com.ruoyi.system.domain.EarthquakeList">
+  <update id="updateEq" parameterType="com.ruoyi.system.domain.entity.EarthquakeList">
     update earthquake_list
     set earthquake_name = #{earthquake_name}, occurrence_time = #{occurrence_time}, magnitude = #{magnitude}, depth = #{depth}
     where eqid = #{eqid}

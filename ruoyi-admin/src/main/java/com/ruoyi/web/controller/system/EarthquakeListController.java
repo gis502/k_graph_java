@@ -2,7 +2,7 @@ package com.ruoyi.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.ruoyi.system.domain.EarthquakeList;
+import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.service.EarthquakeListService;
 import com.ruoyi.web.controller.common.EqQueryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
