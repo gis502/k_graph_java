@@ -11,4 +11,6 @@ public interface EarthquakeListService extends IService<EarthquakeList>{
     List<String> getExcelUploadEarthquake();
 
     List<EarthquakeList> getEarthquakesWithinDistance(Geometry point, double v);
+
+    List<EarthquakeList> selectAllEq();
 }

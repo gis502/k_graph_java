@@ -23,9 +23,9 @@ public class EarthquakeListController {
         return data;
     }
 
-    @PostMapping("queryAllEq")
-    public List<EarthquakeList> queryAllEq() {
-        return earthquakeListService.list();
+    @GetMapping("/geteq")
+    public List<EarthquakeList> selectAllEq() {
+        return earthquakeListService.selectAllEq();
     }
 
     @GetMapping("getLatesteq")
