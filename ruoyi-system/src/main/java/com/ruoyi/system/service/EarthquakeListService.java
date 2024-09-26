@@ -13,5 +13,4 @@ public interface EarthquakeListService extends IService<EarthquakeList>{
     List<EarthquakeList> getEarthquakesWithinDistance(Geometry point, double v);
 
     List<EarthquakeList> selectAllEq();
-
 }
