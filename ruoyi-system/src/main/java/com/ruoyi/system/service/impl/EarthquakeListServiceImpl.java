@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,14 +16,14 @@ import javax.annotation.Resource;
 public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper, EarthquakeList> implements EarthquakeListService{
 
     @Resource
-    private    EarthquakeListMapper EarthquakeListMapper;
+    private    EarthquakeListMapper earthquakeListMapper;
     @Override
     public List<String> getExcelUploadEarthquake() {
         // 查询所有的 EqList 数据
         // 自定义日期时间格式化器，确保显示秒
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        List<EarthquakeList> eqLists = EarthquakeListMapper.selectAllEq();
+        List<EarthquakeList> eqLists = earthquakeListMapper.selectList(null);
 
         // 拼接 position、time、magnitude 字段
         List<String> result = new ArrayList<>();
@@ -35,4 +36,10 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
         }
         return result;
     }
+
+
+    public List<EarthquakeList> getEarthquakesWithinDistance(Geometry point, double distance) {
+        return earthquakeListMapper.selectWithinDistance(point, distance);
+    }
+
 }

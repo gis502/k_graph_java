@@ -21,8 +21,6 @@ public class AftershockInformationController {
 
     @GetMapping("/getLatestAftershockMagnitude")
     public ResponseEntity<Map<String, Integer>> getLatestAftershockData(@RequestParam("eqid") String eqid) {
-        System.out.println("11111111111111111111111");
-        System.out.println(eqid);
 
         // 使用 eqid 获取数据
         Map<String, Integer> aftershockData = aftershockInformationService.getLatestAftershockMagnitude(eqid);

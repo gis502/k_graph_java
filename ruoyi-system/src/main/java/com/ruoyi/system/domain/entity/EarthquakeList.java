@@ -4,11 +4,16 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import org.postgis.Point;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Data;
+import org.locationtech.jts.geom.Geometry;
+import org.n52.jackson.datatype.jts.GeometryDeserializer;
+import org.n52.jackson.datatype.jts.GeometrySerializer;
+
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import lombok.Data;
 
 /**
     * 震后生成-地震震情信息-地震列表
@@ -38,7 +43,10 @@ public class EarthquakeList {
      * 地震发生地理位置
      */
     @TableField(value = "geom")
-    private Point geom;
+    @JsonSerialize(using = GeometrySerializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
+    private Geometry geom;
 
     /**
      * 发震时间
