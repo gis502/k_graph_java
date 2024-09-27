@@ -328,7 +328,6 @@ public class EmergencyRescueEquipment {
         }
     }
 
-
     /**
      * 联系人
      */

@@ -24,13 +24,13 @@
     <result column="seismic_intensity" jdbcType="VARCHAR" property="seismicIntensity" />
     <result column="data_source_unit" jdbcType="VARCHAR" property="dataSourceUnit" />
     <result column="remarks" jdbcType="VARCHAR" property="remarks" />
-    <result column="geometry  " jdbcType="OTHER" property="geometry" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    uuid, unique_identifier, "name", shelter_type_name, area, capacity, level_name, secret_level, 
-    administrative_division, address, person_in_charge, emergency_phone, emergency_mobile, 
-    affiliated_organization, start_time, design_service_life, description, seismic_intensity, 
-    data_source_unit, remarks, "geometry  "
+    uuid, unique_identifier, "name", shelter_type_name, area, capacity, level_name, secret_level,
+    administrative_division, address, person_in_charge, emergency_phone, emergency_mobile,
+    affiliated_organization, start_time, design_service_life, description, seismic_intensity,
+    data_source_unit, remarks, geom
   </sql>
 </mapper>
