@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.system.domain.handler.PgGeometryTypeHandler;
 import lombok.Data;
 
 /**
-    * 震后生成-应急处置信息-人员信息-救援队伍
-    */
+ * 震后生成-应急处置信息-人员信息-救援队伍
+ */
 @Data
-@TableName(value = "rescue_teams_info")
+@TableName(value = "rescue_teams_info",autoResultMap = true)
 public class RescueTeamsInfo {
     /**
      * 唯一标识
@@ -93,8 +94,47 @@ public class RescueTeamsInfo {
     /**
      * 位置
      */
-    @TableField(value = "geom")
-    private Object geom;
+    @TableField(value = "geom",typeHandler = PgGeometryTypeHandler.class)
+    private String geom; // WKT 格式存储为 String
+
+    @TableField(exist = false)
+    private Double longitude;
+
+    @TableField(exist = false)
+    private Double latitude;
+
+    // Getter 和 Setter 方法
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void parseGeom() {
+//        System.out.println("初始状态: " + this.geom);
+        if (this.geom != null && this.geom.startsWith("POINT(") && this.geom.endsWith(")")) {
+            try {
+                // 去掉 "POINT(" 和 ")"，然后按空格拆分字符串
+                String[] coordinates = this.geom.substring(6, this.geom.length() - 1).split(" ");
+                this.longitude = Double.parseDouble(coordinates[0]);
+                this.latitude = Double.parseDouble(coordinates[1]);
+            } catch (Exception e) {
+                System.err.println("Error parsing geom: " + e.getMessage() + " for geom: " + this.geom);
+            }
+        } else {
+            System.err.println("Invalid geom format or geom is null: " + this.geom);
+        }
+    }
 
     /**
      * 负责人
