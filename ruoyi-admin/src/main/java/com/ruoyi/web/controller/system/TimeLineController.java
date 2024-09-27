@@ -1,14 +1,12 @@
 package com.ruoyi.web.controller.system;
 
-import com.ruoyi.system.domain.entity.EmergencyResponseInfo;
-import com.ruoyi.system.domain.entity.News;
-import com.ruoyi.system.domain.entity.RescueActionCasualties;
-import com.ruoyi.system.domain.entity.RescueTeam;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.service.impl.EmergencyResponseInfoServiceImpl;
 import com.ruoyi.system.service.impl.NewsServiceImpl;
 import com.ruoyi.system.service.impl.RescueActionCasualtiesServiceImpl;
 import com.ruoyi.system.service.impl.RescueTeamServiceImpl;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -54,5 +52,7 @@ public class TimeLineController {
     public List<News> getNews() {
         return newsService.list();
     }
+
+
 
 }
