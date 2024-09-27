@@ -1,8 +1,9 @@
-package com.ruoyi.system.domain.handler;
+package com.ruoyi.system.domain.entity;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedTypes;
+import org.apache.ibatis.type.TypeHandler;
 import org.postgis.Geometry;
 import org.postgis.PGgeometry;
 
@@ -10,7 +11,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 
 @MappedTypes({String.class})
 public class PgGeometryTypeHandler extends BaseTypeHandler<String> {

@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
-import com.ruoyi.system.domain.handler.PgGeometryTypeHandler;
+
 /**
  * 震前准备-救灾能力储备信息-抢险救援装备填报表
  */
