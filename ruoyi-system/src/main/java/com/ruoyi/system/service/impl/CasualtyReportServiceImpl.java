@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.listener.CasualtyReportListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
@@ -38,6 +36,9 @@ public class CasualtyReportServiceImpl
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private CasualtyReportMapper casualtyReportMapper;
 
     @Override
     public List<CasualtyReport> exportExcelGetData(RequestBTO requestBTO) {
@@ -163,5 +164,11 @@ public class CasualtyReportServiceImpl
 //        List<YaanAftershockStatistics> listDOs = BeanUtil.copyToList(list, YaanAftershockStatistics.class);
         saveBatch(list);
         return list;
+    }
+
+    @Override
+    public CasualtyReport getCasualtiesStatsById(String eqid) {
+
+        return casualtyReportMapper.getCasualtiesStatsById(eqid);
     }
 }
