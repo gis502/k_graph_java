@@ -42,10 +42,10 @@ public class EmergencyResourcesController {
         suppliesQuery.isNotNull("geom");
         List<DisasterReliefSupplies> disasterReliefSuppliesList = disasterReliefSuppliesService.list(suppliesQuery);
 
-        // 解析 geom 字段，转换为经纬度
-        emergencyRescueEquipmentList.forEach(EmergencyRescueEquipment::parseGeom);
-        rescueTeamsInfoList.forEach(RescueTeamsInfo::parseGeom);
-        disasterReliefSuppliesList.forEach(DisasterReliefSupplies::parseGeom);
+//        // 解析 geom 字段，转换为经纬度
+//        emergencyRescueEquipmentList.forEach(EmergencyRescueEquipment::parseGeom);
+//        rescueTeamsInfoList.forEach(RescueTeamsInfo::parseGeom);
+//        disasterReliefSuppliesList.forEach(DisasterReliefSupplies::parseGeom);
 
         // 存入 Map
         Map<String, List<?>> emergencyData = new HashMap<>();

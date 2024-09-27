@@ -6,13 +6,20 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
-import com.ruoyi.system.domain.handler.PgGeometryTypeHandler;
+import org.locationtech.jts.geom.Geometry;
+import org.n52.jackson.datatype.jts.GeometryDeserializer;
+import org.n52.jackson.datatype.jts.GeometrySerializer;
+
 /**
  * 震前准备-救灾能力储备信息-抢险救援装备填报表
  */
 @Data
-@TableName(value = "emergency_rescue_equipment",autoResultMap = true)
+@TableName(value = "emergency_rescue_equipment")
 public class EmergencyRescueEquipment {
     @TableId(value = "uuid", type = IdType.NONE)
     private Object uuid;
@@ -297,8 +304,11 @@ public class EmergencyRescueEquipment {
      * 位置
      */
 
-    @TableField(value = "geom",typeHandler = PgGeometryTypeHandler.class)
-    private String geom; // WKT 格式存储为 String
+    @TableField(value = "geom")
+    @JsonSerialize(using = GeometrySerializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
+    private Geometry geom; // WKT 格式存储为 String
 
     @TableField(exist = false)
     private Double longitude;
@@ -306,40 +316,17 @@ public class EmergencyRescueEquipment {
     @TableField(exist = false)
     private Double latitude;
 
-    // Getter 和 Setter 方法
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    // 解析 geom 字段，将其拆分为经纬度
-    public void parseGeom() {
-//        System.out.println("初始状态: " + this.geom);
-        if (this.geom != null && this.geom.startsWith("POINT(") && this.geom.endsWith(")")) {
-            try {
-                // 去掉 "POINT(" 和 ")"，然后按空格拆分字符串
-                String[] coordinates = this.geom.substring(6, this.geom.length() - 1).split(" ");
-                this.longitude = Double.parseDouble(coordinates[0]);
-                this.latitude = Double.parseDouble(coordinates[1]);
-            } catch (Exception e) {
-                System.err.println("Error parsing geom: " + e.getMessage() + " for geom: " + this.geom);
-            }
+    // 设置 geom 时提取经纬度
+    public void setGeom(Geometry geom) {
+        this.geom = geom;
+        if (geom != null) {
+            this.longitude = geom.getCoordinate().x;
+            this.latitude = geom.getCoordinate().y;
         } else {
-            System.err.println("Invalid geom format or geom is null: " + this.geom);
+            this.longitude = null;
+            this.latitude = null;
         }
     }
-
 
 
     /**
