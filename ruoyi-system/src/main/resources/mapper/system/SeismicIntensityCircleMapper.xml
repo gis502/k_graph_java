@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SeismicIntensityCircleMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.SeismicIntensityCircle">
+    <!--@mbg.generated-->
+    <!--@Table seismic_intensity_circle-->
+    <id column="circleid" jdbcType="OTHER" property="circleid" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+    <result column="eqid" jdbcType="OTHER" property="eqid" />
+    <result column="intensity" jdbcType="INTEGER" property="intensity" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    circleid, geom, eqid, intensity
+  </sql>
+
+  <select id="selectCircleByEqid" resultType="com.ruoyi.system.domain.SeismicIntensityCircle">
+    SELECT * from seismic_intensity_circle where eqid=#{eqid}
+  </select>
+
+  <insert id="addCircle">
+    insert into seismic_intensity_circle (eqid,intensity,geom)
+    values (#{eqid}, #{intensity}, ST_GeomFromText(#{geom}, 4326))
+<!--    values (#{eqid}, #{intensity}, #{geom})-->
+  </insert>
+
+</mapper>
