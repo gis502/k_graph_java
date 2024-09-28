@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/emergencyResources")
@@ -59,12 +58,12 @@ public class EmergencyResourcesController {
     }
 
     @PostMapping("/searchMaterialData")
-    public List<EmergencyRescueEquipment> searchMaterialData(@RequestBody Map<String,Object> inputData){
+    public List<DisasterReliefSupplies> searchMaterialData(@RequestBody Map<String,Object> inputData){
         String county = (String) inputData.get("county");
         String address = (String) inputData.get("address");
         String contactPerson = (String) inputData.get("contactPerson");
         String contactPhone = (String) inputData.get("contactPhone");
-        QueryWrapper<EmergencyRescueEquipment> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DisasterReliefSupplies> queryWrapper = new QueryWrapper<>();
         if(!county.equals("")){
             queryWrapper.like("county",county);
         }
@@ -77,7 +76,7 @@ public class EmergencyResourcesController {
         if(!contactPhone.equals("")){
             queryWrapper.like("contact_phone",contactPhone);
         }
-        return emergencyRescueEquipmentService.list(queryWrapper);
+        return disasterReliefSuppliesService.list(queryWrapper);
     }
 
 
