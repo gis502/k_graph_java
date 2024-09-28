@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/emergencyResources")
@@ -59,13 +60,13 @@ public class EmergencyResourcesController {
 
     @PostMapping("/searchMaterialData")
     public List<EmergencyRescueEquipment> searchMaterialData(@RequestBody Map<String,Object> inputData){
-        String country = (String) inputData.get("country");
+        String county = (String) inputData.get("county");
         String address = (String) inputData.get("address");
         String contactPerson = (String) inputData.get("contactPerson");
         String contactPhone = (String) inputData.get("contactPhone");
         QueryWrapper<EmergencyRescueEquipment> queryWrapper = new QueryWrapper<>();
-        if(!country.equals("")){
-            queryWrapper.like("country",country);
+        if(!county.equals("")){
+            queryWrapper.like("county",county);
         }
         if(!address.equals("")){
             queryWrapper.like("address",address);
@@ -77,6 +78,39 @@ public class EmergencyResourcesController {
             queryWrapper.like("contact_phone",contactPhone);
         }
         return emergencyRescueEquipmentService.list(queryWrapper);
+    }
+
+
+    // --------首页面：应急物资、救援队伍、避难场所的要素图层-------
+    @GetMapping("/getFeaturesLayer")
+    public Map<String, List<?>> getFeaturesLayer() {
+        List<DisasterReliefSupplies> disasterReserves = disasterReliefSuppliesService.list()
+                .stream()
+//        过滤数据时同时排除 null 值和 "0.00000000" 的值
+                .filter(it -> it.getLongitude() != null && !it.getLongitude().equals("0.00000000"))
+                .collect(Collectors.toList());
+
+        List<EmergencyShelters> emergencyShelters = emergencySheltersService.list()
+                .stream()
+//        过滤数据时同时排除 null 值和 "0.00000000" 的值
+                .filter(it -> it.getLongitude() != null && !it.getLongitude().equals("0.00000000"))
+                .collect(Collectors.toList());
+
+        // --------救援装备、急物资存储、避难场所、救援队伍-------
+        // ----救援装备表----
+        List<RescueTeamsInfo> emergencyTeam = rescueTeamsInfoService.list()
+                .stream()
+//        过滤数据时同时排除 null 值和 "0.00000000" 的值
+                .filter(it -> it.getLongitude() != null && !it.getLongitude().equals("0.00000000"))
+                .collect(Collectors.toList());
+
+        // Map 是一种键值对集合，用于存储和快速查找数据
+        Map<String, List<?>> emergencyData = new HashMap<>();
+        emergencyData.put("disasterReserves", disasterReserves);
+        emergencyData.put("emergencyShelters", emergencyShelters);
+        emergencyData.put("emergencyTeam", emergencyTeam);
+//        System.out.println(emergencyData); 检查是否获得数据，已获得！
+        return emergencyData; //该映射包含两个列表，分别是 disasterReserves、emergencyShelters、emergencyTeam
     }
 
     // ----应急物资储备---
