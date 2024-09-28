@@ -10,6 +10,7 @@ import com.ruoyi.system.service.impl.EmergencyRescueEquipmentServiceImpl;
 import com.ruoyi.system.service.impl.EmergencySheltersServiceImpl;
 import com.ruoyi.system.service.impl.RescueTeamsInfoServiceImpl;
 import org.springframework.web.bind.annotation.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
