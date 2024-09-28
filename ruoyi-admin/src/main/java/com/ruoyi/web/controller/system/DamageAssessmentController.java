@@ -28,7 +28,7 @@ public class DamageAssessmentController {
 
         List<SeismicIntensityCircle> circledata = seismicIntensityCircleService.selectCircleByEqid(eqid);
         System.out.println(circledata);
-
+//
         if(circledata.size()!=0){
 //            System.out.println("数据库中该地震烈度圈已存在");
             return 1;
@@ -39,7 +39,7 @@ public class DamageAssessmentController {
 
                 seismicIntensityCircle.setEqid(circle.get("eqid"));
                 seismicIntensityCircle.setIntensity((Integer) circle.get("intensity"));
-                seismicIntensityCircle.setGeom(circle.get("geom"));
+                seismicIntensityCircle.setGeom((String) circle.get("geom"));
                 seismicIntensityCircleService.addCircle(seismicIntensityCircle);
             }
 //            System.out.println("烈度圈存储完成");

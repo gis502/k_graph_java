@@ -20,8 +20,8 @@
 
   <insert id="addCircle">
     insert into seismic_intensity_circle (eqid,intensity,geom)
-<!--    values (#{eqid}, #{intensity}, ST_GeomFromText(#{geom}, 4326))-->
-    values (#{eqid}, #{intensity}, #{geom})
+    values (#{eqid}, #{intensity}, ST_GeomFromText(#{geom}, 4326))
+<!--    values (#{eqid}, #{intensity}, #{geom})-->
   </insert>
 
 </mapper>
