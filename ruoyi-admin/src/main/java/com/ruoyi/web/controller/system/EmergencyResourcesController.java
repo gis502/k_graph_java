@@ -10,6 +10,7 @@ import com.ruoyi.system.service.impl.EmergencyRescueEquipmentServiceImpl;
 import com.ruoyi.system.service.impl.EmergencySheltersServiceImpl;
 import com.ruoyi.system.service.impl.RescueTeamsInfoServiceImpl;
 import org.springframework.web.bind.annotation.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -77,6 +78,39 @@ public class EmergencyResourcesController {
             queryWrapper.like("contact_phone",contactPhone);
         }
         return disasterReliefSuppliesService.list(queryWrapper);
+    }
+
+
+    // --------首页面：应急物资、救援队伍、避难场所的要素图层-------
+    @GetMapping("/getFeaturesLayer")
+    public Map<String, List<?>> getFeaturesLayer() {
+        List<DisasterReliefSupplies> disasterReserves = disasterReliefSuppliesService.list()
+                .stream()
+//        过滤数据时同时排除 null 值和 "0.00000000" 的值
+                .filter(it -> it.getLongitude() != null && !it.getLongitude().equals("0.00000000"))
+                .collect(Collectors.toList());
+
+        List<EmergencyShelters> emergencyShelters = emergencySheltersService.list()
+                .stream()
+//        过滤数据时同时排除 null 值和 "0.00000000" 的值
+                .filter(it -> it.getLongitude() != null && !it.getLongitude().equals("0.00000000"))
+                .collect(Collectors.toList());
+
+        // --------救援装备、急物资存储、避难场所、救援队伍-------
+        // ----救援装备表----
+        List<RescueTeamsInfo> emergencyTeam = rescueTeamsInfoService.list()
+                .stream()
+//        过滤数据时同时排除 null 值和 "0.00000000" 的值
+                .filter(it -> it.getLongitude() != null && !it.getLongitude().equals("0.00000000"))
+                .collect(Collectors.toList());
+
+        // Map 是一种键值对集合，用于存储和快速查找数据
+        Map<String, List<?>> emergencyData = new HashMap<>();
+        emergencyData.put("disasterReserves", disasterReserves);
+        emergencyData.put("emergencyShelters", emergencyShelters);
+        emergencyData.put("emergencyTeam", emergencyTeam);
+//        System.out.println(emergencyData); 检查是否获得数据，已获得！
+        return emergencyData; //该映射包含两个列表，分别是 disasterReserves、emergencyShelters、emergencyTeam
     }
 
     // ----应急物资储备---
@@ -262,6 +296,5 @@ public class EmergencyResourcesController {
         }
         return resultList;
     }
-
 
 }
