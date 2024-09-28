@@ -58,14 +58,14 @@ public class EmergencyResourcesController {
     }
 
     @PostMapping("/searchMaterialData")
-    public List<EmergencyRescueEquipment> searchMaterialData(@RequestBody Map<String,Object> inputData){
-        String country = (String) inputData.get("country");
+    public List<DisasterReliefSupplies> searchMaterialData(@RequestBody Map<String,Object> inputData){
+        String county = (String) inputData.get("county");
         String address = (String) inputData.get("address");
         String contactPerson = (String) inputData.get("contactPerson");
         String contactPhone = (String) inputData.get("contactPhone");
-        QueryWrapper<EmergencyRescueEquipment> queryWrapper = new QueryWrapper<>();
-        if(!country.equals("")){
-            queryWrapper.like("country",country);
+        QueryWrapper<DisasterReliefSupplies> queryWrapper = new QueryWrapper<>();
+        if(!county.equals("")){
+            queryWrapper.like("county",county);
         }
         if(!address.equals("")){
             queryWrapper.like("address",address);
@@ -76,7 +76,7 @@ public class EmergencyResourcesController {
         if(!contactPhone.equals("")){
             queryWrapper.like("contact_phone",contactPhone);
         }
-        return emergencyRescueEquipmentService.list(queryWrapper);
+        return disasterReliefSuppliesService.list(queryWrapper);
     }
 
     // ----救援队伍页面----
@@ -197,5 +197,6 @@ public class EmergencyResourcesController {
         }
         return resultList;
     }
+
 
 }
