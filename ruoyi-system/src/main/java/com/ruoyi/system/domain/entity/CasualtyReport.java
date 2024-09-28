@@ -130,7 +130,7 @@ public class CasualtyReport {
      * 受灾人数，受影响的总人口数量
      */
     @TableField(value = "affected_population")
-    @ExcelProperty(value = {"人员伤亡", "受灾人数"})
+    @ExcelProperty(value = {"人员伤亡", "受灾人数累积"})
     private Integer affectedPopulation;
 
     /**
