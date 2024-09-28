@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.entity.PlotIconmanagement;
 import com.ruoyi.system.service.PlotIconmanagementService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +18,8 @@ public class PlotIconmanagementController {
     private PlotIconmanagementService plotIconmanagementService;
 
     @PostMapping("/getploticon")
-    public List<PlotIconmanagement> selectPlotIcon(){
-        return plotIconmanagementService.list();
+    public AjaxResult getploticon(){
+        return AjaxResult.success(plotIconmanagementService.list());
 
     }
 }
