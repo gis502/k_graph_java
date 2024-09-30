@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ruoyi.system.domain.SeismicIntensityCircle;
+import com.ruoyi.system.domain.entity.SeismicIntensityCircle;
 import com.ruoyi.system.mapper.SeismicIntensityCircleMapper;
 import com.ruoyi.system.service.SeismicIntensityCircleService;
 @Service
@@ -21,4 +21,13 @@ public class SeismicIntensityCircleServiceImpl extends ServiceImpl<SeismicIntens
     public int addCircle(SeismicIntensityCircle seismicIntensityCircle) {
         return seismicIntensityCircleMapper.addCircle(seismicIntensityCircle);
     }
+    @Override
+    public String selectBigOutCircleByEqid(String eqid) {
+        return seismicIntensityCircleMapper.selectBigOutCircleByEqid(eqid);
+    }
+    @Override
+    public Integer selectCenterintensityByEqid(String eqid){
+        return seismicIntensityCircleMapper.selectCenterintensityByEqid(eqid);
+    }
+
 }

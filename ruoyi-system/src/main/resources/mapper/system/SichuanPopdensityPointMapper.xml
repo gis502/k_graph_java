@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SichuanPopdensityPointMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.SichuanPopdensityPoint">
+    <!--@mbg.generated-->
+    <!--@Table sichuan_popdensity_point-->
+    <id column="gid" jdbcType="INTEGER" property="gid" />
+    <result column="density" jdbcType="NUMERIC" property="density" />
+    <result column="area" jdbcType="NUMERIC" property="area" />
+    <result column="perimeter" jdbcType="NUMERIC" property="perimeter" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+    <result column="geom_4326" jdbcType="OTHER" property="geom4326" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    gid, density, area, perimeter, geom, geom_4326
+  </sql>
+<!--  <select id="getSumAreainCirle" resultType="java.lang.Double">-->
+<!--    SELECT sum(area)/1000000-->
+<!--    FROM sichuan_popdensity_point-->
+<!--    WHERE ST_Contains(-->
+<!--                  ST_SetSRID(-->
+<!--                          ST_GeomFromText(-->
+<!--      #{circlestr},4326-->
+<!--                          ),-->
+<!--                          4326-->
+<!--                  ),-->
+<!--                  ST_SetSRID(geom_4326, 4326)-->
+<!--          );-->
+<!--  </select>-->
+
+<!--    <select id="getSumDensityinCirle" resultType="java.lang.Double">-->
+<!--        SELECT sum(density)-->
+<!--        FROM sichuan_popdensity_point-->
+<!--        WHERE ST_Contains(-->
+<!--                      ST_SetSRID(-->
+<!--                              ST_GeomFromText(-->
+<!--        #{circlestr},-->
+<!--        4326-->
+<!--                              ),-->
+<!--                              4326-->
+<!--                      ),-->
+<!--                      ST_SetSRID(geom_4326, 4326)-->
+<!--              );-->
+<!--    </select>-->
+<!--    <select id="getCountinCirle" resultType="java.lang.Integer">-->
+<!--        SELECT count(*)-->
+<!--        FROM sichuan_popdensity_point-->
+<!--        WHERE ST_Contains(-->
+<!--        ST_SetSRID(-->
+<!--        ST_GeomFromText(-->
+<!--        #{circlestr},-->
+<!--        4326-->
+<!--        ),-->
+<!--        4326-->
+<!--        ),-->
+<!--        ST_SetSRID(geom_4326, 4326)-->
+<!--        );-->
+<!--    </select>-->
+
+</mapper>
