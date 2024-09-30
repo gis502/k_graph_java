@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PersonDes2019Mapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.PersonDes2019">
+    <!--@mbg.generated-->
+    <!--@Table person_des_2019-->
+    <result column="geom" jdbcType="OTHER" property="geom" />
+    <result column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="peopledes" jdbcType="INTEGER" property="peopledes" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    geom, uuid, peopledes
+  </sql>
+
+      <select id="getCountinCirle" resultType="java.lang.Integer">
+          SELECT count(*)
+          FROM person_des_2019
+          WHERE ST_Contains(
+          ST_SetSRID(
+          ST_GeomFromText(
+          #{circlestr},
+          4326
+          ),
+          4326
+          ),
+          ST_SetSRID(geom, 4326)
+          );
+      </select>
+    <select id="getavgdesinCirle" resultType="java.lang.Double">
+        SELECT AVG(peopledes)
+        FROM person_des_2019
+        WHERE ST_Contains(
+        ST_SetSRID(
+        ST_GeomFromText(
+        #{circlestr},
+        4326
+        ),
+        4326
+        ),
+        ST_SetSRID(geom, 4326)
+        );
+        </select>
+
+</mapper>
