@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YaanJsonMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.YaanJson">
+    <!--@mbg.generated-->
+    <!--@Table yaan_json-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+    <result column="adcode" jdbcType="INTEGER" property="adcode" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="center" jdbcType="INTEGER" property="center" />
+    <result column="centroid" jdbcType="INTEGER" property="centroid" />
+    <result column="childrennu" jdbcType="INTEGER" property="childrennu" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
+    <result column="parent" jdbcType="INTEGER" property="parent" />
+    <result column="subfeature" jdbcType="INTEGER" property="subfeature" />
+    <result column="acroutes" jdbcType="INTEGER" property="acroutes" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, geom, adcode, "name", center, centroid, childrennu, "level", parent, subfeature, 
+    acroutes
+  </sql>
+
+  <select id="getAreaStr" resultType="java.lang.String">
+    SELECT ST_AsText(geom)
+    FROM yaan_json
+    where name=#{name};
+  </select>
+  <select id="getintersectionArea" resultType="java.lang.String">
+    SELECT ST_AsText(ST_Intersection(
+            ST_GeomFromText(
+                    #{Outcir}, 4326),
+            ST_GeomFromText(
+                    #{Area}, 4326)
+     ));
+  </select>
+  <select id="computeIntersectionRatio" resultType="java.lang.Double">
+    SELECT
+      area1.area1_val / area2.area2_val AS ratio
+    FROM
+      (SELECT ST_Area(ST_Transform(
+              ST_GeomFromText( #{intersectionArea}, 4326),
+              4527
+                      )) AS area1_val) AS area1,
+      (SELECT ST_Area(ST_Transform(
+              ST_GeomFromText(#{Outcir}, 4326),
+              4527
+                      )) AS area2_val) AS area2;
+  </select>
+
+
+</mapper>

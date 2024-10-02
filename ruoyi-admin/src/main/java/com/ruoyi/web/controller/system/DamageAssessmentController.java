@@ -6,15 +6,14 @@ import com.ruoyi.system.domain.entity.SeismicIntensityCircle;
 import com.ruoyi.system.service.PersonDes2019Service;
 import com.ruoyi.system.service.SeismicIntensityCircleService;
 import com.ruoyi.system.service.SichuanPopdensityPointService;
+import com.ruoyi.system.service.YaanJsonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,11 +23,10 @@ public class DamageAssessmentController {
 
     @Autowired
     private SeismicIntensityCircleService seismicIntensityCircleService;
-
-
-
     @Autowired
     private PersonDes2019Service personDes2019Service;
+    @Autowired
+    private YaanJsonService yaanJsonService;
     @PostMapping("/saveIntensityCircle")
     public float saveIntensityCircle(@RequestBody List<Map<String, Object>> savecircles) {
         String eqid = (String) savecircles.get(0).get("eqid");
@@ -61,30 +59,60 @@ public class DamageAssessmentController {
         Map<String, Object> response = new HashMap<>();
         //震中烈度
         Integer Centerintensity=seismicIntensityCircleService.selectCenterintensityByEqid(eqid);
-        response.put("centerintensity", Centerintensity);
-
         //查烈度圈最大圈外圈
         String circlestr = seismicIntensityCircleService.selectBigOutCircleByEqid(eqid);
         // 使用正则表达式匹配并提取所需的部分
         String pattern = "CURVEPOLYGON\\(CIRCULARSTRING\\((.*?)\\)";
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(circlestr);
+        //总伤亡人数评估
+        double casualAll=0;
+        String Outcir="";
         if (m.find()) {
-            String result = "CURVEPOLYGON(CIRCULARSTRING(" + m.group(1) + "))";
+            Outcir = "CURVEPOLYGON(CIRCULARSTRING(" + m.group(1) + "))";
 
-            int count=personDes2019Service.getCountinCirle(result);
-            if(count==0){response.put("peopledes", 0);}
-
+            int count=personDes2019Service.getCountinCirle(Outcir);
+            if(count==0){casualAll=0;}
             else{
-                double des=personDes2019Service.getavgdesinCirle(result);
-                response.put("peopledes", des);
+                double des=personDes2019Service.getavgdesinCirle(Outcir);
+                if(Centerintensity>8){
+                    des=des+150;
+                }
+                double centerIntensityLog = Math.log(Centerintensity);
+                double peopleDesLog = Math.log(des);
+                casualAll= Math.round(
+                        Math.exp(
+                                Math.exp(
+                                        3.1571892494732325 * centerIntensityLog +
+                                                0.34553795677042193 * peopleDesLog -
+                                                6.954773954657806
+                                )
+                        )
+                );
             }
         }
         else {
-            response.put("peopledes", 0);
+            casualAll=0;
+        }
+        response.put("casualAll", casualAll);
+
+        //雅安市各县  按面积占比乘以总数
+        if(casualAll!=0){
+            List<String> arrName=new ArrayList<>(Arrays.asList("雨城区", "名山区", "荥经县", "汉源县", "石棉县", "天全县", "芦山县", "宝兴县"));
+            for (String item : arrName) {
+                String itemAreaStr=yaanJsonService.getAreaStr(item);
+                String intersectionArea=yaanJsonService.getintersectionArea(itemAreaStr,Outcir);
+                if(intersectionArea=="POLYGON EMPTY"){
+                    response.put(item, 0);
+                }
+                else{
+                     double ratio=yaanJsonService.computeIntersectionRatio(intersectionArea,Outcir);
+                    response.put(item, Math.round(ratio*casualAll));
+                }
+            }
         }
 
-        System.out.println(response);
+//        System.out.println(response);
         return response;
     }
 
