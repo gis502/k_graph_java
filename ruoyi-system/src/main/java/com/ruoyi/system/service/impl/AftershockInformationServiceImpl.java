@@ -27,12 +27,8 @@ import com.ruoyi.system.service.AftershockInformationService;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ruoyi.system.service.strategy.DataExportStrategy;
-import org.springframework.stereotype.Service;
-import com.ruoyi.system.domain.entity.AftershockInformation;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 @Service
 public class AftershockInformationServiceImpl extends
@@ -100,18 +96,19 @@ public class AftershockInformationServiceImpl extends
      * @return
      */
     @Override
-    public Map<String, Integer> getLatestAftershockMagnitude(String eqid) {
-        Map<String, Integer> aftershockData = aftershockInformationMapper.getLatestAftershockData(eqid);
+    public Map<String, Object> getLatestAftershockMagnitude(String eqid) {
+        Map<String, Object> aftershockData = aftershockInformationMapper.getLatestAftershockData(eqid);
         // 检查数据是否为 null 或空
         if (aftershockData == null || aftershockData.isEmpty()) {
             // 返回默认值
             aftershockData = new HashMap<>();
-            aftershockData.put("magnitude_3_0_to_3_9", 0);
-            aftershockData.put("magnitude_4_0_to_4_9", 0);
-            aftershockData.put("magnitude_5_0_to_5_9", 0);
+            aftershockData.put("magnitude_3_3_9", 0);
+            aftershockData.put("magnitude_4_4_9", 0);
+            aftershockData.put("magnitude_5_5_9", 0);
+            aftershockData.put("system_insert_time", null); // 默认没有时间
         }
-        System.out.println("------------------------------------------");
-        System.out.println(aftershockData);
+//        System.out.println("------------------------------------------");
+//        System.out.println(aftershockData);
         return aftershockData;
     }
 

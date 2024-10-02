@@ -2,8 +2,6 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.system.service.AftershockInformationService;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,12 +22,13 @@ public class AftershockInformationController {
     private AftershockInformationService aftershockInformationService;
 
     @GetMapping("/getLatestAftershockMagnitude")
-    public ResponseEntity<Map<String, Integer>> getLatestAftershockData(@RequestParam("eqid") String eqid) {
-        System.out.println("===========================================");
+    public ResponseEntity<Map<String, Object>> getLatestAftershockData(@RequestParam("eqid") String eqid) {
         System.out.println(eqid);
         // 使用 eqid 获取数据
-        Map<String, Integer> aftershockData = aftershockInformationService.getLatestAftershockMagnitude(eqid);
+        Map<String, Object> aftershockData = aftershockInformationService.getLatestAftershockMagnitude(eqid);
 
         return ResponseEntity.ok(aftershockData);
     }
+
+
 }

@@ -17,7 +17,8 @@ public interface AftershockInformationService extends IService<AftershockInforma
      * @param eqid
      * @return
      */
-    Map<String, Integer> getLatestAftershockMagnitude(String eqid);
+
     List<AftershockInformation> importExcelAftershockInformation(MultipartFile file, String userName, String eqName) throws IOException;
 
+    Map<String, Object> getLatestAftershockMagnitude(String eqid);
 }
