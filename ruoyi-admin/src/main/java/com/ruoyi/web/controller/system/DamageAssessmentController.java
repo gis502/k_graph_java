@@ -98,6 +98,8 @@ public class DamageAssessmentController {
 
         //雅安市各县  按面积占比乘以总数
         if(casualAll!=0){
+            double sum=0;
+
             List<String> arrName=new ArrayList<>(Arrays.asList("雨城区", "名山区", "荥经县", "汉源县", "石棉县", "天全县", "芦山县", "宝兴县"));
             for (String item : arrName) {
                 String itemAreaStr=yaanJsonService.getAreaStr(item);
@@ -107,9 +109,14 @@ public class DamageAssessmentController {
                 }
                 else{
                      double ratio=yaanJsonService.computeIntersectionRatio(intersectionArea,Outcir);
-                    response.put(item, Math.round(ratio*casualAll));
+                     double itemcasual=Math.round(ratio*casualAll);
+                     sum+=itemcasual;
+                    response.put(item, itemcasual);
                 }
             }
+            if(sum==0){response.put("yaancasual", "无");}
+            else if(sum>casualAll){response.put("casualAll", sum);}
+            else {response.put("yaancasual", sum);}
         }
 
 //        System.out.println(response);
