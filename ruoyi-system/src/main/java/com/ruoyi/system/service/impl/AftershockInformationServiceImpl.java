@@ -77,7 +77,7 @@ public class AftershockInformationServiceImpl extends
                         .like(AftershockInformation::getRelationshipWithMainshock, requestParam);;
 
 
-        return null;
+        return this.page(aftershockInformation, queryWrapper);
     }
 
     @Override
@@ -110,8 +110,6 @@ public class AftershockInformationServiceImpl extends
             aftershockData.put("magnitude_4_0_to_4_9", 0);
             aftershockData.put("magnitude_5_0_to_5_9", 0);
         }
-        System.out.println("------------------------------------------");
-        System.out.println(aftershockData);
         return aftershockData;
     }
 

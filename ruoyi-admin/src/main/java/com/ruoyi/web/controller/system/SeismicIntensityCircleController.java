@@ -1,5 +1,4 @@
 package com.ruoyi.web.controller.system;
-import com.ruoyi.system.domain.SeismicIntensityCircle;
 import com.ruoyi.system.service.impl.SeismicIntensityCircleServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
