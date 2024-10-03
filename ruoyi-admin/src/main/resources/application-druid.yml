@@ -6,7 +6,7 @@ backup:
     db_name: ruoyi
     db_user: postgres
     db_password: zhangsan
-    pg_dump_path: D:/SoftWare/postgresql/bin/pg_dump.exe
+    pg_dump_path: D:/postgresql/bin/pg_dump.exe
 # 数据源配置
 spring:
     datasource:
@@ -15,7 +15,7 @@ spring:
         druid:
             # 主库数据源
 #            master:
-#                url: jdbc:postgresql://localhost:5432/mylocaldb?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+#                url: jdbc:postgresql://localhost:5432/ruoyi1?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
 #                username: postgres
 #                password: 123456
             master:
