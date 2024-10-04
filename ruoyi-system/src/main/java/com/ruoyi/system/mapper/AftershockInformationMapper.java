@@ -10,9 +10,8 @@ import java.util.Map;
 @Mapper
 public interface AftershockInformationMapper extends BaseMapper<AftershockInformation> {
     /**
-     * 获取最新的余震数据
+     *获取最新的余震数据
      * @param eqid
-     * @return
      */
     @Select("SELECT yas.magnitude_3_3_9, yas.magnitude_4_4_9, yas.magnitude_5_5_9, yas.system_insert_time " +
             "FROM aftershock_information yas " +
@@ -22,3 +21,4 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
     Map<String, Object> getLatestAftershockData(String eqid);
 
 }
+

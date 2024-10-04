@@ -13,7 +13,12 @@ import java.util.Map;
 public interface AftershockInformationService extends IService<AftershockInformation>{
 
 
-    List<AftershockInformation> importExcelAftershockInformation(MultipartFile file, String userName, String eqName) throws IOException;
 
+    List<AftershockInformation> importExcelAftershockInformation(MultipartFile file, String userName, String eqName) throws IOException;
+    /**
+     * 最新余震情况
+     * @param eqid
+     * @return
+     */
     Map<String, Object> getLatestAftershockMagnitude(String eqid);
 }
