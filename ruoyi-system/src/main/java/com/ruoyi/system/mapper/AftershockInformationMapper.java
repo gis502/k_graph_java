@@ -17,7 +17,7 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
     @Select("SELECT yas.magnitude_3_3_9, yas.magnitude_4_4_9, yas.magnitude_5_5_9, yas.system_insert_time " +
             "FROM aftershock_information yas " +
             "WHERE yas.earthquake_identifier = #{eqid} " +
-            "ORDER BY yas.system_insert_time DESC " +
+            "ORDER BY yas.submission_deadline DESC " +
             "LIMIT 1")
     Map<String, Object> getLatestAftershockData(String eqid);
 

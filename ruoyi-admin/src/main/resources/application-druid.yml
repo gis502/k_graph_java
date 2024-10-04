@@ -1,12 +1,12 @@
 # 备份文件配置
 backup:
-    path: D:/backup/
+    path: /Library/backup/
     db_port: 7654
     db_host: 47.92.216.173
     db_name: ruoyi
     db_user: postgres
     db_password: zhangsan
-    pg_dump_path: D:/App/PostgreSQL/16/bin/pg_dump.exe
+    pg_dump_path: /Library/PostgreSQL/16/bin/pg_dump
 # 数据源配置
 spring:
     datasource:
