@@ -4,11 +4,16 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import org.postgis.Point;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Data;
+import org.locationtech.jts.geom.Geometry;
+import org.n52.jackson.datatype.jts.GeometryDeserializer;
+import org.n52.jackson.datatype.jts.GeometrySerializer;
+
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import lombok.Data;
 
 /**
     * 震后生成-地震震情信息-地震列表
@@ -38,7 +43,16 @@ public class EarthquakeList {
      * 地震发生地理位置
      */
     @TableField(value = "geom")
-    private String geom;
+    @JsonSerialize(using = GeometrySerializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
+    private Geometry geom;
+
+    @TableField(exist = false) // Indicates no corresponding database column
+    private Double longitude;
+
+    @TableField(exist = false) // Indicates no corresponding database column
+    private Double latitude;
 
     /**
      * 发震时间
@@ -82,9 +96,15 @@ public class EarthquakeList {
     @TableField(value = "province")
     private String province;
 
-    @TableField(exist = false)
-    private Double longitude; // 经度
-
-    @TableField(exist = false)
-    private Double latitude;  // 纬度
+    // 设置 geom 时提取经纬度
+    public void setGeom(Geometry geom) {
+        this.geom = geom;
+        if (geom != null) {
+            this.longitude = geom.getCoordinate().x;
+            this.latitude = geom.getCoordinate().y;
+        } else {
+            this.longitude = null;
+            this.latitude = null;
+        }
+    }
 }

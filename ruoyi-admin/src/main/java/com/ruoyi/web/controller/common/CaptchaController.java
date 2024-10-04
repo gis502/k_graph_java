@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.common;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ import com.ruoyi.system.service.ISysConfigService;
 
 /**
  * 验证码操作处理
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -36,7 +37,7 @@ public class CaptchaController
 
     @Autowired
     private RedisCache redisCache;
-    
+
     @Autowired
     private ISysConfigService configService;
     /**
@@ -73,6 +74,24 @@ public class CaptchaController
         {
             capStr = code = captchaProducer.createText();
             image = captchaProducer.createImage(capStr);
+            Graphics2D g2d = image.createGraphics();
+            // 设置自定义字体样式
+            g2d.setFont(new Font("Arial", Font.BOLD, 42));
+            // 清除干扰线（假设原图像上有干扰线，可以通过绘制纯色覆盖掉干扰线）
+//            g2d.setColor(Color.gray);
+            g2d.setColor(Color.decode("#fff9e6")); // 设置为背景色
+            g2d.fillRect(0, 0, image.getWidth(), image.getHeight()); // 覆盖原始图像
+
+// 重新绘制验证码文本
+            FontMetrics fontMetrics = g2d.getFontMetrics();
+            int x = (image.getWidth() - fontMetrics.stringWidth(capStr)) / 2;  // 水平居中
+            int y = ((image.getHeight() - fontMetrics.getHeight()) / 2) + fontMetrics.getAscent();  // 垂直居中
+            g2d.setColor(Color.BLACK); // 设置为文本颜色
+            g2d.drawString(capStr, x, y);
+
+
+// 释放资源.
+            g2d.dispose();
         }
 
         redisCache.setCacheObject(verifyKey, code, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);

@@ -4,13 +4,19 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import org.locationtech.jts.geom.Geometry;
+import org.n52.jackson.datatype.jts.GeometryDeserializer;
+import org.n52.jackson.datatype.jts.GeometrySerializer;
 
 /**
-    * 震后生成-应急处置信息-人员信息-救援队伍
-    */
+ * 震后生成-应急处置信息-人员信息-救援队伍
+ */
 @Data
-@TableName(value = "rescue_teams_info")
+@TableName(value = "rescue_teams_info",autoResultMap = true)
 public class RescueTeamsInfo {
     /**
      * 唯一标识
@@ -94,7 +100,28 @@ public class RescueTeamsInfo {
      * 位置
      */
     @TableField(value = "geom")
-    private Object geom;
+    @JsonSerialize(using = GeometrySerializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
+    private Geometry geom; // WKT 格式存储为 String
+
+    @TableField(exist = false)
+    private Double longitude;
+
+    @TableField(exist = false)
+    private Double latitude;
+
+    // 设置 geom 时提取经纬度
+    public void setGeom(Geometry geom) {
+        this.geom = geom;
+        if (geom != null) {
+            this.longitude = geom.getCoordinate().x;
+            this.latitude = geom.getCoordinate().y;
+        } else {
+            this.longitude = null;
+            this.latitude = null;
+        }
+    }
 
     /**
      * 负责人

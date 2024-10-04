@@ -39,7 +39,7 @@ public class ExcelFileServiceImpl extends ServiceImpl<ExcelFileMapper, ExcelFile
         if (userFileIds == null || userFileIds.size() == 0) {
             return Collections.emptyList();
         }
-        return baseMapper.selectList(Wrappers.<ExcelFile>lambdaQuery().in(ExcelFile::getId, userFileIds));
+        return baseMapper.selectList(Wrappers.<ExcelFile>lambdaQuery().in(ExcelFile::getId, userFileIds).orderByAsc(ExcelFile::getId));
     }
 
 

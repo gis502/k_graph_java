@@ -1,13 +1,121 @@
 package com.ruoyi.system.service.impl;
 
+import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.AftershockInformation;
+import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.listener.AftershockInformationListener;
+import com.ruoyi.system.listener.TransferSettlementInfoListener;
+import com.ruoyi.system.mapper.EarthquakeListMapper;
+import com.ruoyi.system.service.strategy.DataExportStrategy;
+import lombok.SneakyThrows;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.TransferSettlementInfoMapper;
 import com.ruoyi.system.domain.entity.TransferSettlementInfo;
 import com.ruoyi.system.service.TransferSettlementInfoService;
-@Service
-public class TransferSettlementInfoServiceImpl extends ServiceImpl<TransferSettlementInfoMapper, TransferSettlementInfo> implements TransferSettlementInfoService{
+import org.springframework.web.multipart.MultipartFile;
 
+@Service
+public class TransferSettlementInfoServiceImpl
+        extends ServiceImpl<TransferSettlementInfoMapper, TransferSettlementInfo>
+        implements TransferSettlementInfoService, DataExportStrategy {
+
+    @Resource
+    private EarthquakeListMapper earthquakesListMapper;
+    @Override
+    public IPage<TransferSettlementInfo> getPage(RequestBTO requestBTO) {
+        Page<TransferSettlementInfo>
+                transferSettlementInfo =
+                new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        String requestParam = requestBTO.getRequestParams();
+        LambdaQueryWrapper<TransferSettlementInfo> lambdaQueryWrapper = new LambdaQueryWrapper<TransferSettlementInfo>()
+                .like(TransferSettlementInfo::getEarthquakeName, requestParam)
+                .or()
+                .like(TransferSettlementInfo::getTransferId, requestParam)
+                .or()
+                .like(TransferSettlementInfo::getEarthquakeId, requestParam)
+                .or()
+                .like(TransferSettlementInfo::getEarthquakeAreaName, requestParam)
+                .or()
+                .apply("CAST(emergency_shelters AS TEXT) = {0}", requestParam)
+                .or()
+                .apply("CAST(temporary_shelters AS TEXT) = {0}", requestParam)
+                .or()
+                .apply("CAST(newly_transferred AS TEXT) = {0}", requestParam)
+                .or()
+                .apply("CAST(cumulative_transferred AS TEXT) = {0}", requestParam)
+                .or()
+                .apply("CAST(centralized_settlement AS TEXT) = {0}", requestParam)
+                .or()
+                .apply("CAST(distributed_settlement AS TEXT) = {0}", requestParam)
+                .or()
+                .apply("CAST(reporting_deadline AS TEXT) LIKE {0}", "%" + requestParam + "%")
+                .or()
+                .apply("CAST(system_inserttime AS TEXT) LIKE {0}", "%" + requestParam + "%")
+                .or()
+                .apply("CAST(earthquake_time AS TEXT) LIKE {0}", "%" + requestParam + "%");
+        return this.page(transferSettlementInfo, lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<TransferSettlementInfo> exportExcelGetData(RequestBTO requestBTO) {
+        String [] ids = requestBTO.getIds();
+        List<TransferSettlementInfo> list;
+        if (ids == null || ids.length == 0) {
+            list = this.list().stream()
+                    .sorted(Comparator.comparing(TransferSettlementInfo::getSystemInserttime, Comparator.nullsLast(Comparator.naturalOrder()))
+                            .reversed()).collect(Collectors.toList());
+        } else {
+            list = this.listByIds(Arrays.asList(ids));
+        }
+        return list;
+    }
+
+    @SneakyThrows
+    @Override
+    public List<TransferSettlementInfo> importExcelTransferSettlementInfo(MultipartFile file, String userName, String eqId) {
+        InputStream inputStream = file.getInputStream();
+        // 读取总行数（略过表头）
+        int totalRows = WorkbookFactory.create(inputStream).getSheetAt(0).getPhysicalNumberOfRows() - 4;
+        inputStream.close();
+        // 重新获取 InputStream
+        inputStream = file.getInputStream();
+        TransferSettlementInfoListener listener = new TransferSettlementInfoListener(baseMapper, totalRows, userName);
+        // 读取Excel文件，从第4行开始
+        EasyExcel.read(inputStream,TransferSettlementInfo.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        // 获取解析后的数据
+        List<TransferSettlementInfo> list = listener.getList();
+        // 将解析后的数据保存到数据库
+        // 遍历解析后的数据，根据地震时间与地震名称查找eqList表中的earthquakeId
+        for (TransferSettlementInfo data : list) {
+            // 根据地震时间与地震名称查询 earthquakeId
+            List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
+            System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
+            // 设置 earthquakeId
+            data.setEarthquakeId(earthquakeIdByTimeAndPosition.get(0).getEqid().toString());
+            data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
+            data.setEarthquakeName(earthquakeIdByTimeAndPosition.get(0).getEarthquakeName());
+            data.setMagnitude(earthquakeIdByTimeAndPosition.get(0).getMagnitude());
+            data.setReportingDeadline(data.getReportingDeadline());
+            data.setSystemInserttime(LocalDateTime.now());
+        }
+        //集合拷贝
+//        List<YaanAftershockStatistics> listDOs = BeanUtil.copyToList(list, YaanAftershockStatistics.class);
+        saveBatch(list);
+        return list;
+    }
 }
