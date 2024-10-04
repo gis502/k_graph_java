@@ -4,9 +4,8 @@
   <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.SituationPlot">
     <!--@mbg.generated-->
     <!--@Table situation_plot-->
-    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <id column="plot_id" jdbcType="VARCHAR" property="plotId" />
     <result column="earthquake_id" jdbcType="VARCHAR" property="earthquakeId" />
-    <result column="plot_id" jdbcType="VARCHAR" property="plotId" />
     <result column="drawtype" jdbcType="VARCHAR" property="drawtype" />
     <result column="icon" jdbcType="VARCHAR" property="icon" />
     <result column="severity" jdbcType="VARCHAR" property="severity" />
@@ -20,7 +19,10 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    uuid, earthquake_id, plot_id, drawtype, icon, severity, plot_type, angle, creation_time, 
+    uuid, earthquake_id, plot_id, drawtype, icon, severity, plot_type, angle, creation_time,
     elevation, end_time, is_deleted, geom
   </sql>
+  <select id="getPlot" resultType="com.ruoyi.system.domain.entity.SituationPlot">
+    select * from situation_plot where earthquake_id=#{eqid}
+  </select>
 </mapper>
