@@ -76,7 +76,7 @@ public class CaptchaController
             image = captchaProducer.createImage(capStr);
             Graphics2D g2d = image.createGraphics();
             // 设置自定义字体样式
-            g2d.setFont(new Font("Arial", Font.BOLD, 40));
+            g2d.setFont(new Font("Arial", Font.BOLD, 42));
             // 清除干扰线（假设原图像上有干扰线，可以通过绘制纯色覆盖掉干扰线）
 //            g2d.setColor(Color.gray);
             g2d.setColor(Color.decode("#fff9e6")); // 设置为背景色

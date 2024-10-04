@@ -10,4 +10,11 @@ import com.ruoyi.system.service.TiltphotographymodelService;
 @Service
 public class TiltphotographymodelServiceImpl extends ServiceImpl<TiltphotographymodelMapper, Tiltphotographymodel> implements TiltphotographymodelService{
 
+    @Resource
+    private TiltphotographymodelMapper tiltphotographymodelMapper;
+
+    @Override
+    public List<Tiltphotographymodel> selectAllModel() {
+        return tiltphotographymodelMapper.selectAllModel();
+    }
 }

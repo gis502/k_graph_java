@@ -5,8 +5,16 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
+
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import org.locationtech.jts.geom.Geometry;
+import org.n52.jackson.datatype.jts.GeometryDeserializer;
+import org.n52.jackson.datatype.jts.GeometrySerializer;
 
 /**
     * 震后生成-态势标绘表
@@ -14,8 +22,6 @@ import lombok.Data;
 @Data
 @TableName(value = "situation_plot")
 public class SituationPlot {
-    @TableId(value = "uuid", type = IdType.NONE)
-    private Object uuid;
 
     /**
      * 地震ID
@@ -24,10 +30,10 @@ public class SituationPlot {
     private String earthquakeId;
 
     /**
-     * 标绘ID
+     * 标绘ID (唯一标识符)
      */
-    @TableField(value = "plot_id")
-    private String plotId;
+    @TableId(value = "plot_id", type = IdType.AUTO)
+    private Object plotId;
 
     /**
      * 点、线、面三种其一
@@ -63,7 +69,7 @@ public class SituationPlot {
      * 生成的时间（灾难发生时间如果在标绘时间之前可以在后台修改）
      */
     @TableField(value = "creation_time")
-    private Date creationTime;
+    private LocalDateTime creationTime;
 
     /**
      * 高程
@@ -75,7 +81,7 @@ public class SituationPlot {
      * 标绘结束时间
      */
     @TableField(value = "end_time")
-    private Date endTime;
+    private LocalDateTime endTime;
 
     /**
      * 是否删除
@@ -87,5 +93,26 @@ public class SituationPlot {
      * 位置
      */
     @TableField(value = "geom")
-    private Object geom;
+    @JsonSerialize(using = GeometrySerializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
+    private Geometry geom;
+
+    @TableField(exist = false) // Indicates no corresponding database column
+    private Double longitude;
+
+    @TableField(exist = false) // Indicates no corresponding database column
+    private Double latitude;
+
+    // 设置 geom 时提取经纬度
+    public void setGeom(Geometry geom) {
+        this.geom = geom;
+        if (geom != null) {
+            this.longitude = geom.getCoordinate().x;
+            this.latitude = geom.getCoordinate().y;
+        } else {
+            this.longitude = null;
+            this.latitude = null;
+        }
+    }
 }

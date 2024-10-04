@@ -1,0 +1,58 @@
+package com.ruoyi.web.controller.system;
+
+import com.ruoyi.system.domain.entity.*;
+import com.ruoyi.system.service.impl.EmergencyResponseInfoServiceImpl;
+import com.ruoyi.system.service.impl.NewsServiceImpl;
+import com.ruoyi.system.service.impl.RescueActionCasualtiesServiceImpl;
+import com.ruoyi.system.service.impl.RescueTeamServiceImpl;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+@RestController
+@RequestMapping("/timeLine")
+public class TimeLineController {
+
+    @Resource
+    private EmergencyResponseInfoServiceImpl emergencyResponseInfoService;
+
+    @Resource
+    private RescueActionCasualtiesServiceImpl rescueActionCasualtiesService;
+
+    @Resource
+    private RescueTeamServiceImpl rescueTeamService;
+
+    @Resource
+    private NewsServiceImpl newsService;
+
+    // ----应急响应
+    @GetMapping("/emergencyResponse")
+    public List<EmergencyResponseInfo> getEmergencyResponse(){
+        return emergencyResponseInfoService.list();
+    }
+
+    // ----人员伤亡
+    @GetMapping("rescueActionCasualties")
+    public List<RescueActionCasualties> getRescueActionCasualties(){
+        return rescueActionCasualtiesService.list();
+    }
+
+    // ----救援出队
+    @GetMapping("/rescueTeam")
+    public List<RescueTeam> getRescueTeam() {
+        return rescueTeamService.list();
+    }
+
+    // ----最新新闻
+    @GetMapping("/news")
+    public List<News> getNews() {
+        return newsService.list();
+    }
+
+
+
+}
