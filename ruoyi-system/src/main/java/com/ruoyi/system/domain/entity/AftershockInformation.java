@@ -39,12 +39,30 @@ public class AftershockInformation {
     @TableField(value = "earthquake_name")
     @ExcelProperty({"震情灾情", "地震名称"})
     private String earthquakeName;
+
+    /**
+     * 地震时间，地震发生的具体时间
+     */
+    @TableField(value = "earthquake_time")
+    @ExcelProperty(value = {"震情灾情", "地震时间"})
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime earthquakeTime;
+
     /**
      * 震级，地震 Richter 震级
      */
     @ExcelProperty({"震情灾情", "震级"})
     @TableField(value = "magnitude")
     private String magnitude;
+
+    /**
+     * 震区，受影响的地区名称
+     */
+    @TableField(value = "affected_area")
+    @ExcelProperty(value = {"震情灾情", "震区（县/区）"})
+    private String affectedArea;
+
 
     /**
      * 余震次数累计，所有余震的次数总和
@@ -98,21 +116,7 @@ public class AftershockInformation {
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     private LocalDateTime submissionDeadline;
 
-    /**
-     * 震区，受影响的地区名称
-     */
-    @TableField(value = "affected_area")
-    @ExcelProperty(value = {"震情灾情", "震区（县/区）"})
-    private String affectedArea;
 
-    /**
-     * 地震时间，地震发生的具体时间
-     */
-    @TableField(value = "earthquake_time")
-    @ExcelProperty(value = {"震情灾情", "地震时间"})
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime earthquakeTime;
 
     /**
      * 余震分布，描述余震的空间分布情况

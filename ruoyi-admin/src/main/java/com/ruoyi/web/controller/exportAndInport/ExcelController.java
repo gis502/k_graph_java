@@ -17,6 +17,8 @@ import com.ruoyi.system.service.impl.TransferSettlementInfoServiceImpl;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +43,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class ExcelController {
+    private static final Logger log = LoggerFactory.getLogger(ExcelController.class);
     private final DataExportStrategyContext dataExportStrategyContext;
 
     @Resource
@@ -64,19 +67,23 @@ public class ExcelController {
 
     @PostMapping("/exportExcel")
     public void exportExcel(HttpServletResponse response, @RequestBody RequestBTO RequestBTO) throws IOException {
-        DataExportStrategy strategy = dataExportStrategyContext.getStrategy(RequestBTO.getFlag());
-        Class<?> clazz = strategy.getExportExcelClass();
-        List<?> dataList = strategy.exportExcelGetData(RequestBTO);
+        try {
+            DataExportStrategy strategy = dataExportStrategyContext.getStrategy(RequestBTO.getFlag());
+            Class<?> clazz = strategy.getExportExcelClass();
+            List<?> dataList = strategy.exportExcelGetData(RequestBTO);
 
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("utf-8");
-        // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-        String fileName = URLEncoder.encode("地震数据信息统计表", "UTF-8").replaceAll("\\+", "%20");
-        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), clazz)
-                .includeColumnFiledNames(Arrays.asList(RequestBTO.getFields()))
-                .sheet("地震数据信息统计表")
-                .doWrite(dataList);
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String fileName = URLEncoder.encode("地震数据信息统计表", "UTF-8").replaceAll("\\+", "%20");
+            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+            EasyExcel.write(response.getOutputStream(), clazz)
+                    .includeColumnFiledNames(Arrays.asList(RequestBTO.getFields()))
+                    .sheet("地震数据信息统计表")
+                    .doWrite(dataList);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
     }
 
 
