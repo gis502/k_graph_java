@@ -219,9 +219,8 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         throw new IllegalArgumentException("Unable to determine entity class for mapper: " + mapper.getClass().getName());
     }
 
-//    @Override
-//    public List<SituationPlot> getPlot(String eqid){
-//        return situationPlotMapper.getPlot(eqid);
-//    }
-
+    @Override
+    public List<SituationPlot> getPlot(String eqid) {
+        return situationPlotMapper.getPlot(eqid);
+    }
 }

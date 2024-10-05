@@ -16,4 +16,5 @@ public interface SituationPlotService extends IService<SituationPlot>{
     Object getPlotInfos(String plotType, String plotId);
 
 
+    List<SituationPlot> getPlot(String eqid);
 }
