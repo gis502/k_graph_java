@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 导入导出控制层
@@ -126,6 +127,13 @@ public class ExcelController {
             e.printStackTrace();
             return R.fail("操作失败: " + e.getMessage());
         }
+    }
+
+    @DeleteMapping("/deleteData")
+    public AjaxResult deleteData(@RequestBody Map<String,Object> requestBTO) {
+        System.out.println(requestBTO);
+        List<Map<String, Object>> idsList = (List<Map<String, Object>>) requestBTO.get("ids");
+        return AjaxResult.success(dataExportStrategyContext.getStrategy((String) requestBTO.get("flag")).deleteData(idsList));
     }
 
 

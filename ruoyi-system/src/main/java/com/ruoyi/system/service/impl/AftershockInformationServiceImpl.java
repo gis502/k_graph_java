@@ -15,9 +15,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
@@ -29,10 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.domain.entity.AftershockInformation;
-import java.util.Arrays;
-import java.util.Comparator;
+
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 @Service
 public class AftershockInformationServiceImpl extends
@@ -93,6 +89,32 @@ public class AftershockInformationServiceImpl extends
         }
         return list;
     }
+
+    @Override
+    public String deleteData(List<Map<String, Object>> requestBTO) {
+        // 假设所有的 ids 都在每个 Map 中的 "uuid" 键下，提取所有的 ids
+        List<String> ids = new ArrayList<>();
+
+        // 遍历 requestBTO 列表，提取每个 Map 中的 "uuid" 键的值
+        for (Map<String, Object> entry : requestBTO) {
+            if (entry.containsKey("uuid")) {
+                // 获取 "uuid" 并转换为 String 类型
+                String uuid = (String) entry.get("uuid");
+                ids.add(uuid);
+            }
+        }
+
+        // 判断是否有 ids
+        if (ids.isEmpty()) {
+            return "没有提供要删除的 UUID 列表";
+        }
+
+        // 使用 removeByIds 方法批量删除
+        this.removeByIds(ids);
+
+        return "删除成功";
+    }
+
 
     /**
      * 获取最新余震数据

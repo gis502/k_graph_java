@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -117,5 +114,30 @@ public class TransferSettlementInfoServiceImpl
 //        List<YaanAftershockStatistics> listDOs = BeanUtil.copyToList(list, YaanAftershockStatistics.class);
         saveBatch(list);
         return list;
+    }
+
+    @Override
+    public String deleteData(List<Map<String, Object>> requestBTO) {
+        // 假设所有的 ids 都在每个 Map 中的 "uuid" 键下，提取所有的 ids
+        List<String> ids = new ArrayList<>();
+
+        // 遍历 requestBTO 列表，提取每个 Map 中的 "uuid" 键的值
+        for (Map<String, Object> entry : requestBTO) {
+            if (entry.containsKey("uuid")) {
+                // 获取 "uuid" 并转换为 String 类型
+                String uuid = (String) entry.get("uuid");
+                ids.add(uuid);
+            }
+        }
+
+        // 判断是否有 ids
+        if (ids.isEmpty()) {
+            return "没有提供要删除的 UUID 列表";
+        }
+
+        // 使用 removeByIds 方法批量删除
+        this.removeByIds(ids);
+
+        return "删除成功";
     }
 }

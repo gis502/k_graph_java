@@ -7,6 +7,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 方
@@ -20,6 +21,7 @@ public interface DataExportStrategy {
      * @return
      */
     IPage getPage(RequestBTO requestBTO);
+
 
     /**
      * 获取导出数据
@@ -62,4 +64,6 @@ public interface DataExportStrategy {
         }
         throw new ServiceException("无法获取实体类的类型");
     }
+
+    String deleteData(List<Map<String, Object>> idsList);
 }
