@@ -177,6 +177,8 @@ public class CasualtyReportServiceImpl
             }
         }
         inputStream.close();
+        // 重新获取 InputStream
+        inputStream = file.getInputStream();
         CasualtyReportListener listener = new CasualtyReportListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
         EasyExcel.read(inputStream,CasualtyReport.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();

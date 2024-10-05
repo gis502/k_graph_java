@@ -103,6 +103,8 @@ public class TransferSettlementInfoServiceImpl
             }
         }
         inputStream.close();
+        // 重新获取 InputStream
+        inputStream = file.getInputStream();
         TransferSettlementInfoListener listener = new TransferSettlementInfoListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
         EasyExcel.read(inputStream,TransferSettlementInfo.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();

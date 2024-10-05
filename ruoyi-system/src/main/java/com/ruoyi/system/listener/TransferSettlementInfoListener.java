@@ -26,7 +26,7 @@ public class TransferSettlementInfoListener implements ReadListener<TransferSett
     @Override
     public void invoke(TransferSettlementInfo data, AnalysisContext context) {
         // 检查当前行的第一个单元格
-        if (data.getEarthquakeAreaName().contains("填写单位")) {
+        if (data.getEarthquakeAreaName() == null||data.getEarthquakeAreaName().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {

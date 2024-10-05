@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -30,54 +32,60 @@ public class Meetings {
      * 地震标识
      */
     @TableField(value = "earthquake_id")
-    @ExcelProperty({"会议", "地震标识"})
+    @ExcelProperty({"文会情况", "地震标识"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeId;
 
-    /**
-     * 震区名称
-     */
-    @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"会议", "震区名称"})
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private String earthquakeAreaName;
-
-    /**
-     * 地震时间
-     */
-    @TableField(value = "earthquake_time")
-    @ExcelProperty(value = {"会议", "地震时间"})
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private Date earthquakeTime;
 
     /**
      * 地震名称
      */
     @TableField(value = "earthquake_name")
-    @ExcelProperty(value = {"会议", "地震名称"})
+    @ExcelProperty(value = {"文会情况", "地震名称"})
     @ColumnWidth(30)
     private String earthquakeName;
+    /**
+     * 地震时间
+     */
+    @TableField(value = "earthquake_time")
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @ExcelProperty(value = {"文会情况", "地震时间"})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime earthquakeTime;
+
+    /**
+     * 震级，地震 Richter 震级
+     */
+    @ExcelProperty({"文会情况", "震级"})
+    @TableField(value = "magnitude")
+    private String magnitude;
+    /**
+     * 震区名称
+     */
+    @TableField(value = "earthquake_area_name")
+    @ExcelProperty({"文会情况", "震区（县/区）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private String earthquakeAreaName;
     /**
      * 填报截止时间
      */
     @TableField(value = "report_deadline")
-    @ExcelProperty(value = {"会议", "填报截止时间"})
+    @ExcelProperty(value = {"文会情况", "统计截止时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private Date reportDeadline;
+    private LocalDateTime reportDeadline;
 
     /**
      * 会议（场）
      */
     @TableField(value = "meeting_count")
-    @ExcelProperty(value = {"会议", "会议（场）"})
+    @ExcelProperty(value = {"文会情况", "会议（场）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer meetingCount;
@@ -86,7 +94,7 @@ public class Meetings {
      * 活动（场）
      */
     @TableField(value = "activity_count")
-    @ExcelProperty(value = {"会议", "活动（场）"})
+    @ExcelProperty(value = {"文会情况", "活动（场）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer activityCount;
@@ -95,7 +103,7 @@ public class Meetings {
      * 印发简报（份）
      */
     @TableField(value = "brief_report_count")
-    @ExcelProperty(value = {"会议", "印发简报（份）"})
+    @ExcelProperty(value = {"文会情况", "印发简报（份）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer briefReportCount;
@@ -104,7 +112,7 @@ public class Meetings {
      * 印发通知（份）
      */
     @TableField(value = "notice_count")
-    @ExcelProperty(value = {"会议", "印发通知（份）"})
+    @ExcelProperty(value = {"文会情况", "印发通知（份）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer noticeCount;
@@ -113,7 +121,7 @@ public class Meetings {
      * 会议纪要（份）
      */
     @TableField(value = "meeting_minutes_count")
-    @ExcelProperty(value = {"会议", "会议纪要（份）"})
+    @ExcelProperty(value = {"文会情况", "会议纪要（份）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer meetingMinutesCount;
@@ -126,5 +134,6 @@ public class Meetings {
     @TableField(value = "system_insert_time")
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @ExcelIgnore
-    private Date systemInsertTime;
+    private LocalDateTime systemInsertTime;
+
 }
