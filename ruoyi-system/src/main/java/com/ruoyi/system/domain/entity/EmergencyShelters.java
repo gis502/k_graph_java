@@ -141,7 +141,7 @@ public class EmergencyShelters {
     /**
      * 位置
      */
-    @TableField(value = "geometry")
+    @TableField(value = "geom")
     @JsonSerialize(using = GeometrySerializer.class)
     @JsonDeserialize(using = GeometryDeserializer.class)
     @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
