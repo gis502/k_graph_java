@@ -120,4 +120,14 @@ public class SituationPlotController {
         return plotData;
     }
 
+    /**
+     * @description: "时间轴或者大屏根据标会时间获取数据"
+     * @author: SWB
+     * @time: 2024/10/5 14:49
+     **/
+    @PostMapping("/getplotswithtime")
+    public List<SituationPlot> getPlotsByEqId(@RequestParam String eqid) {
+        List<SituationPlot> selectPlotWithTimeforEqid = situationPlotService.getSituationPlotsByEqId(eqid);
+        return selectPlotWithTimeforEqid;
+    }
 }
