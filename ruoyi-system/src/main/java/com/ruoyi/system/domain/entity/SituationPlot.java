@@ -78,6 +78,12 @@ public class SituationPlot {
     private BigDecimal elevation;
 
     /**
+     * 标绘开始时间
+     */
+    @TableField(value = "start_time")
+    private LocalDateTime startTime;
+
+    /**
      * 标绘结束时间
      */
     @TableField(value = "end_time")
