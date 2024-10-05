@@ -6,7 +6,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import org.locationtech.jts.geom.Geometry;
+import org.n52.jackson.datatype.jts.GeometryDeserializer;
+import org.n52.jackson.datatype.jts.GeometrySerializer;
 
 /**
     * 震前准备-地震灾害和救灾背景信息-描述与灾区及其临区地震活动和地震成灾特性直接相关的各类自然与社会人文信息-应急避难场所
@@ -26,7 +33,7 @@ public class EmergencyShelters {
     /**
      * 名称
      */
-    @TableField(value = "\"name\"")
+    @TableField(value = "name")
     private String name;
 
     /**
@@ -134,6 +141,27 @@ public class EmergencyShelters {
     /**
      * 位置
      */
-    @TableField(value = "\"geometry  \"")
-    private Object geometry;
+    @TableField(value = "geom")
+    @JsonSerialize(using = GeometrySerializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
+    private Geometry geom; // WKT 格式存储为 String
+
+    @TableField(exist = false)
+    private Double longitude;
+
+    @TableField(exist = false)
+    private Double latitude;
+
+    // 设置 geom 时提取经纬度
+    public void setGeom(Geometry geom) {
+        this.geom = geom;
+        if (geom != null) {
+            this.longitude = geom.getCoordinate().x;
+            this.latitude = geom.getCoordinate().y;
+        } else {
+            this.longitude = null;
+            this.latitude = null;
+        }
+    }
 }

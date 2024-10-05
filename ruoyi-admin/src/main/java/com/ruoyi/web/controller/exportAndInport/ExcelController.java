@@ -1,16 +1,30 @@
 package com.ruoyi.web.controller.exportAndInport;
 
 import com.alibaba.excel.EasyExcel;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.AftershockInformation;
+import com.ruoyi.system.domain.entity.CasualtyReport;
+import com.ruoyi.system.domain.entity.TransferSettlementInfo;
+import com.ruoyi.system.mapper.SysOperLogMapper;
+import com.ruoyi.system.service.impl.AftershockInformationServiceImpl;
+import com.ruoyi.system.service.impl.CasualtyReportServiceImpl;
+import com.ruoyi.system.service.impl.TransferSettlementInfoServiceImpl;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -26,8 +40,19 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class ExcelController {
-
     private final DataExportStrategyContext dataExportStrategyContext;
+
+    @Resource
+    private SysOperLogMapper sysOperLogMapper;
+
+    @Resource
+    private AftershockInformationServiceImpl aftershockInformationServiceImpl;
+    @Resource
+    private CasualtyReportServiceImpl caseCacheServiceImpl;
+
+    @Resource
+    private TransferSettlementInfoServiceImpl transferSettlementInfoServiceImpl;
+
 
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
@@ -51,4 +76,57 @@ public class ExcelController {
                 .sheet("地震数据信息统计表")
                 .doWrite(dataList);
     }
+
+
+    @PostMapping("/getExcelUploadByTime")
+    public R getExcelUploadByTime(@RequestParam("time") String time, @RequestParam("requestParams") String requestParams, @RequestParam("username") String username) {
+        List<SysOperLog> message = null;
+
+        switch (time) {
+            case "今日":
+                message = sysOperLogMapper.getMessageByDay(requestParams,username);
+                System.out.println(message);
+                break;
+            case "近七天":
+                message = sysOperLogMapper.getMessageByWeek(requestParams,username);
+                break;
+            case "近一个月":
+                message = sysOperLogMapper.getMessageByMonth(requestParams,username);
+                break;
+            case "近三个月":
+                message = sysOperLogMapper.getMessageByThreeMonth(requestParams,username);
+                break;
+            case "近一年":
+                message = sysOperLogMapper.getMessageByYear(requestParams,username);
+                break;
+        }
+        return R.ok(message);
+    }
+
+    @PostMapping("/importExcel/{userName}&{filename}&{eqId}")
+    @Log(title = "导入数据", businessType = BusinessType.IMPORT)
+    public R getAfterShockStatistics(@RequestParam("file") MultipartFile file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String filename, @PathVariable(value = "eqId") String eqId) throws IOException {
+        System.out.println(eqId);
+        try {
+            if (filename.equals("震情伤亡-震情灾情统计表")) {
+                List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName,eqId);
+                return R.ok(yaanAftershockStatistics);
+            } if (filename.equals("震情伤亡-人员伤亡统计表")) {
+                List<CasualtyReport> yaanCasualties = caseCacheServiceImpl.importExcelCasualtyReport(file, userName,eqId);
+                return R.ok(yaanCasualties);
+            }
+            if (filename.equals("震情伤亡-转移安置统计表")) {
+                List<TransferSettlementInfo> YaanRelocationResettlementDisasterReliefGroup=transferSettlementInfoServiceImpl.importExcelTransferSettlementInfo(file, userName,eqId);
+                return R.ok(YaanRelocationResettlementDisasterReliefGroup);
+            }
+            else {
+                return R.fail("上传文件名称错误");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.fail("操作失败: " + e.getMessage());
+        }
+    }
+
+
 }
