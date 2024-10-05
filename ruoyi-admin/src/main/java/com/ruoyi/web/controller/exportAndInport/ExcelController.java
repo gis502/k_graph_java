@@ -55,6 +55,7 @@ public class ExcelController {
     private TransferSettlementInfoServiceImpl transferSettlementInfoServiceImpl;
 
 
+
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
         return AjaxResult.success(dataExportStrategyContext.getStrategy(requestBTO.getFlag()).getPage(requestBTO));
@@ -86,7 +87,6 @@ public class ExcelController {
         switch (time) {
             case "今日":
                 message = sysOperLogMapper.getMessageByDay(requestParams,username);
-                System.out.println(message);
                 break;
             case "近七天":
                 message = sysOperLogMapper.getMessageByWeek(requestParams,username);
