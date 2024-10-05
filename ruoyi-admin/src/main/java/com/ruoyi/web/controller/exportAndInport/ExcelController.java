@@ -17,6 +17,8 @@ import com.ruoyi.system.service.impl.TransferSettlementInfoServiceImpl;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +42,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class ExcelController {
+    private static final Logger log = LoggerFactory.getLogger(ExcelController.class);
     private final DataExportStrategyContext dataExportStrategyContext;
 
     @Resource
@@ -62,19 +65,23 @@ public class ExcelController {
 
     @PostMapping("/exportExcel")
     public void exportExcel(HttpServletResponse response, @RequestBody RequestBTO RequestBTO) throws IOException {
-        DataExportStrategy strategy = dataExportStrategyContext.getStrategy(RequestBTO.getFlag());
-        Class<?> clazz = strategy.getExportExcelClass();
-        List<?> dataList = strategy.exportExcelGetData(RequestBTO);
+        try {
+            DataExportStrategy strategy = dataExportStrategyContext.getStrategy(RequestBTO.getFlag());
+            Class<?> clazz = strategy.getExportExcelClass();
+            List<?> dataList = strategy.exportExcelGetData(RequestBTO);
 
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("utf-8");
-        // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-        String fileName = URLEncoder.encode("地震数据信息统计表", "UTF-8").replaceAll("\\+", "%20");
-        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), clazz)
-                .includeColumnFiledNames(Arrays.asList(RequestBTO.getFields()))
-                .sheet("地震数据信息统计表")
-                .doWrite(dataList);
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String fileName = URLEncoder.encode("地震数据信息统计表", "UTF-8").replaceAll("\\+", "%20");
+            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+            EasyExcel.write(response.getOutputStream(), clazz)
+                    .includeColumnFiledNames(Arrays.asList(RequestBTO.getFields()))
+                    .sheet("地震数据信息统计表")
+                    .doWrite(dataList);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
     }
 
 
@@ -84,20 +91,20 @@ public class ExcelController {
 
         switch (time) {
             case "今日":
-                message = sysOperLogMapper.getMessageByDay(requestParams,username);
+                message = sysOperLogMapper.getMessageByDay(requestParams, username);
                 System.out.println(message);
                 break;
             case "近七天":
-                message = sysOperLogMapper.getMessageByWeek(requestParams,username);
+                message = sysOperLogMapper.getMessageByWeek(requestParams, username);
                 break;
             case "近一个月":
-                message = sysOperLogMapper.getMessageByMonth(requestParams,username);
+                message = sysOperLogMapper.getMessageByMonth(requestParams, username);
                 break;
             case "近三个月":
-                message = sysOperLogMapper.getMessageByThreeMonth(requestParams,username);
+                message = sysOperLogMapper.getMessageByThreeMonth(requestParams, username);
                 break;
             case "近一年":
-                message = sysOperLogMapper.getMessageByYear(requestParams,username);
+                message = sysOperLogMapper.getMessageByYear(requestParams, username);
                 break;
         }
         return R.ok(message);
@@ -109,17 +116,17 @@ public class ExcelController {
         System.out.println(eqId);
         try {
             if (filename.equals("震情伤亡-震情灾情统计表")) {
-                List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName,eqId);
+                List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName, eqId);
                 return R.ok(yaanAftershockStatistics);
-            } if (filename.equals("震情伤亡-人员伤亡统计表")) {
-                List<CasualtyReport> yaanCasualties = caseCacheServiceImpl.importExcelCasualtyReport(file, userName,eqId);
+            }
+            if (filename.equals("震情伤亡-人员伤亡统计表")) {
+                List<CasualtyReport> yaanCasualties = caseCacheServiceImpl.importExcelCasualtyReport(file, userName, eqId);
                 return R.ok(yaanCasualties);
             }
             if (filename.equals("震情伤亡-转移安置统计表")) {
-                List<TransferSettlementInfo> YaanRelocationResettlementDisasterReliefGroup=transferSettlementInfoServiceImpl.importExcelTransferSettlementInfo(file, userName,eqId);
+                List<TransferSettlementInfo> YaanRelocationResettlementDisasterReliefGroup = transferSettlementInfoServiceImpl.importExcelTransferSettlementInfo(file, userName, eqId);
                 return R.ok(YaanRelocationResettlementDisasterReliefGroup);
-            }
-            else {
+            } else {
                 return R.fail("上传文件名称错误");
             }
         } catch (Exception e) {
