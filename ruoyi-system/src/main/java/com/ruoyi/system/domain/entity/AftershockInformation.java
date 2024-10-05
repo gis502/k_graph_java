@@ -74,6 +74,10 @@ public class AftershockInformation {
     @ExcelProperty({"震情灾情", "5.0-5.9级"})
     private Integer magnitude559;
 
+    @TableField(value = "magnitude_6")
+    @ExcelProperty({"震情灾情", "6.0级以上"})
+    private Integer magnitude6;
+
     /**
      * 系统插入时间，记录被系统创建的时间
      */

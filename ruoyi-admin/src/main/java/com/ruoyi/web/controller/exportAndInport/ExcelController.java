@@ -107,7 +107,6 @@ public class ExcelController {
     @PostMapping("/importExcel/{userName}&{filename}&{eqId}")
     @Log(title = "导入数据", businessType = BusinessType.IMPORT)
     public R getAfterShockStatistics(@RequestParam("file") MultipartFile file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String filename, @PathVariable(value = "eqId") String eqId) throws IOException {
-        System.out.println(eqId);
         try {
             if (filename.equals("震情伤亡-震情灾情统计表")) {
                 List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName,eqId);
