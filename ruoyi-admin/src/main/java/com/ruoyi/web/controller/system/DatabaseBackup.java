@@ -108,7 +108,7 @@ public class DatabaseBackup {
                 .body(resource);
     }
 
-    @Scheduled(cron = "0 0 * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void backupAndDownload() {
         String backupFileName = DB_NAME + "_backup_" + System.currentTimeMillis() + ".backup";
         String backupFilePath = BACKUP_PATH + backupFileName;
@@ -118,8 +118,11 @@ public class DatabaseBackup {
         processBuilder.environment().put("PGPASSWORD", DB_PASSWORD);
 
         // 构建pg_dump命令以备份整个数据库
+        // 构建pg_dump命令，排除sichuan_popdensity_point表
         processBuilder.command(PG_DUMP_PATH, "-h", DB_HOST, "-p", String.valueOf(DB_PORT), "-U", DB_USER,
-                "-F", "c", "-b", "-v", "-E", "UTF8", "-f", backupFilePath, DB_NAME);
+                "-F", "c", "-b", "-v", "-E", "UTF8", "-f", backupFilePath,
+                "--exclude-table=sichuan_popdensity_point", DB_NAME);
+
 
         try {
             // 执行命令
