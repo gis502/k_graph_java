@@ -27,7 +27,7 @@ public class CasualtyReportListener implements ReadListener<CasualtyReport> {
     @Override
     public void invoke(CasualtyReport data, AnalysisContext context) {
 // 检查当前行的第一个单元格
-        if (data.getAffectedAreaName().contains("填写单位")) {
+        if (data.getAffectedAreaName() == null||data.getAffectedAreaName().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {
