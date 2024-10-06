@@ -61,6 +61,7 @@ public class ExcelController {
     }
 
     @PostMapping("/exportExcel")
+    @Log(title = "数据导出", businessType = BusinessType.EXPORT)
     public void exportExcel(HttpServletResponse response, @RequestBody RequestBTO RequestBTO) throws IOException {
         DataExportStrategy strategy = dataExportStrategyContext.getStrategy(RequestBTO.getFlag());
         Class<?> clazz = strategy.getExportExcelClass();
