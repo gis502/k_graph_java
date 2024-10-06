@@ -6,6 +6,7 @@ import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
 import com.ruoyi.system.domain.entity.TransferSettlementInfo;
 import com.ruoyi.system.mapper.CommunicationFacilityDamageRepairStatusMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,9 +46,10 @@ public class CommunicationFacilityDamageRepairStatusListener implements ReadList
         }
     }
 
+    @SneakyThrows
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-
+        WebSocketServerExcel.sendInfo(String.valueOf("100"), userName);
     }
     public List<CommunicationFacilityDamageRepairStatus> getList() {
         return list;

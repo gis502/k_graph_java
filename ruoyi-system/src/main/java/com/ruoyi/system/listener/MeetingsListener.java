@@ -5,6 +5,7 @@ import com.alibaba.excel.read.listener.ReadListener;
 import com.ruoyi.system.domain.entity.Meetings;
 import com.ruoyi.system.mapper.MeetingsMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,9 +45,10 @@ public class MeetingsListener implements ReadListener<Meetings> {
         }
     }
 
+    @SneakyThrows
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-
+        WebSocketServerExcel.sendInfo(String.valueOf("100"), userName);
     }
     public List<Meetings> getList() {
         return list;
