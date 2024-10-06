@@ -39,6 +39,17 @@ public class SafetyProtectionController {
         return safetyProtectionService.page(page, queryWrapper);
     }
 
+
+    /**
+     * 查
+     */
+
+    @PostMapping("/list")
+    public AjaxResult list(){
+        return AjaxResult.success(safetyProtectionService.list());
+    }
+
+
     /**
      * 刪
      */
