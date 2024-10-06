@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.PlotRequest;
 import com.ruoyi.system.domain.entity.SituationPlot;
 import com.ruoyi.system.service.SituationPlotService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -107,5 +109,25 @@ public class SituationPlotController {
         }
     }
 
+    /*
+     * @description: "根据eqid获取相应标绘信息"
+     * @author: SWB
+     * @time: 2024/10/4 16:24
+     **/
+    @GetMapping("/getplot")
+    public List<SituationPlot> getPlot(String eqid){
+        List<SituationPlot> plotData = situationPlotService.getPlot(eqid);
+        return plotData;
+    }
 
+    /**
+     * @description: "时间轴或者大屏根据标会时间获取数据"
+     * @author: SWB
+     * @time: 2024/10/5 14:49
+     **/
+    @PostMapping("/getplotswithtime")
+    public List<SituationPlot> getPlotsByEqId(@RequestParam String eqid) {
+        List<SituationPlot> selectPlotWithTimeforEqid = situationPlotService.getSituationPlotsByEqId(eqid);
+        return selectPlotWithTimeforEqid;
+    }
 }

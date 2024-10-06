@@ -2,32 +2,32 @@ package com.ruoyi.system.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
-import com.ruoyi.system.domain.entity.CasualtyReport;
-import com.ruoyi.system.mapper.CasualtyReportMapper;
+import com.ruoyi.system.domain.entity.Meetings;
+import com.ruoyi.system.mapper.MeetingsMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CasualtyReportListener implements ReadListener<CasualtyReport> {
-
-    private final List<CasualtyReport> list = new ArrayList<CasualtyReport>();
-    private CasualtyReportMapper casualtyReportMapper;
+public class MeetingsListener implements ReadListener<Meetings> {
+    private final List<Meetings> list = new ArrayList<Meetings>();
+    private MeetingsMapper meetingsMapper;
     private int totalRows;
     private int currentRow = 0;
     private String userName;
     private boolean stopReading = false;
-    public CasualtyReportListener(CasualtyReportMapper casualtyReportMapper, int totalRows, String userName) {
-        this.casualtyReportMapper = casualtyReportMapper;
+    public MeetingsListener(MeetingsMapper meetingsMapper, int totalRows, String userName) {
+        this.meetingsMapper = meetingsMapper;
         this.totalRows = totalRows;
         this.userName = userName;
     }
 
     @Override
-    public void invoke(CasualtyReport data, AnalysisContext context) {
+    public void invoke(Meetings data, AnalysisContext context) {
+        System.out.println(data);
 // 检查当前行的第一个单元格
-        if (data.getAffectedAreaName() == null||data.getAffectedAreaName().contains("填写单位")) {
+        if (data.getEarthquakeAreaName() == null||data.getEarthquakeAreaName().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {
@@ -48,11 +48,7 @@ public class CasualtyReportListener implements ReadListener<CasualtyReport> {
     public void doAfterAllAnalysed(AnalysisContext context) {
 
     }
-
-    public List<CasualtyReport> getList() {
+    public List<Meetings> getList() {
         return list;
     }
 }
-
-
-

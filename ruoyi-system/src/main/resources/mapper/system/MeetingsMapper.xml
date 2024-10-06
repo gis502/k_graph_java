@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.MeetingsMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.Meetings">
+    <!--@mbg.generated-->
+    <!--@Table meetings-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_id" jdbcType="VARCHAR" property="earthquakeId" />
+    <result column="earthquake_area_name" jdbcType="VARCHAR" property="earthquakeAreaName" />
+    <result column="meeting_count" jdbcType="INTEGER" property="meetingCount" />
+    <result column="activity_count" jdbcType="INTEGER" property="activityCount" />
+    <result column="brief_report_count" jdbcType="INTEGER" property="briefReportCount" />
+    <result column="notice_count" jdbcType="INTEGER" property="noticeCount" />
+    <result column="meeting_minutes_count" jdbcType="INTEGER" property="meetingMinutesCount" />
+    <result column="report_deadline" jdbcType="TIMESTAMP" property="reportDeadline" />
+    <result column="system_insert_time" jdbcType="TIMESTAMP" property="systemInsertTime" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_id, earthquake_area_name, meeting_count, activity_count, brief_report_count, 
+    notice_count, meeting_minutes_count, report_deadline, system_insert_time, earthquake_time, 
+    earthquake_name
+  </sql>
+</mapper>
