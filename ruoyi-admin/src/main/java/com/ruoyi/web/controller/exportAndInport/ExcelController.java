@@ -7,15 +7,9 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AftershockInformation;
-import com.ruoyi.system.domain.entity.CasualtyReport;
-import com.ruoyi.system.domain.entity.Meetings;
-import com.ruoyi.system.domain.entity.TransferSettlementInfo;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.mapper.SysOperLogMapper;
-import com.ruoyi.system.service.impl.AftershockInformationServiceImpl;
-import com.ruoyi.system.service.impl.CasualtyReportServiceImpl;
-import com.ruoyi.system.service.impl.MeetingsServiceImpl;
-import com.ruoyi.system.service.impl.TransferSettlementInfoServiceImpl;
+import com.ruoyi.system.service.impl.*;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +56,13 @@ public class ExcelController {
     @Resource
    private MeetingsServiceImpl meetingsServiceImpl;
 
+    @Resource
+    private TrafficControlSectionsServiceImpl trafficControlSectionsServiceImpl;
+
+    @Resource
+    private CommunicationFacilityDamageRepairStatusServiceImpl communicationFacilityDamageRepairStatusServiceImpl;
+
+
 
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
@@ -70,6 +71,7 @@ public class ExcelController {
     }
 
     @PostMapping("/exportExcel")
+    @Log(title = "数据导出", businessType = BusinessType.EXPORT)
     public void exportExcel(HttpServletResponse response, @RequestBody RequestBTO RequestBTO) throws IOException {
         try {
             DataExportStrategy strategy = dataExportStrategyContext.getStrategy(RequestBTO.getFlag());
@@ -133,6 +135,14 @@ public class ExcelController {
             if (filename.equals("震情伤亡-文会情况统计表")) {
                 List<Meetings> meetings = meetingsServiceImpl.importExcelMeetings(file, userName,eqId);
                 return R.ok(meetings);
+            }
+            if (filename.equals("交通电力通信-交通管控情况统计表")) {
+                List<TrafficControlSections> trafficControlSections = trafficControlSectionsServiceImpl.importExcelTrafficControlSections(file, userName,eqId);
+                return R.ok(trafficControlSections);
+            }
+            if (filename.equals("交通电力通信-通信设施损毁及抢修情况统计表")) {
+                List<CommunicationFacilityDamageRepairStatus>  communicationFacilityDamageRepairStatus = communicationFacilityDamageRepairStatusServiceImpl.importExcelCommunicationFacilityDamageRepairStatus(file, userName,eqId);
+                return R.ok(communicationFacilityDamageRepairStatus);
             }
             else {
                 return R.fail("上传文件名称错误");

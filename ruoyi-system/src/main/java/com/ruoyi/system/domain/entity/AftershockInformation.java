@@ -3,6 +3,9 @@ package com.ruoyi.system.domain.entity;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.ContentStyle;
+import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -38,6 +41,8 @@ public class AftershockInformation {
      */
     @TableField(value = "earthquake_name")
     @ExcelProperty({"震情灾情", "地震名称"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
 
     /**
@@ -47,6 +52,8 @@ public class AftershockInformation {
     @ExcelProperty(value = {"震情灾情", "地震时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime earthquakeTime;
 
     /**
@@ -54,6 +61,8 @@ public class AftershockInformation {
      */
     @ExcelProperty({"震情灾情", "震级"})
     @TableField(value = "magnitude")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String magnitude;
 
     /**
@@ -61,7 +70,21 @@ public class AftershockInformation {
      */
     @TableField(value = "affected_area")
     @ExcelProperty(value = {"震情灾情", "震区（县/区）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedArea;
+
+
+    /**
+     * 填报截至时间，报告提交的最终期限
+     */
+    @TableField(value = "submission_deadline")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty(value = {"震情灾情", "统计截止时间"})
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime submissionDeadline;
 
 
     /**
@@ -69,6 +92,8 @@ public class AftershockInformation {
      */
     @TableField(value = "total_aftershocks")
     @ExcelProperty({"震情灾情", "余震次数累计"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalAftershocks;
 
     /**
@@ -76,6 +101,8 @@ public class AftershockInformation {
      */
     @TableField(value = "magnitude_3_3_9")
     @ExcelProperty({"震情灾情", "3.0-3.9级"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer magnitude339;
 
     /**
@@ -83,6 +110,8 @@ public class AftershockInformation {
      */
     @TableField(value = "magnitude_4_4_9")
     @ExcelProperty({"震情灾情", "4.0-4.9级"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer magnitude449;
 
     /**
@@ -90,10 +119,14 @@ public class AftershockInformation {
      */
     @TableField(value = "magnitude_5_5_9")
     @ExcelProperty({"震情灾情", "5.0-5.9级"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer magnitude559;
 
     @TableField(value = "magnitude_6")
     @ExcelProperty({"震情灾情", "6.0级以上"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer magnitude6;
 
     /**
@@ -107,14 +140,6 @@ public class AftershockInformation {
         return systemInsertTime != null ? systemInsertTime.truncatedTo(ChronoUnit.SECONDS) : null;
     }
 
-    /**
-     * 填报截至时间，报告提交的最终期限
-     */
-    @TableField(value = "submission_deadline")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty(value = {"震情灾情", "统计截止时间"})
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime submissionDeadline;
 
 
 

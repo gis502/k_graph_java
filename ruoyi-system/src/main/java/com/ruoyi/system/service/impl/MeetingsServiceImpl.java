@@ -16,6 +16,7 @@ import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -99,9 +100,8 @@ public class MeetingsServiceImpl
     }
 
 
-    @SneakyThrows
     @Override
-    public List<Meetings> importExcelMeetings(MultipartFile file, String userName, String eqId) {
+    public List<Meetings> importExcelMeetings(MultipartFile file, String userName, String eqId)throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);
         Sheet sheet = workbook.getSheetAt(0);
@@ -123,7 +123,7 @@ public class MeetingsServiceImpl
 // 重新获取 InputStream
         inputStream = file.getInputStream();
         MeetingsListener listener = new MeetingsListener(baseMapper, actualRows, userName);
-        // 读取Excel文件，从第4行开始
+        // 读取Excel文件，从第3行开始
         EasyExcel.read(inputStream, Meetings.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
         List<Meetings> list = listener.getList();
@@ -156,4 +156,5 @@ public class MeetingsServiceImpl
         }
         return true;  // 所有单元格都为空，算作空行
     }
+
 }
