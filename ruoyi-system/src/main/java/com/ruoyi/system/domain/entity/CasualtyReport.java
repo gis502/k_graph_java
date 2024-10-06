@@ -2,6 +2,9 @@ package com.ruoyi.system.domain.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.ContentStyle;
+import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,8 +18,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
-    * 震后生成-地震灾情信息-人员伤亡表（用户上传数据）
-    */
+ * 震后生成-地震灾情信息-人员伤亡表（用户上传数据）
+ */
 @Data
 @TableName(value = "casualty_report")
 public class CasualtyReport {
@@ -38,80 +41,9 @@ public class CasualtyReport {
      */
     @ExcelProperty(value = {"人员伤亡", "地震名称"})
     @TableField(value = "earthquake_name")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
-    /**
-     * 震级，地震 Richter 震级
-     */
-    @ExcelProperty({"震情灾情", "震级"})
-    @TableField(value = "magnitude")
-    private String magnitude;
-
-    /**
-     * 震区名称，受影响地区的名称
-     */
-    @ExcelProperty(value = {"人员伤亡", "震区（县/区）"})
-    @TableField(value = "affected_area_name")
-    private String affectedAreaName;
-
-    /**
-     * 系统插入时间，记录被系统创建的时间
-     */
-    @ExcelProperty(value = {"人员伤亡", "系统插入时间"})
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
-    @TableField(value = "system_insert_time")
-    private LocalDateTime systemInsertTime;
-
-    /**
-     * 新增遇难人数，新报告的遇难者数量
-     */
-    @ExcelProperty(value = {"人员伤亡", "新增遇难（人）"})
-    @TableField(value = "newly_deceased")
-    private Integer newlyDeceased;
-
-    /**
-     * 新增失联人数，新报告的失联者数量
-     */
-    @ExcelProperty(value = {"人员伤亡", "新增失联（人）"})
-    @TableField(value = "newly_missing")
-    private Integer newlyMissing;
-
-    /**
-     * 新增受伤人数，新报告的受伤者数量
-     */
-    @ExcelProperty(value = {"人员伤亡", "新增受伤（人）"})
-    @TableField(value = "newly_injured")
-    private Integer newlyInjured;
-
-    /**
-     * 累计遇难人数，所有报告的遇难者总数
-     */
-    @ExcelProperty(value = {"人员伤亡", "累计遇难（人）"})
-    @TableField(value = "total_deceased")
-    private Integer totalDeceased;
-
-    /**
-     * 累计失联人数，所有报告的失联者总数
-     */
-    @ExcelProperty(value = {"人员伤亡", "累计失联（人）"})
-    @TableField(value = "total_missing")
-    private Integer totalMissing;
-
-    /**
-     * 累计受伤人数，所有报告的受伤者总数
-     */
-    @ExcelProperty(value = {"人员伤亡", "累计受伤（人）"})
-    @TableField(value = "total_injured")
-    private Integer totalInjured;
-
-    /**
-     * 填报截止时间，报告提交的最终期限
-     */
-    @ExcelProperty(value = {"人员伤亡", "统计截止时间"})
-    @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @TableField(value = "submission_deadline")
-    private Date submissionDeadline;
 
     /**
      * 地震时间，地震发生的具体时间
@@ -120,7 +52,101 @@ public class CasualtyReport {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "earthquake_time")
     @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime earthquakeTime;
+    /**
+     * 震级，地震 Richter 震级
+     */
+    @ExcelProperty({"震情灾情", "震级"})
+    @TableField(value = "magnitude")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private String magnitude;
+
+    /**
+     * 震区名称，受影响地区的名称
+     */
+    @ExcelProperty(value = {"人员伤亡", "震区（县/区）"})
+    @TableField(value = "affected_area_name")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private String affectedAreaName;
+
+    /**
+     * 填报截止时间，报告提交的最终期限
+     */
+    @ExcelProperty(value = {"人员伤亡", "统计截止时间"})
+    @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @TableField(value = "submission_deadline")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Date submissionDeadline;
+
+
+    /**
+     * 新增遇难人数，新报告的遇难者数量
+     */
+    @ExcelProperty(value = {"人员伤亡", "新增遇难（人）"})
+    @TableField(value = "newly_deceased")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer newlyDeceased;
+
+    /**
+     * 新增失联人数，新报告的失联者数量
+     */
+    @ExcelProperty(value = {"人员伤亡", "新增失联（人）"})
+    @TableField(value = "newly_missing")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer newlyMissing;
+
+    /**
+     * 新增受伤人数，新报告的受伤者数量
+     */
+    @ExcelProperty(value = {"人员伤亡", "新增受伤（人）"})
+    @TableField(value = "newly_injured")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer newlyInjured;
+
+    /**
+     * 累计遇难人数，所有报告的遇难者总数
+     */
+    @ExcelProperty(value = {"人员伤亡", "累计遇难（人）"})
+    @TableField(value = "total_deceased")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer totalDeceased;
+
+    /**
+     * 累计失联人数，所有报告的失联者总数
+     */
+    @ExcelProperty(value = {"人员伤亡", "累计失联（人）"})
+    @TableField(value = "total_missing")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer totalMissing;
+
+    /**
+     * 累计受伤人数，所有报告的受伤者总数
+     */
+    @ExcelProperty(value = {"人员伤亡", "累计受伤（人）"})
+    @TableField(value = "total_injured")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer totalInjured;
+
+    /**
+     * 系统插入时间，记录被系统创建的时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
+    @TableField(value = "system_insert_time")
+    private LocalDateTime systemInsertTime;
+
 
     public LocalDateTime getSystemInsertTime() {
         return systemInsertTime != null ? systemInsertTime.truncatedTo(ChronoUnit.SECONDS) : null;
@@ -131,6 +157,8 @@ public class CasualtyReport {
      */
     @TableField(value = "affected_population")
     @ExcelProperty(value = {"人员伤亡", "受灾人数累积"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer affectedPopulation;
 
     /**
