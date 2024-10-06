@@ -2,6 +2,9 @@ package com.ruoyi.system.domain.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.ContentStyle;
+import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,7 +18,8 @@ import lombok.Data;
 
 /**
     * 震后生成-地震灾情信息-生命线震害信息-交通管制路段表（用户上传数据）
-    */
+ * @author 方
+ */
 @Data
 @TableName(value = "traffic_control_sections")
 public class TrafficControlSections {
@@ -23,26 +27,59 @@ public class TrafficControlSections {
      * 编号
      */
     @TableId(value = "uuid", type = IdType.NONE)
-    private Object uuid;
+    private String uuid;
 
     /**
      * 地震标识
      */
     @TableField(value = "earthquake_id")
     private String earthquakeId;
+    /**
+     * 地震名称
+     */
+    @TableField(value = "earthquake_name")
+    @ExcelProperty({"交通管控情况", "地震名称"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private String earthquakeName;
+
+    /**
+     * 地震发生时间
+     */
+    @TableField(value = "earthquake_time")
+    @ExcelProperty({"交通管控情况", "地震发生时间"})
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime earthquakeTime;
 
     /**
      * 震区名称
      */
     @TableField(value = "affected_area")
     @ExcelProperty({"交通管控情况", "震区（县/区）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedArea;
+
+    /**
+     * 统计截止时间
+     */
+    @TableField(value = "reporting_deadline")
+    @ExcelProperty({"交通管控情况", "统计截止时间"})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime reportingDeadline;
 
     /**
      * 累计发放通行证数量
      */
     @TableField(value = "total_passes_issued")
     @ExcelProperty({"交通管控情况", "累计发放通行证（张）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalPassesIssued;
 
     /**
@@ -50,6 +87,8 @@ public class TrafficControlSections {
      */
     @TableField(value = "control_diversion_points")
     @ExcelProperty({"交通管控情况", "设置管制分流点（处）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer controlDiversionPoints;
 
     /**
@@ -57,14 +96,10 @@ public class TrafficControlSections {
      */
     @TableField(value = "traffic_control_section")
     @ExcelProperty({"交通管控情况", "交通管制路段（条）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String trafficControlSection;
 
-    /**
-     * 填报截止时间
-     */
-    @TableField(value = "reporting_deadline")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime reportingDeadline;
 
     /**
      * 系统自动插入记录的时间
@@ -73,17 +108,5 @@ public class TrafficControlSections {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime systemInsertTime;
 
-    /**
-     * 地震发生时间
-     */
-    @TableField(value = "earthquake_time")
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime earthquakeTime;
 
-    /**
-     * 地震名称
-     */
-    @TableField(value = "earthquake_name")
-    private String earthquakeName;
 }
