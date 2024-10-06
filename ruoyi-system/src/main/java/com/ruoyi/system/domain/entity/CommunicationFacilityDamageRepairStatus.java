@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -28,7 +29,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 地震标识
      */
     @TableField(value = "earthquake_id")
-    private Integer earthquakeId;
+    private String earthquakeId;
 
 
     /**
@@ -49,7 +50,7 @@ public class CommunicationFacilityDamageRepairStatus {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    private Date earthquakeTime;
+    private LocalDateTime earthquakeTime;
 
 
     /**
@@ -70,7 +71,7 @@ public class CommunicationFacilityDamageRepairStatus {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    private Date reportingDeadline;
+    private LocalDateTime reportingDeadline;
 
     /**
      * 总停用基站数
@@ -151,6 +152,6 @@ public class CommunicationFacilityDamageRepairStatus {
     @TableField(value = "system_insertion_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    private Date systemInsertionTime;
+    private LocalDateTime systemInsertionTime;
 
 }

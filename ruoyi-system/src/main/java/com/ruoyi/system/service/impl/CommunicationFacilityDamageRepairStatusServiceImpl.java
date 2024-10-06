@@ -1,18 +1,6 @@
 package com.ruoyi.system.service.impl;
 
 import com.alibaba.excel.EasyExcel;
-import com.ruoyi.system.domain.entity.AftershockInformation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.listener.AftershockInformationListener;
-import com.ruoyi.system.listener.CommunicationFacilityDamageRepairStatusListener;
-import com.ruoyi.system.mapper.EarthquakeListMapper;
-import org.apache.poi.ss.usermodel.*;
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.List;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -20,14 +8,22 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
+import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.listener.CommunicationFacilityDamageRepairStatusListener;
 import com.ruoyi.system.mapper.CommunicationFacilityDamageRepairStatusMapper;
+import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.service.CommunicationFacilityDamageRepairStatusService;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CommunicationFacilityDamageRepairStatusServiceImpl
@@ -166,10 +162,10 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
             if (cell != null && cell.getCellType() != CellType.BLANK) {
-                return false;  // 只要有一个单元格不为空，这行就不算空行
+                return false;
             }
         }
-        return true;  // 所有单元格都为空，算作空行
+        return true;
     }
 
 }
