@@ -1,11 +1,18 @@
 package com.ruoyi.system.service.impl;
 
 import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.Meetings;
 import com.ruoyi.system.listener.MeetingsListener;
 import com.ruoyi.system.listener.trafficControlSectionsListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
+import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +20,9 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.entity.TrafficControlSections;
 import com.ruoyi.system.mapper.TrafficControlSectionsMapper;
@@ -21,7 +30,80 @@ import com.ruoyi.system.service.TrafficControlSectionsService;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class TrafficControlSectionsServiceImpl extends ServiceImpl<TrafficControlSectionsMapper, TrafficControlSections> implements TrafficControlSectionsService{
+public class TrafficControlSectionsServiceImpl
+        extends ServiceImpl<TrafficControlSectionsMapper, TrafficControlSections>
+        implements TrafficControlSectionsService, DataExportStrategy {
+    /**
+     * @param requestBTO
+     * @return
+     */
+    @Override
+    public IPage<TrafficControlSections> getPage(RequestBTO requestBTO) {
+        Page<TrafficControlSections> trafficControlSections =
+                new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        String requestParam = requestBTO.getRequestParams();
+        LambdaQueryWrapper<TrafficControlSections> queryWrapper = Wrappers.lambdaQuery(TrafficControlSections.class)
+                .like(TrafficControlSections::getEarthquakeName, requestParam)
+                .or()
+                .like(TrafficControlSections::getAffectedArea, requestParam)
+                .or()
+                .apply("CAST(total_passes_issued AS TEXT) = {0}", requestParam)
+                .or()
+                .apply("CAST(control_diversion_points AS TEXT) = {0}", requestParam)
+                .or()
+                .like(TrafficControlSections::getTrafficControlSection, requestParam)
+                .or()
+                .apply("CAST(reporting_deadline AS TEXT) = {0}", requestParam)
+                .or()
+                .apply("CAST(earthquake_time AS TEXT) = {0}", requestParam);
+
+        return this.page(trafficControlSections, queryWrapper);
+    }
+
+    /**
+     * @param requestBTO
+     * @return
+     */
+    @Override
+    public List<TrafficControlSections> exportExcelGetData(RequestBTO requestBTO) {
+        String [] ids = requestBTO.getIds();
+        List<TrafficControlSections> list;
+        if (ids == null || ids.length == 0) {
+            list = this.list().stream()
+                    .sorted(Comparator.comparing(TrafficControlSections::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                            .reversed()).collect(Collectors.toList());
+        } else {
+            list = this.listByIds(Arrays.asList(ids));
+        }
+        return list;
+    }
+
+
+    /**
+     * @param idsList
+     * @return
+     */
+    @Override
+    public String deleteData(List<Map<String, Object>> idsList) {
+        // 假设所有的 ids 都在每个 Map 中的 "uuid" 键下，提取所有的 ids
+        List<String> ids = new ArrayList<>();
+        // 遍历 requestBTO 列表，提取每个 Map 中的 "uuid" 键的值
+        for (Map<String, Object> entry : idsList) {
+            if (entry.containsKey("uuid")) {
+                // 获取 "uuid" 并转换为 String 类型
+                String uuid = (String) entry.get("uuid");
+                ids.add(uuid);
+            }
+        }
+        // 判断是否有 ids
+        if (ids.isEmpty()) {
+            return "没有提供要删除的 UUID 列表";
+        }
+        // 使用 removeByIds 方法批量删除
+        this.removeByIds(ids);
+
+        return "删除成功";
+    }
 
     @Autowired
     private EarthquakeListMapper earthquakesListMapper;
