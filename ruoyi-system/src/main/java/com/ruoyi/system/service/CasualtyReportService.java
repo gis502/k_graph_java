@@ -9,8 +9,9 @@ import java.util.List;
 
 public interface CasualtyReportService extends IService<CasualtyReport>{
 
-
     List<CasualtyReport> importExcelCasualtyReport(MultipartFile file, String userName, String eqId) throws IOException;
 
     CasualtyReport getCasualtiesStatsById(String eqid);
+
+    CasualtyReport getTotal(String eqid);
 }

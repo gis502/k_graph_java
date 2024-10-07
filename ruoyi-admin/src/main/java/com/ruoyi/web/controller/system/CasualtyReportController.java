@@ -24,4 +24,9 @@ public class CasualtyReportController {
     public CasualtyReport getCasualtiesStatsById(@RequestParam String eqid) {
         return casualtyReportService.getCasualtiesStatsById(eqid);
     }
+
+    @GetMapping("/gettotal")
+    public CasualtyReport getTotal(@RequestParam String eqid) {
+        return casualtyReportService.getTotal(eqid);
+    }
 }

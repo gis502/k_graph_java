@@ -27,12 +27,9 @@ import com.ruoyi.system.service.AftershockInformationService;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ruoyi.system.service.strategy.DataExportStrategy;
-import org.springframework.stereotype.Service;
-import com.ruoyi.system.domain.entity.AftershockInformation;
+
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 @Service
 public class AftershockInformationServiceImpl extends
@@ -148,5 +145,11 @@ public class AftershockInformationServiceImpl extends
 //        List<YaanAftershockStatistics> listDOs = BeanUtil.copyToList(list, YaanAftershockStatistics.class);
         saveBatch(list);
         return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> getTotal(String eqid) {
+        List<Map<String, Object>> aftershockDataList = aftershockInformationMapper.getTotal(eqid);
+        return aftershockDataList;
     }
 }

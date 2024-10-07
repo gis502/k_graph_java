@@ -35,6 +35,9 @@ public class TransferSettlementInfoServiceImpl
         implements TransferSettlementInfoService, DataExportStrategy {
 
     @Resource
+    private TransferSettlementInfoMapper transferSettlementInfoMapper;
+
+    @Resource
     private EarthquakeListMapper earthquakesListMapper;
     @Override
     public IPage<TransferSettlementInfo> getPage(RequestBTO requestBTO) {
@@ -117,5 +120,11 @@ public class TransferSettlementInfoServiceImpl
 //        List<YaanAftershockStatistics> listDOs = BeanUtil.copyToList(list, YaanAftershockStatistics.class);
         saveBatch(list);
         return list;
+
+    }
+
+    @Override
+    public List<TransferSettlementInfo> getTotal(String eqid){
+        return transferSettlementInfoMapper.getTotal(eqid);
     }
 }
