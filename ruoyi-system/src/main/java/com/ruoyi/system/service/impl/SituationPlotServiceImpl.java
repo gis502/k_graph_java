@@ -219,9 +219,23 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         throw new IllegalArgumentException("Unable to determine entity class for mapper: " + mapper.getClass().getName());
     }
 
-//    @Override
-//    public List<SituationPlot> getPlot(String eqid){
-//        return situationPlotMapper.getPlot(eqid);
-//    }
+    @Override
+    public List<SituationPlot> getPlot(String eqid) {
+        return situationPlotMapper.getPlot(eqid);
+    }
 
+    @Override
+    public List<SituationPlot> getSituationPlotsByEqId(String eqid) {
+
+        QueryWrapper<SituationPlot> queryWrapper = new QueryWrapper<>();
+
+        // 构建查询条件 earthquake_id = {eqid}
+        queryWrapper.eq("earthquake_id", eqid);
+
+        // 关联 SituationPlotInfo 表并根据 startTime 升序排序
+        queryWrapper.orderByAsc("start_time");
+
+        // 执行查询
+        return situationPlotMapper.selectList(queryWrapper);
+    }
 }

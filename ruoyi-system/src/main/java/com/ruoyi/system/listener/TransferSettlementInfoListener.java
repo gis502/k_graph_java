@@ -17,7 +17,7 @@ public class TransferSettlementInfoListener implements ReadListener<TransferSett
     private int currentRow = 0;
     private String userName;
     private boolean stopReading = false;
-    public TransferSettlementInfoListener(TransferSettlementInfoMapper baseMapper, int totalRows, String userName) {
+    public TransferSettlementInfoListener(TransferSettlementInfoMapper transferSettlementInfoMapper, int totalRows, String userName) {
         this.transferSettlementInfoMapper = transferSettlementInfoMapper;
         this.totalRows = totalRows;
         this.userName = userName;
@@ -25,8 +25,9 @@ public class TransferSettlementInfoListener implements ReadListener<TransferSett
 
     @Override
     public void invoke(TransferSettlementInfo data, AnalysisContext context) {
+        System.out.println(data);
         // 检查当前行的第一个单元格
-        if (data.getEarthquakeAreaName().contains("填写单位")) {
+        if (data.getEarthquakeAreaName() == null||data.getEarthquakeAreaName().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {

@@ -31,7 +31,7 @@ public class AftershockInformationListener  implements ReadListener<AftershockIn
     @Override
     public void invoke(AftershockInformation data, AnalysisContext context) {
 // 检查当前行的第一个单元格
-        if (data.getAffectedArea().contains("填写单位")) {
+        if (data.getAffectedArea() == null || data.getAffectedArea().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {

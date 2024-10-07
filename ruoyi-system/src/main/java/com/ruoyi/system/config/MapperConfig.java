@@ -83,11 +83,11 @@ public class MapperConfig {
         typeMapping.put("崩塌", "LandslideCollapse");
 
         //房屋信息-建筑物破坏类表
-        typeMapping.put("基本完好建筑物", "buildingDamageType");
-        typeMapping.put("轻微破坏建筑物", "buildingDamageType");
-        typeMapping.put("中等破坏建筑物", "buildingDamageType");
-        typeMapping.put("严重破坏建筑物", "buildingDamageType");
-        typeMapping.put("毁坏或倒塌建筑物", "buildingDamageType");
+        typeMapping.put("基本完好建筑物", "BuildingDamageType");
+        typeMapping.put("轻微破坏建筑物", "BuildingDamageType");
+        typeMapping.put("中等破坏建筑物", "BuildingDamageType");
+        typeMapping.put("严重破坏建筑物", "BuildingDamageType");
+        typeMapping.put("毁坏或倒塌建筑物", "BuildingDamageType");
 
         typeMapping.forEach((key, value) ->
                 System.out.println("PlotType to MapperType mapping: " + key + " -> " + value)

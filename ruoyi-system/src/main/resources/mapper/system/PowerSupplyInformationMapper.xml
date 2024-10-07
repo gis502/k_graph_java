@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PowerSupplyInformationMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.PowerSupplyInformation">
+    <!--@mbg.generated-->
+    <!--@Table power_supply_information-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_id" jdbcType="VARCHAR" property="earthquakeId" />
+    <result column="affected_area" jdbcType="VARCHAR" property="affectedArea" />
+    <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
+    <result column="total_out_of_service_substations" jdbcType="INTEGER" property="totalOutOfServiceSubstations" />
+    <result column="restored_substations" jdbcType="INTEGER" property="restoredSubstations" />
+    <result column="to_be_repaired_substations" jdbcType="INTEGER" property="toBeRepairedSubstations" />
+    <result column="total_trip_circuits" jdbcType="INTEGER" property="totalTripCircuits" />
+    <result column="restored_circuits" jdbcType="INTEGER" property="restoredCircuits" />
+    <result column="to_be_restored_circuits" jdbcType="INTEGER" property="toBeRestoredCircuits" />
+    <result column="total_blackout_users" jdbcType="INTEGER" property="totalBlackoutUsers" />
+    <result column="restored_power_users" jdbcType="INTEGER" property="restoredPowerUsers" />
+    <result column="currently_blacked_out_villages" jdbcType="VARCHAR" property="currentlyBlackedOutVillages" />
+    <result column="emergency_power_users" jdbcType="INTEGER" property="emergencyPowerUsers" />
+    <result column="reporting_deadline" jdbcType="TIMESTAMP" property="reportingDeadline" />
+    <result column="system_insert_time" jdbcType="TIMESTAMP" property="systemInsertTime" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_id, affected_area, record_time, total_out_of_service_substations, 
+    restored_substations, to_be_repaired_substations, total_trip_circuits, restored_circuits, 
+    to_be_restored_circuits, total_blackout_users, restored_power_users, currently_blacked_out_villages, 
+    emergency_power_users, reporting_deadline, system_insert_time, earthquake_time, earthquake_name
+  </sql>
+</mapper>

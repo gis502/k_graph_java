@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CommunicationFacilityDamageRepairStatusMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus">
+    <!--@mbg.generated-->
+    <!--@Table communication_facility_damage_repair_status-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_id" jdbcType="INTEGER" property="earthquakeId" />
+    <result column="earthquake_zone_name" jdbcType="VARCHAR" property="earthquakeZoneName" />
+    <result column="total_disabled_base_stations" jdbcType="INTEGER" property="totalDisabledBaseStations" />
+    <result column="restored_base_stations" jdbcType="INTEGER" property="restoredBaseStations" />
+    <result column="current_disabled_base_stations" jdbcType="INTEGER" property="currentDisabledBaseStations" />
+    <result column="total_damaged_cable_length" jdbcType="NUMERIC" property="totalDamagedCableLength" />
+    <result column="repaired_cable_length" jdbcType="NUMERIC" property="repairedCableLength" />
+    <result column="current_pending_repair_cable_length" jdbcType="NUMERIC" property="currentPendingRepairCableLength" />
+    <result column="current_interrupted_villages_count" jdbcType="INTEGER" property="currentInterruptedVillagesCount" />
+    <result column="current_interrupted_impact_count" jdbcType="INTEGER" property="currentInterruptedImpactCount" />
+    <result column="reporting_deadline" jdbcType="TIMESTAMP" property="reportingDeadline" />
+    <result column="system_insertion_time" jdbcType="TIMESTAMP" property="systemInsertionTime" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_id, earthquake_zone_name, total_disabled_base_stations, restored_base_stations, 
+    current_disabled_base_stations, total_damaged_cable_length, repaired_cable_length, 
+    current_pending_repair_cable_length, current_interrupted_villages_count, current_interrupted_impact_count, 
+    reporting_deadline, system_insertion_time, earthquake_time, earthquake_name
+  </sql>
+</mapper>
