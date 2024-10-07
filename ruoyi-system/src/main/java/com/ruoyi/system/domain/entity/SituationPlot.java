@@ -65,6 +65,7 @@ public class SituationPlot {
     @TableField(value = "angle")
     private BigDecimal angle;
 
+
     /**
      * 生成的时间（灾难发生时间如果在标绘时间之前可以在后台修改）
      */
