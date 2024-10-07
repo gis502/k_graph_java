@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TrafficControlSectionsMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.TrafficControlSections">
+    <!--@mbg.generated-->
+    <!--@Table traffic_control_sections-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_id" jdbcType="VARCHAR" property="earthquakeId" />
+    <result column="affected_area" jdbcType="VARCHAR" property="affectedArea" />
+    <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
+    <result column="total_passes_issued" jdbcType="INTEGER" property="totalPassesIssued" />
+    <result column="control_diversion_points" jdbcType="INTEGER" property="controlDiversionPoints" />
+    <result column="traffic_control_section" jdbcType="VARCHAR" property="trafficControlSection" />
+    <result column="reporting_deadline" jdbcType="TIMESTAMP" property="reportingDeadline" />
+    <result column="system_insert_time" jdbcType="TIMESTAMP" property="systemInsertTime" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_id, affected_area, record_time, total_passes_issued, control_diversion_points, 
+    traffic_control_section, reporting_deadline, system_insert_time, earthquake_time, 
+    earthquake_name
+  </sql>
+</mapper>

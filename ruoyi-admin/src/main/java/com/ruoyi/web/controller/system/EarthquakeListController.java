@@ -8,12 +8,12 @@ import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.service.EarthquakeListService;
 import org.locationtech.jts.geom.Point;
 import org.springframework.web.bind.annotation.*;
-
+import com.ruoyi.common.annotation.Log;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import com.ruoyi.common.enums.BusinessType;
 
 @RestController
 @RequestMapping("/system")
@@ -107,11 +107,13 @@ public class EarthquakeListController {
 
 
     @PostMapping("saveEq")
+    @Log(title = "地震信息", businessType = BusinessType.INSERT)
     public boolean saveEq(@RequestBody EarthquakeList earthquakeList) {
         return earthquakeListService.save(earthquakeList);
     }
 
     @RequestMapping("deleteEqById")
+    @Log(title = "地震信息", businessType = BusinessType.DELETE)
     public boolean deleteEqById(@RequestParam(value = "id") String id) {
         return earthquakeListService.removeById(id);
     }
