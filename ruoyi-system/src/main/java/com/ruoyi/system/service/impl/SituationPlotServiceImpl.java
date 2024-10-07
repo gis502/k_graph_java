@@ -7,18 +7,21 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.SituationPlotMapper;
 import com.ruoyi.system.domain.entity.SituationPlot;
 import com.ruoyi.system.service.SituationPlotService;
+
 @Service
-public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, SituationPlot> implements SituationPlotService{
+public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, SituationPlot> implements SituationPlotService {
     @Autowired
     private SituationPlotMapper situationPlotMapper;
     @Autowired
@@ -85,6 +88,9 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         situationPlotMapper.delete(new LambdaQueryWrapper<SituationPlot>()
                 .eq(SituationPlot::getPlotId, plotId));
         System.out.println("Plot deleted with id: " + plotId);
+        if (Objects.equals(plotType, "直线箭头")) {
+            return;
+        }
 
         // 2. 根据 plotType 获取对应的 Mapper 类型并删除 details
         String mapperType = plotTypeToMapperType.get(plotType.toLowerCase());
@@ -222,5 +228,20 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
     @Override
     public List<SituationPlot> getPlot(String eqid) {
         return situationPlotMapper.getPlot(eqid);
+    }
+
+    @Override
+    public List<SituationPlot> getSituationPlotsByEqId(String eqid) {
+
+        QueryWrapper<SituationPlot> queryWrapper = new QueryWrapper<>();
+
+        // 构建查询条件 earthquake_id = {eqid}
+        queryWrapper.eq("earthquake_id", eqid);
+
+        // 关联 SituationPlotInfo 表并根据 startTime 升序排序
+        queryWrapper.orderByAsc("start_time");
+
+        // 执行查询
+        return situationPlotMapper.selectList(queryWrapper);
     }
 }

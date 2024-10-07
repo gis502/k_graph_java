@@ -5,6 +5,7 @@ import com.alibaba.excel.read.listener.ReadListener;
 import com.ruoyi.system.domain.entity.CasualtyReport;
 import com.ruoyi.system.mapper.CasualtyReportMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class CasualtyReportListener implements ReadListener<CasualtyReport> {
     @Override
     public void invoke(CasualtyReport data, AnalysisContext context) {
 // 检查当前行的第一个单元格
-        if (data.getAffectedAreaName().contains("填写单位")) {
+        if (data.getAffectedAreaName() == null||data.getAffectedAreaName().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {
@@ -44,9 +45,10 @@ public class CasualtyReportListener implements ReadListener<CasualtyReport> {
         }
     }
 
+    @SneakyThrows
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-
+        WebSocketServerExcel.sendInfo(String.valueOf("100"), userName);
     }
 
     public List<CasualtyReport> getList() {

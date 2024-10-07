@@ -1,10 +1,18 @@
 package com.ruoyi.system.domain.entity;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.ContentStyle;
+import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -17,7 +25,7 @@ public class PowerSupplyInformation {
      * 编号
      */
     @TableId(value = "uuid", type = IdType.NONE)
-    private Object uuid;
+    private String uuid;
 
     /**
      * 地震标识
@@ -26,98 +34,147 @@ public class PowerSupplyInformation {
     private String earthquakeId;
 
     /**
+     * 地震名称
+     */
+    @TableField(value = "earthquake_name")
+    @ExcelProperty({"电力设施损毁及抢修情况", "地震名称"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private String earthquakeName;
+
+    /**
+     * 地震时间
+     */
+    @TableField(value = "earthquake_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty({"电力设施损毁及抢修情况", "地震时间"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime earthquakeTime;
+
+    /**
      * 震区名称
      */
     @TableField(value = "affected_area")
+    @ExcelProperty({"电力设施损毁及抢修情况", "震区（县/区）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedArea;
 
     /**
-     * 记录时间
+     * 填报截止时间
      */
-    @TableField(value = "record_time")
-    private Date recordTime;
+    @TableField(value = "reporting_deadline")
+    @ExcelProperty(value = {"电力设施损毁及抢修情况", "统计截止时间"})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime reportingDeadline;
+
+
 
     /**
      * 累计停运变电站数量
      */
     @TableField(value = "total_out_of_service_substations")
+    @ExcelProperty({"电力设施损毁及抢修情况", "累计停运变（发）电站（座）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalOutOfServiceSubstations;
 
     /**
      * 已恢复变电站数量
      */
     @TableField(value = "restored_substations")
+    @ExcelProperty({"电力设施损毁及抢修情况", "已恢复变（发）电站（座）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer restoredSubstations;
 
     /**
      * 待修复变电站数量
      */
     @TableField(value = "to_be_repaired_substations")
+    @ExcelProperty({"电力设施损毁及抢修情况", "待修复变（发）电站（座）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer toBeRepairedSubstations;
 
     /**
      * 累计跳闸线路数量
      */
     @TableField(value = "total_trip_circuits")
+    @ExcelProperty({"电力设施损毁及抢修情况", "累计跳闸线路（条）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalTripCircuits;
 
     /**
      * 已恢复线路数量
      */
     @TableField(value = "restored_circuits")
+    @ExcelProperty({"电力设施损毁及抢修情况", "已恢复线路（条）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer restoredCircuits;
 
     /**
      * 待恢复线路数量
      */
     @TableField(value = "to_be_restored_circuits")
+    @ExcelProperty({"电力设施损毁及抢修情况", "待恢复线路（条）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer toBeRestoredCircuits;
 
     /**
      * 累计主网停电用户数
      */
     @TableField(value = "total_blackout_users")
+    @ExcelProperty({"电力设施损毁及抢修情况", "累计主网停电用户数（户）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalBlackoutUsers;
 
     /**
      * 已恢复主网供电用户数
      */
     @TableField(value = "restored_power_users")
+    @ExcelProperty({"电力设施损毁及抢修情况", "已恢复主网供电用户数（户）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer restoredPowerUsers;
 
     /**
      * 目前主网供电中断的村庄
      */
     @TableField(value = "currently_blacked_out_villages")
+    @ExcelProperty({"电力设施损毁及抢修情况", "目前主网供电中断村（个）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String currentlyBlackedOutVillages;
 
     /**
      * 应急供电用户数
      */
     @TableField(value = "emergency_power_users")
+    @ExcelProperty({"电力设施损毁及抢修情况", "应急供电用户（户）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer emergencyPowerUsers;
 
     /**
-     * 填报截止时间
+     * 记录时间
      */
-    @TableField(value = "reporting_deadline")
-    private Date reportingDeadline;
+    @TableField(value = "record_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime recordTime;
 
     /**
      * 系统插入时间
      */
     @TableField(value = "system_insert_time")
-    private Date systemInsertTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime systemInsertTime;
 
-    /**
-     * 地震时间
-     */
-    @TableField(value = "earthquake_time")
-    private Date earthquakeTime;
-
-    /**
-     * 地震名称
-     */
-    @TableField(value = "earthquake_name")
-    private String earthquakeName;
 }

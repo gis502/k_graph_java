@@ -2,31 +2,32 @@ package com.ruoyi.system.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
-import com.ruoyi.system.domain.entity.TransferSettlementInfo;
-import com.ruoyi.system.mapper.TransferSettlementInfoMapper;
+import com.ruoyi.system.domain.entity.Meetings;
+import com.ruoyi.system.mapper.MeetingsMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransferSettlementInfoListener implements ReadListener<TransferSettlementInfo> {
-    private final List<TransferSettlementInfo> list = new ArrayList<TransferSettlementInfo>();
-    private TransferSettlementInfoMapper transferSettlementInfoMapper;
+public class MeetingsListener implements ReadListener<Meetings> {
+    private final List<Meetings> list = new ArrayList<Meetings>();
+    private MeetingsMapper meetingsMapper;
     private int totalRows;
     private int currentRow = 0;
     private String userName;
     private boolean stopReading = false;
-    public TransferSettlementInfoListener(TransferSettlementInfoMapper transferSettlementInfoMapper, int totalRows, String userName) {
-        this.transferSettlementInfoMapper = transferSettlementInfoMapper;
+    public MeetingsListener(MeetingsMapper meetingsMapper, int totalRows, String userName) {
+        this.meetingsMapper = meetingsMapper;
         this.totalRows = totalRows;
         this.userName = userName;
     }
 
     @Override
-    public void invoke(TransferSettlementInfo data, AnalysisContext context) {
+    public void invoke(Meetings data, AnalysisContext context) {
         System.out.println(data);
-        // 检查当前行的第一个单元格
+// 检查当前行的第一个单元格
         if (data.getEarthquakeAreaName() == null||data.getEarthquakeAreaName().contains("填写单位")) {
             stopReading = true;
         }
@@ -44,11 +45,12 @@ public class TransferSettlementInfoListener implements ReadListener<TransferSett
         }
     }
 
+    @SneakyThrows
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-
+        WebSocketServerExcel.sendInfo(String.valueOf("100"), userName);
     }
-    public List<TransferSettlementInfo> getList() {
+    public List<Meetings> getList() {
         return list;
     }
 }

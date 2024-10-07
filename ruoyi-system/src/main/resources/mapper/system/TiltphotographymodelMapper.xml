@@ -1,24 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.TiltphotographymodelMapper">
-  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.Tiltphotographymodel">
-    <!--@mbg.generated-->
-    <!--@Table tiltphotographymodel-->
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="path" jdbcType="VARCHAR" property="path" />
-    <result column="rz" jdbcType="INTEGER" property="rz" />
-    <result column="tz" jdbcType="INTEGER" property="tz" />
-    <result column="time" jdbcType="VARCHAR" property="time" />
-    <result column="modelid" jdbcType="VARCHAR" property="modelid" />
-    <result column="rze" jdbcType="SMALLINT" property="rze" />
-    <result column="tze" jdbcType="SMALLINT" property="tze" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    "name", "path", rz, tz, "time", modelid, rze, tze
-  </sql>
+    <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.Tiltphotographymodel">
+        <!--@mbg.generated-->
+        <!--@Table tiltphotographymodel-->
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="path" jdbcType="VARCHAR" property="path"/>
+        <result column="rz" jdbcType="INTEGER" property="rz"/>
+        <result column="tz" jdbcType="INTEGER" property="tz"/>
+        <result column="time" jdbcType="VARCHAR" property="time"/>
+        <result column="modelid" jdbcType="VARCHAR" property="modelid"/>
+        <result column="rze" jdbcType="SMALLINT" property="rze"/>
+        <result column="tze" jdbcType="SMALLINT" property="tze"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        "name", "path", rz, tz, "time", modelid, rze, tze
+    </sql>
 
     <select id="selectAllModel" resultType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
-      select * from tiltphotographymodel
+        select *
+        from tiltphotographymodel
     </select>
+
+    <insert id="addModel">
+        insert into tiltphotographymodel (name, path, rz, tz, rze, tze, time, modelid)
+        values (#{name}, #{path}, #{rz}, #{tz}, #{rze}, #{tze}, #{time}, #{modelid})
+    </insert>
+
+    <delete id="deleteModel">
+        delete
+        from tiltphotographymodel
+        where modelid = #{modelid}
+    </delete>
+
+    <update id="updataModel" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
+        update tiltphotographymodel
+        set name = #{name},
+            path = #{path}
+        where modelid = #{modelid}
+    </update>
+
+    <update id="updataModelNoElevation" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
+        update tiltphotographymodel
+        set tz = #{tz},
+            rz = #{rz}
+        where modelid = #{modelid}
+    </update>
+
+    <update id="updataModelElevation" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
+        update tiltphotographymodel
+        set tze = #{tze},
+            rze = #{rze}
+        where modelid = #{modelid}
+    </update>
 </mapper>
