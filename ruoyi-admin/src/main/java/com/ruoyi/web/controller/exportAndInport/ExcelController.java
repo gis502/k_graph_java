@@ -62,6 +62,12 @@ public class ExcelController {
     @Resource
     private CommunicationFacilityDamageRepairStatusServiceImpl communicationFacilityDamageRepairStatusServiceImpl;
 
+    @Resource
+    private PowerSupplyInformationServiceImpl powerSupplyInformationServiceImpl;
+
+    @Resource
+    private RoadDamageServiceImpl roadDamageServiceImpl;
+
 
 
     @PostMapping("/getData")
@@ -143,6 +149,14 @@ public class ExcelController {
             if (filename.equals("交通电力通信-通信设施损毁及抢修情况统计表")) {
                 List<CommunicationFacilityDamageRepairStatus>  communicationFacilityDamageRepairStatus = communicationFacilityDamageRepairStatusServiceImpl.importExcelCommunicationFacilityDamageRepairStatus(file, userName,eqId);
                 return R.ok(communicationFacilityDamageRepairStatus);
+            }
+            if (filename.equals("交通电力通信-电力设施损毁及抢修情况统计表")) {
+                List<PowerSupplyInformation>  powerSupplyInformation = powerSupplyInformationServiceImpl.importExcelPowerSupplyInformation(file, userName,eqId);
+                return R.ok(powerSupplyInformation);
+            }
+            if (filename.equals("交通电力通信-道路交通损毁及抢修情况统计表")) {
+                List<RoadDamage>  RoadDamage = roadDamageServiceImpl.importExcelRoadDamage(file, userName,eqId);
+                return R.ok(RoadDamage);
             }
             else {
                 return R.fail("上传文件名称错误");
