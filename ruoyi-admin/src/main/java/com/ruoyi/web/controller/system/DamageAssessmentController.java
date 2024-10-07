@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.system.domain.entity.BuildingDamage;
+import com.ruoyi.system.domain.entity.EconomicLoss;
 import com.ruoyi.system.domain.entity.SeismicIntensityCircle;
 import com.ruoyi.system.service.PersonDes2019Service;
 import com.ruoyi.system.service.SeismicIntensityCircleService;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.ruoyi.system.mapper.EconomicLossMapper;
+import com.ruoyi.system.service.*;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -27,6 +32,11 @@ public class DamageAssessmentController {
     private PersonDes2019Service personDes2019Service;
     @Autowired
     private YaanJsonService yaanJsonService;
+    @Autowired
+    private BuildingDamageService buildingDamageService;
+    @Autowired
+    private EconomicLossService economicLossService;
+
     @PostMapping("/saveIntensityCircle")
     @Log(title = "灾损评估-烈度圈", businessType = BusinessType.INSERT)
     public float saveIntensityCircle(@RequestBody List<Map<String, Object>> savecircles) {
@@ -51,6 +61,7 @@ public class DamageAssessmentController {
 //            System.out.println("烈度圈存储完成");
             return 1;
         }
+//        return 1;
     }
 
     @PostMapping("/getPersonDes")
@@ -119,7 +130,18 @@ public class DamageAssessmentController {
             else {response.put("yaancasual", sum);}
         }
 
+//        System.out.println(response);
         return response;
+    }
+
+    @GetMapping("/getBuildingDamageByEqid")
+    public List<BuildingDamage> getBuildingDamageByEqid(@RequestParam("eqid") String eqid) {
+        return buildingDamageService.selectBuildingDamageByEqid(eqid);
+    }
+
+    @GetMapping("/getEconomicLossByEqid")
+    public List<EconomicLoss> getEconomicLossByEqid(@RequestParam("eqid") String eqid) {
+        return economicLossService.selectEconomicLossByEqid(eqid);
     }
 
 }
