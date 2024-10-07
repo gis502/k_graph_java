@@ -45,16 +45,20 @@ public class SituationPlotController {
         System.out.println("Plot: " + plot);
         System.out.println("Plot Info: " + plotInfo);
         situationPlotService.save(plot);
-
-        // 调用 service 层的 addPlot 方法
-        try {
-            situationPlotService.addPlot(plot.getPlotType(), plotInfo);
+        if (requestBody.getPlotinfo() != null){
+            // 调用 service 层的 addPlot 方法
+            try {
+                situationPlotService.addPlot(plot.getPlotType(), plotInfo);
+                return ResponseEntity.ok("Plot added successfully");
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+            }
+        } else {
             return ResponseEntity.ok("Plot added successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
+
     }
 
     /**
