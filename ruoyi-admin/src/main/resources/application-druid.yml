@@ -1,12 +1,12 @@
 # 备份文件配置
 backup:
-    path: /Library/backup/
+    path: D:/backup/
     db_port: 7654
     db_host: 47.92.216.173
     db_name: ruoyi
     db_user: postgres
     db_password: zhangsan
-    pg_dump_path: /Library/PostgreSQL/16/bin/pg_dump
+    pg_dump_path: D:/postgresql/bin/pg_dump.exe
 # 数据源配置
 spring:
     datasource:
@@ -15,9 +15,9 @@ spring:
         druid:
             # 主库数据源
 #            master:
-#                url: jdbc:postgresql://localhost:5432/ruoyi1?useUnicode=true&c haracterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+#                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
 #                username: postgres
-#                password: 123456
+#                password: root
             master:
                 url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
                 username: postgres
