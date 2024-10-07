@@ -1,7 +1,7 @@
 package com.ruoyi.web.controller.system;
 
-
-
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.entity.SeismicIntensityCircle;
 import com.ruoyi.system.service.PersonDes2019Service;
 import com.ruoyi.system.service.SeismicIntensityCircleService;
@@ -28,6 +28,7 @@ public class DamageAssessmentController {
     @Autowired
     private YaanJsonService yaanJsonService;
     @PostMapping("/saveIntensityCircle")
+    @Log(title = "灾损评估-烈度圈", businessType = BusinessType.INSERT)
     public float saveIntensityCircle(@RequestBody List<Map<String, Object>> savecircles) {
         String eqid = (String) savecircles.get(0).get("eqid");
 //        System.out.println(eqid);
@@ -50,7 +51,6 @@ public class DamageAssessmentController {
 //            System.out.println("烈度圈存储完成");
             return 1;
         }
-//        return 1;
     }
 
     @PostMapping("/getPersonDes")
@@ -119,7 +119,6 @@ public class DamageAssessmentController {
             else {response.put("yaancasual", sum);}
         }
 
-//        System.out.println(response);
         return response;
     }
 

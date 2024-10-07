@@ -12,15 +12,12 @@ import com.ruoyi.system.listener.TransferSettlementInfoListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import lombok.SneakyThrows;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -92,12 +89,26 @@ public class TransferSettlementInfoServiceImpl
     @Override
     public List<TransferSettlementInfo> importExcelTransferSettlementInfo(MultipartFile file, String userName, String eqId) {
         InputStream inputStream = file.getInputStream();
-        // 读取总行数（略过表头）
-        int totalRows = WorkbookFactory.create(inputStream).getSheetAt(0).getPhysicalNumberOfRows() - 4;
+        Workbook workbook = WorkbookFactory.create(inputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+// 获取总行数，略过前2行表头和后2行表尾
+        int totalRows = sheet.getPhysicalNumberOfRows();
+        int startRow = 2;  // 从第3行开始读取数据（略过前2行）
+        int endRow = totalRows - 2;  // 不读取最后2行
+
+        int actualRows = 0;
+// 遍历中间的数据行
+        for (int i = startRow; i < endRow; i++) {
+            Row row = sheet.getRow(i);
+
+            if (row != null && !isRowEmpty(row)) {
+                actualRows++;  // 只计入非空行
+            }
+        }
         inputStream.close();
         // 重新获取 InputStream
         inputStream = file.getInputStream();
-        TransferSettlementInfoListener listener = new TransferSettlementInfoListener(baseMapper, totalRows, userName);
+        TransferSettlementInfoListener listener = new TransferSettlementInfoListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
         EasyExcel.read(inputStream,TransferSettlementInfo.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
@@ -126,5 +137,40 @@ public class TransferSettlementInfoServiceImpl
     @Override
     public List<TransferSettlementInfo> getTotal(String eqid){
         return transferSettlementInfoMapper.getTotal(eqid);
+    }
+    // 判断某行是否为空
+    private boolean isRowEmpty(Row row) {
+        for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
+            Cell cell = row.getCell(cellIndex);
+            if (cell != null && cell.getCellType() != CellType.BLANK) {
+                return false;  // 只要有一个单元格不为空，这行就不算空行
+            }
+        }
+        return true;  // 所有单元格都为空，算作空行
+    }
+
+    @Override
+    public String deleteData(List<Map<String, Object>> requestBTO) {
+        // 假设所有的 ids 都在每个 Map 中的 "uuid" 键下，提取所有的 ids
+        List<String> ids = new ArrayList<>();
+
+        // 遍历 requestBTO 列表，提取每个 Map 中的 "uuid" 键的值
+        for (Map<String, Object> entry : requestBTO) {
+            if (entry.containsKey("uuid")) {
+                // 获取 "uuid" 并转换为 String 类型
+                String uuid = (String) entry.get("uuid");
+                ids.add(uuid);
+            }
+        }
+
+        // 判断是否有 ids
+        if (ids.isEmpty()) {
+            return "没有提供要删除的 UUID 列表";
+        }
+
+        // 使用 removeByIds 方法批量删除
+        this.removeByIds(ids);
+
+        return "删除成功";
     }
 }

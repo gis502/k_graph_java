@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.enums.BusinessType;
+
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,7 @@ public class SituationPlotController {
      * @time: 2024/9/30 23:09
      **/
     @PostMapping("/insertplotandinfo")
+    @Log(title = "态势标绘", businessType = BusinessType.INSERT)
     public ResponseEntity<String> addPlot(@RequestBody PlotRequest requestBody) {
         SituationPlot plot = requestBody.getPlot();
         Map<String, Object> plotInfo = requestBody.getPlotinfo();
@@ -59,6 +63,7 @@ public class SituationPlotController {
      * @time: 2024/9/30 23:10
      **/
     @PutMapping("/updataplotinfo")
+    @Log(title = "态势标绘", businessType = BusinessType.UPDATE)
     public ResponseEntity<String> updatePlotDetails(
             @RequestParam String plotType,
             @RequestParam String plotId,
@@ -97,6 +102,7 @@ public class SituationPlotController {
      **/
     // 删除 plot 和 details
     @DeleteMapping("/deleteplotinfo")
+    @Log(title = "态势标绘", businessType = BusinessType.DELETE)
     public ResponseEntity<String> deletePlot(@RequestParam String plotType,
                                              @RequestParam String plotId) {
         try {
@@ -120,4 +126,14 @@ public class SituationPlotController {
         return plotData;
     }
 
+    /**
+     * @description: "时间轴或者大屏根据标会时间获取数据"
+     * @author: SWB
+     * @time: 2024/10/5 14:49
+     **/
+    @PostMapping("/getplotswithtime")
+    public List<SituationPlot> getPlotsByEqId(@RequestParam String eqid) {
+        List<SituationPlot> selectPlotWithTimeforEqid = situationPlotService.getSituationPlotsByEqId(eqid);
+        return selectPlotWithTimeforEqid;
+    }
 }

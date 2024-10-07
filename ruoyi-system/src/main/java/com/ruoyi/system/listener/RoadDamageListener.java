@@ -2,32 +2,34 @@ package com.ruoyi.system.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
-import com.ruoyi.system.domain.entity.TransferSettlementInfo;
-import com.ruoyi.system.mapper.TransferSettlementInfoMapper;
+import com.ruoyi.system.domain.entity.PowerSupplyInformation;
+import com.ruoyi.system.domain.entity.RoadDamage;
+import com.ruoyi.system.mapper.PowerSupplyInformationMapper;
+import com.ruoyi.system.mapper.RoadDamageMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransferSettlementInfoListener implements ReadListener<TransferSettlementInfo> {
-    private final List<TransferSettlementInfo> list = new ArrayList<TransferSettlementInfo>();
-    private TransferSettlementInfoMapper transferSettlementInfoMapper;
+public class RoadDamageListener implements ReadListener<RoadDamage> {
+    private final List<RoadDamage> list = new ArrayList<RoadDamage>();
+    private RoadDamageMapper roadDamageMapper;
     private int totalRows;
     private int currentRow = 0;
     private String userName;
     private boolean stopReading = false;
-    public TransferSettlementInfoListener(TransferSettlementInfoMapper transferSettlementInfoMapper, int totalRows, String userName) {
-        this.transferSettlementInfoMapper = transferSettlementInfoMapper;
+    public RoadDamageListener(RoadDamageMapper roadDamageMapper, int totalRows, String userName) {
+        this.roadDamageMapper = roadDamageMapper;
         this.totalRows = totalRows;
         this.userName = userName;
     }
 
     @Override
-    public void invoke(TransferSettlementInfo data, AnalysisContext context) {
+    public void invoke(RoadDamage data, AnalysisContext context) {
         System.out.println(data);
         // 检查当前行的第一个单元格
-        if (data.getEarthquakeAreaName() == null||data.getEarthquakeAreaName().contains("填写单位")) {
+        if (data.getAffectedArea() == null||data.getAffectedArea().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {
@@ -46,9 +48,14 @@ public class TransferSettlementInfoListener implements ReadListener<TransferSett
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
+        try {
+            WebSocketServerExcel.sendInfo("100", userName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
-    public List<TransferSettlementInfo> getList() {
+    public List<RoadDamage> getList() {
         return list;
     }
 }
