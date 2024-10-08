@@ -2,19 +2,27 @@ package com.ruoyi.web.controller.system;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.EqFormDto;
 import com.ruoyi.system.domain.dto.GeometryDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.service.EarthquakeListService;
+import org.apache.ibatis.annotations.Delete;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
+
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import com.ruoyi.common.enums.BusinessType;
 
+import com.ruoyi.common.enums.BusinessType;
+@Validated
 @RestController
 @RequestMapping("/system")
 public class EarthquakeListController {
@@ -99,15 +107,15 @@ public class EarthquakeListController {
     }
 
 
-    @PostMapping("saveEq")
+    @PostMapping("/saveEq")
     @Log(title = "地震信息", businessType = BusinessType.INSERT)
     public boolean saveEq(@RequestBody EarthquakeList earthquakeList) {
         return earthquakeListService.save(earthquakeList);
     }
 
-    @RequestMapping("deleteEqById")
+    @PostMapping("/deleteEq")
     @Log(title = "地震信息", businessType = BusinessType.DELETE)
-    public boolean deleteEqById(@RequestParam(value = "id") String id) {
+    public boolean deleteEq(@RequestParam(value = "eqid") String id) {
         return earthquakeListService.removeById(id);
     }
 
@@ -117,5 +125,48 @@ public class EarthquakeListController {
         return earthquakeListService.getEarthquakesWithinDistance(point, 1000.0);
     }
 
+    @PostMapping("/addEq")
+    public boolean addEq(@Valid @RequestBody EarthquakeList earthquakeList) {
 
+
+        // 创建 GeometryFactory
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        // 获取经纬度
+        Double longitude = earthquakeList.getLongitude();
+        Double latitude = earthquakeList.getLatitude();
+        System.out.println("经纬度------------------------------:"+longitude);
+
+        // 检查经纬度是否有效
+        if (longitude != null && latitude != null) {
+            // 创建 Point 对象
+            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+            // 设置 geom
+            earthquakeList.setGeom(point);
+        }
+
+        // 保存地震信息
+        return earthquakeListService.save(earthquakeList);
+    }
+
+    @PostMapping("/updataeq")
+    public boolean update(@Valid @RequestBody EarthquakeList earthquakeList) {
+        // 创建 GeometryFactory
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        // 获取经纬度
+        Double longitude = earthquakeList.getLongitude();
+        Double latitude = earthquakeList.getLatitude();
+
+        // 检查经纬度是否有效
+        if (longitude != null && latitude != null) {
+            // 创建 Point 对象
+            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+            // 设置 geom
+            earthquakeList.setGeom(point);
+        }
+
+        // 更新地震信息
+        return earthquakeListService.updateById(earthquakeList);
+    }
 }

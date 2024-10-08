@@ -1,18 +1,24 @@
 package com.ruoyi.system.domain.entity;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.n52.jackson.datatype.jts.GeometryDeserializer;
 import org.n52.jackson.datatype.jts.GeometrySerializer;
 
 
+import javax.persistence.PrePersist;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -30,6 +36,7 @@ public class EarthquakeList {
     /**
      * 地震名称
      */
+    @NotEmpty(message = "请填写完整")
     @TableField(value = "earthquake_name")
     private String earthquakeName;
 
@@ -48,27 +55,38 @@ public class EarthquakeList {
     @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
     private Geometry geom;
 
+
+    /**
+     * 经度和纬度
+     */
+    @NotNull(message = "请填写完整")
     @TableField(exist = false) // Indicates no corresponding database column
     private Double longitude;
 
+
+    @NotNull(message = "请填写完整")
     @TableField(exist = false) // Indicates no corresponding database column
     private Double latitude;
 
     /**
      * 发震时间
      */
+    @NotNull(message = "请填写完整")
     @TableField(value = "occurrence_time")
     private LocalDateTime occurrenceTime;
+
 
     /**
      * 震级
      */
+    @NotEmpty(message = "请填写完整")
     @TableField(value = "magnitude")
     private String magnitude;
 
     /**
      * 震源深度
      */
+    @NotEmpty(message = "请填写完整")
     @TableField(value = "\"depth\"")
     private String depth;
 
@@ -107,4 +125,5 @@ public class EarthquakeList {
             this.latitude = null;
         }
     }
+
 }
