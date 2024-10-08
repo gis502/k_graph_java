@@ -2,19 +2,27 @@ package com.ruoyi.web.controller.system;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.EqFormDto;
 import com.ruoyi.system.domain.dto.GeometryDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.service.EarthquakeListService;
+import org.apache.ibatis.annotations.Delete;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
+
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import com.ruoyi.common.enums.BusinessType;
 
+import com.ruoyi.common.enums.BusinessType;
+@Validated
 @RestController
 @RequestMapping("/system")
 public class EarthquakeListController {
@@ -60,20 +68,34 @@ public class EarthquakeListController {
         if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
             QueryWrapper.like(EarthquakeList::getEarthquakeName, queryDTO.getEarthquakeName());
         }
-        if (queryDTO.getOccurrenceTime() != null && !queryDTO.getOccurrenceTime().isEmpty()) {
-            // 解析时间范围字符串
-            String[] timeRange = queryDTO.getOccurrenceTime().split(" 至 ");
-            if (timeRange.length == 2) {
-                try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime startTime = LocalDateTime.parse(timeRange[0], formatter);
-                    LocalDateTime endTime = LocalDateTime.parse(timeRange[1], formatter);
 
-                    QueryWrapper.between(EarthquakeList::getOccurrenceTime, startTime, endTime);
-                } catch (Exception e) {
-                    // 处理解析错误
-                    e.printStackTrace();
-                }
+        // 如果前端传递了 startTime 和 endTime，则用于筛选 occurrence_time
+        if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // ISO格式
+            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
+            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
+
+            QueryWrapper.between(EarthquakeList::getOccurrenceTime, startTime, endTime);
+            System.out.println("筛选时间范围: " + startTime + " 至 " + endTime);
+        }
+
+        // 验证震级顺序
+        if (queryDTO.getStartMagnitude() != null && !queryDTO.getStartMagnitude().isEmpty() &&
+                queryDTO.getEndMagnitude() != null && !queryDTO.getEndMagnitude().isEmpty()) {
+            double startMagnitude = Double.parseDouble(queryDTO.getStartMagnitude());
+            double endMagnitude = Double.parseDouble(queryDTO.getEndMagnitude());
+            if (startMagnitude > endMagnitude) {
+                throw new IllegalArgumentException("起始震级必须小于等于结束震级");
+            }
+        }
+
+        // 验证深度顺序
+        if (queryDTO.getStartDepth() != null && !queryDTO.getStartDepth().isEmpty() &&
+                queryDTO.getEndDepth() != null && !queryDTO.getEndDepth().isEmpty()) {
+            double startDepth = Double.parseDouble(queryDTO.getStartDepth());
+            double endDepth = Double.parseDouble(queryDTO.getEndDepth());
+            if (startDepth > endDepth) {
+                throw new IllegalArgumentException("起始深度必须小于等于结束深度");
             }
         }
 
@@ -92,22 +114,20 @@ public class EarthquakeListController {
             QueryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", Double.valueOf(queryDTO.getEndDepth()));
         }
 
-
         QueryWrapper.orderByDesc(EarthquakeList::getOccurrenceTime);
 
         return earthquakeListService.list(QueryWrapper);
     }
 
-
-    @PostMapping("saveEq")
+    @PostMapping("/saveEq")
     @Log(title = "地震信息", businessType = BusinessType.INSERT)
     public boolean saveEq(@RequestBody EarthquakeList earthquakeList) {
         return earthquakeListService.save(earthquakeList);
     }
 
-    @RequestMapping("deleteEqById")
+    @PostMapping("/deleteEq")
     @Log(title = "地震信息", businessType = BusinessType.DELETE)
-    public boolean deleteEqById(@RequestParam(value = "id") String id) {
+    public boolean deleteEq(@RequestParam(value = "eqid") String id) {
         return earthquakeListService.removeById(id);
     }
 
@@ -117,5 +137,48 @@ public class EarthquakeListController {
         return earthquakeListService.getEarthquakesWithinDistance(point, 1000.0);
     }
 
+    @PostMapping("/addEq")
+    public boolean addEq(@Valid @RequestBody EarthquakeList earthquakeList) {
 
+
+        // 创建 GeometryFactory
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        // 获取经纬度
+        Double longitude = earthquakeList.getLongitude();
+        Double latitude = earthquakeList.getLatitude();
+        System.out.println("经纬度------------------------------:"+longitude);
+
+        // 检查经纬度是否有效
+        if (longitude != null && latitude != null) {
+            // 创建 Point 对象
+            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+            // 设置 geom
+            earthquakeList.setGeom(point);
+        }
+
+        // 保存地震信息
+        return earthquakeListService.save(earthquakeList);
+    }
+
+    @PostMapping("/updataeq")
+    public boolean update(@Valid @RequestBody EarthquakeList earthquakeList) {
+        // 创建 GeometryFactory
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        // 获取经纬度
+        Double longitude = earthquakeList.getLongitude();
+        Double latitude = earthquakeList.getLatitude();
+
+        // 检查经纬度是否有效
+        if (longitude != null && latitude != null) {
+            // 创建 Point 对象
+            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+            // 设置 geom
+            earthquakeList.setGeom(point);
+        }
+
+        // 更新地震信息
+        return earthquakeListService.updateById(earthquakeList);
+    }
 }
