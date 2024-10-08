@@ -1,16 +1,26 @@
 package com.ruoyi.system.service.impl;
 
 import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.TrafficControlSections;
 import com.ruoyi.system.listener.RoadDamageListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
+import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.RoadDamageMapper;
 import com.ruoyi.system.domain.entity.RoadDamage;
@@ -18,10 +28,86 @@ import com.ruoyi.system.service.RoadDamageService;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class RoadDamageServiceImpl extends ServiceImpl<RoadDamageMapper, RoadDamage> implements RoadDamageService{
+public class RoadDamageServiceImpl
+        extends ServiceImpl<RoadDamageMapper, RoadDamage>
+        implements RoadDamageService, DataExportStrategy {
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    /**
+     * @param requestBTO
+     * @return
+     */
+    @Override
+    public IPage<RoadDamage> getPage(RequestBTO requestBTO) {
+        Page<RoadDamage> roadDamage =
+                new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        String requestParam = requestBTO.getRequestParams();
+        // 构建 LambdaQueryWrapper
+        LambdaQueryWrapper<RoadDamage> queryWrapper = Wrappers.lambdaQuery(RoadDamage.class);
+        queryWrapper
+                .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getEarthquakeName, requestParam)
+                .or()
+                .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getAffectedArea, requestParam)
+                .or()
+                .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getHighwaysNationalRoads, requestParam)
+                .or()
+                .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getProvincialRoads, requestParam)
+                .or()
+                .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getVillagesWithRoadClosures, requestParam)
+                .or()
+                .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getUnderRepair, requestParam)
+                .or()
+                .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getRestoredRoads, requestParam);
+
+        return this.page(roadDamage,queryWrapper);
+    }
+
+    /**
+     * @param requestBTO
+     * @return
+     */
+    @Override
+    public List<RoadDamage> exportExcelGetData(RequestBTO requestBTO) {
+        String[] ids = requestBTO.getIds();
+        List<RoadDamage> list;
+        if (ids == null || ids.length == 0) {
+            list = this.list().stream()
+                    .sorted(Comparator.comparing(RoadDamage::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                            .reversed()).collect(Collectors.toList());
+        } else {
+            list = this.listByIds(Arrays.asList(ids));
+        }
+        return list;
+    }
+
+    /**
+     * @param idsList
+     * @return
+     */
+    @Override
+    public String deleteData(List<Map<String, Object>> idsList) {
+        // 假设所有的 ids 都在每个 Map 中的 "uuid" 键下，提取所有的 ids
+        List<String> ids = new ArrayList<>();
+        // 遍历 requestBTO 列表，提取每个 Map 中的 "uuid" 键的值
+        for (Map<String, Object> entry : idsList) {
+            if (entry.containsKey("uuid")) {
+                // 获取 "uuid" 并转换为 String 类型
+                String uuid = (String) entry.get("uuid");
+                ids.add(uuid);
+            }
+        }
+        // 判断是否有 ids
+        if (ids.isEmpty()) {
+            return "没有提供要删除的 UUID 列表";
+        }
+        // 使用 removeByIds 方法批量删除
+        this.removeByIds(ids);
+
+        return "删除成功";
+    }
+
     @Override
     public List<RoadDamage> importExcelRoadDamage(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -67,6 +153,7 @@ public class RoadDamageServiceImpl extends ServiceImpl<RoadDamageMapper, RoadDam
         saveBatch(list);
         return list;
     }
+
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
