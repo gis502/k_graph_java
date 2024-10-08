@@ -213,6 +213,11 @@ public class CasualtyReportServiceImpl
     public CasualtyReport getTotal(String eqid) {
         return casualtyReportMapper.getTotal(eqid);
     }
+
+    @Override
+    public List<CasualtyReport> getCasualty(String eqid) {
+        return casualtyReportMapper.getCasualty(eqid);
+    }
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
