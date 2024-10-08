@@ -22,13 +22,28 @@ public class RoadDamage {
      * 序号
      */
     @TableId(value = "uuid", type = IdType.NONE)
-    private Object uuid;
+    private String uuid;
 
     /**
      * 地震标识
      */
     @TableField(value = "earthquake_id")
     private String earthquakeId;
+
+    /**
+     * 地震名称
+     */
+    @TableField(value = "earthquake_name")
+    @ExcelProperty({"道路交通损毁及抢修情况", "地震名称"})
+    private String earthquakeName;
+
+    /**
+     * 地震发生时间
+     */
+    @TableField(value = "earthquake_time")
+    @ExcelProperty({"道路交通损毁及抢修情况", "地震时间"})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime earthquakeTime;
 
     /**
      * 震区名称
@@ -38,11 +53,13 @@ public class RoadDamage {
     private String affectedArea;
 
     /**
-     * 记录时间
+     * 填报截止时间
      */
-    @TableField(value = "record_time")
+    @TableField(value = "reporting_deadline")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime recordTime;
+    @ExcelProperty({"道路交通损毁及抢修情况", "统计截止时间"})
+    private Date reportingDeadline;
+
 
     /**
      * 高速公路及国道损毁情况
@@ -107,12 +124,6 @@ public class RoadDamage {
     @ExcelProperty({"道路交通损毁及抢修情况", "待抢修（公里）"})
     private BigDecimal pendingRepairKm;
 
-    /**
-     * 填报截止时间
-     */
-    @TableField(value = "reporting_deadline")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date reportingDeadline;
 
     /**
      * 系统自动插入记录的时间
@@ -121,16 +132,14 @@ public class RoadDamage {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime systemInsertTime;
 
-    /**
-     * 地震发生时间
-     */
-    @TableField(value = "earthquake_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime earthquakeTime;
+
 
     /**
-     * 地震名称
+     * 记录时间
      */
-    @TableField(value = "earthquake_name")
-    private String earthquakeName;
+    @TableField(value = "record_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime recordTime;
+
+
 }
