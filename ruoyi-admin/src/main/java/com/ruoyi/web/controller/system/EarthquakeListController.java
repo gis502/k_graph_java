@@ -63,27 +63,29 @@ public class EarthquakeListController {
 
     @PostMapping("/fromEq")
     public List<EarthquakeList> fromEq(@RequestBody EqFormDto queryDTO) {
+        // 验证震级和深度的顺序
+        if (Double.valueOf(queryDTO.getStartMagnitude()) > Double.valueOf(queryDTO.getEndMagnitude())) {
+            throw new IllegalArgumentException("起始震级必须小于等于结束震级");
+        }
+        if (Double.valueOf(queryDTO.getStartDepth()) > Double.valueOf(queryDTO.getEndDepth())) {
+            throw new IllegalArgumentException("起始深度必须小于等于结束深度");
+        }
         LambdaQueryWrapper<EarthquakeList> QueryWrapper = new LambdaQueryWrapper<>();
 
         if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
             QueryWrapper.like(EarthquakeList::getEarthquakeName, queryDTO.getEarthquakeName());
         }
-        if (queryDTO.getOccurrenceTime() != null && !queryDTO.getOccurrenceTime().isEmpty()) {
-            // 解析时间范围字符串
-            String[] timeRange = queryDTO.getOccurrenceTime().split(" 至 ");
-            if (timeRange.length == 2) {
-                try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime startTime = LocalDateTime.parse(timeRange[0], formatter);
-                    LocalDateTime endTime = LocalDateTime.parse(timeRange[1], formatter);
 
-                    QueryWrapper.between(EarthquakeList::getOccurrenceTime, startTime, endTime);
-                } catch (Exception e) {
-                    // 处理解析错误
-                    e.printStackTrace();
-                }
-            }
+        // 如果前端传递了 startTime 和 endTime，则用于筛选 occurrence_time
+        if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // ISO格式
+            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
+            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
+
+            QueryWrapper.between(EarthquakeList::getOccurrenceTime, startTime, endTime);
+            System.out.println("筛选时间范围: " + startTime + " 至 " + endTime);
         }
+
 
         if (queryDTO.getStartMagnitude() != null && !queryDTO.getStartMagnitude().isEmpty()) {
             QueryWrapper.apply("CAST(magnitude AS NUMERIC) >= {0}", Double.valueOf(queryDTO.getStartMagnitude()));
@@ -105,8 +107,6 @@ public class EarthquakeListController {
 
         return earthquakeListService.list(QueryWrapper);
     }
-
-
     @PostMapping("/saveEq")
     @Log(title = "地震信息", businessType = BusinessType.INSERT)
     public boolean saveEq(@RequestBody EarthquakeList earthquakeList) {
