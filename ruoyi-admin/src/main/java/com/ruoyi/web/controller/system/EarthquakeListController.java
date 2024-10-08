@@ -63,13 +63,6 @@ public class EarthquakeListController {
 
     @PostMapping("/fromEq")
     public List<EarthquakeList> fromEq(@RequestBody EqFormDto queryDTO) {
-        // 验证震级和深度的顺序
-        if (Double.valueOf(queryDTO.getStartMagnitude()) > Double.valueOf(queryDTO.getEndMagnitude())) {
-            throw new IllegalArgumentException("起始震级必须小于等于结束震级");
-        }
-        if (Double.valueOf(queryDTO.getStartDepth()) > Double.valueOf(queryDTO.getEndDepth())) {
-            throw new IllegalArgumentException("起始深度必须小于等于结束深度");
-        }
         LambdaQueryWrapper<EarthquakeList> QueryWrapper = new LambdaQueryWrapper<>();
 
         if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
@@ -86,6 +79,25 @@ public class EarthquakeListController {
             System.out.println("筛选时间范围: " + startTime + " 至 " + endTime);
         }
 
+        // 验证震级顺序
+        if (queryDTO.getStartMagnitude() != null && !queryDTO.getStartMagnitude().isEmpty() &&
+                queryDTO.getEndMagnitude() != null && !queryDTO.getEndMagnitude().isEmpty()) {
+            double startMagnitude = Double.parseDouble(queryDTO.getStartMagnitude());
+            double endMagnitude = Double.parseDouble(queryDTO.getEndMagnitude());
+            if (startMagnitude > endMagnitude) {
+                throw new IllegalArgumentException("起始震级必须小于等于结束震级");
+            }
+        }
+
+        // 验证深度顺序
+        if (queryDTO.getStartDepth() != null && !queryDTO.getStartDepth().isEmpty() &&
+                queryDTO.getEndDepth() != null && !queryDTO.getEndDepth().isEmpty()) {
+            double startDepth = Double.parseDouble(queryDTO.getStartDepth());
+            double endDepth = Double.parseDouble(queryDTO.getEndDepth());
+            if (startDepth > endDepth) {
+                throw new IllegalArgumentException("起始深度必须小于等于结束深度");
+            }
+        }
 
         if (queryDTO.getStartMagnitude() != null && !queryDTO.getStartMagnitude().isEmpty()) {
             QueryWrapper.apply("CAST(magnitude AS NUMERIC) >= {0}", Double.valueOf(queryDTO.getStartMagnitude()));
@@ -102,11 +114,11 @@ public class EarthquakeListController {
             QueryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", Double.valueOf(queryDTO.getEndDepth()));
         }
 
-
         QueryWrapper.orderByDesc(EarthquakeList::getOccurrenceTime);
 
         return earthquakeListService.list(QueryWrapper);
     }
+
     @PostMapping("/saveEq")
     @Log(title = "地震信息", businessType = BusinessType.INSERT)
     public boolean saveEq(@RequestBody EarthquakeList earthquakeList) {
