@@ -3,7 +3,7 @@ backup:
     path: D:/backup/
     db_port: 7654
     db_host: 47.92.216.173
-    db_name: ruoyi
+    db_name: yaan
     db_user: postgres
     db_password: zhangsan
     pg_dump_path: D:/postgresql/bin/pg_dump.exe
@@ -14,14 +14,14 @@ spring:
         driverClassName: org.postgresql.Driver
         druid:
             # 主库数据源
-#            master:
-#                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-#                username: postgres
-#                password: root
             master:
-                url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
                 username: postgres
-                password: zhangsan
+                password: root
+##            master:
+#                url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+#                username: postgres
+#                password: zhangsan
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
