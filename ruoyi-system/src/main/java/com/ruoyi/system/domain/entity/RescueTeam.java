@@ -107,5 +107,5 @@ public class RescueTeam {
     private String eqid;
 
     @TableField(value="describe_things")
-    private String describe_things;
+    private String describeThings;
 }
