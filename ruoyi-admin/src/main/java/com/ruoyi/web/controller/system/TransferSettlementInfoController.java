@@ -23,4 +23,10 @@ public class TransferSettlementInfoController {
         List<TransferSettlementInfo> transferSettlementInfoList = transferSettlementInfoService.getTotal(eqid);
         return ResponseEntity.ok(transferSettlementInfoList);
     }
+
+    @GetMapping("/getTransferInfo")
+    public ResponseEntity<List<TransferSettlementInfo>> getTransferInfo(@RequestParam("eqid") String eqid) {
+        List<TransferSettlementInfo> transferInfo = transferSettlementInfoService.getTransferInfo(eqid);
+        return ResponseEntity.ok(transferInfo);
+    }
 }
