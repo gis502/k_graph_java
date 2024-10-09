@@ -36,6 +36,7 @@ public class AftershockInformationController {
         List<Map<String, Object>> aftershockDataList = aftershockInformationService.getAfterShockInformation(eqid);
 
         return ResponseEntity.ok(aftershockDataList);
+
     }
 
 }
