@@ -1,4 +1,5 @@
 package com.ruoyi.system.domain.entity;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -125,5 +126,4 @@ public class EarthquakeList {
             this.latitude = null;
         }
     }
-
 }
