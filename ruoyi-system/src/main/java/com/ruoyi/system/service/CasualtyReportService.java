@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.system.domain.entity.CasualtyReport;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,5 +14,5 @@ public interface CasualtyReportService extends IService<CasualtyReport>{
 
     CasualtyReport getCasualtiesStatsById(String eqid);
 
-    CasualtyReport getTotal(String eqid);
+    List<CasualtyReport> getTotal(String eqid);
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/casualty")
 public class CasualtyReportController {
@@ -26,7 +28,7 @@ public class CasualtyReportController {
     }
 
     @GetMapping("/gettotal")
-    public CasualtyReport getTotal(@RequestParam String eqid) {
+    public List<CasualtyReport> getTotal(@RequestParam String eqid) {
         return casualtyReportService.getTotal(eqid);
     }
 }
