@@ -29,11 +29,11 @@ public class AftershockInformationController {
         return ResponseEntity.ok(aftershockData);
     }
 
-    @GetMapping("/getAftershock")
+    @GetMapping("/getAfterShockInformation")
     public ResponseEntity<List<Map<String, Object>>> getTotal(@RequestParam("eqid") String eqid) {
 
         // 使用 eqid 获取数据
-        List<Map<String, Object>> aftershockDataList = aftershockInformationService.getTotal(eqid);
+        List<Map<String, Object>> aftershockDataList = aftershockInformationService.getAfterShockInformation(eqid);
 
         return ResponseEntity.ok(aftershockDataList);
     }
