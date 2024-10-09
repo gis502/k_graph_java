@@ -30,6 +30,7 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
 //            "ORDER BY yas.system_insert_time DESC ")
 //    List<Map<String, Object>> getTotal(String eqid);
 
+    
     @Select("SELECT cr.affected_area, " +
             "SUM(cr.magnitude_3_3_9) AS magnitude_3_3_9, " +
             "SUM(cr.magnitude_4_4_9) AS magnitude_4_4_9, " +
