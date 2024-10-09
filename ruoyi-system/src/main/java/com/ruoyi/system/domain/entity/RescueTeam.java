@@ -108,4 +108,10 @@ public class RescueTeam {
 
     @TableField(value="describe_things")
     private String describeThings;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }
