@@ -136,6 +136,7 @@ public class AftershockInformationServiceImpl extends
             aftershockData.put("magnitude_5_0_to_5_9", 0);
             aftershockData.put("magnitude_6", 0);
         }
+
         return aftershockData;
     }
 
