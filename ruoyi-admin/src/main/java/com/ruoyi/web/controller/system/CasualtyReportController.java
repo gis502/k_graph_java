@@ -28,7 +28,7 @@ public class CasualtyReportController {
     }
 
     @GetMapping("/gettotal")
-    public CasualtyReport getTotal(@RequestParam String eqid) {
+    public List<CasualtyReport> getTotal(@RequestParam String eqid) {
         return casualtyReportService.getTotal(eqid);
     }
 
