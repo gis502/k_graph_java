@@ -17,4 +17,15 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "FROM public.casualty_report " +
             "WHERE earthquake_identifier = #{eqid}")
     CasualtyReport getCasualtiesStatsById(@Param("eqid") String eqid);
+
+    @Select("SELECT " +
+            "SUM(total_deceased) AS total_deceased, " +
+            "SUM(total_missing) AS total_missing, " +
+            "SUM(total_injured) AS total_injured, " +
+            "MAX(submission_deadline) AS submission_deadline " +
+            "FROM public.casualty_report " +
+            "WHERE earthquake_identifier = #{eqid}")
+    CasualtyReport getTotal(@Param("eqid") String eqid);
 }
+
+

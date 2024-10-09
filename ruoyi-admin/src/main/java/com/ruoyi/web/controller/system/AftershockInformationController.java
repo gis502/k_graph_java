@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,4 +28,14 @@ public class AftershockInformationController {
 
         return ResponseEntity.ok(aftershockData);
     }
+
+    @GetMapping("/getAftershock")
+    public ResponseEntity<List<Map<String, Object>>> getTotal(@RequestParam("eqid") String eqid) {
+
+        // 使用 eqid 获取数据
+        List<Map<String, Object>> aftershockDataList = aftershockInformationService.getTotal(eqid);
+
+        return ResponseEntity.ok(aftershockDataList);
+    }
+
 }

@@ -7,18 +7,22 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.SituationPlotMapper;
 import com.ruoyi.system.domain.entity.SituationPlot;
 import com.ruoyi.system.service.SituationPlotService;
+
 @Service
-public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, SituationPlot> implements SituationPlotService{
+public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, SituationPlot> implements SituationPlotService {
     @Autowired
     private SituationPlotMapper situationPlotMapper;
     @Autowired
@@ -46,7 +50,7 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         System.out.println("Inserting details: " + details);
         // 根据plotType获取对应的Mapper类型
         String mapperType = plotTypeToMapperType.get(plotType.toLowerCase());
-        System.out.println("mapperType: " + mapperType);
+        System.out.println("mapperType！！: " + mapperType);
         if (mapperType != null) {
             System.out.println("mapperRegistry: " + mapperRegistry);
             try {
@@ -85,6 +89,9 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         situationPlotMapper.delete(new LambdaQueryWrapper<SituationPlot>()
                 .eq(SituationPlot::getPlotId, plotId));
         System.out.println("Plot deleted with id: " + plotId);
+        if (Objects.equals(plotType, "直线箭头") || Objects.equals(plotType, "攻击箭头") || Objects.equals(plotType, "钳击箭头")){
+            return;
+        }
 
         // 2. 根据 plotType 获取对应的 Mapper 类型并删除 details
         String mapperType = plotTypeToMapperType.get(plotType.toLowerCase());
@@ -168,6 +175,14 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         String mapperType = plotTypeToMapperType.get(plotType.toLowerCase());
         if (mapperType != null) {
             try {
+                // 1. 查询 situation_plot 表中的信息
+                QueryWrapper<SituationPlot> plotWrapper = new QueryWrapper<>();
+                plotWrapper.eq("plot_id", plotId);  // 使用 plotId 作为查询条件
+
+                // 获取 situation_plot 表中的记录
+                SituationPlot plotInfo = situationPlotMapper.selectOne(plotWrapper);
+                System.out.println("Plot Query result: " + plotInfo);
+
                 BaseMapper<?> mapper = mapperRegistry.get(mapperType + "Mapper");
                 System.out.println("mapper: " + mapper);
 
@@ -184,8 +199,13 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                     Object result = ((BaseMapper<Object>) mapper).selectOne(wrapper);
                     System.out.println("Query result: " + result);
 
+
+                    // 将 plot 表的信息和 plotType 对应表的信息整合在一起
+                    Map<String, Object> combinedResult = new HashMap<>();
+                    combinedResult.put("plotInfo", plotInfo);
+                    combinedResult.put("plotTypeInfo", result);
                     // 返回查询结果
-                    return result;
+                    return combinedResult;
                 } else {
                     throw new IllegalArgumentException("Unknown mapper type: " + mapperType);
                 }

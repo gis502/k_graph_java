@@ -206,8 +206,12 @@ public class CasualtyReportServiceImpl
 
     @Override
     public CasualtyReport getCasualtiesStatsById(String eqid) {
-
         return casualtyReportMapper.getCasualtiesStatsById(eqid);
+    }
+
+    @Override
+    public CasualtyReport getTotal(String eqid) {
+        return casualtyReportMapper.getTotal(eqid);
     }
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
