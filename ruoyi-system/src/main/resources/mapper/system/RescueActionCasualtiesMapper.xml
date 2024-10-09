@@ -23,9 +23,10 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    uuid, "location", casualty_status, abcd_score, new_mild_injury_count, new_serious_injury_count, 
-    new_critical_injury_count, new_death_count, total_mild_injury_count, total_serious_injury_count, 
-    total_critical_injury_count, total_death_count, medical_rescue_team, contact_person, 
-    contact_phone, record_time
+    uuid, "location", casualty_status, abcd_score,total_mild_injury_count, total_serious_injury_count,
+    total_critical_injury_count, total_death_count, medical_rescue_team, contact_person,
+    contact_phone, record_time,new_count,total_count
+
+
   </sql>
 </mapper>
