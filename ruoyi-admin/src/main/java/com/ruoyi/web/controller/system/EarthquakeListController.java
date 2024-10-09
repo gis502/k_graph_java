@@ -63,60 +63,52 @@ public class EarthquakeListController {
 
     @PostMapping("/fromEq")
     public List<EarthquakeList> fromEq(@RequestBody EqFormDto queryDTO) {
-        LambdaQueryWrapper<EarthquakeList> QueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<EarthquakeList> queryWrapper = new LambdaQueryWrapper<>();
 
+        // 按名称模糊查询
         if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
-            QueryWrapper.like(EarthquakeList::getEarthquakeName, queryDTO.getEarthquakeName());
+            queryWrapper.like(EarthquakeList::getEarthquakeName, queryDTO.getEarthquakeName());
         }
 
-        // 如果前端传递了 startTime 和 endTime，则用于筛选 occurrence_time
+        // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
         if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // ISO格式
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
             LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
-
-            QueryWrapper.between(EarthquakeList::getOccurrenceTime, startTime, endTime);
-            System.out.println("筛选时间范围: " + startTime + " 至 " + endTime);
+            queryWrapper.between(EarthquakeList::getOccurrenceTime, startTime, endTime);
         }
 
-        // 验证震级顺序
-        if (queryDTO.getStartMagnitude() != null && !queryDTO.getStartMagnitude().isEmpty() &&
-                queryDTO.getEndMagnitude() != null && !queryDTO.getEndMagnitude().isEmpty()) {
+        // 验证并添加震级筛选条件
+        if (isValidNumeric(queryDTO.getStartMagnitude()) && isValidNumeric(queryDTO.getEndMagnitude())) {
             double startMagnitude = Double.parseDouble(queryDTO.getStartMagnitude());
             double endMagnitude = Double.parseDouble(queryDTO.getEndMagnitude());
             if (startMagnitude > endMagnitude) {
                 throw new IllegalArgumentException("起始震级必须小于等于结束震级");
             }
+            queryWrapper.apply("CAST(magnitude AS NUMERIC) >= {0}", startMagnitude);
+            queryWrapper.apply("CAST(magnitude AS NUMERIC) <= {0}", endMagnitude);
         }
 
-        // 验证深度顺序
-        if (queryDTO.getStartDepth() != null && !queryDTO.getStartDepth().isEmpty() &&
-                queryDTO.getEndDepth() != null && !queryDTO.getEndDepth().isEmpty()) {
+        // 验证并添加深度筛选条件
+        if (isValidNumeric(queryDTO.getStartDepth()) && isValidNumeric(queryDTO.getEndDepth())) {
             double startDepth = Double.parseDouble(queryDTO.getStartDepth());
             double endDepth = Double.parseDouble(queryDTO.getEndDepth());
             if (startDepth > endDepth) {
                 throw new IllegalArgumentException("起始深度必须小于等于结束深度");
             }
+            queryWrapper.apply("CAST(depth AS NUMERIC) >= {0}", startDepth);
+            queryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", endDepth);
         }
 
-        if (queryDTO.getStartMagnitude() != null && !queryDTO.getStartMagnitude().isEmpty()) {
-            QueryWrapper.apply("CAST(magnitude AS NUMERIC) >= {0}", Double.valueOf(queryDTO.getStartMagnitude()));
-        }
-        if (queryDTO.getEndMagnitude() != null && !queryDTO.getEndMagnitude().isEmpty()) {
-            QueryWrapper.apply("CAST(magnitude AS NUMERIC) <= {0}", Double.valueOf(queryDTO.getEndMagnitude()));
-        }
-        if (queryDTO.getStartDepth() != null && !queryDTO.getStartDepth().isEmpty()) {
-            // 使用 apply 将 depth 转换为数值类型再进行比较
-            QueryWrapper.apply("CAST(depth AS NUMERIC) >= {0}", Double.valueOf(queryDTO.getStartDepth()));
-        }
-        if (queryDTO.getEndDepth() != null && !queryDTO.getEndDepth().isEmpty()) {
-            // 使用 apply 将 depth 转换为数值类型再进行比较
-            QueryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", Double.valueOf(queryDTO.getEndDepth()));
-        }
+        // 按时间倒序排列
+        queryWrapper.orderByDesc(EarthquakeList::getOccurrenceTime);
 
-        QueryWrapper.orderByDesc(EarthquakeList::getOccurrenceTime);
+        return earthquakeListService.list(queryWrapper);
+    }
 
-        return earthquakeListService.list(QueryWrapper);
+    // 辅助方法，用于检查是否为有效数值
+    private boolean isValidNumeric(String value) {
+        return value != null && !value.trim().isEmpty() && value.matches("-?\\d+(\\.\\d+)?");
     }
 
     @PostMapping("/saveEq")
