@@ -103,4 +103,10 @@ public class GroundSettlementSinkhole {
 
     @TableField(value = "geom")
     private Object geom;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }
