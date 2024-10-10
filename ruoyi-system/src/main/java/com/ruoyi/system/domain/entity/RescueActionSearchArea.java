@@ -4,7 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 
 /**
@@ -49,14 +54,15 @@ public class RescueActionSearchArea {
     /**
      * 救援装备类型：破拆类（如液压剪、切割机等）、支撑类（如气垫、千斤顶等）、提升类（如吊机、担架等）
      */
-    @TableField(value = "rescue_equipment_type")
-    private String rescueEquipmentType;
+    @TableField(value = "rescue_equipment_type", typeHandler = JacksonTypeHandler.class)
+    private List<String>  rescueEquipmentType;
+
 
     /**
      * 是否需要工程机械（如挖掘机、装载机、长臂吊车等）：是、否
      */
     @TableField(value = "need_engineering_machinery")
-    private Boolean needEngineeringMachinery;
+    private String needEngineeringMachinery;
 
     /**
      * 联系人员
@@ -75,4 +81,10 @@ public class RescueActionSearchArea {
      */
     @TableField(value = "record_time")
     private Date recordTime;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }

@@ -21,8 +21,8 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    uuid, casualties, usage_type, structure_type, damage_form, disposal_team, disposal_measures, 
-    initial_disposal_phase, start_disposal_date, estimated_completion_date, actual_completion_date, 
+    uuid, casualties, usage_type, structure_type, damage_form, disposal_team, disposal_measures,
+    initial_disposal_phase, start_disposal_date, estimated_completion_date, actual_completion_date,
     contact_person, contact_phone, plot_id
   </sql>
 </mapper>

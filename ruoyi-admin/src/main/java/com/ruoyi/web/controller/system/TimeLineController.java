@@ -1,14 +1,12 @@
 package com.ruoyi.web.controller.system;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.service.impl.EmergencyResponseInfoServiceImpl;
 import com.ruoyi.system.service.impl.NewsServiceImpl;
 import com.ruoyi.system.service.impl.RescueActionCasualtiesServiceImpl;
 import com.ruoyi.system.service.impl.RescueTeamServiceImpl;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -52,6 +50,8 @@ public class TimeLineController {
     public List<News> getNews() {
         return newsService.list();
     }
+
+
 
 
 

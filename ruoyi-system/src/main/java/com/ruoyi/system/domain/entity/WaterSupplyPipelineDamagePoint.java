@@ -75,4 +75,10 @@ public class WaterSupplyPipelineDamagePoint {
      */
     @TableField(value = "\"location\"")
     private Object location;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }
