@@ -74,13 +74,23 @@ public class MapperConfig {
         typeMapping.put("失踪人员", "rescueActionMissingPersons");
 
         //救援行动类-伤亡人员类表
-        typeMapping.put("伤亡人员", "rescueActionCasualties");
+        typeMapping.put("死亡人员", "rescueActionCasualties");
         typeMapping.put("重伤人员", "rescueActionCasualties");
         typeMapping.put("轻伤人员", "rescueActionCasualties");
+        typeMapping.put("危重伤人员", "rescueActionCasualties");
 
         //次生/衍生灾害处置信息-滑坡、崩塌表
         typeMapping.put("滑坡", "landslideCollapse");
         typeMapping.put("崩塌", "landslideCollapse");
+
+        //震后生成-灾害现场动态信息-次生/衍生灾害处置信息-泥石流
+        typeMapping.put("泥石流", "debrisFlow");
+
+        //震后生成-灾害现场动态信息-次生/衍生灾害处置信息-地面沉降,地面塌陷
+        typeMapping.put("地面塌陷", "groundSettlementSinkhole");
+
+        //震后生成-灾害现场动态信息-次生/衍生灾害处置信息-地裂缝
+        typeMapping.put("地裂缝", "fissure");
 
         //房屋信息-建筑物破坏类表
         typeMapping.put("基本完好建筑物", "buildingDamageType");
@@ -95,23 +105,23 @@ public class MapperConfig {
         //交通设施破坏类-公路破坏点
         typeMapping.put("公路破坏点", "roadDamagePoints");
         //交通设施破坏类-交通管制点
-        typeMapping.put("交通管制点", "roadDamagePoints");
+        typeMapping.put("交通管制点", "trafficControlPoints");
         //交通设施破坏类-不可通行铁路，铁路破坏点
-        typeMapping.put("不可通行铁路", "roadDamagePoints");
-        typeMapping.put("铁路破坏点", "roadDamagePoints");
+        typeMapping.put("不可通行铁路", "unusableRailwaysDamagePoints");
+        typeMapping.put("铁路破坏点", "unusableRailwaysDamagePoints");
 
         //交通设施破坏类-飞行区等级可用机场，不可用机场表
         typeMapping.put("可用机场", "usableUnusableAirports");
         typeMapping.put("不可用机场", "usableUnusableAirports");
         //交通设施破坏类-限制通行桥梁，不可通行桥梁表
-        typeMapping.put("限制通行桥梁", "TrafficFacilityDamage");
-        typeMapping.put("不可通行桥梁", "TrafficFacilityDamage");
+        typeMapping.put("限制通行桥梁", "trafficFacilityDamage");
+        typeMapping.put("不可通行桥梁", "trafficFacilityDamage");
         //交通设施破坏类-不可通行隧道表
         typeMapping.put("不可通行隧道", "unpassableTunnel");
         //生命线工程破坏类-不可用供水管网表
         typeMapping.put("不可用供水管网", "unavailableWaterSupplyNetwork");
         //生命线工程破坏类-供水管线破坏点表
-        typeMapping.put("供水管线破坏点", "unavailableWaterSupplyNetwork");
+        typeMapping.put("供水管线破坏点", "waterSupplyPipelineDamagePoint");
         //生命线工程破坏类-不可用输、配电线路表
         typeMapping.put("不可用输、配电线路", "usableUnusableAirports");
         //
