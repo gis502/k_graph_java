@@ -1,9 +1,11 @@
 package com.ruoyi.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.entity.ListTable;
+import com.ruoyi.system.domain.entity.RescueTeamsInfo;
 import com.ruoyi.system.domain.entity.SafetyProtection;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.service.SafetyProtectionService;
@@ -12,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/safety_protection")
 public class SafetyProtectionController {
@@ -41,14 +46,37 @@ public class SafetyProtectionController {
 
 
     /**
-     * 查
+     * 查全部
      */
 
     @PostMapping("/list")
-    public AjaxResult list(){
+    public AjaxResult list() {
         return AjaxResult.success(safetyProtectionService.list());
     }
 
+
+    /**
+     * 搜索查
+     */
+
+    @PostMapping("/searchSafetyProtection")
+    public List<SafetyProtection> searchSafetyProtection(@RequestParam("inputData") String inputData) {
+        LambdaQueryWrapper<SafetyProtection> wrapper = new LambdaQueryWrapper<>();
+
+        // 添加查询条件
+        wrapper.like(SafetyProtection::getApplicationType, inputData)
+                .or()
+                .like(SafetyProtection::getSource, inputData)
+                .or()
+                .like(SafetyProtection::getAgreement, inputData)
+                .or()
+                .like(SafetyProtection::getNotes, inputData)
+                .or()
+                .apply("CAST(port AS TEXT) = {0}", inputData);
+
+
+        return safetyProtectionService.list(wrapper);
+    }
 
     /**
      * 刪
@@ -62,11 +90,9 @@ public class SafetyProtectionController {
      * 改
      */
     @PutMapping("/update")
-    public boolean update(@RequestBody SafetyProtection safetyProtection ) {
+    public boolean update(@RequestBody SafetyProtection safetyProtection) {
         return safetyProtectionService.updateById(safetyProtection);
     }
-
-
 
 
 }
