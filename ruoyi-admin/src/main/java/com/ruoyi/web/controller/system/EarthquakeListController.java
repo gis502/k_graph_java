@@ -56,6 +56,7 @@ public class EarthquakeListController {
         QueryWrapper.like(EarthquakeList::getEarthquakeName, queryValue)
                 .or().like(EarthquakeList::getMagnitude, queryValue)
                 .or().like(EarthquakeList::getDepth, queryValue)
+                .or().apply("ST_AsText(geom) LIKE {0}", "%" + queryValue + "%") // 使用 ST_AsText 转换 geom
                 .or().apply("to_char(occurrence_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%")
                 .orderByDesc(EarthquakeList::getOccurrenceTime);
         return earthquakeListService.list(QueryWrapper);
