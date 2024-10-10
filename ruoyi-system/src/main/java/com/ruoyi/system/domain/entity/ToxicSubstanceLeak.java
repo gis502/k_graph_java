@@ -69,4 +69,10 @@ public class ToxicSubstanceLeak {
      */
     @TableField(value = "contact_phone")
     private String contactPhone;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }
