@@ -17,7 +17,7 @@ import org.n52.jackson.datatype.jts.GeometryDeserializer;
 import org.n52.jackson.datatype.jts.GeometrySerializer;
 
 
-import javax.persistence.PrePersist;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
