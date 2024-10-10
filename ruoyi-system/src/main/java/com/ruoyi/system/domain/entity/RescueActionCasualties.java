@@ -111,4 +111,10 @@ public class RescueActionCasualties {
 
     @TableField(value = "total_count")
     private Integer totalCount;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }
