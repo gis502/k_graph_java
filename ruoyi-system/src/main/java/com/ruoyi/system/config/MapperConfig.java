@@ -63,6 +63,11 @@ public class MapperConfig {
         typeMapping.put("已出发队伍", "rescueTeam");
         typeMapping.put("正在参与队伍", "rescueTeam");
 
+        //军事箭头
+        typeMapping.put("直线箭头", "militaryArrows");
+        typeMapping.put("攻击箭头", "militaryArrows");
+        typeMapping.put("钳击箭头", "militaryArrows");
+
         //救援行动类-营救搜索区域类表
         typeMapping.put("未搜索区域", "rescueActionSearchArea");
         typeMapping.put("已搜索区域", "rescueActionSearchArea");
