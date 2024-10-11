@@ -25,8 +25,9 @@ import com.ruoyi.system.service.AftershockInformationService;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ruoyi.system.service.strategy.DataExportStrategy;
-import org.springframework.stereotype.Service;
-import com.ruoyi.system.domain.entity.AftershockInformation;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -133,8 +134,12 @@ public class AftershockInformationServiceImpl extends
             aftershockData.put("magnitude_5_0_to_5_9", 0);
             aftershockData.put("magnitude_6", 0);
         }
+
         return aftershockData;
     }
+
+
+
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
     @Override
@@ -157,9 +162,9 @@ public class AftershockInformationServiceImpl extends
             }
         }
         inputStream.close();
-// 重新获取 InputStream
+        // 重新获取 InputStream
         inputStream = file.getInputStream();
-        AftershockInformationListener listener = new AftershockInformationListener(baseMapper, actualRows, userName);
+        AftershockInformationListener listener = new AftershockInformationListener(baseMapper, totalRows, userName);
         // 读取Excel文件，从第4行开始
         EasyExcel.read(inputStream,AftershockInformation.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
@@ -182,6 +187,18 @@ public class AftershockInformationServiceImpl extends
 //        List<YaanAftershockStatistics> listDOs = BeanUtil.copyToList(list, YaanAftershockStatistics.class);
         saveBatch(list);
         return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> getTotal(String eqid) {
+        List<Map<String, Object>> aftershockDataList = aftershockInformationMapper.getTotal(eqid);
+        return aftershockDataList;
+    }
+
+    @Override
+    public List<Map<String, Object>> getAfterShockInformation(String eqid) {
+        List<Map<String, Object>> aftershockDataList = aftershockInformationMapper.getAfterShockInformation(eqid);
+        return aftershockDataList;
     }
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {

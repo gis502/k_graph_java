@@ -108,4 +108,10 @@ public class DamLake {
      */
     @TableField(value = "estimated_storage_capacity")
     private String estimatedStorageCapacity;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }
