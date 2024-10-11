@@ -191,7 +191,8 @@ public class AftershockInformationServiceImpl extends
 
     @Override
     public List<Map<String, Object>> getTotal(String eqid) {
-        return null;
+        List<Map<String, Object>> aftershockDataList = aftershockInformationMapper.getTotal(eqid);
+        return aftershockDataList;
     }
 
     @Override
