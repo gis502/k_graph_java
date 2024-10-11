@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HousingSituationMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.HousingSituation">
+    <!--@mbg.generated-->
+    <!--@Table housing_situation-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_identifier" jdbcType="VARCHAR" property="earthquakeIdentifier" />
+    <result column="affected_area_name" jdbcType="VARCHAR" property="affectedAreaName" />
+    <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
+    <result column="currently_damaged" jdbcType="INTEGER" property="currentlyDamaged" />
+    <result column="currently_disabled" jdbcType="INTEGER" property="currentlyDisabled" />
+    <result column="currently_restricted" jdbcType="INTEGER" property="currentlyRestricted" />
+    <result column="currently_available" jdbcType="INTEGER" property="currentlyAvailable" />
+    <result column="submission_deadline" jdbcType="TIMESTAMP" property="submissionDeadline" />
+    <result column="system_insert_time" jdbcType="TIMESTAMP" property="systemInsertTime" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+    <result column="housing_category" jdbcType="VARCHAR" property="housingCategory" />
+    <result column="damage_grade" jdbcType="VARCHAR" property="damageGrade" />
+    <result column="quantity_area" jdbcType="VARCHAR" property="quantityArea" />
+    <result column="construction_year" jdbcType="VARCHAR" property="constructionYear" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_identifier, affected_area_name, record_time, currently_damaged, 
+    currently_disabled, currently_restricted, currently_available, submission_deadline, 
+    system_insert_time, earthquake_time, earthquake_name, housing_category, damage_grade, 
+    quantity_area, construction_year
+  </sql>
+</mapper>
