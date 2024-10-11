@@ -37,26 +37,26 @@ public class RescueActionCasualties {
     /**
      * 新增人数：轻伤
      */
-    @TableField(value = "new_mild_injury_count")
-    private Integer newMildInjuryCount;
-
-    /**
-     * 新增人数：重伤
-     */
-    @TableField(value = "new_serious_injury_count")
-    private Integer newSeriousInjuryCount;
-
-    /**
-     * 新增人数：危重伤
-     */
-    @TableField(value = "new_critical_injury_count")
-    private Integer newCriticalInjuryCount;
-
-    /**
-     * 新增人数：死亡
-     */
-    @TableField(value = "new_death_count")
-    private Integer newDeathCount;
+//    @TableField(value = "new_mild_injury_count")
+//    private Integer newMildInjuryCount;
+//
+//    /**
+//     * 新增人数：重伤
+//     */
+//    @TableField(value = "new_serious_injury_count")
+//    private Integer newSeriousInjuryCount;
+//
+//    /**
+//     * 新增人数：危重伤
+//     */
+//    @TableField(value = "new_critical_injury_count")
+//    private Integer newCriticalInjuryCount;
+//
+//    /**
+//     * 新增人数：死亡
+//     */
+//    @TableField(value = "new_death_count")
+//    private Integer newDeathCount;
 
     /**
      * 累计人数：轻伤
@@ -105,4 +105,16 @@ public class RescueActionCasualties {
      */
     @TableField(value = "record_time")
     private Date recordTime;
+
+    @TableField(value = "new_count")
+    private Integer newCount;
+
+    @TableField(value = "total_count")
+    private Integer totalCount;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }

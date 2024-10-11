@@ -63,4 +63,10 @@ public class RescueActionMissingPersons {
      */
     @TableField(value = "record_time")
     private Date recordTime;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }

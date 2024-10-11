@@ -106,6 +106,15 @@ public class RescueTeam {
     @TableField(value = "eqid")
     private String eqid;
 
-    @TableField(value="describe_things")
+    /**
+     * 地震id
+     */
+    @TableField(value = "describe_things")
     private String describeThings;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }

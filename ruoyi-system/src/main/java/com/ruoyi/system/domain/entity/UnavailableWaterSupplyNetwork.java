@@ -26,4 +26,10 @@ public class UnavailableWaterSupplyNetwork {
      */
     @TableField(value = "water_supply_network_type")
     private String waterSupplyNetworkType;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }
