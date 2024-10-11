@@ -23,3 +23,10 @@ psql -h localhost -p 5432 -U postgres -d mylocaldb -f ruoyi_backup.sql
 --add-opens java.base/java.util=ALL-UNNAMED
 ```
 
+>备份backup文件
+```sql
+--1
+D:/App/PostgreSQL/16/bin/pg_dump.exe -h 47.92.216.173 -p 7654 -U postgres -F c -b -v -E UTF8 -f D:/App/PostgreSQL/backup/yaan.backup --exclude-table=sichuan_popdensity_point yaan
+--2
+D:/App/PostgreSQL/16/bin/pg_restore.exe -U postgres -d yaan -v "D:\yaan_backup_1728195811573.backup"
+```

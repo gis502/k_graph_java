@@ -89,9 +89,6 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         situationPlotMapper.delete(new LambdaQueryWrapper<SituationPlot>()
                 .eq(SituationPlot::getPlotId, plotId));
         System.out.println("Plot deleted with id: " + plotId);
-        if (Objects.equals(plotType, "直线箭头") || Objects.equals(plotType, "攻击箭头") || Objects.equals(plotType, "钳击箭头")){
-            return;
-        }
 
         // 2. 根据 plotType 获取对应的 Mapper 类型并删除 details
         String mapperType = plotTypeToMapperType.get(plotType.toLowerCase());
