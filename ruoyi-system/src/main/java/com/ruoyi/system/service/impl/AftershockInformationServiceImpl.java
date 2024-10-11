@@ -28,8 +28,6 @@ import com.ruoyi.system.service.strategy.DataExportStrategy;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import org.springframework.stereotype.Service;
-import com.ruoyi.system.domain.entity.AftershockInformation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -136,6 +134,7 @@ public class AftershockInformationServiceImpl extends
             aftershockData.put("magnitude_5_0_to_5_9", 0);
             aftershockData.put("magnitude_6", 0);
         }
+
         return aftershockData;
     }
 
@@ -193,6 +192,12 @@ public class AftershockInformationServiceImpl extends
     @Override
     public List<Map<String, Object>> getTotal(String eqid) {
         List<Map<String, Object>> aftershockDataList = aftershockInformationMapper.getTotal(eqid);
+        return aftershockDataList;
+    }
+
+    @Override
+    public List<Map<String, Object>> getAfterShockInformation(String eqid) {
+        List<Map<String, Object>> aftershockDataList = aftershockInformationMapper.getAfterShockInformation(eqid);
         return aftershockDataList;
     }
     // 判断某行是否为空

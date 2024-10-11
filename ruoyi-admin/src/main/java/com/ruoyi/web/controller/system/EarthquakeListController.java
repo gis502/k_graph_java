@@ -35,6 +35,29 @@ public class EarthquakeListController {
         return data;
     }
 
+
+
+//    @PostMapping("/addEq")
+//    @Log(title = "新增地震信息", businessType = BusinessType.INSERT)
+//    public AjaxResult addEq(@Validated @RequestBody EarthquakeList earthquakeList) {
+//        // 新增地震信息
+//        boolean success = earthquakeListService.save(earthquakeList);
+//        return success ? AjaxResult.success("新增地震信息成功！") : AjaxResult.error("新增地震信息失败！");
+//    }
+//
+//    @PostMapping("/updataeq")
+//    @Log(title = "修改地震信息", businessType = BusinessType.UPDATE)
+//    public AjaxResult updataeq(@Validated @RequestBody EarthquakeList earthquakeList){
+//        boolean success = earthquakeListService.updateById(earthquakeList);
+//        return success ? AjaxResult.success("新增地震信息成功！") : AjaxResult.error("新增地震信息失败！");
+//    }
+//
+//    @PostMapping("/deleteEq")
+//    @Log(title = "删除地震信息", businessType = BusinessType.DELETE)
+//    public AjaxResult deleteEq(@RequestParam("eqid") String eqid){
+//        return AjaxResult.success(earthquakeListService.removeById(eqid));
+//    }
+
     @GetMapping("/geteq")
     public List<EarthquakeList> selectAllEq() {
         return earthquakeListService.selectAllEq();
