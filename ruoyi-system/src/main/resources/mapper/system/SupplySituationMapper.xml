@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SupplySituationMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.SupplySituation">
+    <!--@mbg.generated-->
+    <!--@Table supply_situation-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_id" jdbcType="INTEGER" property="earthquakeId" />
+    <result column="earthquake_area_name" jdbcType="VARCHAR" property="earthquakeAreaName" />
+    <result column="water_supply_points" jdbcType="INTEGER" property="waterSupplyPoints" />
+    <result column="centralized_water_project_damage" jdbcType="INTEGER" property="centralizedWaterProjectDamage" />
+    <result column="report_deadline" jdbcType="TIMESTAMP" property="reportDeadline" />
+    <result column="system_insert_time" jdbcType="TIMESTAMP" property="systemInsertTime" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_id, earthquake_area_name, water_supply_points, centralized_water_project_damage, 
+    report_deadline, system_insert_time, earthquake_time, earthquake_name
+  </sql>
+</mapper>
