@@ -43,36 +43,32 @@ public class PowerSupplyInformationServiceImpl
     public IPage<PowerSupplyInformation> getPage(RequestBTO requestBTO) {
         Page<PowerSupplyInformation> powerSupplyInformation = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         String searchParam = requestBTO.getRequestParams();
-        LambdaQueryWrapper<PowerSupplyInformation> queryWrapper =
-                Wrappers.lambdaQuery(PowerSupplyInformation.class);
-        queryWrapper
+        LambdaQueryWrapper<PowerSupplyInformation> queryWrapper = Wrappers.lambdaQuery(PowerSupplyInformation.class)
                 .like(PowerSupplyInformation::getEarthquakeName, searchParam)
-                .or()
-                .like(PowerSupplyInformation::getEarthquakeTime, searchParam)
                 .or()
                 .like(PowerSupplyInformation::getAffectedArea, searchParam)
                 .or()
-                .like(PowerSupplyInformation::getReportingDeadline, searchParam)
+                .apply("cast(total_out_of_service_substations as text) like {0}", searchParam)
                 .or()
-                .like(PowerSupplyInformation::getTotalOutOfServiceSubstations, searchParam)
+                .apply("cast(restored_substations as text) like {0}", searchParam)
                 .or()
-                .like(PowerSupplyInformation::getRestoredSubstations, searchParam)
+                .apply("cast(to_be_repaired_substations as text) like {0}", searchParam)
                 .or()
-                .like(PowerSupplyInformation::getToBeRepairedSubstations, searchParam)
+                .apply("cast(total_trip_circuits as text) like {0}", searchParam)
                 .or()
-                .like(PowerSupplyInformation::getTotalTripCircuits, searchParam)
+                .apply("cast(restored_circuits as text) like {0}", searchParam)
                 .or()
-                .like(PowerSupplyInformation::getRestoredCircuits, searchParam)
+                .apply("cast(to_be_restored_circuits as text) like {0}", searchParam)
                 .or()
-                .like(PowerSupplyInformation::getToBeRestoredCircuits, searchParam)
+                .apply("cast(total_blackout_users as text) like {0}", searchParam)
                 .or()
-                .like(PowerSupplyInformation::getTotalBlackoutUsers, searchParam)
-                .or()
-                .like(PowerSupplyInformation::getRestoredPowerUsers, searchParam)
+                .apply("cast(restored_power_users as text) like {0}", searchParam)
                 .or()
                 .like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, searchParam)
                 .or()
-                .like(PowerSupplyInformation::getEmergencyPowerUsers, searchParam);
+                .apply("cast(emergency_power_users as text) like {0}", searchParam);
+
+
         return this.page(powerSupplyInformation, queryWrapper);
     }
 

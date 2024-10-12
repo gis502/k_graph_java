@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SubstationDetailsMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.SubstationDetails">
+    <!--@mbg.generated-->
+    <!--@Table substation_details-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="team" jdbcType="VARCHAR" property="team" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="voltage_level" jdbcType="VARCHAR" property="voltageLevel" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="line" jdbcType="VARCHAR" property="line" />
+    <result column="risk_category" jdbcType="VARCHAR" property="riskCategory" />
+    <result column="type_division" jdbcType="VARCHAR" property="typeDivision" />
+    <result column="government_disclosed_point" jdbcType="VARCHAR" property="governmentDisclosedPoint" />
+    <result column="risk_description" jdbcType="VARCHAR" property="riskDescription" />
+    <result column="district" jdbcType="VARCHAR" property="district" />
+    <result column="town" jdbcType="VARCHAR" property="town" />
+    <result column="village" jdbcType="VARCHAR" property="village" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="data_source_unit" jdbcType="VARCHAR" property="dataSourceUnit" />
+    <result column="administrative_level" jdbcType="VARCHAR" property="administrativeLevel" />
+    <result column="creation_time" jdbcType="TIMESTAMP" property="creationTime" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, unit, team, "type", voltage_level, "name", line, risk_category, type_division, 
+    government_disclosed_point, risk_description, district, town, village, address, remarks, 
+    data_source_unit, administrative_level, creation_time, "number", geom
+  </sql>
+</mapper>
