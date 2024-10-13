@@ -134,7 +134,7 @@ public class MapperConfig {
         //生命线工程破坏类-不可用输气管线表
         typeMapping.put("输、不可用输气管线", "unusableGasPipes");
         //交通设施破坏类-
-        typeMapping.put("输、供气管线破坏点", "waterSupplyPipelineDamagePoint");
+        typeMapping.put("供气管线破坏点", "gasPipelineDamagePoints");
         //水利工程破坏类-堰塞湖表
         typeMapping.put("堰塞湖", "damLake");
         //水利工程破坏类-基本完好大坝,中等破坏大坝,严重破坏大坝表
