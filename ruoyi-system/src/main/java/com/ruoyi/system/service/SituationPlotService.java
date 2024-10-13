@@ -11,7 +11,7 @@ public interface SituationPlotService extends IService<SituationPlot>{
 
     void deletePlot(String plotType, String plotId);
 
-    void updatePlotDetails(String plotType, String plotId, Object details);
+    void updatePlotDetails(String startTime,String endTime,String plotType, String plotId, Object details);
 
     Object getPlotInfos(String plotType, String plotId);
 
