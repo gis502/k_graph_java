@@ -58,6 +58,7 @@ public class EmergencyResourcesController {
         return emergencyData; // 返回包含三个列表的 Map
     }
 
+    // 物资查询
     @PostMapping("/searchMaterialData")
     public List<DisasterReliefSupplies> searchMaterialData(@RequestBody Map<String,Object> inputData){
         String county = (String) inputData.get("county");
@@ -78,6 +79,37 @@ public class EmergencyResourcesController {
             queryWrapper.like("contact_phone",contactPhone);
         }
         return disasterReliefSuppliesService.list(queryWrapper);
+    }
+
+    // 救援力量查询
+    @PostMapping("/searchEmergencyTeamData")
+    public List<RescueTeamsInfo> searchEmergencyTeamData(@RequestBody Map<String,Object> inputData){
+        String levelName = (String) inputData.get("levelName");
+        String teamTypeName = (String) inputData.get("teamTypeName");
+        Integer totalMembers = (Integer) inputData.get("totalMembers");
+        String address = (String) inputData.get("address");
+        String personInCharge = (String) inputData.get("personInCharge");
+        String chargePhone = (String) inputData.get("chargePhone");
+        QueryWrapper<RescueTeamsInfo> queryWrapper = new QueryWrapper<>();
+        if(!levelName.equals("")){
+            queryWrapper.like("level_name",levelName);
+        }
+        if(!address.equals("")){
+            queryWrapper.like("address",address);
+        }
+        if(!teamTypeName.equals("")){
+            queryWrapper.like("team_type_name",teamTypeName);
+        }
+        if(!totalMembers.equals("")){
+            queryWrapper.gt("total_members",totalMembers);
+        }
+        if(!personInCharge.equals("")){
+            queryWrapper.like("person_in_charge",personInCharge);
+        }
+        if(!chargePhone.equals("")){
+            queryWrapper.like("charge_phone",chargePhone);
+        }
+        return rescueTeamsInfoService.list(queryWrapper);
     }
 
 
