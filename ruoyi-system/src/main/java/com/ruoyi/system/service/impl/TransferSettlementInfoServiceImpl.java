@@ -138,6 +138,12 @@ public class TransferSettlementInfoServiceImpl
     public List<TransferSettlementInfo> getTotal(String eqid){
         return transferSettlementInfoMapper.getTotal(eqid);
     }
+
+    @Override
+    public List<TransferSettlementInfo> getTransferInfo(String eqid){
+        return transferSettlementInfoMapper.getTransferInfo(eqid);
+    }
+
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {

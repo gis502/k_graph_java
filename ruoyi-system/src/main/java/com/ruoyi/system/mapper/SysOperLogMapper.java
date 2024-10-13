@@ -47,8 +47,7 @@ public interface SysOperLogMapper
      */
     public void cleanOperLog();
 
-
-    List<SysOperLog> getMessageByDay(@Param("requestParams")String requestParams, @Param("username")String username);
+    List<SysOperLog> getMessageByDay(@Param("requestParams")String requestParams,@Param("username")String username);
 
 
 
@@ -62,6 +61,5 @@ public interface SysOperLogMapper
 
 
     List<SysOperLog> getMessageByYear(@Param("requestParams")String requestParams,@Param("username")String username);
-
 
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.MilitaryArrowsMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.MilitaryArrows">
+    <!--@mbg.generated-->
+    <!--@Table military_arrows-->
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="plot_id" jdbcType="VARCHAR" property="plotId" />
+    <result column="starting_point" jdbcType="VARCHAR" property="startingPoint" />
+    <result column="target_point" jdbcType="VARCHAR" property="targetPoint" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, plot_id, starting_point, target_point
+  </sql>
+</mapper>

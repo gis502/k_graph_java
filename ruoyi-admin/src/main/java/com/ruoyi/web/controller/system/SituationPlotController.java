@@ -69,12 +69,14 @@ public class SituationPlotController {
     @PutMapping("/updataplotinfo")
     @Log(title = "态势标绘", businessType = BusinessType.UPDATE)
     public ResponseEntity<String> updatePlotDetails(
+            @RequestParam String startTime,
+            @RequestParam String endTime,
             @RequestParam String plotType,
             @RequestParam String plotId,
             @RequestBody Map<String, Object> details) {
 
         try {
-            situationPlotService.updatePlotDetails(plotType, plotId, details);
+            situationPlotService.updatePlotDetails(startTime,endTime,plotType, plotId, details);
             return ResponseEntity.ok("Plot details updated successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating plot details: " + e.getMessage());

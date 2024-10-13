@@ -80,17 +80,18 @@ public class DamageAssessmentController {
         double casualAll=0;
         String Outcir="";
         if (m.find()) {
-            Outcir = "CURVEPOLYGON(CIRCULARSTRING(" + m.group(1) + "))";
+            Outcir = "CURVEPOLYGON(CIRCULARSTRING(" + m.group(1) + "))";  //取烈度圈最外面一圈
 
-            int count=personDes2019Service.getCountinCirle(Outcir);
+            int count=personDes2019Service.getCountinCirle(Outcir); //是否有人口密度栅格落入烈度圈范围
             if(count==0){casualAll=0;}
             else{
-                double des=personDes2019Service.getavgdesinCirle(Outcir);
-                if(Centerintensity>8){
+                double des=personDes2019Service.getavgdesinCirle(Outcir); //烈度圈中方平均人口密度
+                if(Centerintensity>8){  //烈度大于八度。人员密度中原来基础上加上150（公式）
                     des=des+150;
                 }
-                double centerIntensityLog = Math.log(Centerintensity);
-                double peopleDesLog = Math.log(des);
+                double centerIntensityLog = Math.log(Centerintensity); //中心烈度
+                double peopleDesLog = Math.log(des); //烈度圈中方平均人口密度
+                //总人数 带入公式
                 casualAll= Math.round(
                         Math.exp(
                                 Math.exp(
@@ -107,30 +108,70 @@ public class DamageAssessmentController {
         }
         response.put("casualAll", casualAll);
 
-        //雅安市各县  按面积占比乘以总数
-        if(casualAll!=0){
-            double sum=0;
 
-            List<String> arrName=new ArrayList<>(Arrays.asList("雨城区", "名山区", "荥经县", "汉源县", "石棉县", "天全县", "芦山县", "宝兴县"));
+        //每个行政区权重计算
+        List<String> arrName=new ArrayList<>(Arrays.asList("雨城区", "名山区", "荥经县", "汉源县", "石棉县", "天全县", "芦山县", "宝兴县")); //行政区
+        double totalWeightedRatio = 0; // 所有区域的加权比率总和
+        Map<String, Double> weightedRatios = new HashMap<>(); // 用于存储每个区县的加权比率
+        Map<String, Double> populationRatios = new HashMap<String, Double>() {{  //人员占比
+            put("雨城区", 25.71);
+            put("名山区", 17.75);
+            put("荥经县", 9.17);
+            put("汉源县", 19.91);
+            put("石棉县", 7.95);
+            put("天全县", 9.20);
+            put("芦山县", 6.96);
+            put("宝兴县", 3.35);
+        }};
+
+        //
+        if(casualAll!=0){
+//            double sum=0;
+
             for (String item : arrName) {
                 String itemAreaStr=yaanJsonService.getAreaStr(item);
-                String intersectionArea=yaanJsonService.getintersectionArea(itemAreaStr,Outcir);
-                if(intersectionArea=="POLYGON EMPTY"){
-                    response.put(item, 0);
+                String intersectionArea=yaanJsonService.getintersectionArea(itemAreaStr,Outcir);  //行政区和烈度圈相交地面
+                if(intersectionArea=="POLYGON EMPTY"){  //不相交
+//                    response.put(item, 0);
+                    weightedRatios.put(item, 0.0);
                 }
-                else{
-                     double ratio=yaanJsonService.computeIntersectionRatio(intersectionArea,Outcir);
-                     double itemcasual=Math.round(ratio*casualAll);
+
+                else{ //烈度圈与行政区相交
+                    double areaRatio=yaanJsonService.computeIntersectionRatio(intersectionArea,Outcir); //行政区和烈度圈相交比率
+                    System.out.println("areaRatio");
+                    System.out.println(areaRatio);
+                    double populationRatio = populationRatios.getOrDefault(item, 0.0); //人员占比
+                    System.out.println("populationRatio");
+                    System.out.println(populationRatio);
+
+                    double weightedRatio = areaRatio * populationRatio;
+                    System.out.println("weightedRatio");
+                    System.out.println(weightedRatio);
+                    weightedRatios.put(item, weightedRatio); // 存储每个区县的人员*面积比率
+                    System.out.println("weightedRatios");
+                    System.out.println(weightedRatios);
+                    totalWeightedRatio += weightedRatio;
+                }
+            }
+        }
+        System.out.println("totalWeightedRatio");
+        System.out.println(totalWeightedRatio);
+        //每个区县人员
+        if(totalWeightedRatio!=0){
+            double sum=0;
+            for (String item : arrName) {
+                double weightedRatio = weightedRatios.getOrDefault(item, 0.0); //人员占比
+                     double itemcasual=Math.round(weightedRatio*casualAll/totalWeightedRatio);  //比率乘以总人数
                      sum+=itemcasual;
                     response.put(item, itemcasual);
-                }
             }
             if(sum==0){response.put("yaancasual", "无");}
             else if(sum>casualAll){response.put("casualAll", sum);}
             else {response.put("yaancasual", sum);}
         }
 
-//        System.out.println(response);
+
+        System.out.println(response);
         return response;
     }
 

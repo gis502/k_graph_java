@@ -20,11 +20,14 @@
     <result column="on_standby" jdbcType="VARCHAR" property="onStandby" />
     <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
     <result column="eqid" jdbcType="VARCHAR" property="eqid" />
+    <result column="describe_things" jdbcType="VARCHAR" property="describeThings" />
+    <result column="plot_id" jdbcType="VARCHAR" property="plotId" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     uuid, team_name, station_province, station_city, station_county, personnel_count, 
     team_nature, team_type, departure_date, estimated_arrival_date, planned_rescue_area, 
-    contact_person, contact_phone, on_standby, record_time, eqid
+    contact_person, contact_phone, on_standby, record_time, eqid,describe_things,plot_id
   </sql>
+  
 </mapper>
