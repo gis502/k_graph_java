@@ -1,6 +1,6 @@
 # 备份文件配置
 backup:
-    path: D:/backup1/
+    path: D:/backup/
     db_port: 7654
     db_host: 47.92.216.173
     db_name: yaan
