@@ -78,6 +78,7 @@ public class EmergencyResourcesController {
         if(!contactPhone.equals("")){
             queryWrapper.like("contact_phone",contactPhone);
         }
+        queryWrapper.isNotNull("geom");
         return disasterReliefSuppliesService.list(queryWrapper);
     }
 
@@ -109,6 +110,7 @@ public class EmergencyResourcesController {
         if(!chargePhone.equals("")){
             queryWrapper.like("charge_phone",chargePhone);
         }
+        queryWrapper.isNotNull("geom");
         return rescueTeamsInfoService.list(queryWrapper);
     }
 
