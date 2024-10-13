@@ -209,6 +209,20 @@ public class EarthquakeListController {
         // 创建 GeometryFactory
         GeometryFactory geometryFactory = new GeometryFactory();
 
+//        // 获取经纬度
+//        Double longitude = earthquakeList.getLongitude();
+//        Double latitude = earthquakeList.getLatitude();
+//        System.out.println("经纬度------------------------------:"+longitude);
+//
+//        // 检查经纬度是否有效
+//        if (longitude != null && latitude != null) {
+//            // 创建 Point 对象
+//            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+//            // 设置 geom
+//            earthquakeList.setGeom(point);
+//        }
+
+
         // 创建 Point 对象
         Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
         // 设置 geom
