@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,12 +123,19 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
     }
 
     @Override
-    public void updatePlotDetails(String plotType, String plotId, Object details) {
+    public void updatePlotDetails(String startTime, String endTime,String plotType, String plotId, Object details) {
         // 打印更新前的 plotId 和 details 信息
-        System.out.println("Updating plotId: " + plotId);
-        System.out.println("Updating details: " + details);
+        //        System.out.println("Updating plotId: " + plotId);
+        //        System.out.println("Updating details: " + details);
 
         // 更新 plot 信息（如果有相关字段需要更新的话）
+        SituationPlot situationPlot = new SituationPlot();
+        situationPlot.setStartTime(LocalDateTime.parse(startTime));
+        situationPlot.setEndTime(LocalDateTime.parse(endTime));
+
+        UpdateWrapper<SituationPlot> plotUpdateWrapper = new UpdateWrapper<>();
+        plotUpdateWrapper.eq("plot_id",plotId);
+        situationPlotMapper.update(situationPlot,plotUpdateWrapper);
         // 这里假设 plot 信息的更新是可选的，不需要实际的 plot 对象
         // 如果需要，可以根据实际情况调整
 

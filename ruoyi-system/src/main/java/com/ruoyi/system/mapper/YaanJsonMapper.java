@@ -10,6 +10,4 @@ public interface YaanJsonMapper extends BaseMapper<YaanJson> {
     String getAreaStr(String name);
     String getintersectionArea(@Param("Outcir") String Outcir, @Param("Area") String Area);
     Double computeIntersectionRatio(@Param("intersectionArea") String intersectionArea, @Param("Outcir") String Outcir);
-
-
 }
