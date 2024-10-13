@@ -37,9 +37,6 @@ public class TimeLineController {
     @GetMapping("/rescueActionCasualties")
     public List<RescueActionCasualties> getRescueActionCasualties(@RequestParam("eqid") String eqid) {
 
-        System.out.println(eqid);
-        List<RescueActionCasualties> list=rescueActionCasualtiesService.getByEqid(eqid);
-        System.out.println(list);
         // 根据传递的 eqid 参数查询数据
         return rescueActionCasualtiesService.getByEqid(eqid);
     }
