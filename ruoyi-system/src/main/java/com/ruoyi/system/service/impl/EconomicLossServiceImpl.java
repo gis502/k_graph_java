@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EconomicLossServiceImpl extends ServiceImpl<EconomicLossMapper, EconomicLoss> implements EconomicLossService {
@@ -20,6 +21,20 @@ public class EconomicLossServiceImpl extends ServiceImpl<EconomicLossMapper, Eco
 
     @Override
     public List<EconomicLoss> selectEconomicLossByEqid(String eqid) {
-        return economicLossMapper.selectEconomicLossByEqid(eqid); // 根据 eqid 查询
+        return economicLossMapper.selectEconomicLossByEqid(eqid);
     }
+
+    @Override
+    public void saveEconomicLoss(List<Map<String, Object>> economicLossList) {
+
+        for (Map<String, Object> damageData : economicLossList) {
+            EconomicLoss economicLoss = new EconomicLoss();
+            economicLoss.setEqid((String) damageData.get("eqid"));
+            economicLoss.setCounty((String) damageData.get("county"));
+            economicLoss.setAmount(((Number) damageData.get("amount")).doubleValue());
+
+            economicLossMapper.insert(economicLoss);
+        }
+    }
+
 }

@@ -185,6 +185,16 @@ public class DamageAssessmentController {
         return economicLossService.selectEconomicLossByEqid(eqid);
     }
 
+    @PostMapping("saveBuildingDamage")
+    public void saveBuildingDamage(@RequestBody List<Map<String, Object>> buildingDamageList) {
+        buildingDamageService.saveBuildingDamage(buildingDamageList);
+    }
+
+    @PostMapping("saveEconomicLoss")
+    public void saveEconomicLoss(@RequestBody List<Map<String, Object>> economicLossList) {
+        economicLossService.saveEconomicLoss(economicLossList);
+    }
+
 }
 
 
