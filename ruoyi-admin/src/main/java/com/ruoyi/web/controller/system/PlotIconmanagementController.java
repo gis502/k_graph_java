@@ -38,4 +38,10 @@ public class PlotIconmanagementController {
     public AjaxResult addPlotIcon(@RequestBody PlotIconmanagement plotIcon){
         return AjaxResult.success(plotIconmanagementService.save(plotIcon));
     }
+    @PostMapping("/searchploticon")
+    public List<PlotIconmanagement>searchPloticon(@RequestParam("menuName") String menuName){
+        System.out.println("menuName:"+menuName);
+        List<PlotIconmanagement> plotIcon = plotIconmanagementService.searchPlotIcon(menuName);
+        return plotIcon;
+    }
 }

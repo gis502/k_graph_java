@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
@@ -9,5 +10,13 @@ import com.ruoyi.system.mapper.PlotIconmanagementMapper;
 import com.ruoyi.system.service.PlotIconmanagementService;
 @Service
 public class PlotIconmanagementServiceImpl extends ServiceImpl<PlotIconmanagementMapper, PlotIconmanagement> implements PlotIconmanagementService{
+
+    @Autowired
+    private PlotIconmanagementMapper plotIconmanagementMapper;
+
+    @Override
+    public List<PlotIconmanagement> searchPlotIcon(String menuName) {
+        return plotIconmanagementMapper.searchPlotIcon( menuName );
+    }
 
 }

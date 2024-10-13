@@ -6,4 +6,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 public interface PlotIconmanagementService extends IService<PlotIconmanagement>{
+    List<PlotIconmanagement> searchPlotIcon(String menuName);
 }
