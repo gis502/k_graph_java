@@ -34,15 +34,16 @@ public class TimeLineController {
     }
 
     // ----人员伤亡
-    @GetMapping("rescueActionCasualties")
-    public List<RescueActionCasualties> getRescueActionCasualties(){
-        return rescueActionCasualtiesService.list();
+    @GetMapping("/rescueActionCasualties")
+    public List<RescueActionCasualties> getRescueActionCasualties(@RequestParam("eqid") String eqid) {
+        // 根据传递的 eqid 参数查询数据
+        return rescueActionCasualtiesService.getByEqid(eqid);
     }
 
     // ----救援出队
     @GetMapping("/rescueTeam")
-    public List<RescueTeam> getRescueTeam() {
-        return rescueTeamService.list();
+    public List<RescueTeam> getRescueTeam(@RequestParam("eqid") String eqid) {
+        return rescueTeamService.getByEqid(eqid);
     }
 
     // ----最新新闻

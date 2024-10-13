@@ -117,4 +117,7 @@ public class RescueActionCasualties {
      */
     @TableField(value = "plot_id")
     private String plotId;
+
+    @TableField(value = "eqid")
+    private String eqid;
 }
