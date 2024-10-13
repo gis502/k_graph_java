@@ -49,5 +49,21 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
             "GROUP BY cr.affected_area, cr.submission_deadline")
     List<Map<String, Object>> getTotal(String eqid);
 
+    @Select("SELECT yas.magnitude_3_3_9, yas.magnitude_4_4_9, yas.magnitude_5_5_9, yas.affected_area, yas.earthquake_time, yas.total_aftershocks " +
+            "FROM public.aftershock_information yas " +
+            "JOIN ( " +
+            "    SELECT affected_area, MAX(submission_deadline) AS latest_submission_deadline " +
+            "    FROM public.aftershock_information " +
+            "    WHERE earthquake_identifier = #{eqid} " +
+            "    GROUP BY affected_area " +
+            ") sub ON yas.affected_area = sub.affected_area " +
+            "AND yas.submission_deadline = sub.latest_submission_deadline " +
+            "WHERE yas.earthquake_identifier = #{eqid} " +
+            "ORDER BY yas.affected_area ")
+    List<Map<String, Object>> getAfterShockInformation(String eqid);
+
+
+
+
 
 }

@@ -156,22 +156,63 @@ public class EarthquakeListController {
     @PostMapping("/addEq")
     public boolean addEq(@Valid @RequestBody EarthquakeList earthquakeList) {
 
+        // 震级验证
+        String magnitudeStr = earthquakeList.getMagnitude();
+        if (magnitudeStr == null || magnitudeStr.isEmpty()) {
+            throw new IllegalArgumentException("震级不能为空");
+        }
+        Double magnitude = null;
+        try {
+            magnitude = Double.valueOf(magnitudeStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("震级必须为数字");
+        }
+        if (magnitude < 3 || magnitude > 10) {
+            throw new IllegalArgumentException("震级必须在 3 到 10 之间");
+        }
+
+        // 深度验证
+        String depthStr = earthquakeList.getDepth();
+        if (depthStr == null || depthStr.isEmpty()) {
+            throw new IllegalArgumentException("深度不能为空");
+        }
+        Double depth = null;
+        try {
+            depth = Double.valueOf(depthStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("深度必须为数字");
+        }
+        if (depth < 0) {
+            throw new IllegalArgumentException("深度不能为负数");
+        }
+
+        // 经度验证
+        Double longitude = earthquakeList.getLongitude();
+        if (longitude == null) {
+            throw new IllegalArgumentException("经度不能为空");
+        }
+        if (longitude < -180 || longitude > 180) {
+            throw new IllegalArgumentException("经度应在 -180 到 180 之间");
+        }
+
+        // 纬度验证
+        Double latitude = earthquakeList.getLatitude();
+        if (latitude == null) {
+            throw new IllegalArgumentException("纬度不能为空");
+        }
+        if (latitude < -90 || latitude > 90) {
+            throw new IllegalArgumentException("纬度应在 -90 到 90 之间");
+        }
+
+
 
         // 创建 GeometryFactory
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        // 获取经纬度
-        Double longitude = earthquakeList.getLongitude();
-        Double latitude = earthquakeList.getLatitude();
-        System.out.println("经纬度------------------------------:"+longitude);
-
-        // 检查经纬度是否有效
-        if (longitude != null && latitude != null) {
-            // 创建 Point 对象
-            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-            // 设置 geom
-            earthquakeList.setGeom(point);
-        }
+        // 创建 Point 对象
+        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+        // 设置 geom
+        earthquakeList.setGeom(point);
 
         // 保存地震信息
         return earthquakeListService.save(earthquakeList);
