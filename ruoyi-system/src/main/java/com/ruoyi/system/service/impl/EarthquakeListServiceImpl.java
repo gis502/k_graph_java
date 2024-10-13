@@ -23,7 +23,7 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
 
     @Override
     public List<String> getExcelUploadEarthquake() {
-        // 查询所有的 EqList 数据
+        // 查询所有的 EqList 数据getData
         // 自定义日期时间格式化器，确保显示秒
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
