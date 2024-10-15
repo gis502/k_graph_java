@@ -84,6 +84,9 @@ public class MapperConfig {
         typeMapping.put("轻伤人员", "rescueActionCasualties");
         typeMapping.put("危重伤人员", "rescueActionCasualties");
 
+        //救援行动类-集结缓冲区类表
+        typeMapping.put("集结缓冲区", "bufferZone");
+
         //次生/衍生灾害处置信息-滑坡、崩塌表
         typeMapping.put("滑坡", "landslideCollapse");
         typeMapping.put("崩塌", "landslideCollapse");
