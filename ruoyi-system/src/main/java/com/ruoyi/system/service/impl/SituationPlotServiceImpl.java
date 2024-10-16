@@ -7,18 +7,23 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.SituationPlotMapper;
 import com.ruoyi.system.domain.entity.SituationPlot;
 import com.ruoyi.system.service.SituationPlotService;
+
 @Service
-public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, SituationPlot> implements SituationPlotService{
+public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, SituationPlot> implements SituationPlotService {
     @Autowired
     private SituationPlotMapper situationPlotMapper;
     @Autowired
@@ -46,7 +51,7 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         System.out.println("Inserting details: " + details);
         // 根据plotType获取对应的Mapper类型
         String mapperType = plotTypeToMapperType.get(plotType.toLowerCase());
-        System.out.println("mapperType: " + mapperType);
+        System.out.println("mapperType！！: " + mapperType);
         if (mapperType != null) {
             System.out.println("mapperRegistry: " + mapperRegistry);
             try {
@@ -118,12 +123,19 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
     }
 
     @Override
-    public void updatePlotDetails(String plotType, String plotId, Object details) {
+    public void updatePlotDetails(String startTime, String endTime,String plotType, String plotId, Object details) {
         // 打印更新前的 plotId 和 details 信息
-        System.out.println("Updating plotId: " + plotId);
-        System.out.println("Updating details: " + details);
+        //        System.out.println("Updating plotId: " + plotId);
+        //        System.out.println("Updating details: " + details);
 
         // 更新 plot 信息（如果有相关字段需要更新的话）
+        SituationPlot situationPlot = new SituationPlot();
+        situationPlot.setStartTime(LocalDateTime.parse(startTime));
+        situationPlot.setEndTime(LocalDateTime.parse(endTime));
+
+        UpdateWrapper<SituationPlot> plotUpdateWrapper = new UpdateWrapper<>();
+        plotUpdateWrapper.eq("plot_id",plotId);
+        situationPlotMapper.update(situationPlot,plotUpdateWrapper);
         // 这里假设 plot 信息的更新是可选的，不需要实际的 plot 对象
         // 如果需要，可以根据实际情况调整
 
@@ -168,6 +180,14 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         String mapperType = plotTypeToMapperType.get(plotType.toLowerCase());
         if (mapperType != null) {
             try {
+                // 1. 查询 situation_plot 表中的信息
+                QueryWrapper<SituationPlot> plotWrapper = new QueryWrapper<>();
+                plotWrapper.eq("plot_id", plotId);  // 使用 plotId 作为查询条件
+
+                // 获取 situation_plot 表中的记录
+                SituationPlot plotInfo = situationPlotMapper.selectOne(plotWrapper);
+                System.out.println("Plot Query result: " + plotInfo);
+
                 BaseMapper<?> mapper = mapperRegistry.get(mapperType + "Mapper");
                 System.out.println("mapper: " + mapper);
 
@@ -184,8 +204,13 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                     Object result = ((BaseMapper<Object>) mapper).selectOne(wrapper);
                     System.out.println("Query result: " + result);
 
+
+                    // 将 plot 表的信息和 plotType 对应表的信息整合在一起
+                    Map<String, Object> combinedResult = new HashMap<>();
+                    combinedResult.put("plotInfo", plotInfo);
+                    combinedResult.put("plotTypeInfo", result);
                     // 返回查询结果
-                    return result;
+                    return combinedResult;
                 } else {
                     throw new IllegalArgumentException("Unknown mapper type: " + mapperType);
                 }

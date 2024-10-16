@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.RescueActionCasualtiesMapper">
+ <mapper namespace="com.ruoyi.system.mapper.RescueActionCasualtiesMapper">
   <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.RescueActionCasualties">
     <!--@mbg.generated-->
     <!--@Table rescue_action_casualties-->
@@ -8,10 +8,8 @@
     <result column="location" jdbcType="VARCHAR" property="location" />
     <result column="casualty_status" jdbcType="VARCHAR" property="casualtyStatus" />
     <result column="abcd_score" jdbcType="VARCHAR" property="abcdScore" />
-    <result column="new_mild_injury_count" jdbcType="INTEGER" property="newMildInjuryCount" />
-    <result column="new_serious_injury_count" jdbcType="INTEGER" property="newSeriousInjuryCount" />
-    <result column="new_critical_injury_count" jdbcType="INTEGER" property="newCriticalInjuryCount" />
-    <result column="new_death_count" jdbcType="INTEGER" property="newDeathCount" />
+    <result column="new_count" jdbcType="INTEGER" property="newCount" />
+    <result column="total_count" jdbcType="INTEGER" property="totalCount" />
     <result column="total_mild_injury_count" jdbcType="INTEGER" property="totalMildInjuryCount" />
     <result column="total_serious_injury_count" jdbcType="INTEGER" property="totalSeriousInjuryCount" />
     <result column="total_critical_injury_count" jdbcType="INTEGER" property="totalCriticalInjuryCount" />
@@ -20,12 +18,13 @@
     <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
     <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
     <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
+    <result column="plot_id" jdbcType="VARCHAR" property="plotId" />
+    <result column="eqid" jdbcType="VARCHAR" property="eqid" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    uuid, "location", casualty_status, abcd_score, new_mild_injury_count, new_serious_injury_count, 
-    new_critical_injury_count, new_death_count, total_mild_injury_count, total_serious_injury_count, 
-    total_critical_injury_count, total_death_count, medical_rescue_team, contact_person, 
-    contact_phone, record_time
+    uuid, "location", casualty_status, abcd_score,new_count,total_count,
+    total_mild_injury_count, total_serious_injury_count,total_critical_injury_count, total_death_count,
+    medical_rescue_team, contact_person,contact_phone, record_time,plot_id,eqid
   </sql>
 </mapper>

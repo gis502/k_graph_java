@@ -45,16 +45,20 @@ public class SituationPlotController {
         System.out.println("Plot: " + plot);
         System.out.println("Plot Info: " + plotInfo);
         situationPlotService.save(plot);
-
-        // 调用 service 层的 addPlot 方法
-        try {
-            situationPlotService.addPlot(plot.getPlotType(), plotInfo);
+        if (requestBody.getPlotinfo() != null){
+            // 调用 service 层的 addPlot 方法
+            try {
+                situationPlotService.addPlot(plot.getPlotType(), plotInfo);
+                return ResponseEntity.ok("Plot added successfully");
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+            }
+        } else {
             return ResponseEntity.ok("Plot added successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
+
     }
 
     /**
@@ -65,12 +69,14 @@ public class SituationPlotController {
     @PutMapping("/updataplotinfo")
     @Log(title = "态势标绘", businessType = BusinessType.UPDATE)
     public ResponseEntity<String> updatePlotDetails(
+            @RequestParam String startTime,
+            @RequestParam String endTime,
             @RequestParam String plotType,
             @RequestParam String plotId,
             @RequestBody Map<String, Object> details) {
 
         try {
-            situationPlotService.updatePlotDetails(plotType, plotId, details);
+            situationPlotService.updatePlotDetails(startTime,endTime,plotType, plotId, details);
             return ResponseEntity.ok("Plot details updated successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating plot details: " + e.getMessage());

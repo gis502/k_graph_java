@@ -1,14 +1,12 @@
 package com.ruoyi.web.controller.system;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.service.impl.EmergencyResponseInfoServiceImpl;
 import com.ruoyi.system.service.impl.NewsServiceImpl;
 import com.ruoyi.system.service.impl.RescueActionCasualtiesServiceImpl;
 import com.ruoyi.system.service.impl.RescueTeamServiceImpl;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -36,15 +34,17 @@ public class TimeLineController {
     }
 
     // ----人员伤亡
-    @GetMapping("rescueActionCasualties")
-    public List<RescueActionCasualties> getRescueActionCasualties(){
-        return rescueActionCasualtiesService.list();
+    @GetMapping("/rescueActionCasualties")
+    public List<RescueActionCasualties> getRescueActionCasualties(@RequestParam("eqid") String eqid) {
+
+        // 根据传递的 eqid 参数查询数据
+        return rescueActionCasualtiesService.getByEqid(eqid);
     }
 
     // ----救援出队
     @GetMapping("/rescueTeam")
-    public List<RescueTeam> getRescueTeam() {
-        return rescueTeamService.list();
+    public List<RescueTeam> getRescueTeam(@RequestParam("eqid") String eqid) {
+        return rescueTeamService.getByEqid(eqid);
     }
 
     // ----最新新闻
@@ -52,6 +52,8 @@ public class TimeLineController {
     public List<News> getNews() {
         return newsService.list();
     }
+
+
 
 
 

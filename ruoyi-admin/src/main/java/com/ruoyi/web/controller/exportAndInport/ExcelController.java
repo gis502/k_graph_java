@@ -102,7 +102,6 @@ public class ExcelController {
     @PostMapping("/getExcelUploadByTime")
     public R getExcelUploadByTime(@RequestParam("time") String time, @RequestParam("requestParams") String requestParams, @RequestParam("username") String username) {
         List<SysOperLog> message = null;
-
         switch (time) {
             case "今日":
                 message = sysOperLogMapper.getMessageByDay(requestParams,username);

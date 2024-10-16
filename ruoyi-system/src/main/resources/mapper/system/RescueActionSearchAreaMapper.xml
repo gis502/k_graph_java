@@ -10,7 +10,7 @@
     <result column="rescue_team_and_personnel_count" jdbcType="VARCHAR" property="rescueTeamAndPersonnelCount" />
     <result column="rescue_type" jdbcType="VARCHAR" property="rescueType" />
     <result column="rescue_time_plan" jdbcType="VARCHAR" property="rescueTimePlan" />
-    <result column="rescue_equipment_type" jdbcType="VARCHAR" property="rescueEquipmentType" />
+<!--    <result column="rescue_equipment_type" property="rescueEquipmentType" />-->
     <result column="need_engineering_machinery" jdbcType="BOOLEAN" property="needEngineeringMachinery" />
     <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
     <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
@@ -18,8 +18,8 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    uuid, rescue_area_location, rescue_area_size_km2, rescue_team_and_personnel_count, 
-    rescue_type, rescue_time_plan, rescue_equipment_type, need_engineering_machinery, 
+    uuid, rescue_area_location, rescue_area_size_km2, rescue_team_and_personnel_count,
+    rescue_type, rescue_time_plan, rescue_equipment_type, need_engineering_machinery,
     contact_person, contact_phone, record_time
   </sql>
 </mapper>

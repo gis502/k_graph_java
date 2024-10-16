@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BufferZoneMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.BufferZone">
+    <!--@mbg.generated-->
+    <!--@Table buffer_zone-->
+    <result column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="plot_id" jdbcType="VARCHAR" property="plotId" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="capacity" jdbcType="VARCHAR" property="capacity" />
+    <result column="basic_support" jdbcType="VARCHAR" property="basicSupport" />
+    <result column="contact_person" jdbcType="VARCHAR" property="contactPerson" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, plot_id, area, capacity, basic_support, contact_person, contact_phone
+  </sql>
+</mapper>

@@ -10,4 +10,8 @@ public interface TransferSettlementInfoService extends IService<TransferSettleme
 
 
     List<TransferSettlementInfo> importExcelTransferSettlementInfo(MultipartFile file, String userName, String eqId);
+
+    List<TransferSettlementInfo> getTotal(String eqid);
+
+    List<TransferSettlementInfo> getTransferInfo(String eqid);
 }

@@ -26,4 +26,11 @@ public class RestrictedUnusableRoads {
      */
     @TableField(value = "road_level")
     private String roadLevel;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
+
 }

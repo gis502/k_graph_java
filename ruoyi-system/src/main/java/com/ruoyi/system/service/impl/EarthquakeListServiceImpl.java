@@ -23,11 +23,15 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
 
     @Override
     public List<String> getExcelUploadEarthquake() {
-        // 查询所有的 EqList 数据
+        // 查询所有的 EqList 数据getData
         // 自定义日期时间格式化器，确保显示秒
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        List<EarthquakeList> eqLists = earthquakeListMapper.selectList(null);
+        // 创建 QueryWrapper 用于排序
+        QueryWrapper<EarthquakeList> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("occurrence_time"); // 按 OccurrenceTime 字段升序排序
+
+        List<EarthquakeList> eqLists = earthquakeListMapper.selectList(queryWrapper);
 
         // 拼接 position、time、magnitude 字段
         List<String> result = new ArrayList<>();
