@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BuildingDamageServiceImpl extends ServiceImpl<BuildingDamageMapper, BuildingDamage> implements BuildingDamageService {
@@ -17,6 +18,20 @@ public class BuildingDamageServiceImpl extends ServiceImpl<BuildingDamageMapper,
 
     @Override
     public List<BuildingDamage> selectBuildingDamageByEqid(String eqid) {
-        return buildingDamageMapper.selectBuildingDamageByEqid(eqid); // 根据 eqid 查询
+        return buildingDamageMapper.selectBuildingDamageByEqid(eqid);
     }
+
+    @Override
+    public void saveBuildingDamage(List<Map<String, Object>> buildingDamageList) {
+
+        for (Map<String, Object> damageData : buildingDamageList) {
+            BuildingDamage buildingDamage = new BuildingDamage();
+            buildingDamage.setEqid((String) damageData.get("eqid"));
+            buildingDamage.setCounty((String) damageData.get("county"));
+            buildingDamage.setSize(((Number) damageData.get("size")).doubleValue());
+
+            buildingDamageMapper.insert(buildingDamage);
+        }
+    }
+
 }

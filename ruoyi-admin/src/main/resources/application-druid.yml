@@ -24,11 +24,14 @@ spring:
 #                password: postgres
             # 从库数据源
             slave:
-                # 从数据源开关/默认关闭
-                enabled: false
-                url:
-                username:
-                password:
+#                enabled: true
+#                url: jdbc:postgresql://47.92.216.173:7655/ruoyi?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+#                username: postgres
+#                password: zhangsan
+                enabled: true
+                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+                username: postgres
+                password: root
             # 初始连接数
             initialSize: 5
             # 最小连接池数量

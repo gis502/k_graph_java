@@ -5,6 +5,7 @@ import com.alibaba.excel.read.listener.ReadListener;
 import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.mapper.AftershockInformationMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,9 +49,10 @@ public class AftershockInformationListener  implements ReadListener<AftershockIn
         }
     }
 
+    @SneakyThrows
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-
+        WebSocketServerExcel.sendInfo(String.valueOf(100),userName);
     }
     @Override
     public boolean hasNext(AnalysisContext analysisContext) {

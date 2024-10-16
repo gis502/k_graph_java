@@ -84,6 +84,9 @@ public class MapperConfig {
         typeMapping.put("轻伤人员", "rescueActionCasualties");
         typeMapping.put("危重伤人员", "rescueActionCasualties");
 
+        //救援行动类-集结缓冲区类表
+        typeMapping.put("集结缓冲区", "bufferZone");
+
         //次生/衍生灾害处置信息-滑坡、崩塌表
         typeMapping.put("滑坡", "landslideCollapse");
         typeMapping.put("崩塌", "landslideCollapse");
@@ -134,7 +137,7 @@ public class MapperConfig {
         //生命线工程破坏类-不可用输气管线表
         typeMapping.put("输、不可用输气管线", "unusableGasPipes");
         //交通设施破坏类-
-        typeMapping.put("输、供气管线破坏点", "waterSupplyPipelineDamagePoint");
+        typeMapping.put("供气管线破坏点", "gasPipelineDamagePoints");
         //水利工程破坏类-堰塞湖表
         typeMapping.put("堰塞湖", "damLake");
         //水利工程破坏类-基本完好大坝,中等破坏大坝,严重破坏大坝表

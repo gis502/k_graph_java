@@ -97,16 +97,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<if test="requestParams != null and requestParams != ''">
 			AND (
-			su.phonenumber LIKE concat('%', #{requestParams}, '%')
-			OR sol.oper_name LIKE concat('%', #{requestParams}, '%')
-			OR sol.dept_name LIKE concat('%', #{requestParams}, '%')
-			OR sol.json_result LIKE concat('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+			su.phonenumber LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.oper_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.dept_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.json_result LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}::text, '%')
 			)
 		</if>
+
 		ORDER BY sol.oper_time DESC
 	</select>
 
@@ -124,16 +125,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<if test="requestParams != null and requestParams != ''">
 			AND (
-			su.phonenumber LIKE concat('%', #{requestParams}, '%')
-			OR sol.oper_name LIKE concat('%', #{requestParams}, '%')
-			OR sol.dept_name LIKE concat('%', #{requestParams}, '%')
-			OR sol.json_result LIKE concat('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+			su.phonenumber LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.oper_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.dept_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.json_result LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}::text, '%')
 			)
 		</if>
+
 		ORDER BY sol.oper_time DESC
 	</select>
 
@@ -150,16 +152,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<if test="requestParams != null and requestParams != ''">
 			AND (
-			su.phonenumber LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.oper_name LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.dept_name LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.json_result LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+			su.phonenumber LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.oper_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.dept_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.json_result LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}::text, '%')
 			)
 		</if>
+
 		ORDER BY sol.oper_time DESC
 	</select>
 
@@ -176,15 +179,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<if test="requestParams != null and requestParams != ''">
 			AND (
-			su.phonenumber LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.oper_name LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.dept_name LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.json_result LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
-
+			su.phonenumber LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.oper_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.dept_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.json_result LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}::text, '%')
 			)
 		</if>
 		ORDER BY sol.oper_time DESC
@@ -203,14 +205,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<if test="requestParams != null and requestParams != ''">
 			AND (
-			su.phonenumber LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.oper_name LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.dept_name LIKE CONCAT('%', #{requestParams}, '%')
-			OR sol.json_result LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}, '%')
-			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}, '%')
+			su.phonenumber LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.oper_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.dept_name LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR sol.json_result LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd HH24:mi:ss') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM-dd') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy-MM') LIKE CONCAT('%', #{requestParams}::text, '%')
+			OR TO_CHAR(sol.oper_time, 'yyyy') LIKE CONCAT('%', #{requestParams}::text, '%')
 			)
 		</if>
 		ORDER BY sol.oper_time DESC
