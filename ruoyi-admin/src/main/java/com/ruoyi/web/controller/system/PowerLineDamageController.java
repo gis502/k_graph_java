@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.system;
-import com.ruoyi.system.domain.PowerLineDamage;
-import com.ruoyi.system.service.impl.PowerLineDamageService;
+import com.ruoyi.system.service.PowerLineDamageService;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
