@@ -33,15 +33,14 @@ public class AftershockInformation {
      * 地震标识，标识地震事件的唯一标识符
      */
     @TableField(value = "earthquake_identifier")
-    @ExcelProperty({"震情灾情", "地震标识"})
     private String earthquakeIdentifier;
 
     /**
      * 地震名称，地震的描述性名称
      */
-    @TableField(value = "earthquake_name")
-    @ExcelProperty({"震情灾情", "地震名称"})
-    @ColumnWidth(30)
+    @TableField(value = "earthquake_name") //对应数据库表名
+    @ExcelProperty({"震情伤亡-震情灾情统计表", "地震名称"})//用于导入导出
+    @ColumnWidth(30) //导出默认列宽30
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
 
@@ -49,7 +48,7 @@ public class AftershockInformation {
      * 地震时间，地震发生的具体时间
      */
     @TableField(value = "earthquake_time")
-    @ExcelProperty(value = {"震情灾情", "地震时间"})
+    @ExcelProperty(value = {"震情伤亡-震情灾情统计表", "地震时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
@@ -59,7 +58,7 @@ public class AftershockInformation {
     /**
      * 震级，地震 Richter 震级
      */
-    @ExcelProperty({"震情灾情", "震级"})
+    @ExcelProperty({"震情伤亡-震情灾情统计表", "震级"})
     @TableField(value = "magnitude")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -69,7 +68,7 @@ public class AftershockInformation {
      * 震区，受影响的地区名称
      */
     @TableField(value = "affected_area")
-    @ExcelProperty(value = {"震情灾情", "震区（县/区）"})
+    @ExcelProperty(value = {"震情伤亡-震情灾情统计表", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedArea;
@@ -80,7 +79,7 @@ public class AftershockInformation {
      */
     @TableField(value = "submission_deadline")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty(value = {"震情灾情", "统计截止时间"})
+    @ExcelProperty(value = {"震情伤亡-震情灾情统计表", "统计截止时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -91,7 +90,7 @@ public class AftershockInformation {
      * 余震次数累计，所有余震的次数总和
      */
     @TableField(value = "total_aftershocks")
-    @ExcelProperty({"震情灾情", "余震次数累计"})
+    @ExcelProperty({"震情伤亡-震情灾情统计表", "余震次数累计"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalAftershocks;
@@ -100,7 +99,7 @@ public class AftershockInformation {
      * 3.0-3.9级余震次数，该级别范围内的余震次数
      */
     @TableField(value = "magnitude_3_3_9")
-    @ExcelProperty({"震情灾情", "3.0-3.9级"})
+    @ExcelProperty({"震情伤亡-震情灾情统计表", "3.0-3.9级"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer magnitude339;
@@ -109,7 +108,7 @@ public class AftershockInformation {
      * 4.0-4.9级余震次数，该级别范围内的余震次数
      */
     @TableField(value = "magnitude_4_4_9")
-    @ExcelProperty({"震情灾情", "4.0-4.9级"})
+    @ExcelProperty({"震情伤亡-震情灾情统计表", "4.0-4.9级"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer magnitude449;
@@ -118,13 +117,13 @@ public class AftershockInformation {
      * 5.0-5.9级余震次数，该级别范围内的余震次数
      */
     @TableField(value = "magnitude_5_5_9")
-    @ExcelProperty({"震情灾情", "5.0-5.9级"})
+    @ExcelProperty({"震情伤亡-震情灾情统计表", "5.0-5.9级"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer magnitude559;
 
     @TableField(value = "magnitude_6")
-    @ExcelProperty({"震情灾情", "6.0级以上"})
+    @ExcelProperty({"震情伤亡-震情灾情统计表", "6.0级以上"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer magnitude6;

@@ -68,6 +68,9 @@ public class ExcelController {
     @Resource
     private RoadDamageServiceImpl roadDamageServiceImpl;
 
+    @Resource
+    private AfterSeismicInformationServiceImpl afterSeismicInformationServiceImpl;
+
 
 
     @PostMapping("/getData")
@@ -141,6 +144,10 @@ public class ExcelController {
                 List<Meetings> meetings = meetingsServiceImpl.importExcelMeetings(file, userName,eqId);
                 return R.ok(meetings);
             }
+            if (filename.equals("震情伤亡-震情受灾统计表")) {
+                List<AfterSeismicInformation>  afterSeismicInformation = afterSeismicInformationServiceImpl.importAfterSeismicInformation(file, userName,eqId);
+                return R.ok(afterSeismicInformation);
+            }
             if (filename.equals("交通电力通信-交通管控情况统计表")) {
                 List<TrafficControlSections> trafficControlSections = trafficControlSectionsServiceImpl.importExcelTrafficControlSections(file, userName,eqId);
                 return R.ok(trafficControlSections);
@@ -158,9 +165,14 @@ public class ExcelController {
                 return R.ok(RoadDamage);
             }
             else {
-                return R.fail("上传文件名称错误");
+                return R.fail("上传失败，请检查文件格式");
             }
+        } catch (IOException e) {
+            // 处理文件IO异常
+            e.printStackTrace();
+            return R.fail("文件处理失败: " + e.getMessage());
         } catch (Exception e) {
+            // 处理其他异常
             e.printStackTrace();
             return R.fail("操作失败: " + e.getMessage());
         }
