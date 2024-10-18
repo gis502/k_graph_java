@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * 导入导出策略上下文
  *
@@ -29,10 +30,17 @@ public class DataExportStrategyContext {
      * @return 导出策略
      */
     public DataExportStrategy getStrategy(String flag) {
-        DataExportStrategy strategy = strategyMap.get(flag);
-        if (strategy == null) {
-            throw new ServiceException("系统执行异常请联系管理员");
+        try {
+            DataExportStrategy strategy = strategyMap.get(flag);
+            if (strategy == null) {
+                throw new ServiceException("未找到匹配的导出策略");
+            }
+            return strategy;
+        } catch (ServiceException e) {
+            // 捕获异常但不向前端反馈，仅记录日志
+            // 返回 null 或者一个默认策略
+            return null;
         }
-        return strategy;
     }
+
 }

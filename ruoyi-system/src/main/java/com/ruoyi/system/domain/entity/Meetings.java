@@ -32,7 +32,7 @@ public class Meetings {
      * 地震标识
      */
     @TableField(value = "earthquake_id")
-    @ExcelProperty({"文会情况", "地震标识"})
+    @ExcelProperty({"震情伤亡-文会情况统计表", "地震标识"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeId;
@@ -42,7 +42,7 @@ public class Meetings {
      * 地震名称
      */
     @TableField(value = "earthquake_name")
-    @ExcelProperty(value = {"文会情况", "地震名称"})
+    @ExcelProperty(value = {"震情伤亡-文会情况统计表", "地震名称"})
     @ColumnWidth(30)
     private String earthquakeName;
     /**
@@ -50,7 +50,7 @@ public class Meetings {
      */
     @TableField(value = "earthquake_time")
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    @ExcelProperty(value = {"文会情况", "地震时间"})
+    @ExcelProperty(value = {"震情伤亡-文会情况统计表", "地震时间"})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -59,14 +59,14 @@ public class Meetings {
     /**
      * 震级，地震 Richter 震级
      */
-    @ExcelProperty({"文会情况", "震级"})
+    @ExcelProperty({"震情伤亡-文会情况统计表", "震级"})
     @TableField(value = "magnitude")
     private String magnitude;
     /**
      * 震区名称
      */
     @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"文会情况", "震区（县/区）"})
+    @ExcelProperty({"震情伤亡-文会情况统计表", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeAreaName;
@@ -74,7 +74,7 @@ public class Meetings {
      * 填报截止时间
      */
     @TableField(value = "report_deadline")
-    @ExcelProperty(value = {"文会情况", "统计截止时间"})
+    @ExcelProperty(value = {"震情伤亡-文会情况统计表", "统计截止时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
@@ -85,7 +85,7 @@ public class Meetings {
      * 会议（场）
      */
     @TableField(value = "meeting_count")
-    @ExcelProperty(value = {"文会情况", "会议（场）"})
+    @ExcelProperty(value = {"震情伤亡-文会情况统计表", "会议（场）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer meetingCount;
@@ -94,7 +94,7 @@ public class Meetings {
      * 活动（场）
      */
     @TableField(value = "activity_count")
-    @ExcelProperty(value = {"文会情况", "活动（场）"})
+    @ExcelProperty(value = {"震情伤亡-文会情况统计表", "活动（场）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer activityCount;
@@ -103,7 +103,7 @@ public class Meetings {
      * 印发简报（份）
      */
     @TableField(value = "brief_report_count")
-    @ExcelProperty(value = {"文会情况", "印发简报（份）"})
+    @ExcelProperty(value = {"震情伤亡-文会情况统计表", "印发简报（份）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer briefReportCount;
@@ -112,7 +112,7 @@ public class Meetings {
      * 印发通知（份）
      */
     @TableField(value = "notice_count")
-    @ExcelProperty(value = {"文会情况", "印发通知（份）"})
+    @ExcelProperty(value = {"震情伤亡-文会情况统计表", "印发通知（份）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer noticeCount;
@@ -121,7 +121,7 @@ public class Meetings {
      * 会议纪要（份）
      */
     @TableField(value = "meeting_minutes_count")
-    @ExcelProperty(value = {"文会情况", "会议纪要（份）"})
+    @ExcelProperty(value = {"震情伤亡-文会情况统计表", "会议纪要（份）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer meetingMinutesCount;

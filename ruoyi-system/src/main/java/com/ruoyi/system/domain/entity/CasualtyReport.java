@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
- * 震后生成-地震灾情信息-人员伤亡表（用户上传数据）
+ * 震后生成-地震灾情信息-震情伤亡-人员伤亡统计表表（用户上传数据）
  */
 @Data
 @TableName(value = "casualty_report")
@@ -33,13 +33,13 @@ public class CasualtyReport {
      * 地震标识，标识地震事件的唯一标识符
      */
     @TableField(value = "earthquake_identifier")
-    @ExcelProperty({"人员伤亡", "地震标识"})
+    @ExcelProperty({"震情伤亡-人员伤亡统计表", "地震标识"})
     private String earthquakeIdentifier;
 
     /**
      * 地震名称，地震的描述性名称
      */
-    @ExcelProperty(value = {"人员伤亡", "地震名称"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "地震名称"})
     @TableField(value = "earthquake_name")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -48,7 +48,7 @@ public class CasualtyReport {
     /**
      * 地震时间，地震发生的具体时间
      */
-    @ExcelProperty(value = {"人员伤亡", "地震时间"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "地震时间"})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "earthquake_time")
     @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
@@ -58,7 +58,7 @@ public class CasualtyReport {
     /**
      * 震级，地震 Richter 震级
      */
-    @ExcelProperty({"震情灾情", "震级"})
+    @ExcelProperty({"震情伤亡-人员伤亡统计表", "震级"})
     @TableField(value = "magnitude")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -67,7 +67,7 @@ public class CasualtyReport {
     /**
      * 震区名称，受影响地区的名称
      */
-    @ExcelProperty(value = {"人员伤亡", "震区（县/区）"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "震区（县/区）"})
     @TableField(value = "affected_area_name")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -76,7 +76,7 @@ public class CasualtyReport {
     /**
      * 填报截止时间，报告提交的最终期限
      */
-    @ExcelProperty(value = {"人员伤亡", "统计截止时间"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "统计截止时间"})
     @DateTimeFormat(value = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "submission_deadline")
@@ -88,7 +88,7 @@ public class CasualtyReport {
     /**
      * 新增遇难人数，新报告的遇难者数量
      */
-    @ExcelProperty(value = {"人员伤亡", "新增遇难（人）"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "新增遇难（人）"})
     @TableField(value = "newly_deceased")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -97,7 +97,7 @@ public class CasualtyReport {
     /**
      * 新增失联人数，新报告的失联者数量
      */
-    @ExcelProperty(value = {"人员伤亡", "新增失联（人）"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "新增失联（人）"})
     @TableField(value = "newly_missing")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -106,7 +106,7 @@ public class CasualtyReport {
     /**
      * 新增受伤人数，新报告的受伤者数量
      */
-    @ExcelProperty(value = {"人员伤亡", "新增受伤（人）"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "新增受伤（人）"})
     @TableField(value = "newly_injured")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -115,7 +115,7 @@ public class CasualtyReport {
     /**
      * 累计遇难人数，所有报告的遇难者总数
      */
-    @ExcelProperty(value = {"人员伤亡", "累计遇难（人）"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "累计遇难（人）"})
     @TableField(value = "total_deceased")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -124,7 +124,7 @@ public class CasualtyReport {
     /**
      * 累计失联人数，所有报告的失联者总数
      */
-    @ExcelProperty(value = {"人员伤亡", "累计失联（人）"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "累计失联（人）"})
     @TableField(value = "total_missing")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -133,7 +133,7 @@ public class CasualtyReport {
     /**
      * 累计受伤人数，所有报告的受伤者总数
      */
-    @ExcelProperty(value = {"人员伤亡", "累计受伤（人）"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "累计受伤（人）"})
     @TableField(value = "total_injured")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -156,7 +156,7 @@ public class CasualtyReport {
      * 受灾人数，受影响的总人口数量
      */
     @TableField(value = "affected_population")
-    @ExcelProperty(value = {"人员伤亡", "受灾人数累积"})
+    @ExcelProperty(value = {"震情伤亡-人员伤亡统计表", "受灾人数累积"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer affectedPopulation;

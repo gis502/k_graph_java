@@ -40,6 +40,8 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
         String requestParam = requestBTO.getRequestParams();
         // 构造查询条件
         LambdaQueryWrapper<CommunicationFacilityDamageRepairStatus> queryWrapper = Wrappers.lambdaQuery(CommunicationFacilityDamageRepairStatus.class)
+                .like(CommunicationFacilityDamageRepairStatus::getEarthquakeId,requestParam)
+                .or()
                 .like(CommunicationFacilityDamageRepairStatus::getEarthquakeName, requestParam)
                 .or()
                 .like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParam)

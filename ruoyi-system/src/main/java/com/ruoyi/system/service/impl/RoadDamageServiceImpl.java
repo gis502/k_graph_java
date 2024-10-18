@@ -47,6 +47,8 @@ public class RoadDamageServiceImpl
         // 构建 LambdaQueryWrapper
         LambdaQueryWrapper<RoadDamage> queryWrapper = Wrappers.lambdaQuery(RoadDamage.class);
         queryWrapper
+                .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getEarthquakeId, requestParam)
+                .or()
                 .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getEarthquakeName, requestParam)
                 .or()
                 .like(requestParam != null && !requestParam.isEmpty(), RoadDamage::getAffectedArea, requestParam)
