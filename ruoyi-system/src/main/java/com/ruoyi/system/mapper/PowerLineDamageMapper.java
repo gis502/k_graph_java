@@ -1,7 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ruoyi.system.domain.PowerLineDamage;
+import com.ruoyi.system.domain.entity.PowerLineDamage;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

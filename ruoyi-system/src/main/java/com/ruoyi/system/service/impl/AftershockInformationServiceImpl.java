@@ -15,6 +15,8 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -119,12 +121,13 @@ public class AftershockInformationServiceImpl extends
 
     /**
      * 获取最新余震数据
+     *
      * @param eqid
      * @return
      */
     @Override
-    public Map<String, Integer> getLatestAftershockMagnitude(String eqid) {
-        Map<String, Integer> aftershockData = aftershockInformationMapper.getLatestAftershockData(eqid);
+    public Map<String, Object> getLatestAftershockMagnitude(String eqid) {
+        Map<String, Object> aftershockData = aftershockInformationMapper.getLatestAftershockData(eqid);
         // 检查数据是否为 null 或空
         if (aftershockData == null || aftershockData.isEmpty()) {
             // 返回默认值
@@ -133,7 +136,26 @@ public class AftershockInformationServiceImpl extends
             aftershockData.put("magnitude_4_0_to_4_9", 0);
             aftershockData.put("magnitude_5_0_to_5_9", 0);
             aftershockData.put("magnitude_6", 0);
+        } else {
+            // 格式化 submission_deadline 字段
+            Object submissionDeadlineObj = aftershockData.get("submission_deadline");
+            if (submissionDeadlineObj != null) {
+                String submissionDeadline = submissionDeadlineObj.toString();
+
+                // 使用自定义 DateTimeFormatter 解析日期格式 'yyyy-MM-dd HH:mm:ss.S'
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+                LocalDateTime localDateTime = LocalDateTime.parse(submissionDeadline, formatter);
+
+                // 将日期格式化为 'yyyy-MM-dd HH:mm:ss'
+                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String formattedDateTime = localDateTime.format(outputFormatter);
+
+                aftershockData.put("submission_deadline", formattedDateTime); // 更新 Map 中的时间格式
+            }
         }
+
+        // 使用 System.out.println 替代日志记录
+        System.out.println("Aftershock data: " + aftershockData);
 
         return aftershockData;
     }
