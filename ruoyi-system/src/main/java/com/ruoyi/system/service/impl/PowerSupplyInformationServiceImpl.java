@@ -44,6 +44,8 @@ public class PowerSupplyInformationServiceImpl
         Page<PowerSupplyInformation> powerSupplyInformation = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         String searchParam = requestBTO.getRequestParams();
         LambdaQueryWrapper<PowerSupplyInformation> queryWrapper = Wrappers.lambdaQuery(PowerSupplyInformation.class)
+                .like(PowerSupplyInformation::getEarthquakeId, searchParam)
+                .or()
                 .like(PowerSupplyInformation::getEarthquakeName, searchParam)
                 .or()
                 .like(PowerSupplyInformation::getAffectedArea, searchParam)

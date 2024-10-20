@@ -37,7 +37,7 @@ public class PowerSupplyInformation {
      * 地震名称
      */
     @TableField(value = "earthquake_name")
-    @ExcelProperty({"电力设施损毁及抢修情况", "地震名称"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "地震名称"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
@@ -47,7 +47,7 @@ public class PowerSupplyInformation {
      */
     @TableField(value = "earthquake_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty({"电力设施损毁及抢修情况", "地震时间"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "地震时间"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime earthquakeTime;
@@ -56,7 +56,7 @@ public class PowerSupplyInformation {
      * 震区名称
      */
     @TableField(value = "affected_area")
-    @ExcelProperty({"电力设施损毁及抢修情况", "震区（县/区）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedArea;
@@ -65,7 +65,7 @@ public class PowerSupplyInformation {
      * 填报截止时间
      */
     @TableField(value = "reporting_deadline")
-    @ExcelProperty(value = {"电力设施损毁及抢修情况", "统计截止时间"})
+    @ExcelProperty(value = {"交通电力通信-电力设施损毁及抢修情况统计表", "统计截止时间"})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -77,7 +77,7 @@ public class PowerSupplyInformation {
      * 累计停运变电站数量
      */
     @TableField(value = "total_out_of_service_substations")
-    @ExcelProperty({"电力设施损毁及抢修情况", "累计停运变（发）电站（座）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "累计停运变（发）电站（座）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalOutOfServiceSubstations;
@@ -86,7 +86,7 @@ public class PowerSupplyInformation {
      * 已恢复变电站数量
      */
     @TableField(value = "restored_substations")
-    @ExcelProperty({"电力设施损毁及抢修情况", "已恢复变（发）电站（座）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "已恢复变（发）电站（座）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer restoredSubstations;
@@ -95,7 +95,7 @@ public class PowerSupplyInformation {
      * 待修复变电站数量
      */
     @TableField(value = "to_be_repaired_substations")
-    @ExcelProperty({"电力设施损毁及抢修情况", "待修复变（发）电站（座）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "待修复变（发）电站（座）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer toBeRepairedSubstations;
@@ -104,7 +104,7 @@ public class PowerSupplyInformation {
      * 累计跳闸线路数量
      */
     @TableField(value = "total_trip_circuits")
-    @ExcelProperty({"电力设施损毁及抢修情况", "累计跳闸线路（条）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "累计跳闸线路（条）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalTripCircuits;
@@ -113,7 +113,7 @@ public class PowerSupplyInformation {
      * 已恢复线路数量
      */
     @TableField(value = "restored_circuits")
-    @ExcelProperty({"电力设施损毁及抢修情况", "已恢复线路（条）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "已恢复线路（条）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer restoredCircuits;
@@ -122,7 +122,7 @@ public class PowerSupplyInformation {
      * 待恢复线路数量
      */
     @TableField(value = "to_be_restored_circuits")
-    @ExcelProperty({"电力设施损毁及抢修情况", "待恢复线路（条）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "待恢复线路（条）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer toBeRestoredCircuits;
@@ -131,7 +131,7 @@ public class PowerSupplyInformation {
      * 累计主网停电用户数
      */
     @TableField(value = "total_blackout_users")
-    @ExcelProperty({"电力设施损毁及抢修情况", "累计主网停电用户数（户）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "累计主网停电用户数（户）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalBlackoutUsers;
@@ -140,7 +140,7 @@ public class PowerSupplyInformation {
      * 已恢复主网供电用户数
      */
     @TableField(value = "restored_power_users")
-    @ExcelProperty({"电力设施损毁及抢修情况", "已恢复主网供电用户数（户）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "已恢复主网供电用户数（户）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer restoredPowerUsers;
@@ -149,7 +149,7 @@ public class PowerSupplyInformation {
      * 目前主网供电中断的村庄
      */
     @TableField(value = "currently_blacked_out_villages")
-    @ExcelProperty({"电力设施损毁及抢修情况", "目前主网供电中断村（个）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "目前主网供电中断村"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String currentlyBlackedOutVillages;
@@ -158,7 +158,7 @@ public class PowerSupplyInformation {
      * 应急供电用户数
      */
     @TableField(value = "emergency_power_users")
-    @ExcelProperty({"电力设施损毁及抢修情况", "应急供电用户（户）"})
+    @ExcelProperty({"交通电力通信-电力设施损毁及抢修情况统计表", "应急供电用户数（户）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer emergencyPowerUsers;
