@@ -21,10 +21,10 @@ public class AftershockInformationController {
     private AftershockInformationService aftershockInformationService;
 
     @GetMapping("/getLatestAftershockMagnitude")
-    public ResponseEntity<Map<String, Integer>> getLatestAftershockData(@RequestParam("eqid") String eqid) {
+    public ResponseEntity<Map<String, Object>> getLatestAftershockData(@RequestParam("eqid") String eqid) {
 
         // 使用 eqid 获取数据
-        Map<String, Integer> aftershockData = aftershockInformationService.getLatestAftershockMagnitude(eqid);
+        Map<String, Object> aftershockData = aftershockInformationService.getLatestAftershockMagnitude(eqid);
 
         return ResponseEntity.ok(aftershockData);
     }
