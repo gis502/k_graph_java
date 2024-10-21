@@ -9,12 +9,4 @@ import com.ruoyi.system.service.PlotIconmanagementService;
 @Service
 public class PlotIconmanagementServiceImpl extends ServiceImpl<PlotIconmanagementMapper, PlotIconmanagement> implements PlotIconmanagementService{
 
-    @Autowired
-    private PlotIconmanagementMapper plotIconmanagementMapper;
-
-    @Override
-    public List<PlotIconmanagement> searchPlotIcon(String menuName) {
-        return plotIconmanagementMapper.searchPlotIcon( menuName );
-    }
-
 }

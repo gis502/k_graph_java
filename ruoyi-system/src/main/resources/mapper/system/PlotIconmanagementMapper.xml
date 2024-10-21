@@ -15,14 +15,4 @@
     <!--@mbg.generated-->
     uuid, "name", "describe", "type", plottype, img
   </sql>
-  <select id="searchPlotIcon" resultType="com.ruoyi.system.domain.entity.PlotIconmanagement">
-    SELECT * FROM plot_iconmanagement
-    <where>
-      <if test="menuName != null and menuName != ''">
-        (name LIKE '%' || #{menuName} || '%' OR
-        "describe" LIKE '%' || #{menuName} || '%' OR
-        type LIKE '%' || #{menuName} || '%')
-      </if>
-    </where>
-  </select>
 </mapper>
