@@ -131,11 +131,11 @@ public class MapperConfig {
         //生命线工程破坏类-供水管线破坏点表
         typeMapping.put("供水管线破坏点", "waterSupplyPipelineDamagePoint");
         //生命线工程破坏类-不可用输、配电线路表
-        typeMapping.put("不可用输、配电线路", "usableUnusableAirports");
+        typeMapping.put("不可用输、配电线路", "unavailableTransmissionDistributionLines");
         //
         typeMapping.put("输、配电线路破坏点", "powerLineDamage");
         //生命线工程破坏类-不可用输气管线表
-        typeMapping.put("输、不可用输气管线", "unusableGasPipes");
+        typeMapping.put("不可用输气管线", "unusableGasPipes");
         //交通设施破坏类-
         typeMapping.put("供气管线破坏点", "gasPipelineDamagePoints");
         //水利工程破坏类-堰塞湖表
