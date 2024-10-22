@@ -38,7 +38,7 @@ public class TrafficControlSections {
      * 地震名称
      */
     @TableField(value = "earthquake_name")
-    @ExcelProperty({"交通管控情况", "地震名称"})
+    @ExcelProperty({"交通电力通信-交通管控情况统计表", "地震名称"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
@@ -47,7 +47,7 @@ public class TrafficControlSections {
      * 地震发生时间
      */
     @TableField(value = "earthquake_time")
-    @ExcelProperty({"交通管控情况", "地震发生时间"})
+    @ExcelProperty({"交通电力通信-交通管控情况统计表", "地震时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
@@ -58,7 +58,7 @@ public class TrafficControlSections {
      * 震区名称
      */
     @TableField(value = "affected_area")
-    @ExcelProperty({"交通管控情况", "震区（县/区）"})
+    @ExcelProperty({"交通电力通信-交通管控情况统计表", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedArea;
@@ -67,7 +67,7 @@ public class TrafficControlSections {
      * 统计截止时间
      */
     @TableField(value = "reporting_deadline")
-    @ExcelProperty({"交通管控情况", "统计截止时间"})
+    @ExcelProperty({"交通电力通信-交通管控情况统计表", "统计截止时间"})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -77,7 +77,7 @@ public class TrafficControlSections {
      * 累计发放通行证数量
      */
     @TableField(value = "total_passes_issued")
-    @ExcelProperty({"交通管控情况", "累计发放通行证（张）"})
+    @ExcelProperty({"交通电力通信-交通管控情况统计表", "累计发放通行证（张）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalPassesIssued;
@@ -86,7 +86,7 @@ public class TrafficControlSections {
      * 设置的交通管制分流点数量
      */
     @TableField(value = "control_diversion_points")
-    @ExcelProperty({"交通管控情况", "设置管制分流点（处）"})
+    @ExcelProperty({"交通电力通信-交通管控情况统计表", "设置管制分流点（处）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer controlDiversionPoints;
@@ -95,7 +95,7 @@ public class TrafficControlSections {
      * 具体的交通管制路段
      */
     @TableField(value = "traffic_control_section")
-    @ExcelProperty({"交通管控情况", "交通管制路段（条）"})
+    @ExcelProperty({"交通电力通信-交通管控情况统计表", "交通管制路段"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String trafficControlSection;

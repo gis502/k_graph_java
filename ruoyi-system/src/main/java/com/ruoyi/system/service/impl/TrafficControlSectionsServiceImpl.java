@@ -43,6 +43,8 @@ public class TrafficControlSectionsServiceImpl
                 new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         String requestParam = requestBTO.getRequestParams();
         LambdaQueryWrapper<TrafficControlSections> queryWrapper = Wrappers.lambdaQuery(TrafficControlSections.class)
+                .like(TrafficControlSections::getEarthquakeId, requestParam)
+                .or()
                 .like(TrafficControlSections::getEarthquakeName, requestParam)
                 .or()
                 .like(TrafficControlSections::getAffectedArea, requestParam)

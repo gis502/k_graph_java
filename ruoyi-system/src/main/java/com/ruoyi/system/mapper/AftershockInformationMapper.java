@@ -17,12 +17,12 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
      * @param eqid
      * @return
      */
-    @Select("SELECT yas.magnitude_3_3_9, yas.magnitude_4_4_9, yas.magnitude_5_5_9 " +
+    @Select("SELECT yas.magnitude_3_3_9, yas.magnitude_4_4_9, yas.magnitude_5_5_9, yas.submission_deadline " +
             "FROM public.aftershock_information yas " +
             "WHERE yas.earthquake_identifier = #{eqid} " +
-            "ORDER BY yas.system_insert_time DESC " +
+            "ORDER BY yas.submission_deadline DESC " +
             "LIMIT 1")
-    Map<String, Integer> getLatestAftershockData(String eqid);
+    Map<String, Object> getLatestAftershockData(String eqid);
 
 //    @Select("SELECT yas.magnitude_3_3_9, yas.magnitude_4_4_9, yas.magnitude_5_5_9, yas.affected_area, yas.earthquake_time, yas.total_aftershocks  " +
 //            "FROM public.aftershock_information yas " +
@@ -30,7 +30,7 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
 //            "ORDER BY yas.system_insert_time DESC ")
 //    List<Map<String, Object>> getTotal(String eqid);
 
-    
+
     @Select("SELECT cr.affected_area, " +
             "SUM(cr.magnitude_3_3_9) AS magnitude_3_3_9, " +
             "SUM(cr.magnitude_4_4_9) AS magnitude_4_4_9, " +

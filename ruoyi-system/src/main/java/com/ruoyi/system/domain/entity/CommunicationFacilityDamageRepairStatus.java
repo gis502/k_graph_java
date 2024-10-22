@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
-    * 震后生成-灾害现场动态信息-生命线修复信息-通信设施损毁及抢修情况（用户上传数据）
+    * 震后生成-灾害现场动态信息-生命线修复信息-交通电力通信-通信设施损毁及抢修情况统计表（用户上传数据）
     */
 @Data
 @TableName(value = "communication_facility_damage_repair_status")
@@ -38,7 +38,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 地震名称
      */
     @TableField(value = "earthquake_name")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "地震名称"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "地震名称"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
@@ -47,7 +47,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 地震时间
      */
     @TableField(value = "earthquake_time")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "地震时间"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "地震时间"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -59,7 +59,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 震区名称
      */
     @TableField(value = "earthquake_zone_name")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "震区（县/区）"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeZoneName;
@@ -68,7 +68,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 填报截止时间
      */
     @TableField(value = "reporting_deadline")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "统计截止时间"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "统计截止时间"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -79,7 +79,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 总停用基站数
      */
     @TableField(value = "total_disabled_base_stations")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "累计退服基站（个）"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "累计退服基站（个）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer totalDisabledBaseStations;
@@ -88,7 +88,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 已恢复基站数
      */
     @TableField(value = "restored_base_stations")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "抢通恢复基站（个）"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "抢通恢复基站（个）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer restoredBaseStations;
@@ -97,7 +97,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 当前停用基站数
      */
     @TableField(value = "current_disabled_base_stations")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "目前退服基站（个）"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "目前退服基站（个）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer currentDisabledBaseStations;
@@ -106,7 +106,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 总损坏光缆长度
      */
     @TableField(value = "total_damaged_cable_length")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "累计受损光缆  （公里）"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "累计受损光缆  （公里）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private BigDecimal totalDamagedCableLength;
@@ -115,7 +115,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 已修复光缆长度
      */
     @TableField(value = "repaired_cable_length")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "抢通恢复光缆（公里）"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "抢通恢复光缆（公里）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private BigDecimal repairedCableLength;
@@ -124,7 +124,7 @@ public class CommunicationFacilityDamageRepairStatus {
      * 当前待修复光缆长度
      */
     @TableField(value = "current_pending_repair_cable_length")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "目前待修复光缆 （公里）"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "目前待修复光缆 （公里）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private BigDecimal currentPendingRepairCableLength;
@@ -133,16 +133,16 @@ public class CommunicationFacilityDamageRepairStatus {
      * 当前通信中断村庄数
      */
     @TableField(value = "current_interrupted_villages_count")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "目前通信中断村（个）"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "目前通信中断村"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private Integer currentInterruptedVillagesCount;
+    private String currentInterruptedVillagesCount;
 
     /**
      * 当前通信中断影响数
      */
     @TableField(value = "current_interrupted_impact_count")
-    @ExcelProperty(value = {"通信设施损毁及抢修情况", "当前通信中断影响数"})
+    @ExcelProperty(value = {"交通电力通信-通信设施损毁及抢修情况统计表", "当前通信中断影响数"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer currentInterruptedImpactCount;

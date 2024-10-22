@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AfterSeismicInformationMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.AfterSeismicInformation">
+    <id column="uuid" jdbcType="OTHER" property="uuid" />
+    <result column="earthquake_identifier" jdbcType="VARCHAR" property="earthquakeIdentifier" />
+    <result column="earthquake_name" jdbcType="VARCHAR" property="earthquakeName" />
+    <result column="affected_area_name" jdbcType="VARCHAR" property="affectedAreaName" />
+    <result column="system_insert_time" jdbcType="TIMESTAMP" property="systemInsertTime" />
+    <result column="submission_deadline" jdbcType="VARCHAR" property="submissionDeadline" />
+    <result column="affected_county_district" jdbcType="INTEGER" property="affectedCountyDistrict" />
+    <result column="earthquake_time" jdbcType="TIMESTAMP" property="earthquakeTime" />
+    <result column="affected_population" jdbcType="INTEGER" property="affectedPopulation" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    uuid, earthquake_identifier, earthquake_name, affected_area_name, system_insert_time,
+    submission_deadline, affected_county_district, earthquake_time, affected_population
+  </sql>
+</mapper>
