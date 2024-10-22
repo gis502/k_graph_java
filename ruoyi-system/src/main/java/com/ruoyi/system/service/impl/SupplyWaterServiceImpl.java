@@ -5,14 +5,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.*;
-import com.ruoyi.system.listener.SecondaryDisasterInfoListener;
-import com.ruoyi.system.listener.SupplySituationListener;
+import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.SupplyWater;
+import com.ruoyi.system.listener.SupplyWaterListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
+import com.ruoyi.system.mapper.SupplyWaterMapper;
+import com.ruoyi.system.service.SupplyWaterService;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -20,20 +24,12 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ruoyi.system.mapper.SupplySituationMapper;
-import com.ruoyi.system.service.SupplySituationService;
-import org.springframework.web.multipart.MultipartFile;
-
 @Service
-public class SupplySituationServiceImpl
-        extends ServiceImpl<SupplySituationMapper, SupplySituation>
-        implements SupplySituationService, DataExportStrategy {
-
+public class SupplyWaterServiceImpl extends ServiceImpl<SupplyWaterMapper, SupplyWater>
+        implements SupplyWaterService, DataExportStrategy {
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
-
 
 
     /**
@@ -41,21 +37,12 @@ public class SupplySituationServiceImpl
      * @return
      */
     @Override
-    public IPage<SupplySituation> getPage(RequestBTO requestBTO) {
+    public IPage<SupplyWater> getPage(RequestBTO requestBTO) {
         String requestParam = requestBTO.getRequestParams();
-        Page<SupplySituation> supplySituation = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
-        LambdaQueryWrapper<SupplySituation> wrapper = Wrappers.lambdaQuery(SupplySituation.class)
-                .like(SupplySituation::getEarthquakeName, requestParam)
-                .or()
-                .apply("CAST(earthquake_time AS TEXT) LIKE {0}", "%" + requestParam + "%")
-                .or()
-                .like(SupplySituation::getEarthquakeAreaName, requestParam)
-                .or()
-                .apply("CAST(report_deadline AS TEXT) LIKE {0}", "%" + requestParam + "%")
-                .or()
-                .apply("CAST(centralized_water_project_damage AS TEXT) LIKE {0}", "%" + requestParam + "%");
-
-        return this.page(supplySituation, wrapper);
+        Page<SupplyWater> supplyWaterPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        LambdaQueryWrapper<SupplyWater> wrapper = Wrappers.lambdaQuery(SupplyWater.class)
+                .like(SupplyWater::getEarthquakeName, requestParam);
+        return this.page(supplyWaterPage, wrapper);
     }
 
     /**
@@ -63,12 +50,12 @@ public class SupplySituationServiceImpl
      * @return
      */
     @Override
-    public List<SupplySituation> exportExcelGetData(RequestBTO requestBTO) {
+    public List<SupplyWater> exportExcelGetData(RequestBTO requestBTO) {
         String[] ids = requestBTO.getIds();
-        List<SupplySituation> list;
+        List<SupplyWater> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
-                    .sorted(Comparator.comparing(SupplySituation::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .sorted(Comparator.comparing(SupplyWater::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
                             .reversed()).collect(Collectors.toList());
         } else {
             list = this.listByIds(Arrays.asList(ids));
@@ -107,7 +94,7 @@ public class SupplySituationServiceImpl
     }
 
     @Override
-    public List<SupplySituation> importExcelSupplySituation(MultipartFile file, String userName, String eqId) throws IOException {
+    public List<SupplyWater> importExcelSupplyWater(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);
         Sheet sheet = workbook.getSheetAt(0);
@@ -128,14 +115,14 @@ public class SupplySituationServiceImpl
         inputStream.close();
         // 重新获取 InputStream
         inputStream = file.getInputStream();
-        SupplySituationListener listener = new SupplySituationListener(baseMapper, actualRows, userName);
+        SupplyWaterListener listener = new SupplyWaterListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream, RoadDamage.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream, SupplyWater.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
-        List<SupplySituation> list = listener.getList();
+        List<SupplyWater> list = listener.getList();
         // 将解析后的数据保存到数据库
         // 遍历解析后的数据，根据地震时间与地震名称查找eqList表中的earthquakeId
-        for (SupplySituation data : list) {
+        for (SupplyWater data : list) {
             // 根据地震时间与地震名称查询 earthquakeId
             List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
             System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);

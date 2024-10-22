@@ -22,6 +22,8 @@ import lombok.Data;
 @Data
 @TableName(value = "communication_facility_damage_repair_status")
 public class CommunicationFacilityDamageRepairStatus {
+
+
     @TableId(value = "uuid", type = IdType.NONE)
     private String uuid;
 
