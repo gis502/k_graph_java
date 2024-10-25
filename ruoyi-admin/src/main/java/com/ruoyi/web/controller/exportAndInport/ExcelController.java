@@ -100,6 +100,8 @@ public class ExcelController {
     @Resource
     private SupplyWaterServiceImpl supplyWaterService;
 
+    @Resource
+    private MaterialDonationServiceImpl materialDonationService;
 
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
@@ -221,15 +223,19 @@ public class ExcelController {
                 List<DisasterAreaWeatherForecast> disasterAreaWeatherForecasts = disasterAreaWeatherForecastService.importExcelDisasterAreaWeatherForecast(file, userName, eqId);
                 return R.ok(disasterAreaWeatherForecasts);
             }
-            if (filename.equals("资金及物资捐赠-政府部门接收捐赠资金")){
+            if (filename.equals("资金及物资捐赠-物资捐赠情况统计表")){
+                List<MaterialDonation> materialDonations = materialDonationService.importExcelMaterialDonation(file, userName, eqId);
+                return R.ok(materialDonations);
+            }
+            if (filename.equals("资金及物资捐赠-资金援助情况-政府部门接收捐赠资金统计表")){
                 List<GovernmentDepartmentDonations> governmentDepartmentDonations = governmentDepartmentDonationsService.importExcelGovernmentDepartmentDonations(file, userName, eqId);
                 return R.ok(governmentDepartmentDonations);
             }
-            if (filename.equals("资金及物资捐赠-慈善组织接收捐赠资金")){
+            if (filename.equals("资金及物资捐赠-资金援助情况-慈善机构接收捐赠资金统计表")){
                 List<CharityOrganizationDonations> charityOrganizationDonations = charityOrganizationDonationsService.importExcelCharityOrganizationDonations(file, userName, eqId);
                 return R.ok(charityOrganizationDonations);
             }
-            if (filename.equals("资金及物资捐赠-红十字会系统接收捐赠资金")){
+            if (filename.equals("资金及物资捐赠-资金援助情况-红十字会系统接收捐赠资金统计表")){
                 List<RedCrossDonations> redCrossDonations = redCrossDonationsService.importExcelRedCrossDonations(file, userName, eqId);
                 return R.ok(redCrossDonations);
             }
