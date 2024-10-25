@@ -159,6 +159,8 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
         saveBatch(list);
         return list;
     }
+
+
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
@@ -170,4 +172,10 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
         return true;
     }
 
+    @Resource
+    public CommunicationFacilityDamageRepairStatusMapper communicationFacilityDamageRepairStatusMapper;
+    @Override
+    public List<CommunicationFacilityDamageRepairStatus> facility(String eqid) {
+        return communicationFacilityDamageRepairStatusMapper.facility(eqid);
+    }
 }

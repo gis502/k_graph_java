@@ -222,6 +222,9 @@ public class AftershockInformationServiceImpl extends
         List<Map<String, Object>> aftershockDataList = aftershockInformationMapper.getAfterShockInformation(eqid);
         return aftershockDataList;
     }
+
+
+
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {

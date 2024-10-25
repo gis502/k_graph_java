@@ -35,6 +35,8 @@ public class RoadDamageServiceImpl
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Resource
+    private RoadDamageMapper roadDamageMapper;
     /**
      * @param requestBTO
      * @return
@@ -165,5 +167,10 @@ public class RoadDamageServiceImpl
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    @Override
+    public List<RoadDamage> getRoadRepairsByEqid(String eqid) {
+        return roadDamageMapper.selectRoadRepairsByEqid(eqid);
     }
 }
