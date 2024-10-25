@@ -30,7 +30,7 @@ public class TimeLineController {
     // ----应急响应
     @GetMapping("/emergencyResponse")
     public List<EmergencyResponseInfo> getEmergencyResponse(@RequestParam("eqid") String eqid) {
-        return emergencyResponseInfoService.list();
+        return emergencyResponseInfoService.getByEqid(eqid);
     }
 
     // ----人员伤亡
