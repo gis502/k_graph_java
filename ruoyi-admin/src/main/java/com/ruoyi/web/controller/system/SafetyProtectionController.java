@@ -6,6 +6,8 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.entity.SafetyProtection;
 import com.ruoyi.system.service.SafetyProtectionService;
 import com.ruoyi.web.controller.common.RequestParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/safety_protection")
 public class SafetyProtectionController {
 
+    private static final Logger log = LoggerFactory.getLogger(SafetyProtectionController.class);
     @Autowired
     private SafetyProtectionService safetyProtectionService;
 
@@ -39,15 +42,25 @@ public class SafetyProtectionController {
 
         String source = safetyProtection.getSource();
         String agreement = safetyProtection.getAgreement();
-        String notes = safetyProtection.getNotes();
+        String port = Integer.toString(safetyProtection.getPort());
         String tactics = safetyProtection.getTactics();
 
         ProcessBuilder processBuilder = new ProcessBuilder();
-        if (!tactics.equals("true")) {
-            processBuilder.command("sudo", "ufw", tactics, "proto" + agreement + "from" + source + "to" + "any" + "port" + notes);
+        if (!safetyProtection.getIfDelete().equals("true")) {
+            processBuilder.command("sudo", "ufw", tactics,
+                    "proto", agreement,
+                    "from", source,
+                    "to", "any",
+                    "port", port);
         } else {
-            processBuilder.command("sudo", "ufw", "delete", "allow", "proto" + agreement + "from" + source + "to" + "any" + "port" + notes);
+            processBuilder.command("sudo", "ufw", "delete", "allow",
+                    "proto", agreement,
+                    "from", source,
+                    "to", "any",
+                    "port", port);
         }
+
+        System.out.println(processBuilder.command());
         processBuilder.redirectErrorStream(true);
 
         Process process = processBuilder.start();
