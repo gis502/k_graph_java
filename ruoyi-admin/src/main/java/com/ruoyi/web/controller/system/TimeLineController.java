@@ -29,7 +29,7 @@ public class TimeLineController {
 
     // ----应急响应
     @GetMapping("/emergencyResponse")
-    public List<EmergencyResponseInfo> getEmergencyResponse(){
+    public List<EmergencyResponseInfo> getEmergencyResponse(@RequestParam("eqid") String eqid) {
         return emergencyResponseInfoService.list();
     }
 
@@ -46,11 +46,14 @@ public class TimeLineController {
     public List<RescueTeam> getRescueTeam(@RequestParam("eqid") String eqid) {
         return rescueTeamService.getByEqid(eqid);
     }
+    //    public List<RescueTeam_timeInnerJoin> getRescueTeam(@RequestParam("eqid") String eqid) {
+    //        return rescueTeamService.getInfoByEqid(eqid);
+    //}
 
     // ----最新新闻
     @GetMapping("/news")
-    public List<News> getNews() {
-        return newsService.list();
+    public List<News> getNews(@RequestParam("eqid") String eqid) {
+        return newsService.getByEqid(eqid);
     }
 
 

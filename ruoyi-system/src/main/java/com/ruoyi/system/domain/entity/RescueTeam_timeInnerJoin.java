@@ -4,15 +4,16 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
     * 震后生成-应急处置信息-人员信息-救援力量队伍类表
     */
 @Data
 @TableName(value = "rescue_team")
-public class RescueTeam {
+public class RescueTeam_timeInnerJoin {
     @TableId(value = "uuid", type = IdType.NONE)
     private Object uuid;
 
@@ -97,25 +98,22 @@ public class RescueTeam {
     /**
      * 记录时间
      */
-    @TableField(value = "record_time")
-    private Date recordTime;
+//    @TableField(value = "record_time")
+//    private Date recordTime;
 
     /**
      * 地震id
      */
-    @TableField(value = "eqid")
-    private String eqid;
+//    @TableField(value = "eqid")
+//    private String eqid;
 
-    /**
-     * 地震id
-     */
+
     @TableField(value = "describe_things")
     private String describeThings;
 
-    /**
-     * 标绘id
-     */
-    @TableField(value = "plot_id")
-    private String plotId;
+
+    //联查
+    private String startTime;
+    private String creationTime;
 
 }

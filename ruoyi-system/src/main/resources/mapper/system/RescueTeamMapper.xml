@@ -29,5 +29,5 @@
     team_nature, team_type, departure_date, estimated_arrival_date, planned_rescue_area, 
     contact_person, contact_phone, on_standby, record_time, eqid,describe_things,plot_id
   </sql>
-  
+
 </mapper>
