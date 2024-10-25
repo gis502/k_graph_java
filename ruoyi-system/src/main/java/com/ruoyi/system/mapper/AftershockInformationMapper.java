@@ -35,6 +35,7 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
             "SUM(cr.magnitude_3_3_9) AS magnitude_3_3_9, " +
             "SUM(cr.magnitude_4_4_9) AS magnitude_4_4_9, " +
             "SUM(cr.magnitude_5_5_9) AS magnitude_5_5_9, " +
+            "SUM(cr.magnitude_6) AS magnitude_6, "+
             "SUM(total_aftershocks) AS total_aftershocks, " +
             "cr.submission_deadline " +
             "FROM public.aftershock_information cr " +
