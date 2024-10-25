@@ -1,20 +1,17 @@
 package com.ruoyi.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ruoyi.system.domain.entity.ListTable;
-import com.ruoyi.system.domain.entity.RescueTeamsInfo;
-import com.ruoyi.system.domain.entity.SafetyProtection;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.system.domain.entity.SafetyProtection;
 import com.ruoyi.system.service.SafetyProtectionService;
 import com.ruoyi.web.controller.common.RequestParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestMethod;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 @RestController
@@ -29,7 +26,37 @@ public class SafetyProtectionController {
      */
     @PostMapping("/insert")
     public AjaxResult insert(@RequestBody SafetyProtection safetyProtection) {
+        try {
+            safetyProtection.setIfDelete("false");
+            changePort(safetyProtection);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
         return AjaxResult.success(safetyProtectionService.save(safetyProtection));
+    }
+
+    public static void changePort(SafetyProtection safetyProtection) throws IOException, InterruptedException {
+
+        String source = safetyProtection.getSource();
+        String agreement = safetyProtection.getAgreement();
+        String notes = safetyProtection.getNotes();
+        String tactics = safetyProtection.getTactics();
+
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (!tactics.equals("true")) {
+            processBuilder.command("sudo", "ufw", tactics, "proto" + agreement + "from" + source + "to" + "any" + "port" + notes);
+        } else {
+            processBuilder.command("sudo", "ufw", "delete", "allow", "proto" + agreement + "from" + source + "to" + "any" + "port" + notes);
+        }
+        processBuilder.redirectErrorStream(true);
+
+        Process process = processBuilder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+        process.waitFor();
     }
 
     /**
@@ -72,6 +99,8 @@ public class SafetyProtectionController {
                 .or()
                 .like(SafetyProtection::getNotes, inputData)
                 .or()
+                .like(SafetyProtection::getTactics, inputData)
+                .or()
                 .apply("CAST(port AS TEXT) = {0}", inputData);
 
 
@@ -82,7 +111,11 @@ public class SafetyProtectionController {
      * 刪
      */
     @DeleteMapping("/removeById")
-    public boolean removeById(@RequestParam(value = "id") String id) {
+    public boolean removeById(@RequestParam(value = "id") String id) throws IOException, InterruptedException {
+        SafetyProtection safetyProtection = safetyProtectionService.getById(id);
+        safetyProtection.setIfDelete("true");
+        changePort(safetyProtection);
+
         return safetyProtectionService.removeById(id);
     }
 
@@ -90,7 +123,9 @@ public class SafetyProtectionController {
      * 改
      */
     @PutMapping("/update")
-    public boolean update(@RequestBody SafetyProtection safetyProtection) {
+    public boolean update(@RequestBody SafetyProtection safetyProtection) throws IOException, InterruptedException {
+        this.removeById(safetyProtection.getUuid());
+        this.insert(safetyProtection);
         return safetyProtectionService.updateById(safetyProtection);
     }
 
