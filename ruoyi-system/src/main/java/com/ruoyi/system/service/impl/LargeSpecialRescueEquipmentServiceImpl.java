@@ -56,7 +56,7 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         inputStream = file.getInputStream();
         LargeSpecialRescueEquipmentListener listener = new LargeSpecialRescueEquipmentListener(baseMapper, totalRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream, AfterSeismicInformation.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream, LargeSpecialRescueEquipment.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
         List<LargeSpecialRescueEquipment> list = listener.getList();
         // 将解析后的数据保存到数据库

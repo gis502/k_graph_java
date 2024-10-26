@@ -55,7 +55,7 @@ public class DisasterReliefMaterials {
      */
     @TableField(value = "submission_deadline")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty({"救灾物资情况（累计）", "统计截止时间"})
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "统计截止时间"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Date submissionDeadline;
@@ -64,7 +64,7 @@ public class DisasterReliefMaterials {
      * 震区名称
      */
     @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"救灾物资情况（累计）", "震区名称"})
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "震区名称"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private String earthquakeAreaName;
@@ -73,7 +73,7 @@ public class DisasterReliefMaterials {
      * 当前救灾物资总数（万件）
      */
     @TableField(value = "current_disaster_supplies_total")
-    @ExcelProperty({"救灾物资情况（累计）", "当前救灾物资总数（万件）"})
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "当前救灾物资总数（万件）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer currentDisasterSuppliesTotal;
@@ -82,7 +82,7 @@ public class DisasterReliefMaterials {
      * 调拨安置类物资（万件）
      */
     @TableField(value = "allocated_supplies_total")
-    @ExcelProperty({"救援力量情况表", "调拨安置类物资（万件）"})
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "调拨安置类物资（万件）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer allocatedSuppliesTotal;
@@ -91,7 +91,7 @@ public class DisasterReliefMaterials {
      * 帐篷（顶）
      */
     @TableField(value = "tents_count")
-    @ExcelProperty({"救灾物资情况（累计）", "帐篷（顶）"})
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "帐篷（顶）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer tentsCount;
@@ -100,7 +100,7 @@ public class DisasterReliefMaterials {
      * 棉被（床）
      */
     @TableField(value = "quilts_count")
-    @ExcelProperty({"救灾物资情况（累计）", "棉被（床）"})
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "棉被（床）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer quiltsCount;
@@ -109,7 +109,7 @@ public class DisasterReliefMaterials {
      * 折叠床（张）
      */
     @TableField(value = "folding_beds_count")
-    @ExcelProperty({"救灾物资情况（累计）", "折叠床（张）"})
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "折叠床（张）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer foldingBedsCount;

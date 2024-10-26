@@ -54,7 +54,7 @@ public class LargeSpecialRescueEquipment {
      */
     @TableField(value = "submission_deadline")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty({"大型、特种救援装备", "统计截止时间"})
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "统计截止时间"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private LocalDateTime submissionDeadline;
@@ -63,7 +63,7 @@ public class LargeSpecialRescueEquipment {
      * 震区名称
      */
     @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"大型、特种救援装备", "震区名称"})
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "震区名称"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private String earthquakeAreaName;
@@ -72,7 +72,7 @@ public class LargeSpecialRescueEquipment {
      * 直升机
      */
     @TableField(value = "helicopter_count")
-    @ExcelProperty({"大型、特种救援装备", "直升机"})
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "直升机"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer helicopterCount;
@@ -81,7 +81,7 @@ public class LargeSpecialRescueEquipment {
      * 舟桥
      */
     @TableField(value = "bridge_boat_count")
-    @ExcelProperty({"大型、特种救援装备", "舟桥"})
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "舟桥"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer bridgeBoatCount;
@@ -90,7 +90,7 @@ public class LargeSpecialRescueEquipment {
      * 翼龙无人机
      */
     @TableField(value = "wing_drone_count")
-    @ExcelProperty({"大型、特种救援装备", "翼龙无人机"})
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "翼龙无人机"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer wingDroneCount;

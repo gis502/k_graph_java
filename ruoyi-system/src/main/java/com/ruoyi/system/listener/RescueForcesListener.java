@@ -2,7 +2,6 @@ package com.ruoyi.system.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
-
 import com.ruoyi.system.domain.entity.RescueForces;
 import com.ruoyi.system.mapper.RescueForcesMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
@@ -11,6 +10,7 @@ import lombok.SneakyThrows;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 public class RescueForcesListener implements ReadListener<RescueForces> {
     private final List<RescueForces> list = new ArrayList<RescueForces>();
     private RescueForcesMapper rescueForcesMapper;
@@ -50,8 +50,6 @@ public class RescueForcesListener implements ReadListener<RescueForces> {
     public void doAfterAllAnalysed(AnalysisContext context) {
         WebSocketServerExcel.sendInfo("100", userName);
     }
-    public List<RescueForces> getList() {
-        return list;
-    }
+    public List<RescueForces> getList() {return list;}
 }
 
