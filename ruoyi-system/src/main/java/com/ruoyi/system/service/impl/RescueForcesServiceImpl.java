@@ -35,6 +35,7 @@ public class RescueForcesServiceImpl extends
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Override
     public List<RescueForces> importExcelRescueForces(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);
