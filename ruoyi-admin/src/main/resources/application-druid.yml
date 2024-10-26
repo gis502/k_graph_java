@@ -13,7 +13,7 @@ spring:
         type: com.alibaba.druid.pool.DruidDataSource
         driverClassName: org.postgresql.Driver
         druid:
-            # 主库数据源
+             主库数据源
             master:
                  url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
                  username: postgres
@@ -21,7 +21,7 @@ spring:
 #            master:
 #                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
 #                username: postgres
-#                password: postgres
+#                password: 123456
             # 从库数据源
             slave:
 #                enabled: true
@@ -31,7 +31,7 @@ spring:
                 enabled: true
                 url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
                 username: postgres
-                password: root
+                password: 123456
             # 初始连接数
             initialSize: 5
             # 最小连接池数量

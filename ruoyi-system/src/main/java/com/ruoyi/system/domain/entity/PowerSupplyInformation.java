@@ -20,6 +20,7 @@ import lombok.Data;
     */
 @Data
 @TableName(value = "power_supply_information")
+
 public class PowerSupplyInformation {
     /**
      * 编号

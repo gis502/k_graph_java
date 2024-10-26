@@ -35,6 +35,11 @@ public class PowerSupplyInformationServiceImpl
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Resource
+    private PowerSupplyInformationMapper powerSupplyInformationMapper;
+
+
+
     /**
      * @param requestBTO
      * @return
@@ -176,5 +181,10 @@ public class PowerSupplyInformationServiceImpl
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    @Override
+    public List<PowerSupplyInformation> getPowerSupply(String eqid) {
+        return powerSupplyInformationMapper.getPowerSupply(eqid);
     }
 }

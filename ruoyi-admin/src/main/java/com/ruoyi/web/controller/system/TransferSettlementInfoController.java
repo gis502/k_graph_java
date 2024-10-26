@@ -11,10 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/transfer")
 public class TransferSettlementInfoController {
-
     @Autowired
     private TransferSettlementInfoService transferSettlementInfoService;
-
     /**
      * 获取最新的转移安置信息
      */

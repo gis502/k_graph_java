@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
+
 @Mapper
 public interface TransferSettlementInfoMapper extends BaseMapper<TransferSettlementInfo> {
     @Select("SELECT " +
@@ -14,7 +15,7 @@ public interface TransferSettlementInfoMapper extends BaseMapper<TransferSettlem
             "SUM(temporary_shelters) AS temporary_shelters, " +
             "SUM(newly_transferred) AS newly_transferred, " +
             "SUM(cumulative_transferred) AS cumulative_transferred,"+
-            "MAX(reporting_deadline) AS reporting_deadline " +
+            "MAX(system_inserttime) AS system_inserttime " +
             "FROM public.transfer_settlement_info " +
             "WHERE earthquake_id = #{eqid}")
     List<TransferSettlementInfo> getTotal(String eqid);
