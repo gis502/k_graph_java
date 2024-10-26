@@ -208,7 +208,7 @@ public class ExcelController {
                 List<HousingSituation> housingSituations = housingSituationService.importExcelHousingSituation(file, userName, eqId);
                 return R.ok(housingSituations);
             }
-            if (filename.equals("建筑物、工程受损-供水情况统计表")) {
+            if (filename.equals("建筑物、工程受损-集中供水工程受损统计表")) {
                 List<SupplySituation> supplySituations = supplySituationService.importExcelSupplySituation(file, userName, eqId);
                 return R.ok(supplySituations);
             }
@@ -248,16 +248,15 @@ public class ExcelController {
                 List<RedCrossDonations> redCrossDonations = redCrossDonationsService.importExcelRedCrossDonations(file, userName, eqId);
                 return R.ok(redCrossDonations);
             }
-
-            if (filename.equals("救援力量情况统计表")){
+            if (filename.equals("力量物资资金-救援力量情况统计表")){
                 List<RescueForces> rescueForces = rescueForcesServiceImpl.importExcelRescueForces(file, userName,eqId);
                 return R.ok(rescueForces);
             }
-            if (filename.equals("救灾物资情况（累计）统计表")){
+            if (filename.equals("力量物资资金-救灾物资情况（累计）统计表")){
                 List<DisasterReliefMaterials> disasterReliefMaterials = disasterReliefMaterialsServiceImpl.importExcelDisasterReliefMaterials(file, userName,eqId);
                 return R.ok(disasterReliefMaterials);
             }
-            if (filename.equals("大型、特种救援装备统计表")){
+            if (filename.equals("力量物资资金-大型、特种救援装备统计表")){
                 List<LargeSpecialRescueEquipment> largeSpecialRescueEquipment = largeSpecialRescueEquipmentServiceImpl.importExcelLargeSpecialRescueEquipment(file, userName,eqId);
                 return R.ok(largeSpecialRescueEquipment);
             }

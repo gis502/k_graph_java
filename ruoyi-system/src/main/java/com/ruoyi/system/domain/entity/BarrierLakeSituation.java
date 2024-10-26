@@ -59,17 +59,17 @@ public class BarrierLakeSituation {
     private String affectedArea;
 
     /*
-    * 堰塞湖情况
-    * */
+     * 堰塞湖情况
+     * */
     @TableField(value = "barrier_lake")
-    @ExcelProperty(value = {"堰塞湖（雍塞体）情况", "堰塞湖情况）"})
+    @ExcelProperty(value = {"堰塞湖（雍塞体）情况", "堰塞湖"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String barrierLake;
 
     /*
-    * 受威胁地区
-    * */
+     * 受威胁地区
+     * */
     @TableField(value = "threatened_areas")
     @ExcelProperty(value = {"堰塞湖（雍塞体）情况", "受威胁地区（乡镇、村）"})
     @ColumnWidth(30)
@@ -77,8 +77,8 @@ public class BarrierLakeSituation {
     private String threatenedAreas;
 
     /*
-    * 受威胁群众
-    * */
+     * 受威胁群众
+     * */
     @TableField(value = "threatened_population")
     @ExcelProperty(value = {"堰塞湖（雍塞体）情况", "受威胁群众（户或人）"})
     @ColumnWidth(30)
@@ -86,8 +86,8 @@ public class BarrierLakeSituation {
     private Integer threatenedPopulation;
 
     /*
-    * 避险转移
-    * */
+     * 避险转移
+     * */
     @TableField(value = "evacuation")
     @ExcelProperty(value = {"堰塞湖（雍塞体）情况", "避险转移（户或人）"})
     @ColumnWidth(30)
@@ -95,8 +95,8 @@ public class BarrierLakeSituation {
     private Integer evacuation;
 
     /*
-    * 统计截止时间
-    * */
+     * 统计截止时间
+     * */
     @TableField(value = "reporting_deadline")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ExcelProperty(value = {"堰塞湖（雍塞体）情况", "统计截止时间"})

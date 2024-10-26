@@ -130,7 +130,7 @@ public class SupplySituationServiceImpl
         inputStream = file.getInputStream();
         SupplySituationListener listener = new SupplySituationListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream, RoadDamage.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream, SupplySituation.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
         List<SupplySituation> list = listener.getList();
         // 将解析后的数据保存到数据库

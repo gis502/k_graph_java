@@ -46,7 +46,7 @@ public class RedCrossDonations {
     private String earthquakeAreaName;
 
     @TableField(value = "submission_deadline")
-    @ExcelProperty(value = {"红十字会系统接收捐赠资金", "填报截止时间"})
+    @ExcelProperty(value = {"红十字会系统接收捐赠资金", "统计截止时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)

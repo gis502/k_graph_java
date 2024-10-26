@@ -55,7 +55,7 @@ public class DisasterAreaWeatherForecast {
     private String weatherForecast;
 
     @TableField("submission_deadline")
-    @ExcelProperty(value = {"气象情况", "填报截止时间"})
+    @ExcelProperty(value = {"气象情况", "统计截止时间"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime submissionDeadline;

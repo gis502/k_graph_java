@@ -55,7 +55,7 @@ public class SecondaryDisasterInfo {
     @ExcelProperty(value = {"山洪危险区情况", "隐患点（处）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private String hazardPoints;
+    private Integer hazardPoints;
 
     @TableField(value = "threatened_areas_secondary")
     @ExcelProperty(value = {"山洪危险区情况", "受威胁地区（乡镇、村）"})
@@ -67,13 +67,13 @@ public class SecondaryDisasterInfo {
     @ExcelProperty(value = {"山洪危险区情况", "受威胁群众（户或人）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private int threatenedPopulationSecondary;
+    private String threatenedPopulationSecondary;
 
     @TableField(value = "evacuation_secondary")
     @ExcelProperty(value = {"山洪危险区情况", "避险转移（户或人）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private boolean evacuationSecondary;
+    private String evacuationSecondary;
 
     @TableField(value = "reporting_deadline")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -90,10 +90,10 @@ public class SecondaryDisasterInfo {
     private String threatenedAreas;
 
     @TableField(value = "threatened_population")
-    private int threatenedPopulation;
+    private Integer threatenedPopulation;
 
     @TableField(value = "evacuation")
-    private boolean evacuation;
+    private Integer evacuation;
 
     @TableField(value = "system_insert_time")
     private LocalDateTime systemInsertTime;

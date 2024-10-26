@@ -27,7 +27,7 @@ public class RescueForcesListener implements ReadListener<RescueForces> {
 
     @Override
     public void invoke(RescueForces data, AnalysisContext context) {
-// 检查当前行的第一个单元格
+        // 检查当前行的第一个单元格
         if (data.getEarthquakeAreaName() == null || data.getEarthquakeAreaName().contains("填写单位")) {
             stopReading = true;
         }

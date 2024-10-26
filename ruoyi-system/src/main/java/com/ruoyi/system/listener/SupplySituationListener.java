@@ -15,7 +15,6 @@ import java.util.List;
 public class SupplySituationListener implements ReadListener<SupplySituation> {
 
 
-
     private final List<SupplySituation> list = new ArrayList<SupplySituation>();
     private SupplySituationMapper supplySituationMapper;
     private int totalRows;
@@ -64,10 +63,5 @@ public class SupplySituationListener implements ReadListener<SupplySituation> {
     public List<SupplySituation> getList() {
         return list;
     }
-
-
-
-
-
 
 }

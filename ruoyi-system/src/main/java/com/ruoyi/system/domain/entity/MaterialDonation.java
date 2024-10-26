@@ -61,7 +61,7 @@ public class MaterialDonation {
      * 地震时间
      * */
     @TableField(value = "report_deadline")
-    @ExcelProperty(value = {"资金及物资捐赠情况", "填报截止时间"})
+    @ExcelProperty(value = {"资金及物资捐赠情况", "统计截止时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
