@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+
 @Data
 @TableName(value = "safety_protection")
 public class SafetyProtection {
@@ -27,4 +28,9 @@ public class SafetyProtection {
     @TableField(value = "notes")
     private String notes;
 
+    @TableField(value = "tactics")
+    private String tactics;
+
+    @TableField(exist = false)
+    private String ifDelete;
 }
