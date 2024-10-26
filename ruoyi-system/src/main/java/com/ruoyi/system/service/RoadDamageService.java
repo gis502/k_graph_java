@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface RoadDamageService extends IService<RoadDamage>{
 
+    List<RoadDamage> getRoadRepairsByEqid(String eqid);
 
     List<RoadDamage> importExcelRoadDamage(MultipartFile file, String userName, String eqId) throws IOException;
 }

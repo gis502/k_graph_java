@@ -86,6 +86,15 @@ public class ExcelController {
     private HousingSituationServiceImpl housingSituationService;
 
     @Resource
+    private RescueForcesServiceImpl rescueForcesServiceImpl;
+
+    @Resource
+    private DisasterReliefMaterialsServiceImpl disasterReliefMaterialsServiceImpl;
+
+    @Resource
+    private LargeSpecialRescueEquipmentServiceImpl largeSpecialRescueEquipmentServiceImpl;
+
+    @Resource
     private SupplySituationServiceImpl supplySituationService;
 
     @Resource
@@ -240,6 +249,18 @@ public class ExcelController {
                 return R.ok(redCrossDonations);
             }
 
+            if (filename.equals("救援力量情况统计表")){
+                List<RescueForces> rescueForces = rescueForcesServiceImpl.importExcelRescueForces(file, userName,eqId);
+                return R.ok(rescueForces);
+            }
+            if (filename.equals("救灾物资情况（累计）统计表")){
+                List<DisasterReliefMaterials> disasterReliefMaterials = disasterReliefMaterialsServiceImpl.importExcelDisasterReliefMaterials(file, userName,eqId);
+                return R.ok(disasterReliefMaterials);
+            }
+            if (filename.equals("大型、特种救援装备统计表")){
+                List<LargeSpecialRescueEquipment> largeSpecialRescueEquipment = largeSpecialRescueEquipmentServiceImpl.importExcelLargeSpecialRescueEquipment(file, userName,eqId);
+                return R.ok(largeSpecialRescueEquipment);
+            }
             else {
                 return R.fail("上传文件名称错误");
             }
