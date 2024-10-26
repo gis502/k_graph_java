@@ -71,6 +71,15 @@ public class ExcelController {
     @Resource
     private AfterSeismicInformationServiceImpl afterSeismicInformationServiceImpl;
 
+    @Resource
+    private RescueForcesServiceImpl rescueForcesServiceImpl;
+
+    @Resource
+    private DisasterReliefMaterialsServiceImpl disasterReliefMaterialsServiceImpl;
+
+    @Resource
+    private LargeSpecialRescueEquipmentServiceImpl largeSpecialRescueEquipmentServiceImpl;
+
 
 
     @PostMapping("/getData")
@@ -163,6 +172,18 @@ public class ExcelController {
             if (filename.equals("交通电力通信-道路交通损毁及抢修情况统计表")) {
                 List<RoadDamage>  RoadDamage = roadDamageServiceImpl.importExcelRoadDamage(file, userName,eqId);
                 return R.ok(RoadDamage);
+            }
+            if (filename.equals("救援力量情况统计表")){
+                List<RescueForces> rescueForces = rescueForcesServiceImpl.importExcelRescueForces(file, userName,eqId);
+                return R.ok(rescueForces);
+            }
+            if (filename.equals("救灾物资情况（累计）统计表")){
+                List<DisasterReliefMaterials> disasterReliefMaterials = disasterReliefMaterialsServiceImpl.importExcelDisasterReliefMaterials(file, userName,eqId);
+                return R.ok(disasterReliefMaterials);
+            }
+            if (filename.equals("大型、特种救援装备统计表")){
+                List<LargeSpecialRescueEquipment> largeSpecialRescueEquipment = largeSpecialRescueEquipmentServiceImpl.importExcelLargeSpecialRescueEquipment(file, userName,eqId);
+                return R.ok(largeSpecialRescueEquipment);
             }
             else {
                 return R.fail("上传失败，请检查文件格式");
