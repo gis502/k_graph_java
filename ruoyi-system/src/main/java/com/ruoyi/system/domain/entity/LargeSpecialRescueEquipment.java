@@ -35,19 +35,29 @@ public class LargeSpecialRescueEquipment {
      * 地震名称
      */
     @TableField(value = "earthquake_name")
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "地震名称"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private String earthquakeName;
 
     /**
      * 地震时间
      */
     @TableField(value = "earthquake_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "地震时间"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private LocalDateTime earthquakeTime;
 
     /**
-     * 系统插入时间
+     * 震区名称
      */
-    @TableField(value = "system_insert_time")
-    private LocalDateTime systemInsertTime;
+    @TableField(value = "earthquake_area_name")
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "震区名称"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
+    private String earthquakeAreaName;
 
     /**
      * 统计截止时间
@@ -58,15 +68,6 @@ public class LargeSpecialRescueEquipment {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private LocalDateTime submissionDeadline;
-
-    /**
-     * 震区名称
-     */
-    @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "震区名称"})
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
-    private String earthquakeAreaName;
 
     /**
      * 直升机
@@ -94,4 +95,10 @@ public class LargeSpecialRescueEquipment {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer wingDroneCount;
+
+    /**
+     * 系统插入时间
+     */
+    @TableField(value = "system_insert_time")
+    private LocalDateTime systemInsertTime;
 }

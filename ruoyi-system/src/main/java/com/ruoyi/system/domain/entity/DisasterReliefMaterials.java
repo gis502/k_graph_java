@@ -36,19 +36,22 @@ public class DisasterReliefMaterials {
      * 地震名称
      */
     @TableField(value = "earthquake_name")
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "地震名称"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private String earthquakeName;
 
     /**
      * 地震时间
      */
     @TableField(value = "earthquake_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "地震时间"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private LocalDateTime earthquakeTime;
 
-    /**
-     * 系统插入时间
-     */
-    @TableField(value = "system_insert_time")
-    private LocalDateTime systemInsertTime;
+
 
     /**
      * 统计截止时间
@@ -113,4 +116,10 @@ public class DisasterReliefMaterials {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private Integer foldingBedsCount;
+
+    /**
+     * 系统插入时间
+     */
+    @TableField(value = "system_insert_time")
+    private LocalDateTime systemInsertTime;
 }

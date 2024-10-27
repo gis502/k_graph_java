@@ -36,22 +36,32 @@ public class RescueForces {
     private String earthquakeId;
 
     /**
-     * 地震时间
-     */
-    @TableField(value = "earthquake_time")
-    private LocalDateTime earthquakeTime;
-
-    /**
      * 地震名称
      */
     @TableField(value = "earthquake_name")
+    @ExcelProperty({"力量物资资金-救援力量情况统计表", "地震名称"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private String earthquakeName;
 
     /**
-     * 系统插入时间
+     * 地震时间
      */
-    @TableField(value = "system_insert_time")
-    private LocalDateTime systemInsertTime;
+    @TableField(value = "earthquake_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "地震时间"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
+    private LocalDateTime earthquakeTime;
+
+    /**
+     * 震区名称
+     */
+    @TableField(value = "earthquake_area_name")
+    @ExcelProperty({"力量物资资金-救援力量情况统计表", "震区名称"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
+    private String earthquakeAreaName;
 
     /**
      * 统计截止时间
@@ -63,15 +73,6 @@ public class RescueForces {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private LocalDateTime  submissionDeadline;
-
-    /**
-     * 震区名称
-     */
-    @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"力量物资资金-救援力量情况统计表", "震区名称"})
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
-    private String earthquakeAreaName;
 
     /**
      * 解放军
@@ -234,6 +235,13 @@ public class RescueForces {
      */
     @TableField(value = "record_time")
     private LocalDateTime recordTime;
+
+
+    /**
+     * 系统插入时间
+     */
+    @TableField(value = "system_insert_time")
+    private LocalDateTime systemInsertTime;
 
 
 }
