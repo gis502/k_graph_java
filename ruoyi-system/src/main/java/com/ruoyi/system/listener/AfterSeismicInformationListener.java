@@ -53,6 +53,7 @@ public class AfterSeismicInformationListener implements ReadListener<AfterSeismi
     public void doAfterAllAnalysed(AnalysisContext context) {
         WebSocketServerExcel.sendInfo("100", userName);
     }
+
     public List<AfterSeismicInformation> getList() {
         return list;
     }

@@ -97,7 +97,6 @@ public class AftershockInformationServiceImpl extends
     public String deleteData(List<Map<String, Object>> requestBTO) {
         // 假设所有的 ids 都在每个 Map 中的 "uuid" 键下，提取所有的 ids
         List<String> ids = new ArrayList<>();
-
         // 遍历 requestBTO 列表，提取每个 Map 中的 "uuid" 键的值
         for (Map<String, Object> entry : requestBTO) {
             if (entry.containsKey("uuid")) {
