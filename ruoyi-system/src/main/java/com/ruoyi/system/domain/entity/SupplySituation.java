@@ -29,7 +29,7 @@ public class SupplySituation {
      * 地震标识id
      */
     @TableField(value = "earthquake_id")
-    private Integer earthquakeId;
+    private String earthquakeId;
     /**
      * 地震名称
      */
@@ -68,15 +68,6 @@ public class SupplySituation {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime reportDeadline;
-
-    /**
-     * 保障安置点供水（处）
-     */
-    @TableField(value = "water_supply_points")
-    @ExcelProperty({"供水情况", "保障安置点供水（处)"})
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private Integer waterSupplyPoints;
 
     /**
      * 集中供水工程受损（处）

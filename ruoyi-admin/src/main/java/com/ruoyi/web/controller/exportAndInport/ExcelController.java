@@ -54,7 +54,9 @@ public class ExcelController {
     private TransferSettlementInfoServiceImpl transferSettlementInfoServiceImpl;
 
     @Resource
-   private MeetingsServiceImpl meetingsServiceImpl;
+    private MeetingsServiceImpl meetingsServiceImpl;
+    @Resource
+    private AfterSeismicInformationServiceImpl afterSeismicInformationServiceImpl;
 
     @Resource
     private TrafficControlSectionsServiceImpl trafficControlSectionsServiceImpl;
@@ -69,9 +71,46 @@ public class ExcelController {
     private RoadDamageServiceImpl roadDamageServiceImpl;
 
     @Resource
-    private AfterSeismicInformationServiceImpl afterSeismicInformationServiceImpl;
+    private RiskConstructionGeohazardsServiceImpl riskConstructionGeohazardsServiceImpl;
 
+    @Resource
+    private BarrierLakeSituationServiceImpl barrierLakeSituationService;
 
+    @Resource
+    private SecondaryDisasterInfoServiceImpl secondaryDisasterInfoService;
+
+    @Resource
+    private DisasterAreaWeatherForecastServiceImpl disasterAreaWeatherForecastService;
+
+    @Resource
+    private HousingSituationServiceImpl housingSituationService;
+
+    @Resource
+    private RescueForcesServiceImpl rescueForcesServiceImpl;
+
+    @Resource
+    private DisasterReliefMaterialsServiceImpl disasterReliefMaterialsServiceImpl;
+
+    @Resource
+    private LargeSpecialRescueEquipmentServiceImpl largeSpecialRescueEquipmentServiceImpl;
+
+    @Resource
+    private SupplySituationServiceImpl supplySituationService;
+
+    @Resource
+    private CharityOrganizationDonationsServiceImpl charityOrganizationDonationsService;
+
+    @Resource
+    private GovernmentDepartmentDonationsServiceImpl governmentDepartmentDonationsService;
+
+    @Resource
+    private RedCrossDonationsServiceImpl redCrossDonationsService;
+
+    @Resource
+    private SupplyWaterServiceImpl supplyWaterService;
+
+    @Resource
+    private MaterialDonationServiceImpl materialDonationService;
 
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
@@ -97,7 +136,7 @@ public class ExcelController {
                     .sheet("地震数据信息统计表")
                     .doWrite(dataList);
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -107,19 +146,19 @@ public class ExcelController {
         List<SysOperLog> message = null;
         switch (time) {
             case "今日":
-                message = sysOperLogMapper.getMessageByDay(requestParams,username);
+                message = sysOperLogMapper.getMessageByDay(requestParams, username);
                 break;
             case "近七天":
-                message = sysOperLogMapper.getMessageByWeek(requestParams,username);
+                message = sysOperLogMapper.getMessageByWeek(requestParams, username);
                 break;
             case "近一个月":
-                message = sysOperLogMapper.getMessageByMonth(requestParams,username);
+                message = sysOperLogMapper.getMessageByMonth(requestParams, username);
                 break;
             case "近三个月":
-                message = sysOperLogMapper.getMessageByThreeMonth(requestParams,username);
+                message = sysOperLogMapper.getMessageByThreeMonth(requestParams, username);
                 break;
             case "近一年":
-                message = sysOperLogMapper.getMessageByYear(requestParams,username);
+                message = sysOperLogMapper.getMessageByYear(requestParams, username);
                 break;
         }
         return R.ok(message);
@@ -132,56 +171,108 @@ public class ExcelController {
     public R getAfterShockStatistics(@RequestParam("file") MultipartFile file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String filename, @PathVariable(value = "eqId") String eqId) throws IOException {
         try {
             if (filename.equals("震情伤亡-震情灾情统计表")) {
-                List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName,eqId);
+                List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName, eqId);
                 return R.ok(yaanAftershockStatistics);
-            } if (filename.equals("震情伤亡-人员伤亡统计表")) {
-                List<CasualtyReport> yaanCasualties = caseCacheServiceImpl.importExcelCasualtyReport(file, userName,eqId);
+            }
+            if (filename.equals("震情伤亡-人员伤亡统计表")) {
+                List<CasualtyReport> yaanCasualties = caseCacheServiceImpl.importExcelCasualtyReport(file, userName, eqId);
                 return R.ok(yaanCasualties);
             }
             if (filename.equals("震情伤亡-转移安置统计表")) {
-                List<TransferSettlementInfo> YaanRelocationResettlementDisasterReliefGroup=transferSettlementInfoServiceImpl.importExcelTransferSettlementInfo(file, userName,eqId);
+                List<TransferSettlementInfo> YaanRelocationResettlementDisasterReliefGroup = transferSettlementInfoServiceImpl.importExcelTransferSettlementInfo(file, userName, eqId);
                 return R.ok(YaanRelocationResettlementDisasterReliefGroup);
             }
             if (filename.equals("震情伤亡-文会情况统计表")) {
-                List<Meetings> meetings = meetingsServiceImpl.importExcelMeetings(file, userName,eqId);
+                List<Meetings> meetings = meetingsServiceImpl.importExcelMeetings(file, userName, eqId);
                 return R.ok(meetings);
             }
             if (filename.equals("震情伤亡-震情受灾统计表")) {
-                List<AfterSeismicInformation>  afterSeismicInformation = afterSeismicInformationServiceImpl.importAfterSeismicInformation(file, userName,eqId);
-                return R.ok(afterSeismicInformation);
+                List<AfterSeismicInformation> afterSeismicInformations = afterSeismicInformationServiceImpl.importExcelAfterSeismicInformation(file, userName, eqId);
+                return R.ok(afterSeismicInformations);
             }
             if (filename.equals("交通电力通信-交通管控情况统计表")) {
-                List<TrafficControlSections> trafficControlSections = trafficControlSectionsServiceImpl.importExcelTrafficControlSections(file, userName,eqId);
+                List<TrafficControlSections> trafficControlSections = trafficControlSectionsServiceImpl.importExcelTrafficControlSections(file, userName, eqId);
                 return R.ok(trafficControlSections);
             }
             if (filename.equals("交通电力通信-通信设施损毁及抢修情况统计表")) {
-                List<CommunicationFacilityDamageRepairStatus>  communicationFacilityDamageRepairStatus = communicationFacilityDamageRepairStatusServiceImpl.importExcelCommunicationFacilityDamageRepairStatus(file, userName,eqId);
+                List<CommunicationFacilityDamageRepairStatus> communicationFacilityDamageRepairStatus = communicationFacilityDamageRepairStatusServiceImpl.importExcelCommunicationFacilityDamageRepairStatus(file, userName, eqId);
                 return R.ok(communicationFacilityDamageRepairStatus);
             }
             if (filename.equals("交通电力通信-电力设施损毁及抢修情况统计表")) {
-                List<PowerSupplyInformation>  powerSupplyInformation = powerSupplyInformationServiceImpl.importExcelPowerSupplyInformation(file, userName,eqId);
+                List<PowerSupplyInformation> powerSupplyInformation = powerSupplyInformationServiceImpl.importExcelPowerSupplyInformation(file, userName, eqId);
                 return R.ok(powerSupplyInformation);
             }
             if (filename.equals("交通电力通信-道路交通损毁及抢修情况统计表")) {
-                List<RoadDamage>  RoadDamage = roadDamageServiceImpl.importExcelRoadDamage(file, userName,eqId);
+                List<RoadDamage> RoadDamage = roadDamageServiceImpl.importExcelRoadDamage(file, userName, eqId);
                 return R.ok(RoadDamage);
             }
-            else {
-                return R.fail("上传失败，请检查文件格式");
+            if (filename.equals("建筑物、工程受损-房屋情况统计表")) {
+                List<HousingSituation> housingSituations = housingSituationService.importExcelHousingSituation(file, userName, eqId);
+                return R.ok(housingSituations);
             }
-        } catch (IOException e) {
-            // 处理文件IO异常
-            e.printStackTrace();
-            return R.fail("文件处理失败: " + e.getMessage());
+            if (filename.equals("建筑物、工程受损-集中供水工程受损统计表")) {
+                List<SupplySituation> supplySituations = supplySituationService.importExcelSupplySituation(file, userName, eqId);
+                return R.ok(supplySituations);
+            }
+            if (filename.equals("建筑物、工程受损-保障安置点供水统计表")) {
+                List<SupplyWater> supplyWaters = supplyWaterService.importExcelSupplyWater(file, userName, eqId);
+                return R.ok(supplyWaters);
+            }
+            if (filename.equals("次生灾害-地质灾害统计表")){
+                List<RiskConstructionGeohazards> riskConstructionGeohazards = riskConstructionGeohazardsServiceImpl.importExcelRiskConstructionGeohazards(file, userName, eqId);
+                return R.ok(riskConstructionGeohazards);
+            }
+            if (filename.equals("次生灾害-堰塞湖（雍塞体）统计表")){
+                List<BarrierLakeSituation> barrierLakeSituations = barrierLakeSituationService.importExcelBarrierLakeSituation(file, userName, eqId);
+                return R.ok(barrierLakeSituations);
+            }
+            if (filename.equals("次生灾害-山洪危险区统计表")){
+                List<SecondaryDisasterInfo> secondaryDisasterInfos = secondaryDisasterInfoService.importExcelSecondaryDisasterInfo(file, userName, eqId);
+                return R.ok(secondaryDisasterInfos);
+            }
+            if (filename.equals("次生灾害-气象情况统计表")){
+                List<DisasterAreaWeatherForecast> disasterAreaWeatherForecasts = disasterAreaWeatherForecastService.importExcelDisasterAreaWeatherForecast(file, userName, eqId);
+                return R.ok(disasterAreaWeatherForecasts);
+            }
+            if (filename.equals("资金及物资捐赠-物资捐赠情况统计表")){
+                List<MaterialDonation> materialDonations = materialDonationService.importExcelMaterialDonation(file, userName, eqId);
+                return R.ok(materialDonations);
+            }
+            if (filename.equals("资金及物资捐赠-资金援助情况-政府部门接收捐赠资金统计表")){
+                List<GovernmentDepartmentDonations> governmentDepartmentDonations = governmentDepartmentDonationsService.importExcelGovernmentDepartmentDonations(file, userName, eqId);
+                return R.ok(governmentDepartmentDonations);
+            }
+            if (filename.equals("资金及物资捐赠-资金援助情况-慈善机构接收捐赠资金统计表")){
+                List<CharityOrganizationDonations> charityOrganizationDonations = charityOrganizationDonationsService.importExcelCharityOrganizationDonations(file, userName, eqId);
+                return R.ok(charityOrganizationDonations);
+            }
+            if (filename.equals("资金及物资捐赠-资金援助情况-红十字会系统接收捐赠资金统计表")){
+                List<RedCrossDonations> redCrossDonations = redCrossDonationsService.importExcelRedCrossDonations(file, userName, eqId);
+                return R.ok(redCrossDonations);
+            }
+            if (filename.equals("力量物资资金-救援力量情况统计表")){
+                List<RescueForces> rescueForces = rescueForcesServiceImpl.importExcelRescueForces(file, userName,eqId);
+                return R.ok(rescueForces);
+            }
+            if (filename.equals("力量物资资金-救灾物资情况（累计）统计表")){
+                List<DisasterReliefMaterials> disasterReliefMaterials = disasterReliefMaterialsServiceImpl.importExcelDisasterReliefMaterials(file, userName,eqId);
+                return R.ok(disasterReliefMaterials);
+            }
+            if (filename.equals("力量物资资金-大型、特种救援装备统计表")){
+                List<LargeSpecialRescueEquipment> largeSpecialRescueEquipment = largeSpecialRescueEquipmentServiceImpl.importExcelLargeSpecialRescueEquipment(file, userName,eqId);
+                return R.ok(largeSpecialRescueEquipment);
+            }
+            else {
+                return R.fail("上传文件名称错误");
+            }
         } catch (Exception e) {
-            // 处理其他异常
             e.printStackTrace();
             return R.fail("操作失败: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/deleteData")
-    public AjaxResult deleteData(@RequestBody Map<String,Object> requestBTO) {
+    public AjaxResult deleteData(@RequestBody Map<String, Object> requestBTO) {
         System.out.println(requestBTO);
         List<Map<String, Object>> idsList = (List<Map<String, Object>>) requestBTO.get("ids");
         return AjaxResult.success(dataExportStrategyContext.getStrategy((String) requestBTO.get("flag")).deleteData(idsList));
