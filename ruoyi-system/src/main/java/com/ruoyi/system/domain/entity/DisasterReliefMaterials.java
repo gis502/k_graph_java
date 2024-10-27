@@ -19,7 +19,7 @@ import java.util.Date;
  * 救灾物资情况统计表（累计）(用户上传数据)
  */
 @Data
-@TableName(value = "disaster_relief_supplies_accumulated")
+@TableName(value = "disaster_relief_materials")
 public class DisasterReliefMaterials {
     /**
      * 序号，自增主键
