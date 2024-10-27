@@ -18,7 +18,7 @@ import java.util.Date;
  * 救灾物资情况统计表（累计）(用户上传数据)
  */
 @Data
-@TableName(value = "rescue_force_situation")
+@TableName(value = "disaster_relief_supplies_accumulated")
 public class DisasterReliefMaterials {
     /**
      * 序号，自增主键
@@ -55,7 +55,7 @@ public class DisasterReliefMaterials {
      * 震区名称
      */
     @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "震区名称"})
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private String earthquakeAreaName;

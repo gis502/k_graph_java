@@ -54,7 +54,7 @@ public class LargeSpecialRescueEquipment {
      * 震区名称
      */
     @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "震区名称"})
+    @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private String earthquakeAreaName;
