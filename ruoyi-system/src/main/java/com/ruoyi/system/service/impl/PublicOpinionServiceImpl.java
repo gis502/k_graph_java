@@ -15,6 +15,7 @@ import com.ruoyi.system.mapper.PublicOpinionMapper;
 import com.ruoyi.system.service.PublicOpinionService;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -23,7 +24,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Service
 public class PublicOpinionServiceImpl
         extends ServiceImpl<PublicOpinionMapper, PublicOpinion>
         implements PublicOpinionService, DataExportStrategy {

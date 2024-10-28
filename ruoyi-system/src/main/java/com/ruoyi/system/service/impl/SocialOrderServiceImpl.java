@@ -15,6 +15,7 @@ import com.ruoyi.system.mapper.SocialOrderMapper;
 import com.ruoyi.system.service.SocialOrderService;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -23,7 +24,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Service
 public class SocialOrderServiceImpl extends
         ServiceImpl<SocialOrderMapper,SocialOrder>
         implements SocialOrderService, DataExportStrategy {
