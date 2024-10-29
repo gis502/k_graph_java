@@ -34,7 +34,8 @@ public class SupplySituationServiceImpl
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
-
+    @Resource
+    private SupplySituationMapper supplySituationMapper;
 
     /**
      * @param requestBTO
@@ -160,6 +161,12 @@ public class SupplySituationServiceImpl
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+
+    @Override
+    public List<SupplySituation> getsupplySituationById(String eqid){
+        return supplySituationMapper.selectSupplySituationById(eqid);
     }
 
 }
