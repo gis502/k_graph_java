@@ -26,4 +26,10 @@ public class UnavailableTransmissionDistributionLines {
      */
     @TableField(value = "voltage_level")
     private String voltageLevel;
+
+    /**
+     * 标绘id
+     */
+    @TableField(value = "plot_id")
+    private String plotId;
 }
