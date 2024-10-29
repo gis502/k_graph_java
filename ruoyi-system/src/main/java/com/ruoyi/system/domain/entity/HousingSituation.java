@@ -117,7 +117,7 @@ public class HousingSituation {
      * 系统插入时间，记录被系统创建的时间
      */
     @TableField(value = "system_insert_time")
-    @ExcelProperty({"震情灾情", "地震名称"})
+    @ExcelProperty({"震情灾情", "系统插入时间"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Date systemInsertTime;
