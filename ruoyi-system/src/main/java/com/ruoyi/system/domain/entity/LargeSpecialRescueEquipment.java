@@ -1,7 +1,6 @@
 package com.ruoyi.system.domain.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.alibaba.excel.annotation.write.style.ContentStyle;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
@@ -45,7 +44,6 @@ public class LargeSpecialRescueEquipment {
      * 地震时间
      */
     @TableField(value = "earthquake_time")
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "地震时间"})
     @ColumnWidth(30)
@@ -65,7 +63,6 @@ public class LargeSpecialRescueEquipment {
      * 统计截止时间
      */
     @TableField(value = "submission_deadline")
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ExcelProperty({"力量物资资金-大型、特种救援装备统计表", "统计截止时间"})
     @ColumnWidth(30)

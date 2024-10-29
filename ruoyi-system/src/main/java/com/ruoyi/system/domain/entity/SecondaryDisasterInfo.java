@@ -51,6 +51,14 @@ public class SecondaryDisasterInfo {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedArea;
 
+    @TableField(value = "reporting_deadline")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty(value = {"山洪危险区情况", "统计截止时间"})
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime reportingDeadline;
+
     @TableField(value = "hazard_points")
     @ExcelProperty(value = {"山洪危险区情况", "隐患点（处）"})
     @ColumnWidth(30)
@@ -75,13 +83,7 @@ public class SecondaryDisasterInfo {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String evacuationSecondary;
 
-    @TableField(value = "reporting_deadline")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty(value = {"山洪危险区情况", "统计截止时间"})
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private LocalDateTime reportingDeadline;
+
 
     @TableField(value = "barrier_lake")
     private String barrierLake;

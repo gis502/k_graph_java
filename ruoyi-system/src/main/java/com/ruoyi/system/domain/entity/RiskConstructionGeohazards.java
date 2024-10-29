@@ -57,6 +57,19 @@ public class RiskConstructionGeohazards {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String quakeAreaName;
+
+    /*
+     * 统计截止时间
+     * */
+    @TableField(value = "report_deadline")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty(value = {"地质灾害情况", "统计截止时间"})
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime reportDeadline;
+
+
     /*
     * 现有风险点
     * */
@@ -105,16 +118,7 @@ public class RiskConstructionGeohazards {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer evacuationCount;
-    /*
-    * 统计截止时间
-    * */
-    @TableField(value = "report_deadline")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty(value = {"地质灾害情况", "统计截止时间"})
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private LocalDateTime reportDeadline;
+
 
     /*
     * 系统插入时间
