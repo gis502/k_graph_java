@@ -157,7 +157,9 @@ public class SafetyProtectionController {
         LambdaQueryWrapper<SafetyProtection> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SafetyProtection::getSource, safetyProtection.getSource())
                 .eq(SafetyProtection::getPort, safetyProtection.getPort())
-                .eq(SafetyProtection::getAgreement, safetyProtection.getAgreement());
+                .eq(SafetyProtection::getAgreement, safetyProtection.getAgreement())
+                .eq(SafetyProtection::getTactics, safetyProtection.getTactics())
+                .eq(SafetyProtection::getNotes, safetyProtection.getNotes());
 
         return safetyProtectionService.count(queryWrapper) > 0; // Returns true if a matching entry exists
     }
