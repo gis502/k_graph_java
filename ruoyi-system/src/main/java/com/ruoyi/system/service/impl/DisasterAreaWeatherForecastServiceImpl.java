@@ -80,12 +80,12 @@ public class DisasterAreaWeatherForecastServiceImpl extends
 
     @Override
     public IPage getPage(RequestBTO requestBTO) {
-        Page<DisasterAreaWeatherForecast> barrierLakeSituationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        Page<DisasterAreaWeatherForecast> disasterAreaWeatherForecastPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         String requestParam = requestBTO.getRequestParams();
         LambdaQueryWrapper<DisasterAreaWeatherForecast> queryWrapper =
                 Wrappers.lambdaQuery(DisasterAreaWeatherForecast.class)
                         .like(DisasterAreaWeatherForecast::getEarthquakeId, requestParam);
-        return this.page(barrierLakeSituationPage, queryWrapper);
+        return this.page(disasterAreaWeatherForecastPage, queryWrapper);
     }
 
     @Override

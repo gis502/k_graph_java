@@ -25,7 +25,7 @@ public class RedCrossDonations {
     @TableField(value = "earthquake_id")
     private String earthquakeId;
 
-    @TableField(value = "earthquake_area_name")
+    @TableField(value = "earthquake_name")
     @ExcelProperty(value = {"红十字会系统接收捐赠资金", "地震名称"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
@@ -53,8 +53,14 @@ public class RedCrossDonations {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime submissionDeadline;
 
-    @TableField(value = "donation_amount")
+    @TableField(value = "today_amount")
     @ExcelProperty(value = {"红十字会系统接收捐赠资金", "当日"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Double todayAmount;
+
+    @TableField(value = "donation_amount")
+    @ExcelProperty(value = {"红十字会系统接收捐赠资金", "累计"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Double donationAmount;

@@ -48,6 +48,8 @@ public class DisasterAreaWeatherForecast {
 
     @TableField("submission_deadline")
     @ExcelProperty(value = {"气象情况", "统计截止时间"})
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime submissionDeadline;
@@ -57,7 +59,6 @@ public class DisasterAreaWeatherForecast {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String weatherForecast;
-
 
 
     @TableField("record_time")

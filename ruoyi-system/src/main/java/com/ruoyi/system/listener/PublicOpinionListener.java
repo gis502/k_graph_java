@@ -25,7 +25,6 @@ public class PublicOpinionListener implements ReadListener<PublicOpinion> {
         this.userName = userName;
     }
 
-
     @Override
     public void invoke(PublicOpinion data, AnalysisContext analysisContext) {
         System.out.println(data);
@@ -55,7 +54,6 @@ public class PublicOpinionListener implements ReadListener<PublicOpinion> {
             throw new RuntimeException(e);
         }
     }
-
 
     public List<PublicOpinion> getList() {
         return list;

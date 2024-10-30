@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain.entity;
 
+
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
@@ -15,24 +16,31 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("government_department_donations")
-public class GovernmentDepartmentDonations {
-
+@TableName("social_order")
+public class SocialOrder {
 
     @TableId(value = "uuid", type = IdType.NONE)
     private String uuid;
-
+    /**
+     * 地震标识
+     */
     @TableField(value = "earthquake_id")
     private String earthquakeId;
 
+    /*
+     * 地震名称
+     * */
     @TableField(value = "earthquake_name")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "地震名称"})
+    @ExcelProperty(value = {"社会秩序", "地震名称"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
 
+    /*
+     * 地震时间
+     * */
     @TableField(value = "earthquake_time")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "地震时间"})
+    @ExcelProperty(value = {"社会秩序", "地震时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
@@ -40,33 +48,32 @@ public class GovernmentDepartmentDonations {
     private LocalDateTime earthquakeTime;
 
     @TableField(value = "earthquake_area_name")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "震区（县/区）"})
+    @ExcelProperty(value = {"社会秩序", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeAreaName;
 
-    @TableField(value = "submission_deadline")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "统计截止时间"})
+    @TableField(value = "reporting_deadline")
+    @ExcelProperty(value = {"社会秩序", "统计截止时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private LocalDateTime submissionDeadline;
+    private LocalDateTime reportingDeadline;
 
-    @TableField(value = "today_amount")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "当日"})
+    @TableField(value = "reported_rescue_info")
+    @ExcelProperty(value = {"社会秩序", "接报救助信息（起）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private Double todayAmount;
+    private Integer reportedRescueInfo;
 
-    @TableField(value = "donation_amount")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "累计"})
+    @TableField(value = "police_force")
+    @ExcelProperty(value = {"社会秩序", "投入警力（人）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private Double donationAmount;
+    private Integer policeForce;
 
-    @TableField(value = "record_time")
-    private LocalDateTime recordTime;
-
+    @TableField(value = "system_insert_time")
+    private LocalDateTime systemInsertTime;
 
 }

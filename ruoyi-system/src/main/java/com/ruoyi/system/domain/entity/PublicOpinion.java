@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain.entity;
 
+
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
@@ -15,58 +16,84 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("government_department_donations")
-public class GovernmentDepartmentDonations {
+@TableName("public_opinion")
+public class PublicOpinion {
 
 
     @TableId(value = "uuid", type = IdType.NONE)
     private String uuid;
-
+    /**
+     * 地震标识
+     */
     @TableField(value = "earthquake_id")
     private String earthquakeId;
 
+    /*
+     * 地震名称
+     * */
     @TableField(value = "earthquake_name")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "地震名称"})
+    @ExcelProperty(value = {"宣传舆论", "地震名称"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
 
+    /*
+     * 地震时间
+     * */
     @TableField(value = "earthquake_time")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "地震时间"})
+    @ExcelProperty(value = {"宣传舆论", "地震时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime earthquakeTime;
 
-    @TableField(value = "earthquake_area_name")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "震区（县/区）"})
+    @TableField(value = "earthquake_zone_name")
+    @ExcelProperty(value = {"宣传舆论", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private String earthquakeAreaName;
+    private String earthquakeZoneName;
 
     @TableField(value = "submission_deadline")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "统计截止时间"})
+    @ExcelProperty(value = {"宣传舆论", "统计截止时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime submissionDeadline;
 
-    @TableField(value = "today_amount")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "当日"})
+    @TableField(value = "publicity_report")
+    @ExcelProperty(value = {"宣传舆论", "宣传报道（篇）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private Double todayAmount;
+    private Integer publicityReport;
 
-    @TableField(value = "donation_amount")
-    @ExcelProperty(value = {"政府部门接受捐赠资金", "累计"})
+    @TableField(value = "provincial_media_report")
+    @ExcelProperty(value = {"宣传舆论", "中省主要媒体报道（篇）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private Double donationAmount;
+    private Integer provincialMediaReport;
 
-    @TableField(value = "record_time")
-    private LocalDateTime recordTime;
+    @TableField(value = "public_opinion_risk_warning")
+    @ExcelProperty(value = {"宣传舆论", "舆情风险提示（条）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer publicOpinionRiskWarning;
+
+    @TableField(value = "press_conference")
+    @ExcelProperty(value = {"宣传舆论", "发布会（场）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer pressConference;
+
+    @TableField(value = "negative_opinion_disposal")
+    @ExcelProperty(value = {"宣传舆论", "处置负面舆论（条）"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private Integer negativeOpinionDisposal;
+
+    @TableField(value = "system_insert_time")
+    private LocalDateTime systemInsertTime;
 
 
 }

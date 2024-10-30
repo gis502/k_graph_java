@@ -173,7 +173,6 @@ public class ExcelController {
     }
 
 
-
     @PostMapping("/importExcel/{userName}&{filename}&{eqId}")
     @Log(title = "导入数据", businessType = BusinessType.IMPORT)
     public R getAfterShockStatistics(@RequestParam("file") MultipartFile file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String filename, @PathVariable(value = "eqId") String eqId) throws IOException {
@@ -270,25 +269,28 @@ public class ExcelController {
                 List<LargeSpecialRescueEquipment> largeSpecialRescueEquipment = largeSpecialRescueEquipmentServiceImpl.importExcelLargeSpecialRescueEquipment(file, userName, eqId);
                 return R.ok(largeSpecialRescueEquipment);
             }
-            if (filename.equals("宣传舆论治安-社会秩序统计表")) {
+            if (filename.equals("宣传舆情治安-社会秩序统计表")) {
                 List<SocialOrder> socialOrder = socialOrderServiceImpl.importExcelSocialOrder(file, userName, eqId);
                 return R.ok(socialOrder);
             }
-            else{
-                    return R.fail("上传文件名称错误");
-                }
-            } catch(Exception e){
-                e.printStackTrace();
-                return R.fail("操作失败: " + e.getMessage());
+            if (filename.equals("宣传舆情治安-宣传舆论统计表")) {
+                List<PublicOpinion> publicOpinions = publicOpinionServiceImpl.importExcelPublicOpinion(file, userName, eqId);
+                return R.ok(publicOpinions);
+            } else {
+                return R.fail("上传文件名称错误");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.fail("操作失败: " + e.getMessage());
         }
-
-        @DeleteMapping("/deleteData")
-        public AjaxResult deleteData (@RequestBody Map < String, Object > requestBTO){
-            System.out.println(requestBTO);
-            List<Map<String, Object>> idsList = (List<Map<String, Object>>) requestBTO.get("ids");
-            return AjaxResult.success(dataExportStrategyContext.getStrategy((String) requestBTO.get("flag")).deleteData(idsList));
-        }
-
     }
+
+    @DeleteMapping("/deleteData")
+    public AjaxResult deleteData(@RequestBody Map<String, Object> requestBTO) {
+        System.out.println(requestBTO);
+        List<Map<String, Object>> idsList = (List<Map<String, Object>>) requestBTO.get("ids");
+        return AjaxResult.success(dataExportStrategyContext.getStrategy((String) requestBTO.get("flag")).deleteData(idsList));
+    }
+
+}
 

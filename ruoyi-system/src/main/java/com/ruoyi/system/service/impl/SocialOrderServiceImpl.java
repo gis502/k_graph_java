@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.BarrierLakeSituation;
 import com.ruoyi.system.domain.entity.SocialOrder;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.SocialOrderListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.SocialOrderMapper;
@@ -71,7 +73,6 @@ public class SocialOrderServiceImpl extends
             data.setEarthquakeName(earthquakeIdByTimeAndPosition.get(0).getEarthquakeName());
 //            data.setMagnitude(earthquakeIdByTimeAndPosition.get(0).getMagnitude());
             data.setReportingDeadline(data.getReportingDeadline());
-            data.setSystemInsertTime(LocalDateTime.now());
         }
         //集合拷贝
         saveBatch(list);
@@ -136,4 +137,6 @@ public class SocialOrderServiceImpl extends
         }
         return true;  // 所有单元格都为空，算作空行
     }
+
+
 }
