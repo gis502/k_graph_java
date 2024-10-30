@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PowerSupplyInformationService extends IService<PowerSupplyInformation>{
 
-
     List<PowerSupplyInformation> importExcelPowerSupplyInformation(MultipartFile file, String userName, String eqId) throws IOException;
 
+    List<PowerSupplyInformation> getPowerSupply(String eqid);
 }
