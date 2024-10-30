@@ -117,4 +117,5 @@ public class RescueTeam {
      */
     @TableField(value = "plot_id")
     private String plotId;
+
 }

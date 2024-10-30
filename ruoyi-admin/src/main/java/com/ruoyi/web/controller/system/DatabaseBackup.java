@@ -41,21 +41,19 @@ public class DatabaseBackup {
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ResponseEntity<Resource> backupAndDownload(@RequestParam String tableName) {
+        // 生成备份文件名
         String backupFileName = DB_NAME + "_backup_" + tableName + "_" + System.currentTimeMillis() + ".backup";
         String backupFilePath = BACKUP_PATH + backupFileName;
+
+        // 构建pg_dump命令
         ProcessBuilder processBuilder = new ProcessBuilder();
-
-        // Set environment variables for the database user and password
         processBuilder.environment().put("PGPASSWORD", DB_PASSWORD);
-
-        // Build the pg_dump command for a specific table in a remote database
         processBuilder.command(PG_DUMP_PATH, "-h", DB_HOST, "-p", String.valueOf(DB_PORT), "-U", DB_USER, "-F", "c", "-b", "-v", "-E", "UTF8", "-f", backupFilePath, "-t", tableName, DB_NAME);
 
         try {
-            // Execute the command
+            // 执行命令
             Process process = processBuilder.start();
-
-            // Capture output
+            // 捕获输出
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -74,7 +72,7 @@ public class DatabaseBackup {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
 
-        // Return the backup file to the client for download
+        // 返回备份文件到前端
         File file = new File(backupFilePath);
         if (!file.exists()) {
             System.out.println("备份文件未生成");

@@ -2,8 +2,6 @@ package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.entity.ZhongduanVillage;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -31,9 +29,9 @@ public interface ZhongduanVillageMapper {
         COUNT(DISTINCT ps.currently_blacked_out_villages) AS CurrentlyBlackedOutVillages,
         COUNT(DISTINCT cf.current_interrupted_villages_count) AS CurrentInterruptedVillages,
         GREATEST(
-            (SELECT MAX(system_insert_time) FROM road_damage),
-            (SELECT MAX(system_insert_time) FROM power_supply_information),
-            (SELECT MAX(system_insertion_time) FROM communication_facility_damage_repair_status)
+            COALESCE(MAX(rd.system_insert_time), NULL),
+            COALESCE(MAX(ps.system_insert_time), NULL),
+            COALESCE(MAX(cf.system_insertion_time), NULL)
         ) AS insertTime
     FROM road_damage rd, power_supply ps, communication_facility cf
 """)

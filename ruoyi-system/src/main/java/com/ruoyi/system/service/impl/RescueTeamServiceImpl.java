@@ -2,6 +2,7 @@ package com.ruoyi.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.system.domain.entity.RescueActionCasualties;
+import com.ruoyi.system.domain.entity.RescueTeam_timeInnerJoin;
 import com.ruoyi.system.mapper.RescueActionCasualtiesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class RescueTeamServiceImpl extends ServiceImpl<RescueTeamMapper, RescueT
         QueryWrapper<RescueTeam> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("eqid", eqid);  // 查询条件为 eqid
         return rescueTeamMapper.selectList(queryWrapper);
+    }
+    public List<RescueTeam_timeInnerJoin> getInfoByEqid(String eqid) {
+        return rescueTeamMapper.getInfoByEqid(eqid);
     }
 
 }
