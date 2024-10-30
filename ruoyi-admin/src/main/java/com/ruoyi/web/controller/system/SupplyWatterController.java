@@ -1,8 +1,7 @@
 package com.ruoyi.web.controller.system;
 
-
-import com.ruoyi.system.domain.entity.RoadDamage;
-import com.ruoyi.system.service.RoadDamageService;
+import com.ruoyi.system.domain.entity.SupplyWater;
+import com.ruoyi.system.service.SupplyWaterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system")
-public class RoadDamageController {
+public class SupplyWatterController {
     @Autowired
-    private RoadDamageService roadDamageService;
+    private SupplyWaterService supplyWaterService;
 
-    @GetMapping("/repair")
-    public List<RoadDamage> repairs(@RequestParam String eqid) {
-        return roadDamageService.getRoadRepairsByEqid(eqid);
+    @GetMapping("/supplyWatterList")
+    public List<SupplyWater> supplyWaterList(@RequestParam(required = false) String eqid) {
+        return supplyWaterService.getSupplyWaterById(eqid);
     }
 }

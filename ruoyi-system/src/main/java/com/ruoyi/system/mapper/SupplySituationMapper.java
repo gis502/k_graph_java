@@ -8,17 +8,18 @@ import java.util.List;
 
 @Mapper
 public interface SupplySituationMapper extends BaseMapper<SupplySituation> {
+    @Select("WITH RankedRecords AS ( " +
+            "    SELECT s.*, " +
+            "           ROW_NUMBER() OVER (PARTITION BY earthquake_area_name ORDER BY report_deadline DESC) AS rn " +
+            "    FROM public.supply_situation s " +
+            "    WHERE s.earthquake_id = #{eqid} " +
+            ") " +
+            "SELECT * " +
+            "FROM RankedRecords " +
+            "WHERE rn = 1 " +
+            "ORDER BY earthquake_area_name")
 
-    @Select("SELECT DISTINCT ON (earthquake_area_name) " +
-            "earthquake_area_name, " +
-            "centralized_water_project_damage, " +
-            "report_deadline, " +
-            "system_insert_time, " +
-            "earthquake_time, " +
-            "earthquake_name " +
-            "FROM supply_situation " +
-            "WHERE earthquake_id = #{eqid} " +  // 使用参数化查询
-            "ORDER BY earthquake_area_name, " +
-            "system_insert_time DESC")
+
+
     List<SupplySituation> selectSupplySituationById(String eqid);
 }

@@ -31,6 +31,8 @@ public class SupplyWaterServiceImpl extends ServiceImpl<SupplyWaterMapper, Suppl
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Resource
+    private SupplyWaterMapper supplyWaterMapper;
 
     /**
      * @param requestBTO
@@ -149,4 +151,8 @@ public class SupplyWaterServiceImpl extends ServiceImpl<SupplyWaterMapper, Suppl
         return true;  // 所有单元格都为空，算作空行
     }
 
+    @Override
+    public List<SupplyWater> getSupplyWaterById(String eqid){
+        return supplyWaterMapper.selectSupplyWaterById(eqid);
+    }
 }

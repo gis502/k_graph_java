@@ -34,6 +34,8 @@ public class HousingSituationServiceImpl
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Resource
+    private HousingSituationMapper housingSituationMapper;
 
 
     /**
@@ -169,5 +171,8 @@ public class HousingSituationServiceImpl
         return true;  // 所有单元格都为空，算作空行
     }
 
-
+    @Override
+    public List<HousingSituation> getHousingSituationById(String eqid){
+        return housingSituationMapper.selectHousingSituationById(eqid);
+    }
 }

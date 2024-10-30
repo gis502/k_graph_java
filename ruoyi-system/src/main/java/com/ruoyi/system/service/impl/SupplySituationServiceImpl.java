@@ -165,7 +165,7 @@ public class SupplySituationServiceImpl
 
 
     @Override
-    public List<SupplySituation> getsupplySituationById(String eqid){
+    public List<SupplySituation> getSupplySituationById(String eqid){
         return supplySituationMapper.selectSupplySituationById(eqid);
     }
 

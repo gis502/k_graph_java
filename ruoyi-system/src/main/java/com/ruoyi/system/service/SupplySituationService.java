@@ -12,5 +12,5 @@ public interface SupplySituationService extends IService<SupplySituation>{
 
     List<SupplySituation> importExcelSupplySituation(MultipartFile file, String userName, String eqId) throws IOException;
 
-    List<SupplySituation> getsupplySituationById(String eqid);
+    List<SupplySituation> getSupplySituationById(String eqid);
 }
