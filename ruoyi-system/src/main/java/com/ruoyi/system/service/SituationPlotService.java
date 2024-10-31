@@ -15,7 +15,13 @@ public interface SituationPlotService extends IService<SituationPlot>{
 
     Object getPlotInfos(String plotType, String plotId);
 
+    List<Object> getExcelPlotInfo(List<String> plotTypes, List<String> plotIds);
+
     List<SituationPlot> getPlot(String eqid);
 
     List<SituationPlot> getSituationPlotsByEqId(String eqid);
+
+    void savePlotDataList(List<SituationPlot> plotDataList);
+
+    void savePlotProperty(List<String> plotProperty);
 }
