@@ -1,14 +1,18 @@
 package com.ruoyi.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.ruoyi.system.domain.entity.DisasterReliefSupplies;
-import com.ruoyi.system.domain.entity.EmergencyRescueEquipment;
-import com.ruoyi.system.domain.entity.EmergencyShelters;
-import com.ruoyi.system.domain.entity.RescueTeamsInfo;
+import com.ruoyi.system.domain.entity.*;
+import com.ruoyi.system.service.YaanJsonService;
 import com.ruoyi.system.service.impl.DisasterReliefSuppliesServiceImpl;
 import com.ruoyi.system.service.impl.EmergencyRescueEquipmentServiceImpl;
 import com.ruoyi.system.service.impl.EmergencySheltersServiceImpl;
 import com.ruoyi.system.service.impl.RescueTeamsInfoServiceImpl;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.web.bind.annotation.*;
 import java.util.stream.Collectors;
 
@@ -33,6 +37,9 @@ public class EmergencyResourcesController {
 
     @Resource
     private EmergencySheltersServiceImpl emergencySheltersService;
+
+    @Resource
+    private YaanJsonService yaanJsonService;
 
     @GetMapping("/getEmergency")
     public Map<String, List<?>> getEmergency() {
@@ -330,5 +337,92 @@ public class EmergencyResourcesController {
         }
         return resultList;
     }
+
+    @PostMapping("/marchByRegion")
+    public Map<String, List<?>> marchByRegion() {
+        QueryWrapper<YaanJson> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("adcode", "511802");
+        List<YaanJson> list = yaanJsonService.list(queryWrapper);
+        String geom = null;
+
+        if (!list.isEmpty()) {
+            YaanJson rescueTeamsInfo = list.get(0);
+            geom = String.valueOf(rescueTeamsInfo.getGeom());
+//            System.out.println("The geom field value is: --------------------------------------" + geom);
+        }
+
+        QueryWrapper<EmergencyRescueEquipment> equipmentQuery = new QueryWrapper<>();
+        equipmentQuery.isNotNull("geom");
+        List<EmergencyRescueEquipment> emergencyRescueEquipmentList = emergencyRescueEquipmentService.list(equipmentQuery);
+
+        QueryWrapper<RescueTeamsInfo> teamsQuery = new QueryWrapper<>();
+        teamsQuery.isNotNull("geom");
+        List<RescueTeamsInfo> rescueTeamsInfoList = rescueTeamsInfoService.list(teamsQuery);
+
+        QueryWrapper<DisasterReliefSupplies> suppliesQuery = new QueryWrapper<>();
+        suppliesQuery.isNotNull("geom");
+        List<DisasterReliefSupplies> disasterReliefSuppliesList = disasterReliefSuppliesService.list(suppliesQuery);
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+        WKTReader reader = new WKTReader(geometryFactory);
+
+
+        // 用于存储在多边形内的对象
+        List<EmergencyRescueEquipment> insideEmergencyRescueEquipment = new ArrayList<>();
+        List<RescueTeamsInfo> insideRescueTeamsInfo = new ArrayList<>();
+        List<DisasterReliefSupplies> insideDisasterReliefSupplies = new ArrayList<>();
+
+        try {
+            MultiPolygon multiPolygon = null;
+            try {
+                if (geom.startsWith("SRID=4326;")) {
+                    geom = geom.substring("SRID=4326;".length());
+                }
+                multiPolygon = (MultiPolygon) reader.read(geom);
+            } catch (ParseException e) {
+                System.out.println("解析 WKT 时出错: ---------------------------------------------" + e.getMessage());
+                e.printStackTrace();
+            }
+
+            // 抢险救援装备
+            for (EmergencyRescueEquipment equipment : emergencyRescueEquipmentList) {
+                String equipmentGeom = String.valueOf(equipment.getGeom()); // 确保这里是字符串
+                Point pointToCheck = (Point) reader.read(equipmentGeom);
+                if (multiPolygon.contains(pointToCheck)) {
+                    insideEmergencyRescueEquipment.add(equipment); // 添加到列表中
+                }
+            }
+
+            // 救援力量
+            for (RescueTeamsInfo teamsInfo : rescueTeamsInfoList) {
+                String teamsInfoGeom = String.valueOf(teamsInfo.getGeom()); // 确保这里是字符串
+                Point pointToCheck = (Point) reader.read(teamsInfoGeom);
+                if (multiPolygon.contains(pointToCheck)) {
+                    insideRescueTeamsInfo.add(teamsInfo); // 添加到列表中
+                }
+            }
+
+            // 救灾物资储备
+            for (DisasterReliefSupplies supplies : disasterReliefSuppliesList) {
+                String suppliesGeom = String.valueOf(supplies.getGeom()); // 确保这里是字符串
+                Point pointToCheck = (Point) reader.read(suppliesGeom);
+                if (multiPolygon.contains(pointToCheck)) {
+                    insideDisasterReliefSupplies.add(supplies); // 添加到列表中
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Map<String, List<?>> emergencyData = new HashMap<>();
+        emergencyData.put("insideEmergencyRescueEquipment", insideEmergencyRescueEquipment);
+        emergencyData.put("insideRescueTeamsInfo", insideRescueTeamsInfo);
+        emergencyData.put("insideDisasterReliefSupplies", insideDisasterReliefSupplies);
+
+        return emergencyData;
+    }
+
+
 
 }
