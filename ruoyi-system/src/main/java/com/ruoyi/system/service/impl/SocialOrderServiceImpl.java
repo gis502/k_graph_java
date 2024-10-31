@@ -7,34 +7,35 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.DisasterAreaWeatherForecast;
+import com.ruoyi.system.domain.entity.BarrierLakeSituation;
+import com.ruoyi.system.domain.entity.SocialOrder;
 import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RoadDamage;
-import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
-import com.ruoyi.system.listener.DisasterAreaWeatherForecastListener;
-import com.ruoyi.system.mapper.DisasterAreaWeatherForecastMapper;
+import com.ruoyi.system.listener.BarrierLakeSituationListener;
+import com.ruoyi.system.listener.SocialOrderListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
-import com.ruoyi.system.service.DisasterAreaWeatherForecastService;
+import com.ruoyi.system.mapper.SocialOrderMapper;
+import com.ruoyi.system.service.SocialOrderService;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
 @Service
-public class DisasterAreaWeatherForecastServiceImpl extends
-        ServiceImpl<DisasterAreaWeatherForecastMapper, DisasterAreaWeatherForecast>
-        implements DisasterAreaWeatherForecastService, DataExportStrategy {
+public class SocialOrderServiceImpl extends
+        ServiceImpl<SocialOrderMapper,SocialOrder>
+        implements SocialOrderService, DataExportStrategy {
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
     @Override
-    public List<DisasterAreaWeatherForecast> importExcelDisasterAreaWeatherForecast(MultipartFile file, String userName, String eqId) throws IOException {
+    public List<SocialOrder> importExcelSocialOrder(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);
         Sheet sheet = workbook.getSheetAt(0);
@@ -55,14 +56,14 @@ public class DisasterAreaWeatherForecastServiceImpl extends
         inputStream.close();
 // 重新获取 InputStream
         inputStream = file.getInputStream();
-        DisasterAreaWeatherForecastListener listener = new DisasterAreaWeatherForecastListener(baseMapper, actualRows, userName);
+        SocialOrderListener listener = new SocialOrderListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream, DisasterAreaWeatherForecast.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream, SocialOrder.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
-        List<DisasterAreaWeatherForecast> list = listener.getList();
+        List<SocialOrder> list = listener.getList();
         // 将解析后的数据保存到数据库
         // 遍历解析后的数据，根据地震时间与地震名称查找eqList表中的earthquakeId
-        for (DisasterAreaWeatherForecast data : list) {
+        for (SocialOrder data : list) {
             // 根据地震时间与地震名称查询 earthquakeId
             List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
             System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
@@ -71,7 +72,7 @@ public class DisasterAreaWeatherForecastServiceImpl extends
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
             data.setEarthquakeName(earthquakeIdByTimeAndPosition.get(0).getEarthquakeName());
 //            data.setMagnitude(earthquakeIdByTimeAndPosition.get(0).getMagnitude());
-            data.setSubmissionDeadline(data.getSubmissionDeadline());
+            data.setReportingDeadline(data.getReportingDeadline());
         }
         //集合拷贝
         saveBatch(list);
@@ -80,21 +81,21 @@ public class DisasterAreaWeatherForecastServiceImpl extends
 
     @Override
     public IPage getPage(RequestBTO requestBTO) {
-        Page<DisasterAreaWeatherForecast> disasterAreaWeatherForecastPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        Page<SocialOrder> socialOrderPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         String requestParam = requestBTO.getRequestParams();
-        LambdaQueryWrapper<DisasterAreaWeatherForecast> queryWrapper =
-                Wrappers.lambdaQuery(DisasterAreaWeatherForecast.class)
-                        .like(DisasterAreaWeatherForecast::getEarthquakeId, requestParam);
-        return this.page(disasterAreaWeatherForecastPage, queryWrapper);
+        LambdaQueryWrapper<SocialOrder> queryWrapper =
+                Wrappers.lambdaQuery(SocialOrder.class)
+                        .like(SocialOrder::getEarthquakeId, requestParam);
+        return this.page(socialOrderPage, queryWrapper);
     }
 
     @Override
     public List<?> exportExcelGetData(RequestBTO requestBTO) {
         String [] ids = requestBTO.getIds();
-        List<DisasterAreaWeatherForecast> list;
+        List<SocialOrder> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
-                    .sorted(Comparator.comparing(DisasterAreaWeatherForecast::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .sorted(Comparator.comparing(SocialOrder::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
                             .reversed()).collect(Collectors.toList());
         } else {
             list = this.listByIds(Arrays.asList(ids));
@@ -136,4 +137,6 @@ public class DisasterAreaWeatherForecastServiceImpl extends
         }
         return true;  // 所有单元格都为空，算作空行
     }
+
+
 }

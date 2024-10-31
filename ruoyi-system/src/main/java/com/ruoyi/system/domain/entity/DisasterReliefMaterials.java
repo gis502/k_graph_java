@@ -1,6 +1,7 @@
 package com.ruoyi.system.domain.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.alibaba.excel.annotation.write.style.ContentStyle;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
@@ -18,7 +19,7 @@ import java.util.Date;
  * 救灾物资情况统计表（累计）(用户上传数据)
  */
 @Data
-@TableName(value = "disaster_relief_supplies_accumulated")
+@TableName(value = "disaster_relief_materials")
 public class DisasterReliefMaterials {
     /**
      * 序号，自增主键
@@ -45,23 +46,12 @@ public class DisasterReliefMaterials {
      * 地震时间
      */
     @TableField(value = "earthquake_time")
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "地震时间"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private LocalDateTime earthquakeTime;
-
-
-
-    /**
-     * 统计截止时间
-     */
-    @TableField(value = "submission_deadline")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "统计截止时间"})
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
-    private Date submissionDeadline;
 
     /**
      * 震区名称
@@ -71,6 +61,17 @@ public class DisasterReliefMaterials {
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
     private String earthquakeAreaName;
+
+    /**
+     * 统计截止时间
+     */
+    @TableField(value = "submission_deadline")
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty({"力量物资资金-救灾物资情况（累计）统计表", "统计截止时间"})
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
+    private Date submissionDeadline;
 
     /**
      * 当前救灾物资总数（万件）

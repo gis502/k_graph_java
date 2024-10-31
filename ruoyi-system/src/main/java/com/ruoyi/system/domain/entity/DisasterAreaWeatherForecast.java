@@ -32,7 +32,6 @@ public class DisasterAreaWeatherForecast {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeName;
 
-
     @TableField(value = "earthquake_time")
     @ExcelProperty(value = {"气象情况", "地震时间"})
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
@@ -47,6 +46,13 @@ public class DisasterAreaWeatherForecast {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedAreaName;
 
+    @TableField("submission_deadline")
+    @ExcelProperty(value = {"气象情况", "统计截止时间"})
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime submissionDeadline;
 
     @TableField(value = "weather_forecast")
     @ExcelProperty(value = {"气象情况", "灾区未来三天天气预报"})
@@ -54,11 +60,6 @@ public class DisasterAreaWeatherForecast {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String weatherForecast;
 
-    @TableField("submission_deadline")
-    @ExcelProperty(value = {"气象情况", "统计截止时间"})
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private LocalDateTime submissionDeadline;
 
     @TableField("record_time")
     private LocalDateTime recordTime;

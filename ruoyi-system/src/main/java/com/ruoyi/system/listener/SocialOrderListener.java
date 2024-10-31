@@ -2,39 +2,37 @@ package com.ruoyi.system.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
-import com.ruoyi.system.domain.entity.BarrierLakeSituation;
-import com.ruoyi.system.domain.entity.HousingSituation;
-import com.ruoyi.system.mapper.BarrierLakeSituationMapper;
-import com.ruoyi.system.mapper.HousingSituationMapper;
+import com.ruoyi.system.domain.entity.AfterSeismicInformation;
+import com.ruoyi.system.domain.entity.SocialOrder;
+import com.ruoyi.system.mapper.AfterSeismicInformationMapper;
+import com.ruoyi.system.mapper.SocialOrderMapper;
 import com.ruoyi.system.webSocket.WebSocketServerExcel;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HousingSituationListener implements ReadListener<HousingSituation> {
-
-    private final List<HousingSituation> list = new ArrayList<HousingSituation>();
-    private HousingSituationMapper housingSituationMapper;
+public class SocialOrderListener implements ReadListener<SocialOrder> {
+    private final List<SocialOrder> list = new ArrayList<SocialOrder>();
+    private SocialOrderMapper socialOrderMapper;
     private int totalRows;
     private int currentRow = 0;
     private String userName;
     private boolean stopReading = false;
-
-    public HousingSituationListener(HousingSituationMapper housingSituationMapper,
-                                    int totalRows,
-                                    String userName) {
-        this.housingSituationMapper = housingSituationMapper;
+    public SocialOrderListener(SocialOrderMapper socialOrderMapper,
+                                           int totalRows,
+                                           String userName) {
+        this.socialOrderMapper = socialOrderMapper;
         this.totalRows = totalRows;
         this.userName = userName;
     }
 
 
     @Override
-    public void invoke(HousingSituation data, AnalysisContext analysisContext) {
+    public void invoke(SocialOrder data, AnalysisContext analysisContext) {
         System.out.println(data);
         // 检查当前行的第一个单元格
-        if (data.getAffectedAreaName() == null || data.getAffectedAreaName().contains("填写单位")) {
+        if (data.getEarthquakeAreaName() == null||data.getEarthquakeAreaName().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {
@@ -60,9 +58,10 @@ public class HousingSituationListener implements ReadListener<HousingSituation> 
         }
     }
 
-    public List<HousingSituation> getList() {
+
+    public List<SocialOrder> getList() {
         return list;
     }
-
-
 }
+
+

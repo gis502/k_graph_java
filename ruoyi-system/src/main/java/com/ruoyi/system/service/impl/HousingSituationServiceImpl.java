@@ -9,6 +9,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.HousingSituationListener;
 import com.ruoyi.system.listener.SecondaryDisasterInfoListener;
+import com.ruoyi.system.listener.SupplyWaterListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
@@ -115,7 +116,6 @@ public class HousingSituationServiceImpl
 
     @Override
     public List<HousingSituation> importExcelHousingSituation(MultipartFile file, String userName, String eqId) throws IOException {
-
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);
         Sheet sheet = workbook.getSheetAt(0);
@@ -125,7 +125,7 @@ public class HousingSituationServiceImpl
         int endRow = totalRows - 2;  // 不读取最后2行
 
         int actualRows = 0;
-        // 遍历中间的数据行
+// 遍历中间的数据行
         for (int i = startRow; i < endRow; i++) {
             Row row = sheet.getRow(i);
 
@@ -134,7 +134,7 @@ public class HousingSituationServiceImpl
             }
         }
         inputStream.close();
-        // 重新获取 InputStream
+// 重新获取 InputStream
         inputStream = file.getInputStream();
         HousingSituationListener listener = new HousingSituationListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
@@ -157,8 +157,55 @@ public class HousingSituationServiceImpl
         //集合拷贝
         saveBatch(list);
         return list;
+    }
 
+    @Override
+    public IPage getPage(RequestBTO requestBTO) {
+        Page<HousingSituation> housingSituationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        String requestParam = requestBTO.getRequestParams();
+        LambdaQueryWrapper<HousingSituation> queryWrapper =
+                Wrappers.lambdaQuery(HousingSituation.class)
+                        .like(HousingSituation::getEarthquakeIdentifier, requestParam);
+        return this.page(housingSituationPage, queryWrapper);
+    }
 
+    @Override
+    public List<?> exportExcelGetData(RequestBTO requestBTO) {
+        String [] ids = requestBTO.getIds();
+        List<HousingSituation> list;
+        if (ids == null || ids.length == 0) {
+            list = this.list().stream()
+                    .sorted(Comparator.comparing(HousingSituation::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                            .reversed()).collect(Collectors.toList());
+        } else {
+            list = this.listByIds(Arrays.asList(ids));
+        }
+        return list;
+    }
+
+    @Override
+    public String deleteData(List<Map<String, Object>> idsList) {
+        // 假设所有的 ids 都在每个 Map 中的 "uuid" 键下，提取所有的 ids
+        List<String> ids = new ArrayList<>();
+
+        // 遍历 requestBTO 列表，提取每个 Map 中的 "uuid" 键的值
+        for (Map<String, Object> entry : idsList) {
+            if (entry.containsKey("uuid")) {
+                // 获取 "uuid" 并转换为 String 类型
+                String uuid = (String) entry.get("uuid");
+                ids.add(uuid);
+            }
+        }
+
+        // 判断是否有 ids
+        if (ids.isEmpty()) {
+            return "没有提供要删除的 UUID 列表";
+        }
+
+        // 使用 removeByIds 方法批量删除
+        this.removeByIds(ids);
+
+        return "删除成功";
     }
 
     private boolean isRowEmpty(Row row) {
