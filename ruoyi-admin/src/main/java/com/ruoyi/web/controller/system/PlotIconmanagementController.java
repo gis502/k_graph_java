@@ -51,4 +51,5 @@ public class PlotIconmanagementController {
     public AjaxResult addPlotIcon(@RequestBody PlotIconmanagement plotIcon) {
         return AjaxResult.success(plotIconmanagementService.save(plotIcon));
     }
+
 }

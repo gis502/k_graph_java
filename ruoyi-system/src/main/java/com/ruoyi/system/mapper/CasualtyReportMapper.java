@@ -10,6 +10,13 @@ import java.util.List;
 
 @Mapper
 public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
+
+    /**
+     * 通过地震标识的eqid进行条件查询
+     *
+     * @param  eqid 地震标识id
+     * @return 结果
+     */
     @Select("SELECT " +
             "SUM(newly_deceased) AS total_deaths, " +
             "SUM(newly_missing) AS total_missing, " +

@@ -17,7 +17,7 @@ public class RoadDamageController {
     @Autowired
     private RoadDamageService roadDamageService;
 
-    @GetMapping("/repairs")
+    @GetMapping("/repair")
     public List<RoadDamage> repairs(@RequestParam String eqid) {
         return roadDamageService.getRoadRepairsByEqid(eqid);
     }

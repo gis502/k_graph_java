@@ -49,8 +49,9 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
     public void addPlot(String plotType, Object details) {
         // 打印插入前的 plot 对象，检查是否包含所有字段
         System.out.println("Inserting details: " + details);
+        System.out.println("plotType: " + plotType);
         // 根据plotType获取对应的Mapper类型
-        String mapperType = plotTypeToMapperType.get(plotType.toLowerCase());
+        String mapperType = plotTypeToMapperType.get(plotType);
         System.out.println("mapperType！！: " + mapperType);
         if (mapperType != null) {
             System.out.println("mapperRegistry: " + mapperRegistry);
@@ -234,7 +235,8 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                 // 获取接口上的泛型参数
                 Type[] genericInterfaces = mapperInterface.getGenericInterfaces();
                 for (Type genericInterface : genericInterfaces) {
-                    if (genericInterface instanceof ParameterizedType parameterizedType) {
+                    if (genericInterface instanceof ParameterizedType ) {
+                        ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
                         // 返回泛型中的第一个参数，也就是实体类
                         return (Class<?>) parameterizedType.getActualTypeArguments()[0];
                     }
