@@ -9,49 +9,65 @@
         <result column="rz" jdbcType="INTEGER" property="rz"/>
         <result column="tz" jdbcType="INTEGER" property="tz"/>
         <result column="time" jdbcType="VARCHAR" property="time"/>
-        <result column="modelid" jdbcType="VARCHAR" property="modelid"/>
+        <result column="uuid" jdbcType="VARCHAR" property="uuid"/>
         <result column="rze" jdbcType="SMALLINT" property="rze"/>
         <result column="tze" jdbcType="SMALLINT" property="tze"/>
+        <result column="model_size" jdbcType="VARCHAR" property="modelSize"/>
     </resultMap>
+
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        "name", "path", rz, tz, "time", modelid, rze, tze
+        name, path, rz, tz, time, uuid, rze, tze, model_size
     </sql>
 
     <select id="selectAllModel" resultType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
-        select *
-        from tiltphotographymodel
+        SELECT *
+        FROM tiltphotographymodel
     </select>
 
-    <insert id="addModel">
-        insert into tiltphotographymodel (name, path, rz, tz, rze, tze, time, modelid)
-        values (#{name}, #{path}, #{rz}, #{tz}, #{rze}, #{tze}, #{time}, #{modelid})
+    <insert id="addModel" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
+        INSERT INTO tiltphotographymodel (name, model_size, path, rz, tz, rze, tze, time, uuid)
+        VALUES (#{name}, #{modelSize}, #{path}, #{rz}, #{tz}, #{rze}, #{tze}, #{time}, #{uuid})
     </insert>
 
     <delete id="deleteModel">
-        delete
-        from tiltphotographymodel
-        where modelid = #{modelid}
+        DELETE
+        FROM tiltphotographymodel
+        WHERE uuid = #{uuid}
     </delete>
 
     <update id="updataModel" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
-        update tiltphotographymodel
-        set name = #{name},
+        UPDATE tiltphotographymodel
+        SET name = #{name},
             path = #{path}
-        where modelid = #{modelid}
+        WHERE uuid = #{uuid}
     </update>
 
     <update id="updataModelNoElevation" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
-        update tiltphotographymodel
-        set tz = #{tz},
+        UPDATE tiltphotographymodel
+        SET tz = #{tz},
             rz = #{rz}
-        where modelid = #{modelid}
+        WHERE uuid = #{uuid}
     </update>
 
     <update id="updataModelElevation" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
-        update tiltphotographymodel
-        set tze = #{tze},
+        UPDATE tiltphotographymodel
+        SET tze = #{tze},
             rze = #{rze}
-        where modelid = #{modelid}
+        WHERE uuid = #{uuid}
     </update>
+
+    <update id="updataModels" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
+        UPDATE tiltphotographymodel
+        SET name = #{name},
+            model_size = #{modelSize},
+            path = #{path},
+            rz = #{rz},
+            tz = #{tz},
+            rze = #{rze},
+            tze = #{tze},
+            time = #{time}
+        WHERE uuid = #{uuid}
+    </update>
+
 </mapper>

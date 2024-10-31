@@ -14,6 +14,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.enums.BusinessType;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,16 +46,11 @@ public class SituationPlotController {
         System.out.println("Plot: " + plot);
         System.out.println("Plot Info: " + plotInfo);
         situationPlotService.save(plot);
-        if (requestBody.getPlotinfo() != null){
+        if (requestBody.getPlotinfo() != null) {
             // 调用 service 层的 addPlot 方法
-            try {
-                situationPlotService.addPlot(plot.getPlotType(), plotInfo);
-                return ResponseEntity.ok("Plot added successfully");
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
-            }
+            situationPlotService.addPlot(plot.getPlotType(), plotInfo);
+            return ResponseEntity.ok("Plot added successfully");
+
         } else {
             return ResponseEntity.ok("Plot added successfully");
         }
@@ -76,12 +72,13 @@ public class SituationPlotController {
             @RequestBody Map<String, Object> details) {
 
         try {
-            situationPlotService.updatePlotDetails(startTime,endTime,plotType, plotId, details);
+            situationPlotService.updatePlotDetails(startTime, endTime, plotType, plotId, details);
             return ResponseEntity.ok("Plot details updated successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating plot details: " + e.getMessage());
         }
     }
+
     /**
      * @description: "根据plotId和plotType获取标绘点信息"
      * @author: SWB
@@ -101,6 +98,32 @@ public class SituationPlotController {
             return "Error occurred while querying details: " + e.getMessage();
         }
     }
+
+    /**
+     * @description: "根据plotIds和plotTypes获取指定地震所有标绘点信息"
+     * @author: NTY
+     * @time: 2024/10/21
+     **/
+    @PostMapping("/getExcelPlotInfo")
+    public Object getExcelPlotInfo(@RequestBody Map<String, List<String>> params) {
+        List<String> plotIds = params.get("plotIds");
+        List<String> plotTypes = params.get("plotTypes");
+
+        try {
+            if (plotIds.size() != plotTypes.size()) {
+                return "plotIds and plotTypes must have the same length.";
+            }
+
+            // 查询多条标绘数据
+            List<Object> ExcelPlotInfoList = situationPlotService.getExcelPlotInfo(plotTypes, plotIds);
+            return !ExcelPlotInfoList.isEmpty() ? ExcelPlotInfoList : Collections.emptyList();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error occurred while querying details: " + e.getMessage();
+        }
+    }
+
     /**
      * @description: "删除标绘点以及对应的属性信息"
      * @author: SWB
@@ -127,7 +150,7 @@ public class SituationPlotController {
      * @time: 2024/10/4 16:24
      **/
     @GetMapping("/getplot")
-    public List<SituationPlot> getPlot(String eqid){
+    public List<SituationPlot> getPlot(String eqid) {
         List<SituationPlot> plotData = situationPlotService.getPlot(eqid);
         return plotData;
     }

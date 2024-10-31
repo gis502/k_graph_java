@@ -172,5 +172,4 @@ public class MapperConfig {
         // 添加其他类型的映射
         return typeMapping;
     }
-
 }

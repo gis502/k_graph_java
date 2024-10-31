@@ -15,6 +15,7 @@ public class StartedEventListener implements ApplicationListener<ApplicationStar
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
+        // 系统启动后运行任务
         DatabaseBackup.backupAndDownload();
     }
 }

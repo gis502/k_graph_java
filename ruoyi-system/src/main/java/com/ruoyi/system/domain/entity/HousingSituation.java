@@ -49,17 +49,17 @@ public class HousingSituation {
      */
     @TableField(value = "earthquake_time")
     @ExcelProperty({"房屋情况", "地震时间"})
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private LocalDateTime earthquakeTime;
 
     /**
      * 震区名称，受影响地区的名称
      */
     @TableField(value = "affected_area_name")
-    @ExcelProperty({"房屋情况", "震区名称"})
+    @ExcelProperty({"房屋情况", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String affectedAreaName;
@@ -70,10 +70,9 @@ public class HousingSituation {
      */
     @TableField(value = "submission_deadline")
     @ExcelProperty({"房屋情况", "统计截止时间"})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐 @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-
     private LocalDateTime submissionDeadline;
 
     /**
@@ -117,9 +116,6 @@ public class HousingSituation {
      * 系统插入时间，记录被系统创建的时间
      */
     @TableField(value = "system_insert_time")
-    @ExcelProperty({"震情灾情", "地震名称"})
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Date systemInsertTime;
 
     /**
