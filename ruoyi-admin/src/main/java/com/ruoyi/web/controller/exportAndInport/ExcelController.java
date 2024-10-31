@@ -620,6 +620,5 @@ public class ExcelController {
         List<Map<String, Object>> idsList = (List<Map<String, Object>>) requestBTO.get("ids");
         return AjaxResult.success(dataExportStrategyContext.getStrategy((String) requestBTO.get("flag")).deleteData(idsList));
     }
-
 }
 

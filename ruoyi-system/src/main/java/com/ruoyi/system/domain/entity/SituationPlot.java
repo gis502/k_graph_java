@@ -26,8 +26,8 @@ public class SituationPlot {
     /**
      * 地震ID
      */
-    // @TableField(value = "earthquake_id")
-    // private String earthquakeId;
+     @TableField(value = "earthquake_id")
+     private String earthquakeId;
 
     /**
      * 标绘ID (唯一标识符)
