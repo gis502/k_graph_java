@@ -22,8 +22,8 @@ public class RiskConstructionGeohazardsController {
 
 
 
-    @GetMapping("/secondarydisasterinfo")
-    public List<RiskConstructionGeohazards> secondarydisasterinfo(@RequestParam String eqid) {
+    @GetMapping("/riskconstructiongeohazards")
+    public List<RiskConstructionGeohazards> riskconstructiongeohazards(@RequestParam String eqid) {
         return riskConstructionGeohazardsService.RiskConstructionGeohazardsByEqId(eqid);
     }
 }
