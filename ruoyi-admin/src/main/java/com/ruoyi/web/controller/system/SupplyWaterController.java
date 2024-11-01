@@ -12,11 +12,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system")
-public class SupplyWatterController {
+public class SupplyWaterController {
     @Autowired
     private SupplyWaterService supplyWaterService;
 
-    @GetMapping("/supplyWatterList")
+    @GetMapping("/supplyWaterList")
     public List<SupplyWater> supplyWaterList(@RequestParam(required = false) String eqid) {
         return supplyWaterService.getSupplyWaterById(eqid);
     }

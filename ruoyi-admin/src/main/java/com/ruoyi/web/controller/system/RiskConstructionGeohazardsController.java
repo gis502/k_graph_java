@@ -1,9 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.system.domain.entity.RiskConstructionGeohazards;
-import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
 import com.ruoyi.system.service.RiskConstructionGeohazardsService;
-import com.ruoyi.system.service.SecondaryDisasterInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +20,8 @@ public class RiskConstructionGeohazardsController {
 
 
 
-    @GetMapping("/secondarydisasterinfo")
-    public List<RiskConstructionGeohazards> secondarydisasterinfo(@RequestParam String eqid) {
+    @GetMapping("/riskconstructiongeohazards")
+    public List<RiskConstructionGeohazards> riskconstructiongeohazards(@RequestParam String eqid) {
         return riskConstructionGeohazardsService.RiskConstructionGeohazardsByEqId(eqid);
     }
 }
