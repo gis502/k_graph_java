@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/system")
 public class DisasterReliefMaterialsController {
     @Autowired
     private DisasterReliefMaterialsService disasterReliefMaterialsService;
