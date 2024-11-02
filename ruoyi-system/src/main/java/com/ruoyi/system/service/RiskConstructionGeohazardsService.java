@@ -12,4 +12,5 @@ public interface RiskConstructionGeohazardsService extends IService<RiskConstruc
 
     List<RiskConstructionGeohazards> importExcelRiskConstructionGeohazards(MultipartFile file, String userName, String eqId) throws IOException;
 
+    List<RiskConstructionGeohazards> RiskConstructionGeohazardsByEqId(String eqid);
 }

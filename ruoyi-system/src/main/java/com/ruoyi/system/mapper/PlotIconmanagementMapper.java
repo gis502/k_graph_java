@@ -9,5 +9,7 @@ import java.util.List;
 
 @Mapper
 public interface PlotIconmanagementMapper extends BaseMapper<PlotIconmanagement> {
+
+    List<PlotIconmanagement> findIconsBySheetNames(@Param("sheetNames") List<String> sheetNames);
     List<PlotIconmanagement> searchPlotIcon(@Param("menuName") String menuName);
 }

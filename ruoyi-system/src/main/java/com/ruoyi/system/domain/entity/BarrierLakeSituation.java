@@ -59,6 +59,18 @@ public class BarrierLakeSituation {
     private String affectedArea;
 
     /*
+     * 统计截止时间
+     * */
+    @TableField(value = "reporting_deadline")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ExcelProperty(value = {"堰塞湖（雍塞体）情况", "统计截止时间"})
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @ColumnWidth(30)
+    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
+    private LocalDateTime reportingDeadline;
+
+
+    /*
      * 堰塞湖情况
      * */
     @TableField(value = "barrier_lake")
@@ -94,16 +106,7 @@ public class BarrierLakeSituation {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer evacuation;
 
-    /*
-     * 统计截止时间
-     * */
-    @TableField(value = "reporting_deadline")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ExcelProperty(value = {"堰塞湖（雍塞体）情况", "统计截止时间"})
-    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    @ColumnWidth(30)
-    @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
-    private LocalDateTime reportingDeadline;
+
 
     /**
      * 系统插入时间，记录被系统创建的时间

@@ -15,4 +15,14 @@
     <!--@mbg.generated-->
     uuid, "name", "describe", "type", plottype, img
   </sql>
+
+  <select id="findIconsBySheetNames" resultType="PlotIconmanagement">
+    SELECT "name" AS name, img AS img
+    FROM plot_iconmanagement
+    WHERE "name" IN
+    <foreach collection="sheetNames" item="name" open="(" separator="," close=")">
+      #{name}
+    </foreach>
+  </select>
+
 </mapper>
