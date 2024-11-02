@@ -10,4 +10,5 @@ import java.util.List;
 public interface LargeSpecialRescueEquipmentService extends IService<LargeSpecialRescueEquipment> {
     List<LargeSpecialRescueEquipment> importExcelLargeSpecialRescueEquipment(MultipartFile file, String userName, String eqId) throws IOException;
 
+    List<LargeSpecialRescueEquipment> LargeSpecialRescueEquipmentByEqId(String eqid);
 }
