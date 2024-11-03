@@ -83,7 +83,6 @@ public class EarthquakeListController {
                 .or().apply("to_char(occurrence_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%")
                 .orderByDesc(EarthquakeList::getOccurrenceTime);
         return earthquakeListService.list(QueryWrapper);
-
     }
 
     @PostMapping("/fromEq")
