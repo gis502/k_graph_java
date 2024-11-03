@@ -61,4 +61,8 @@
     </foreach>
   </insert>
 
+  <select id="getCheckPlot" resultType="com.ruoyi.system.domain.entity.SituationPlot">
+    select geom, start_time, end_time from situation_plot where earthquake_id=#{eqid}
+  </select>
+
 </mapper>

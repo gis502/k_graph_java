@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.system.config.MapperConfig;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
 import java.lang.reflect.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.SituationPlotMapper;
@@ -319,13 +321,13 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
     }
 
     @Override
-    public void savePlotDataList(List<SituationPlot> plotDataList) {
-
+    public void savePlotDataAndProperties(List<SituationPlot> plotDataList, List<String> plotProperty) {
         GeometryFactory geometryFactory = new GeometryFactory();
 
+        String eqid = plotDataList.get(0).getEarthquakeId();
+
+        // 处理 plotDataList 部分
         for (SituationPlot plotData : plotDataList) {
-//            plotData.setEarthquakeId(UUID.randomUUID().toString());
-//            plotData.setPlotId(UUID.randomUUID().toString());
             plotData.setCreationTime(LocalDateTime.now());
 
             // 根据 drawtype 的值进行转换
@@ -340,58 +342,67 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                     plotData.setDrawtype("polygon");
                     break;
                 default:
-                    // 如果没有匹配的情况，可以选择不做任何处理或记录警告
                     break;
             }
 
             // 组合 longitude 和 latitude 成为 geom
             double longitude = plotData.getLongitude();
             double latitude = plotData.getLatitude();
-            if (longitude != 0.0 && latitude != 0.0) { // 确保经纬度有效
+            if (longitude != 0.0 && latitude != 0.0) {
                 Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-                plotData.setGeom(point); // 将生成的几何点设置到 geom 属性中
+                plotData.setGeom(point);
             }
 
-            plotData.setLongitude(null); // 或者 plotData.setLongitude(0.0);
-            plotData.setLatitude(null);  // 或者 plotData.setLatitude(0.0);
+            plotData.setLongitude(null);
+            plotData.setLatitude(null);
         }
 
-        System.out.println("标绘表: " + plotDataList);
+        // 从数据库获取目标 geom、start_time 和 end_time 列表
+        List<SituationPlot> targetPlots = situationPlotMapper.getCheckPlot(eqid);
 
-        situationPlotMapper.insertSituationPlots(plotDataList);
-    }
+        // 遍历 plotDataList 并筛选出与 targetPlots 中任一条数据匹配的项
+        List<SituationPlot> filteredPlotDataList = plotDataList.stream()
+                .filter(plotData -> targetPlots.stream().noneMatch(targetPlot ->
+                        plotData.getGeom() != null
+                                && plotData.getGeom().equalsExact(targetPlot.getGeom())
+                                && plotData.getStartTime().equals(targetPlot.getStartTime())
+                                && plotData.getEndTime().equals(targetPlot.getEndTime())))
+                .collect(Collectors.toList());
 
-    @Override
-    public void savePlotProperty(List<String> plotProperty) {
-        System.out.println("标绘属性数据：" + plotProperty);
+        // 根据filteredPlotDataList列表，找出plotProperty中plotId相同的数据
+        List<String> filteredPlotProperty = filteredPlotDataList.stream()
+                .flatMap(plotData -> plotProperty.stream()
+                        .filter(property -> property.contains("plotId=" + plotData.getPlotId())))
+                .collect(Collectors.toList());
 
+        // 插入不匹配的标绘数据
+        situationPlotMapper.insertSituationPlots(filteredPlotDataList);
+
+        // 处理 plotProperty 部分
         Map<String, BaseMapper<?>> mapperRegistry = mapperConfig.mapperRegistry();
 
-        for (String property : plotProperty) {
+        for (String property : filteredPlotProperty) {
             String entityName = property.substring(0, property.indexOf("("));
             String fieldsString = property.substring(property.indexOf("(") + 1, property.lastIndexOf(")"));
             String[] fields = fieldsString.split(", ");
 
             try {
-                // 使用反射创建实例
                 Class<?> clazz = Class.forName("com.ruoyi.system.domain.entity." + capitalize(entityName));
                 Object entityInstance = clazz.getDeclaredConstructor().newInstance();
 
-                // 设置字段值
                 for (String field : fields) {
                     String[] keyValue = field.split("=");
                     String key = keyValue[0].trim();
                     String value = keyValue[1].trim();
 
-                    // 使用反射设置字段
                     Field fieldToSet = clazz.getDeclaredField(key);
-                    fieldToSet.setAccessible(true); // 允许访问私有字段
+                    fieldToSet.setAccessible(true);
 
                     if (fieldToSet.getType() == Double.class) {
                         fieldToSet.set(entityInstance, Double.parseDouble(value));
                     } else if (fieldToSet.getType() == Integer.class) {
                         if (value.contains(".")) {
-                            fieldToSet.set(entityInstance, (int) Math.round(Double.parseDouble(value))); // 四舍五入
+                            fieldToSet.set(entityInstance, (int) Math.round(Double.parseDouble(value)));
                         } else {
                             fieldToSet.set(entityInstance, Integer.parseInt(value));
                         }
@@ -400,38 +411,24 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                     }
                 }
 
-                // 获取对应的 Mapper
                 String mapperKey = entityName.toLowerCase();
                 BaseMapper<?> mapper = mapperRegistry.get(mapperKey);
 
-                System.out.println("entityName：" + entityName);
-                System.out.println("Mapper key: " + mapperKey);
-
                 if (mapper != null) {
-                    // 直接调用 insert 方法
                     ((BaseMapper<Object>) mapper).insert(entityInstance);
                     System.out.println("Inserted entity: " + entityInstance);
                 } else {
                     System.out.println("No mapper found for key: " + mapperKey);
                 }
 
-            } catch (ClassNotFoundException e) {
-                System.err.println("Class not found: " + e.getMessage());
-            } catch (NoSuchFieldException e) {
-                System.err.println("No such field: " + e.getMessage());
-            } catch (IllegalAccessException | InstantiationException e) {
-                System.err.println("Error creating instance: " + e.getMessage());
-            } catch (NumberFormatException e) {
-                System.err.println("Error parsing number: " + e.getMessage());
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                System.err.println("Error processing property: " + e.getMessage());
+                e.printStackTrace();
             }
         }
-        System.out.println("Registered mappers: " + mapperRegistry.keySet());
-    }
 
+//        System.out.println("Registered mappers: " + mapperRegistry.keySet());
+    }
 
     // 将字符串首字母大写的方法
     private String capitalize(String str) {
