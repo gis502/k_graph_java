@@ -8,10 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.BarrierLakeSituation;
-import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RoadDamage;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.CharityOrganizationDonationsListener;
 import com.ruoyi.system.mapper.BarrierLakeSituationMapper;
@@ -36,6 +33,9 @@ public class CharityOrganizationDonationsServiceImpl extends
         implements CharityOrganizationDonationsService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private CharityOrganizationDonationsMapper charityOrganizationDonationsMapper;
 
     @Override
     public List<CharityOrganizationDonations> importExcelCharityOrganizationDonations(MultipartFile file, String userName, String eqId) throws IOException {
@@ -140,4 +140,10 @@ public class CharityOrganizationDonationsServiceImpl extends
         }
         return true;  // 所有单元格都为空，算作空行
     }
+
+    @Override
+    public List<CharityOrganizationDonations> CharityOrganizationDonationsByEqId(String eqid) {
+        return charityOrganizationDonationsMapper.CharityOrganizationDonationsEqId(eqid);
+    }
+
 }

@@ -14,5 +14,5 @@ public interface GovernmentDepartmentDonationsService extends IService<Governmen
     List<GovernmentDepartmentDonations> importExcelGovernmentDepartmentDonations(MultipartFile file, String userName, String eqId) throws IOException;
 
 
-
+    List<GovernmentDepartmentDonations> GovernmentDepartmentDonationsByEqId(String eqid);
 }
