@@ -16,7 +16,7 @@ public interface MaterialDonationMapper extends BaseMapper<MaterialDonation> {
                 *,
                 ROW_NUMBER() OVER (
                     PARTITION BY earthquake_area_name 
-                    ORDER BY reporting_deadline DESC, system_insert_time DESC
+                    ORDER BY report_deadline DESC, system_insert_time DESC
                 ) AS rn
             FROM 
                 material_donation

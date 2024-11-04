@@ -18,7 +18,7 @@ public interface LargeSpecialRescueEquipmentMapper extends BaseMapper<LargeSpeci
                     ORDER BY submission_deadline DESC, system_insert_time DESC
                 ) AS rn
             FROM
-                government_department_donations
+                large_special_rescue_equipment
             WHERE
                 earthquake_id = #{eqid}
         )

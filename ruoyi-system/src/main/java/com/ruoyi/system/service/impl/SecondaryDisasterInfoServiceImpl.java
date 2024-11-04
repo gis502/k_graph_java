@@ -143,4 +143,6 @@ public class SecondaryDisasterInfoServiceImpl extends
     public List<SecondaryDisasterInfo> SecondaryDisasterInfoByEqId(String eqid) {
         return secondaryDisasterInfoMapper.SecondaryDisasterInfoByEqId(eqid);
     }
+
+
 }
