@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.BarrierLakeSituation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.RiskConstructionGeohazards;
 import com.ruoyi.system.domain.entity.RoadDamage;
@@ -34,6 +35,9 @@ public class RiskConstructionGeohazardsServiceImpl extends
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private RiskConstructionGeohazardsMapper riskConstructionGeohazardsMapper;
 
     @Override
     public List<RiskConstructionGeohazards> importExcelRiskConstructionGeohazards(MultipartFile file, String userName, String eqId) throws IOException {
@@ -138,6 +142,10 @@ public class RiskConstructionGeohazardsServiceImpl extends
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    public List<RiskConstructionGeohazards> RiskConstructionGeohazardsByEqId(String eqid) {
+        return riskConstructionGeohazardsMapper.RiskConstructionGeohazardsByEqId(eqid);
     }
 
 }

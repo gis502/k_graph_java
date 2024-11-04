@@ -35,6 +35,9 @@ public class BarrierLakeSituationServiceImpl extends
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Resource
+    private BarrierLakeSituationMapper barrierLakeSituationMapper;
+
     @Override
     public List<BarrierLakeSituation> importExcelBarrierLakeSituation(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -137,5 +140,9 @@ public class BarrierLakeSituationServiceImpl extends
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    public List<BarrierLakeSituation> BarrierLakeSituationByEqId(String eqid) {
+        return barrierLakeSituationMapper.BarrierLakeSituationByEqId(eqid);
     }
 }
