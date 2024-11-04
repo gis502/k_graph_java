@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.system.domain.bto.QueryBTO;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AfterSeismicInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
@@ -39,13 +40,13 @@ public class AfterSeismicInformationServiceImpl extends
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);
         Sheet sheet = workbook.getSheetAt(0);
-// 获取总行数，略过前2行表头和后2行表尾
+        // 获取总行数，略过前2行表头和后2行表尾
         int totalRows = sheet.getPhysicalNumberOfRows();
         int startRow = 2;  // 从第3行开始读取数据（略过前2行）
         int endRow = totalRows - 2;  // 不读取最后2行
 
         int actualRows = 0;
-// 遍历中间的数据行
+        // 遍历中间的数据行
         for (int i = startRow; i < endRow; i++) {
             Row row = sheet.getRow(i);
 
@@ -78,6 +79,22 @@ public class AfterSeismicInformationServiceImpl extends
         //集合拷贝
         saveBatch(list);
         return list;
+    }
+
+    @Override
+    public IPage<AfterSeismicInformation> searchData(RequestBTO requestBTO) {
+
+        Page<AfterSeismicInformation> afterSeismicInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<AfterSeismicInformation> queryWrapper = Wrappers.lambdaQuery(AfterSeismicInformation.class)
+                .like(AfterSeismicInformation::getEarthquakeIdentifier, requestParams)
+                .or().like(AfterSeismicInformation::getEarthquakeName, requestParams)
+                .or().like(AfterSeismicInformation::getAffectedCountyDistrict, requestParams)
+                .or().like(AfterSeismicInformation::getAffectedPopulation, requestParams)
+                .or().like(AfterSeismicInformation::getMagnitude, requestParams);
+
+        return baseMapper.selectPage(afterSeismicInformationPage, queryWrapper);
     }
 
     @Override
@@ -129,6 +146,7 @@ public class AfterSeismicInformationServiceImpl extends
         return "删除成功";
     }
 
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
@@ -138,4 +156,6 @@ public class AfterSeismicInformationServiceImpl extends
         }
         return true;  // 所有单元格都为空，算作空行
     }
+
+
 }

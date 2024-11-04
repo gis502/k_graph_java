@@ -3,8 +3,7 @@ package com.ruoyi.web.controller.exportAndInport;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
@@ -150,10 +149,36 @@ public class ExcelController {
     @Resource
     private MaterialDonationServiceImpl materialDonationService;
 
+
+    /**
+     * 搜索
+     *
+     * @param requestBTO 查询参数
+     * @return AjaxResult
+     */
+    @PostMapping("/searchData")
+    public AjaxResult searchData(@RequestBody RequestBTO requestBTO) {
+
+        switch (requestBTO.getFlag()) {
+            case "AfterSeismicInformation":
+                return AjaxResult.success(afterSeismicInformationServiceImpl.searchData(requestBTO));
+            case "AftershockInformation":
+                return AjaxResult.success(aftershockInformationServiceImpl.searchData(requestBTO));
+
+
+
+
+
+            default:
+                return AjaxResult.error("搜索失败");
+        }
+    }
+
+
+
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
         return AjaxResult.success(dataExportStrategyContext.getStrategy(requestBTO.getFlag()).getPage(requestBTO));
-
     }
 
     @PostMapping("/exportExcel")
