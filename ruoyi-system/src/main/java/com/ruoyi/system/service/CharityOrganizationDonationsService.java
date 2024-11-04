@@ -13,4 +13,5 @@ public interface CharityOrganizationDonationsService extends IService<CharityOrg
     List<CharityOrganizationDonations> importExcelCharityOrganizationDonations(MultipartFile file, String userName, String eqId) throws IOException;
 
 
+    List<CharityOrganizationDonations> CharityOrganizationDonationsByEqId(String eqid);
 }

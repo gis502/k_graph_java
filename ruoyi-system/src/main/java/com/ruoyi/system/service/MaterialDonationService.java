@@ -13,5 +13,5 @@ public interface MaterialDonationService extends IService<MaterialDonation> {
     List<MaterialDonation> importExcelMaterialDonation(MultipartFile file, String userName, String eqId) throws IOException;
 
 
-
+    List<MaterialDonation> MaterialDonationByEqId(String eqid);
 }

@@ -29,6 +29,9 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Resource
+    private GovernmentDepartmentDonationsMapper govDonationsMapper;
+
     @Override
     public List<GovernmentDepartmentDonations> importExcelGovernmentDepartmentDonations(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -131,6 +134,11 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    @Override
+    public List<GovernmentDepartmentDonations> GovernmentDepartmentDonationsByEqId(String eqid) {
+        return govDonationsMapper.GovernmentDepartmentDonationsEqId(eqid);
     }
 
 }

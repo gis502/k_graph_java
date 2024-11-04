@@ -1,7 +1,8 @@
 package com.ruoyi.web.controller.system;
 
-import com.ruoyi.system.domain.entity.SupplyWater;
-import com.ruoyi.system.service.SupplyWaterService;
+
+import com.ruoyi.system.domain.entity.RescueForces;
+import com.ruoyi.system.service.RescueForcesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,12 +13,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system")
-public class SupplyWatterController {
+public class RescueForcesController {
     @Autowired
-    private SupplyWaterService supplyWaterService;
+    private RescueForcesService rescueForcesService;
 
-    @GetMapping("/supplyWatterList")
-    public List<SupplyWater> supplyWaterList(@RequestParam(required = false) String eqid) {
-        return supplyWaterService.getSupplyWaterById(eqid);
+
+
+    @GetMapping("/rescueforces")
+    public List<RescueForces> rescueforces(@RequestParam String eqid) {
+        return rescueForcesService.RescueForcesByEqId(eqid);
     }
 }

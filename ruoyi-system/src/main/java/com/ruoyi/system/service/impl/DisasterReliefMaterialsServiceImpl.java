@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.DisasterReliefMaterials;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.RescueForces;
+import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
 import com.ruoyi.system.listener.DisasterReliefMaterialsListener;
 import com.ruoyi.system.listener.RescueForcesListener;
 import com.ruoyi.system.mapper.DisasterReliefMaterialsMapper;
@@ -34,6 +35,9 @@ public class DisasterReliefMaterialsServiceImpl extends
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private DisasterReliefMaterialsMapper disasterReliefMaterialsMapper;
 
     public List<DisasterReliefMaterials> importExcelDisasterReliefMaterials(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -136,6 +140,11 @@ public class DisasterReliefMaterialsServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public List<DisasterReliefMaterials> DisasterReliefMaterialsByEqId(String eqid) {
+        return disasterReliefMaterialsMapper.DisasterReliefMaterialsByEqId(eqid);
     }
 
 }

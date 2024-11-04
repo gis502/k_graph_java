@@ -12,4 +12,5 @@ public interface BarrierLakeSituationService extends IService<BarrierLakeSituati
 
     List<BarrierLakeSituation> importExcelBarrierLakeSituation(MultipartFile file, String userName, String eqId) throws IOException;
 
+    List<BarrierLakeSituation> BarrierLakeSituationByEqId(String eqid);
 }
