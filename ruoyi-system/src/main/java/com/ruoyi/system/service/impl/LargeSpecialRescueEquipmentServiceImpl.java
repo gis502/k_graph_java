@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AfterSeismicInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.LargeSpecialRescueEquipment;
+import com.ruoyi.system.domain.entity.RescueForces;
 import com.ruoyi.system.listener.LargeSpecialRescueEquipmentListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.LargeSpecialRescueEquipmentMapper;
@@ -32,6 +33,9 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         implements LargeSpecialRescueEquipmentService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private LargeSpecialRescueEquipmentMapper largeSpecialRescueEquipmentMapper;
 
     public List<LargeSpecialRescueEquipment> importExcelLargeSpecialRescueEquipment(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -135,5 +139,10 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public List<LargeSpecialRescueEquipment> LargeSpecialRescueEquipmentByEqId(String eqid) {
+        return largeSpecialRescueEquipmentMapper.LargeSpecialRescueEquipmentEqId(eqid);
     }
 }

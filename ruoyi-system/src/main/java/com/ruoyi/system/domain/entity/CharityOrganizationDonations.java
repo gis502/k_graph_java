@@ -70,6 +70,12 @@ public class CharityOrganizationDonations {
     @TableField(value = "record_time")
     private LocalDateTime recordTime;
 
+    /*
+    * 系统插入时间
+    * */
+    @TableField(value = "system_insert_time")
+    private LocalDateTime systemInsertTime;
+
 
 
 
