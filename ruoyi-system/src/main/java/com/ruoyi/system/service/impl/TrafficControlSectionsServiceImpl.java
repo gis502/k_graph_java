@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.Meetings;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.MeetingsListener;
 import com.ruoyi.system.listener.trafficControlSectionsListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -24,7 +22,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ruoyi.system.domain.entity.TrafficControlSections;
 import com.ruoyi.system.mapper.TrafficControlSectionsMapper;
 import com.ruoyi.system.service.TrafficControlSectionsService;
 import org.springframework.web.multipart.MultipartFile;
@@ -105,6 +102,24 @@ public class TrafficControlSectionsServiceImpl
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<TrafficControlSections> searchData(RequestBTO requestBTO) {
+
+        Page<TrafficControlSections> trafficControlSectionsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<TrafficControlSections> queryWrapper = Wrappers.lambdaQuery(TrafficControlSections.class)
+
+                .or().like(TrafficControlSections::getEarthquakeName, requestParams) // 地震名称
+                .or().like(TrafficControlSections::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(TrafficControlSections::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(TrafficControlSections::getReportingDeadline, requestParams) // 统计截止时间
+                .or().like(TrafficControlSections::getTotalPassesIssued, requestParams) // 累计发放通行证（张）
+                .or().like(TrafficControlSections::getControlDiversionPoints, requestParams) // 设置管制分流点（处）
+                .or().like(TrafficControlSections::getTrafficControlSection, requestParams); // 交通管制路段
+        return baseMapper.selectPage(trafficControlSectionsPage, queryWrapper);
     }
 
     @Autowired

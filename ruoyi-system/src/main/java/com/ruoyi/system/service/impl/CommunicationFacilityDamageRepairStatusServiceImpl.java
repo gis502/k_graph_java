@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.TrafficControlSections;
 import com.ruoyi.system.listener.CommunicationFacilityDamageRepairStatusListener;
 import com.ruoyi.system.mapper.CommunicationFacilityDamageRepairStatusMapper;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -111,6 +112,29 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
 
         return "删除成功";
     }
+
+    @Override
+    public IPage<CommunicationFacilityDamageRepairStatus> searchData(RequestBTO requestBTO) {
+
+        Page<CommunicationFacilityDamageRepairStatus> communicationFacilityDamageRepairStatusPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<CommunicationFacilityDamageRepairStatus> queryWrapper = Wrappers.lambdaQuery(CommunicationFacilityDamageRepairStatus.class)
+
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeName, requestParams) // 地震名称
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParams) // 震区（县/区）
+                .or().like(CommunicationFacilityDamageRepairStatus::getReportingDeadline, requestParams) // 统计截止时间
+                .or().like(CommunicationFacilityDamageRepairStatus::getTotalDisabledBaseStations, requestParams) // 累计退服基站（个）
+                .or().like(CommunicationFacilityDamageRepairStatus::getRestoredBaseStations, requestParams) // 抢通恢复基站（个）
+                .or().like(CommunicationFacilityDamageRepairStatus::getCurrentDisabledBaseStations, requestParams) // 目前退服基站（个）
+                .or().like(CommunicationFacilityDamageRepairStatus::getTotalDamagedCableLength, requestParams) // 累计受损光缆（公里）
+                .or().like(CommunicationFacilityDamageRepairStatus::getRepairedCableLength, requestParams) // 抢通恢复光缆（公里）
+                .or().like(CommunicationFacilityDamageRepairStatus::getCurrentPendingRepairCableLength, requestParams) // 目前待修复光缆（公里）
+                .or().like(CommunicationFacilityDamageRepairStatus::getCurrentInterruptedVillagesCount, requestParams); // 目前通信中断村
+        return baseMapper.selectPage(communicationFacilityDamageRepairStatusPage, queryWrapper);
+    }
+
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
     @Override

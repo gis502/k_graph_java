@@ -3,7 +3,6 @@ package com.ruoyi.web.controller.exportAndInport;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
@@ -71,7 +70,6 @@ public class ExcelController {
     @Resource
     private CasualtyReportServiceImpl caseCacheServiceImpl;
 
-
     @Resource
     private PublicOpinionServiceImpl publicOpinionServiceImpl;
 
@@ -102,16 +100,16 @@ public class ExcelController {
     private RiskConstructionGeohazardsServiceImpl riskConstructionGeohazardsServiceImpl;
 
     @Resource
-    private BarrierLakeSituationServiceImpl barrierLakeSituationService;
+    private BarrierLakeSituationServiceImpl barrierLakeSituationServiceImpl;
 
     @Resource
-    private SecondaryDisasterInfoServiceImpl secondaryDisasterInfoService;
+    private SecondaryDisasterInfoServiceImpl secondaryDisasterInfoServiceImpl;
 
     @Resource
-    private DisasterAreaWeatherForecastServiceImpl disasterAreaWeatherForecastService;
+    private DisasterAreaWeatherForecastServiceImpl disasterAreaWeatherForecastServiceImpl;
 
     @Resource
-    private HousingSituationServiceImpl housingSituationService;
+    private HousingSituationServiceImpl housingSituationServiceImpl;
 
     @Resource
     private SituationPlotServiceImpl situationPlotServiceImpl;
@@ -123,8 +121,10 @@ public class ExcelController {
 
     @Resource
     private SituationPlotService situationPlotService;
-    @Autowired
+
+    @Resource
     private SituationPlotMapper situationPlotMapper;
+
     @Resource
     private DisasterReliefMaterialsServiceImpl disasterReliefMaterialsServiceImpl;
 
@@ -132,22 +132,22 @@ public class ExcelController {
     private LargeSpecialRescueEquipmentServiceImpl largeSpecialRescueEquipmentServiceImpl;
 
     @Resource
-    private SupplySituationServiceImpl supplySituationService;
+    private SupplySituationServiceImpl supplySituationServiceImpl;
 
     @Resource
-    private CharityOrganizationDonationsServiceImpl charityOrganizationDonationsService;
+    private CharityOrganizationDonationsServiceImpl charityOrganizationDonationsServiceImpl;
 
     @Resource
-    private GovernmentDepartmentDonationsServiceImpl governmentDepartmentDonationsService;
+    private GovernmentDepartmentDonationsServiceImpl governmentDepartmentDonationsServiceImpl;
 
     @Resource
-    private RedCrossDonationsServiceImpl redCrossDonationsService;
+    private RedCrossDonationsServiceImpl redCrossDonationsServiceImpl;
 
     @Resource
-    private SupplyWaterServiceImpl supplyWaterService;
+    private SupplyWaterServiceImpl supplyWaterServiceImpl;
 
     @Resource
-    private MaterialDonationServiceImpl materialDonationService;
+    private MaterialDonationServiceImpl materialDonationServiceImpl;
 
 
     /**
@@ -164,6 +164,52 @@ public class ExcelController {
                 return AjaxResult.success(afterSeismicInformationServiceImpl.searchData(requestBTO));
             case "AftershockInformation":
                 return AjaxResult.success(aftershockInformationServiceImpl.searchData(requestBTO));
+            case  "CasualtyReport":
+                return AjaxResult.success(caseCacheServiceImpl.searchData(requestBTO));
+            case"TransferSettlementInfoServiceImpl":
+                return AjaxResult.success(transferSettlementInfoServiceImpl.searchData(requestBTO));
+            case"Meetings":
+                return AjaxResult.success(meetingsServiceImpl.searchData(requestBTO));
+            case"RoadDamage":
+                return AjaxResult.success(roadDamageServiceImpl.searchData(requestBTO));
+            case"TrafficControlSections":
+                return AjaxResult.success(trafficControlSectionsServiceImpl.searchData(requestBTO));
+            case"CommunicationFacilityDamageRepairStatus":
+                return AjaxResult.success(communicationFacilityDamageRepairStatusServiceImpl.searchData(requestBTO));
+            case"PowerSupplyInformation":
+                return AjaxResult.success(powerSupplyInformationServiceImpl.searchData(requestBTO));
+            case"HousingSituation":
+                return AjaxResult.success(housingSituationServiceImpl.searchData(requestBTO));
+            case"SupplySituation":
+                return AjaxResult.success(supplySituationServiceImpl.searchData(requestBTO));
+            case"SupplyWater":
+                return AjaxResult.success(supplyWaterServiceImpl.searchData(requestBTO));
+            case"RiskConstructionGeohazards":
+                return AjaxResult.success(riskConstructionGeohazardsServiceImpl.searchData(requestBTO));
+            case"BarrierLakeSituation":
+                return AjaxResult.success(barrierLakeSituationServiceImpl.searchData(requestBTO));
+            case"SecondaryDisasterInfo":
+                return AjaxResult.success(secondaryDisasterInfoServiceImpl.searchData(requestBTO));
+            case"DisasterAreaWeatherForecast":
+                return AjaxResult.success(disasterAreaWeatherForecastServiceImpl.searchData(requestBTO));
+            case"RescueForces":
+                return AjaxResult.success(rescueForcesServiceImpl.searchData(requestBTO));
+            case"LargeSpecialRescueEquipment":
+                return AjaxResult.success(largeSpecialRescueEquipmentServiceImpl.searchData(requestBTO));
+            case"DisasterReliefMaterials":
+                return AjaxResult.success(disasterReliefMaterialsServiceImpl.searchData(requestBTO));
+            case"MaterialDonation":
+                return AjaxResult.success(materialDonationServiceImpl.searchData(requestBTO));
+            case"GovernmentDepartmentDonations":
+                return AjaxResult.success(governmentDepartmentDonationsServiceImpl.searchData(requestBTO));
+            case"CharityOrganizationDonations":
+                return AjaxResult.success(charityOrganizationDonationsServiceImpl.searchData(requestBTO));
+            case"RedCrossDonations":
+                return AjaxResult.success(redCrossDonationsServiceImpl.searchData(requestBTO));
+            case"PublicOpinion":
+                return AjaxResult.success(publicOpinionServiceImpl.searchData(requestBTO));
+            case"SocialOrder":
+                return AjaxResult.success(socialOrderServiceImpl.searchData(requestBTO));
 
 
 
@@ -408,15 +454,15 @@ public class ExcelController {
                 return R.ok(RoadDamage);
             }
             if (filename.equals("建筑物、工程受损-房屋情况统计表")) {
-                List<HousingSituation> housingSituations = housingSituationService.importExcelHousingSituation(file, userName, eqId);
+                List<HousingSituation> housingSituations = housingSituationServiceImpl.importExcelHousingSituation(file, userName, eqId);
                 return R.ok(housingSituations);
             }
             if (filename.equals("建筑物、工程受损-集中供水工程受损统计表")) {
-                List<SupplySituation> supplySituations = supplySituationService.importExcelSupplySituation(file, userName, eqId);
+                List<SupplySituation> supplySituations = supplySituationServiceImpl.importExcelSupplySituation(file, userName, eqId);
                 return R.ok(supplySituations);
             }
             if (filename.equals("建筑物、工程受损-保障安置点供水统计表")) {
-                List<SupplyWater> supplyWaters = supplyWaterService.importExcelSupplyWater(file, userName, eqId);
+                List<SupplyWater> supplyWaters = supplyWaterServiceImpl.importExcelSupplyWater(file, userName, eqId);
                 return R.ok(supplyWaters);
             }
             if (filename.equals("次生灾害-地质灾害统计表")) {
@@ -424,31 +470,31 @@ public class ExcelController {
                 return R.ok(riskConstructionGeohazards);
             }
             if (filename.equals("次生灾害-堰塞湖（雍塞体）统计表")) {
-                List<BarrierLakeSituation> barrierLakeSituations = barrierLakeSituationService.importExcelBarrierLakeSituation(file, userName, eqId);
+                List<BarrierLakeSituation> barrierLakeSituations = barrierLakeSituationServiceImpl.importExcelBarrierLakeSituation(file, userName, eqId);
                 return R.ok(barrierLakeSituations);
             }
             if (filename.equals("次生灾害-山洪危险区统计表")) {
-                List<SecondaryDisasterInfo> secondaryDisasterInfos = secondaryDisasterInfoService.importExcelSecondaryDisasterInfo(file, userName, eqId);
+                List<SecondaryDisasterInfo> secondaryDisasterInfos = secondaryDisasterInfoServiceImpl.importExcelSecondaryDisasterInfo(file, userName, eqId);
                 return R.ok(secondaryDisasterInfos);
             }
             if (filename.equals("次生灾害-气象情况统计表")) {
-                List<DisasterAreaWeatherForecast> disasterAreaWeatherForecasts = disasterAreaWeatherForecastService.importExcelDisasterAreaWeatherForecast(file, userName, eqId);
+                List<DisasterAreaWeatherForecast> disasterAreaWeatherForecasts = disasterAreaWeatherForecastServiceImpl.importExcelDisasterAreaWeatherForecast(file, userName, eqId);
                 return R.ok(disasterAreaWeatherForecasts);
             }
             if (filename.equals("资金及物资捐赠-物资捐赠情况统计表")) {
-                List<MaterialDonation> materialDonations = materialDonationService.importExcelMaterialDonation(file, userName, eqId);
+                List<MaterialDonation> materialDonations = materialDonationServiceImpl.importExcelMaterialDonation(file, userName, eqId);
                 return R.ok(materialDonations);
             }
             if (filename.equals("资金及物资捐赠-资金援助情况-政府部门接收捐赠资金统计表")) {
-                List<GovernmentDepartmentDonations> governmentDepartmentDonations = governmentDepartmentDonationsService.importExcelGovernmentDepartmentDonations(file, userName, eqId);
+                List<GovernmentDepartmentDonations> governmentDepartmentDonations = governmentDepartmentDonationsServiceImpl.importExcelGovernmentDepartmentDonations(file, userName, eqId);
                 return R.ok(governmentDepartmentDonations);
             }
             if (filename.equals("资金及物资捐赠-资金援助情况-慈善机构接收捐赠资金统计表")) {
-                List<CharityOrganizationDonations> charityOrganizationDonations = charityOrganizationDonationsService.importExcelCharityOrganizationDonations(file, userName, eqId);
+                List<CharityOrganizationDonations> charityOrganizationDonations = charityOrganizationDonationsServiceImpl.importExcelCharityOrganizationDonations(file, userName, eqId);
                 return R.ok(charityOrganizationDonations);
             }
             if (filename.equals("资金及物资捐赠-资金援助情况-红十字会系统接收捐赠资金统计表")) {
-                List<RedCrossDonations> redCrossDonations = redCrossDonationsService.importExcelRedCrossDonations(file, userName, eqId);
+                List<RedCrossDonations> redCrossDonations = redCrossDonationsServiceImpl.importExcelRedCrossDonations(file, userName, eqId);
                 return R.ok(redCrossDonations);
             }
             if (filename.equals("力量物资资金-救援力量情况统计表")) {

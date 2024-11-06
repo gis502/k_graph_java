@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.BarrierLakeSituation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.PublicOpinion;
+import com.ruoyi.system.domain.entity.SupplySituation;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.PublicOpinionListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -128,6 +129,27 @@ public class PublicOpinionServiceImpl
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<PublicOpinion> searchData(RequestBTO requestBTO) {
+
+        Page<PublicOpinion> publicOpinionPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<PublicOpinion> queryWrapper = Wrappers.lambdaQuery(PublicOpinion.class)
+
+                .or().like(PublicOpinion::getEarthquakeName, requestParams) // 地震名称
+                .or().like(PublicOpinion::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(PublicOpinion::getEarthquakeZoneName, requestParams) // 震区（县/区）
+                .or().like(PublicOpinion::getSubmissionDeadline, requestParams) // 统计截止时间
+                .or().like(PublicOpinion::getPublicityReport, requestParams) // 宣传报道（篇）
+                .or().like(PublicOpinion::getProvincialMediaReport, requestParams) // 中省主要媒体报道（篇）
+                .or().like(PublicOpinion::getPublicOpinionRiskWarning, requestParams) // 舆情风险提示（条）
+                .or().like(PublicOpinion::getPressConference, requestParams) // 发布会（场）
+                .or().like(PublicOpinion::getNegativeOpinionDisposal, requestParams); // 处置负面舆论（条）
+
+        return baseMapper.selectPage(publicOpinionPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

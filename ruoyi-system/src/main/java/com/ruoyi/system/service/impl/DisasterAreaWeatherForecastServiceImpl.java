@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.DisasterAreaWeatherForecast;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RoadDamage;
-import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.DisasterAreaWeatherForecastListener;
 import com.ruoyi.system.mapper.DisasterAreaWeatherForecastMapper;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -125,6 +122,23 @@ public class DisasterAreaWeatherForecastServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<DisasterAreaWeatherForecast> searchData(RequestBTO requestBTO) {
+
+        Page<DisasterAreaWeatherForecast> disasterAreaWeatherForecastPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<DisasterAreaWeatherForecast> queryWrapper = Wrappers.lambdaQuery(DisasterAreaWeatherForecast.class)
+
+                .or().like(DisasterAreaWeatherForecast::getEarthquakeName, requestParams) // 地震名称
+                .or().like(DisasterAreaWeatherForecast::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(DisasterAreaWeatherForecast::getAffectedAreaName, requestParams) // 震区（县/区）
+                .or().like(DisasterAreaWeatherForecast::getSubmissionDeadline, requestParams) // 统计截止时间
+                .or().like(DisasterAreaWeatherForecast::getWeatherForecast, requestParams); // 未来三天气象情况
+
+        return baseMapper.selectPage(disasterAreaWeatherForecastPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

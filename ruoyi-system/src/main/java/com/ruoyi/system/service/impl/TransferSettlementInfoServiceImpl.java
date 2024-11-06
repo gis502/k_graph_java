@@ -3,10 +3,10 @@ package com.ruoyi.system.service.impl;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AftershockInformation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.listener.TransferSettlementInfoListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.TransferSettlementInfoMapper;
-import com.ruoyi.system.domain.entity.TransferSettlementInfo;
 import com.ruoyi.system.service.TransferSettlementInfoService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -179,4 +178,24 @@ public class TransferSettlementInfoServiceImpl
 
         return "删除成功";
     }
+
+    @Override
+    public IPage<TransferSettlementInfo> searchData(RequestBTO requestBTO) {
+        Page<TransferSettlementInfo> transferSettlementInfoPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<TransferSettlementInfo> queryWrapper = Wrappers.lambdaQuery(TransferSettlementInfo.class)
+
+                .or().like(TransferSettlementInfo::getEarthquakeName, requestParams) // 地震名称
+                .or().like(TransferSettlementInfo::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(TransferSettlementInfo::getMagnitude, requestParams) // 震级
+                .or().like(TransferSettlementInfo::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(TransferSettlementInfo::getReportingDeadline, requestParams) // 统计截止时间
+                .or().like(TransferSettlementInfo::getNewlyTransferred, requestParams) // 新增转移安置（人）
+                .or().like(TransferSettlementInfo::getCumulativeTransferred, requestParams) // 累计转移安置（人）
+                .or().like(TransferSettlementInfo::getCentralizedSettlement, requestParams) // 集中安置（人）
+                .or().like(TransferSettlementInfo::getDistributedSettlement, requestParams); // 分散安置（人）
+        return baseMapper.selectPage(transferSettlementInfoPage, queryWrapper);
+    }
+
 }

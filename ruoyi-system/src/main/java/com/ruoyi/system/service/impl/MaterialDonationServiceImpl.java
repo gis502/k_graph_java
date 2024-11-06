@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.MaterialDonation;
+import com.ruoyi.system.domain.entity.SupplySituation;
 import com.ruoyi.system.listener.MaterialDonationListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.MaterialDonationMapper;
@@ -127,6 +128,24 @@ public class MaterialDonationServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<MaterialDonation> searchData(RequestBTO requestBTO) {
+
+        Page<MaterialDonation> materialDonationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<MaterialDonation> queryWrapper = Wrappers.lambdaQuery(MaterialDonation.class)
+
+                .or().like(MaterialDonation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(MaterialDonation::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(MaterialDonation::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(MaterialDonation::getReportDeadline, requestParams) // 统计截止时间
+                .or().like(MaterialDonation::getMaterialDonationCount, requestParams) // 捐赠物资(万件)
+                .or().like(MaterialDonation::getDrugsDonationCount, requestParams); // 药品（箱）
+
+        return baseMapper.selectPage(materialDonationPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.BarrierLakeSituation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RoadDamage;
-import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.SecondaryDisasterInfoListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.SecondaryDisasterInfoMapper;
@@ -128,6 +125,26 @@ public class SecondaryDisasterInfoServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<SecondaryDisasterInfo> searchData(RequestBTO requestBTO) {
+
+        Page<SecondaryDisasterInfo> secondaryDisasterInfoPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<SecondaryDisasterInfo> queryWrapper = Wrappers.lambdaQuery(SecondaryDisasterInfo.class)
+
+                .or().like(SecondaryDisasterInfo::getEarthquakeName, requestParams) // 地震名称
+                .or().like(SecondaryDisasterInfo::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(SecondaryDisasterInfo::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(SecondaryDisasterInfo::getReportingDeadline, requestParams) // 统计截止时间
+                .or().like(SecondaryDisasterInfo::getHazardPoints, requestParams) // 隐患点（处）
+                .or().like(SecondaryDisasterInfo::getThreatenedAreasSecondary, requestParams) // 受威胁地区（乡镇、村）
+                .or().like(SecondaryDisasterInfo::getThreatenedPopulationSecondary, requestParams) // 受威胁群众（户或人）
+                .or().like(SecondaryDisasterInfo::getEvacuationSecondary, requestParams); // 避险转移（户或人）
+
+        return baseMapper.selectPage(secondaryDisasterInfoPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.BarrierLakeSituation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RiskConstructionGeohazards;
-import com.ruoyi.system.domain.entity.RoadDamage;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.RiskConstructionGeohazardsListener;
 import com.ruoyi.system.mapper.BarrierLakeSituationMapper;
@@ -130,6 +127,26 @@ public class BarrierLakeSituationServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<BarrierLakeSituation> searchData(RequestBTO requestBTO) {
+
+        Page<BarrierLakeSituation> barrierLakeSituationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<BarrierLakeSituation> queryWrapper = Wrappers.lambdaQuery(BarrierLakeSituation.class)
+
+                .or().like(BarrierLakeSituation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(BarrierLakeSituation::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(BarrierLakeSituation::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(BarrierLakeSituation::getReportingDeadline, requestParams) // 统计截止时间
+                .or().like(BarrierLakeSituation::getBarrierLake, requestParams) // 堰塞湖
+                .or().like(BarrierLakeSituation::getThreatenedAreas, requestParams) // 受威胁地区(乡镇、村)
+                .or().like(BarrierLakeSituation::getThreatenedPopulation, requestParams) // 受威胁群众(户或人)
+                .or().like(BarrierLakeSituation::getEvacuation, requestParams); // 避险转移(户或人)
+
+        return baseMapper.selectPage(barrierLakeSituationPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

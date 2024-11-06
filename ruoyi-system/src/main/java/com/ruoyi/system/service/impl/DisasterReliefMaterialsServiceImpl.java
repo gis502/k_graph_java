@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.DisasterReliefMaterials;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RescueForces;
-import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.DisasterReliefMaterialsListener;
 import com.ruoyi.system.listener.RescueForcesListener;
 import com.ruoyi.system.mapper.DisasterReliefMaterialsMapper;
@@ -140,6 +137,27 @@ public class DisasterReliefMaterialsServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<DisasterReliefMaterials> searchData(RequestBTO requestBTO) {
+
+        Page<DisasterReliefMaterials> disasterReliefMaterialsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<DisasterReliefMaterials> queryWrapper = Wrappers.lambdaQuery(DisasterReliefMaterials.class)
+
+                .or().like(DisasterReliefMaterials::getEarthquakeName, requestParams) // 地震名称
+                .or().like(DisasterReliefMaterials::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(DisasterReliefMaterials::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(DisasterReliefMaterials::getSubmissionDeadline, requestParams) // 统计截止时间
+                .or().like(DisasterReliefMaterials::getCurrentDisasterSuppliesTotal, requestParams) // 当前救灾物资总数（万件）
+                .or().like(DisasterReliefMaterials::getAllocatedSuppliesTotal, requestParams) // 调拨安置类物资（万件）
+                .or().like(DisasterReliefMaterials::getTentsCount, requestParams) // 帐篷（顶）
+                .or().like(DisasterReliefMaterials::getQuiltsCount, requestParams) // 棉被（床）
+                .or().like(DisasterReliefMaterials::getFoldingBedsCount, requestParams); // 折叠床（张）
+
+        return baseMapper.selectPage(disasterReliefMaterialsPage, queryWrapper);
     }
 
     @Override

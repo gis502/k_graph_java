@@ -126,6 +126,24 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
         return "删除成功";
     }
 
+    @Override
+    public IPage<GovernmentDepartmentDonations> searchData(RequestBTO requestBTO) {
+
+        Page<GovernmentDepartmentDonations> governmentDepartmentDonationsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<GovernmentDepartmentDonations> queryWrapper = Wrappers.lambdaQuery(GovernmentDepartmentDonations.class)
+
+                .or().like(GovernmentDepartmentDonations::getEarthquakeName, requestParams) // 地震名称
+                .or().like(GovernmentDepartmentDonations::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(GovernmentDepartmentDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(GovernmentDepartmentDonations::getSubmissionDeadline, requestParams) // 填报截止时间
+                .or().like(GovernmentDepartmentDonations::getTodayAmount, requestParams) // 当日
+                .or().like(GovernmentDepartmentDonations::getDonationAmount, requestParams); // 累计
+
+        return baseMapper.selectPage(governmentDepartmentDonationsPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

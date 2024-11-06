@@ -131,6 +131,24 @@ public class RedCrossDonationsServiceImpl extends
         return "删除成功";
     }
 
+    @Override
+    public IPage<RedCrossDonations> searchData(RequestBTO requestBTO) {
+
+        Page<RedCrossDonations> redCrossDonationsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<RedCrossDonations> queryWrapper = Wrappers.lambdaQuery(RedCrossDonations.class)
+
+                .or().like(RedCrossDonations::getEarthquakeName, requestParams) // 地震名称
+                .or().like(RedCrossDonations::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(RedCrossDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(RedCrossDonations::getSubmissionDeadline, requestParams) // 填报截止时间
+                .or().like(RedCrossDonations::getTodayAmount, requestParams) // 当日
+                .or().like(RedCrossDonations::getDonationAmount, requestParams); // 累计
+
+        return baseMapper.selectPage(redCrossDonationsPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

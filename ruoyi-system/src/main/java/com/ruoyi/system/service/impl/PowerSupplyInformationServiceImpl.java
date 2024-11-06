@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AftershockInformation;
+import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.listener.PowerSupplyInformationListener;
@@ -125,6 +126,32 @@ public class PowerSupplyInformationServiceImpl
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<PowerSupplyInformation> searchData(RequestBTO requestBTO) {
+
+        Page<PowerSupplyInformation> powerSupplyInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<PowerSupplyInformation> queryWrapper = Wrappers.lambdaQuery(PowerSupplyInformation.class)
+
+                .or().like(PowerSupplyInformation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(PowerSupplyInformation::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(PowerSupplyInformation::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(PowerSupplyInformation::getReportingDeadline, requestParams) // 统计截止时间
+                .or().like(PowerSupplyInformation::getTotalOutOfServiceSubstations, requestParams) // 累计停运变（发）电站（座）
+                .or().like(PowerSupplyInformation::getRestoredSubstations, requestParams) // 已恢复变（发）电站（座）
+                .or().like(PowerSupplyInformation::getToBeRepairedSubstations, requestParams) // 待修复变（发）电站（座）
+                .or().like(PowerSupplyInformation::getTotalTripCircuits, requestParams) // 累计跳闸线路（条）
+                .or().like(PowerSupplyInformation::getRestoredCircuits, requestParams) // 已恢复线路（条）
+                .or().like(PowerSupplyInformation::getToBeRestoredCircuits, requestParams) // 待恢复线路（条）
+                .or().like(PowerSupplyInformation::getTotalBlackoutUsers, requestParams) // 累计主网停电用户数（户）
+                .or().like(PowerSupplyInformation::getRestoredPowerUsers, requestParams) // 已恢复主网供电用户数（户）
+                .or().like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, requestParams) // 目前主网供电中断村
+                .or().like(PowerSupplyInformation::getEmergencyPowerUsers, requestParams); // 应急供电用户数（户）
+
+        return baseMapper.selectPage(powerSupplyInformationPage, queryWrapper);
     }
 
     @Override

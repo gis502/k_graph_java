@@ -131,6 +131,24 @@ public class CharityOrganizationDonationsServiceImpl extends
         return "删除成功";
     }
 
+    @Override
+    public IPage<CharityOrganizationDonations> searchData(RequestBTO requestBTO) {
+
+        Page<CharityOrganizationDonations> charityOrganizationDonationsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<CharityOrganizationDonations> queryWrapper = Wrappers.lambdaQuery(CharityOrganizationDonations.class)
+
+                .or().like(CharityOrganizationDonations::getEarthquakeName, requestParams) // 地震名称
+                .or().like(CharityOrganizationDonations::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(CharityOrganizationDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(CharityOrganizationDonations::getSubmissionDeadline, requestParams) // 填报截止时间
+                .or().like(CharityOrganizationDonations::getTodayAmount, requestParams) // 当日
+                .or().like(CharityOrganizationDonations::getDonationAmount, requestParams); // 累计
+
+        return baseMapper.selectPage(charityOrganizationDonationsPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

@@ -3,11 +3,10 @@ package com.ruoyi.system.service.impl;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AftershockInformation;
-import com.ruoyi.system.domain.entity.CasualtyReport;
-import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.listener.MeetingsListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.MeetingsMapper;
-import com.ruoyi.system.domain.entity.Meetings;
 import com.ruoyi.system.service.MeetingsService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -99,6 +97,25 @@ public class MeetingsServiceImpl
         return "删除成功";
     }
 
+    @Override
+    public IPage<Meetings> searchData(RequestBTO requestBTO) {
+        Page<Meetings> meetingsPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<Meetings> queryWrapper = Wrappers.lambdaQuery(Meetings.class)
+
+                .or().like(Meetings::getEarthquakeName, requestParams) // 地震名称
+                .or().like(Meetings::getEarthquakeTime, requestParams) // 地震时间
+                .or().like(Meetings::getMagnitude, requestParams) // 震级
+                .or().like(Meetings::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(Meetings::getReportDeadline, requestParams) // 统计截止时间
+                .or().like(Meetings::getMeetingCount, requestParams) // 会议（场）
+                .or().like(Meetings::getActivityCount, requestParams) // 活动（场）
+                .or().like(Meetings::getBriefReportCount, requestParams) // 印发简报（份）
+                .or().like(Meetings::getNoticeCount, requestParams) // 印发通知（份）
+                .or().like(Meetings::getMeetingMinutesCount, requestParams); // 会议纪要（份）
+        return baseMapper.selectPage(meetingsPage, queryWrapper);
+    }
 
     @Override
     public List<Meetings> importExcelMeetings(MultipartFile file, String userName, String eqId)throws IOException {
