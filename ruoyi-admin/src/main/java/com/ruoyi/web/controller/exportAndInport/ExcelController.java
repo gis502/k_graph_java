@@ -467,6 +467,7 @@ public class ExcelController {
         List<String> plotProperty = new ArrayList<>();
         List<String> sheetNames = new ArrayList<>();
         Map<String, String> sheetIcon = new HashMap<>();
+        List<String> plotIds = new ArrayList<>();  // 用于存储 plotId
 
         // 获取映射配置
         Map<String, String> fieldMapping = new PlotConfig().getFieldMapping();
@@ -478,14 +479,14 @@ public class ExcelController {
                 if (sheet == null || sheet.getPhysicalNumberOfRows() == 0) continue;
 
                 String sheetName = sheet.getSheetName();
-                String mappedSheetName = sheetMapping.get(sheetName); // 获取映射后的sheetName
+                String mappedSheetName = sheetMapping.get(sheetName);
                 if (mappedSheetName == null) {
                     System.out.println("No mapping found for sheet: " + sheetName);
-                    continue; // 如果没有映射，跳过该sheet
+                    continue;
                 }
                 sheetNames.add(sheetName);
 
-                System.out.println("Sheet: " + mappedSheetName); // 使用映射后的名称
+                System.out.println("Sheet: " + mappedSheetName);
                 Row headerRow = sheet.getRow(0);
                 Map<Integer, String> columnFieldMap = new HashMap<>();
 
@@ -505,9 +506,10 @@ public class ExcelController {
 
                     SituationPlot plotData = new SituationPlot();
                     plotData.setPlotId(UUID.randomUUID().toString()); // 每个实例生成唯一的 plotId
+
+
                     boolean rowIsEmpty = true;
 
-                    // 用于存储第八列及其后的字段
                     Map<String, String> additionalFields = new HashMap<>();
 
                     // 处理前七列
@@ -556,35 +558,34 @@ public class ExcelController {
                         }
                     }
 
-                    // 存储第八列及其后的标题和内容
-                    for (int col = 7; col < row.getPhysicalNumberOfCells(); col++) { // 从第八列开始
+                    for (int col = 7; col < row.getPhysicalNumberOfCells(); col++) {
                         Cell cell = row.getCell(col);
                         String headerName = fieldMapping.get(headerRow.getCell(col).getStringCellValue());
                         if (cell != null) {
-                            String cellValue = cell.toString().trim(); // 去除多余空白
-                            if (!cellValue.isEmpty()) { // 仅在非空时存储
+                            String cellValue = cell.toString().trim();
+                            if (!cellValue.isEmpty()) {
                                 if (headerName != null) {
-                                    additionalFields.put(headerName, cellValue); // 以表头：内容方式存储
+                                    additionalFields.put(headerName, cellValue);
                                 }
                             }
                         }
                     }
 
                     if (!rowIsEmpty) {
-                        plotData.setPlotType(sheetName); // 使用原始名称
+                        plotData.setPlotType(sheetName);
                         plotDataList.add(plotData);
 
-                        // 格式化属性数据为 `mappedSheetName(字段1=值1, 字段2=值2, ...)`
                         StringBuilder propertyString = new StringBuilder(mappedSheetName + "(");
-                        propertyString.append("plotId=").append(plotData.getPlotId()).append(", "); // 添加 plotId
+                        propertyString.append("plotId=").append(plotData.getPlotId()).append(", ");
+                        plotIds.add((String) plotData.getPlotId());  // 强制转换为 String
                         additionalFields.forEach((key, value) ->
                                 propertyString.append(key).append("=").append(value).append(", "));
                         if (propertyString.length() > 2) {
-                            propertyString.setLength(propertyString.length() - 2); // 去掉最后的逗号和空格
+                            propertyString.setLength(propertyString.length() - 2);
                         }
                         propertyString.append(")");
 
-                        plotProperty.add(propertyString.toString()); // 添加格式化后的字符串
+                        plotProperty.add(propertyString.toString());
                     }
                 }
             }
@@ -599,13 +600,17 @@ public class ExcelController {
             plotData.setEarthquakeId(eqId);
             plotData.setIcon(sheetIcon.get(plotData.getPlotType()));
         }
-        // 联系电话的科学计数法格式改成正常字符串
-        List<String> updatedPlotProperty = convertContactPhones(plotProperty);
 
+        List<String> updatedPlotProperty = convertContactPhones(plotProperty);
         situationPlotService.savePlotDataAndProperties(plotDataList, updatedPlotProperty);
 
-        return R.ok("导入成功");
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("plotIds", plotIds);
+
+// 返回 R 响应对象，包含 map 数据
+        return R.ok(responseMap);
     }
+
 
     @DeleteMapping("/deleteData")
     public AjaxResult deleteData(@RequestBody Map<String, Object> requestBTO) {
