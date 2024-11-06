@@ -167,10 +167,6 @@ public class ExcelController {
             case "AftershockInformation":
                 return AjaxResult.success(aftershockInformationServiceImpl.searchData(requestBTO));
 
-
-
-
-
             default:
                 return AjaxResult.error("搜索失败");
         }
