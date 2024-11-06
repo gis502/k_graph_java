@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.BarrierLakeSituation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.PublicOpinion;
+import com.ruoyi.system.domain.entity.SocialOrder;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.PublicOpinionListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -35,6 +36,9 @@ public class PublicOpinionServiceImpl
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private PublicOpinionMapper publicOpinionMapper;
 
     @Override
     public List<PublicOpinion> importExcelPublicOpinion(MultipartFile file, String userName, String eqId) throws IOException {
@@ -138,6 +142,11 @@ public class PublicOpinionServiceImpl
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    @Override
+    public List<PublicOpinion> getpublicopinion(String eqid) {
+        return publicOpinionMapper.getpublicopinion(eqid);
     }
 }
 
