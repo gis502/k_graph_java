@@ -11,8 +11,18 @@ import java.util.List;
 @Mapper
 public interface RoadDamageMapper extends BaseMapper<RoadDamage> {
 
-    @Select("SELECT * FROM road_damage WHERE earthquake_id = #{eqid} " +
-            "AND system_insert_time = (SELECT MAX(system_insert_time) " +
-            "FROM road_damage AS r WHERE r.affected_area = road_damage.affected_area)")
+    @Select("""
+    SELECT psi.*
+    FROM (
+        SELECT psi.*, 
+               ROW_NUMBER() OVER (
+                   PARTITION BY psi.affected_area 
+                   ORDER BY psi.reporting_deadline DESC, psi.system_insert_time DESC
+               ) AS rn
+        FROM road_damage psi
+        WHERE psi.earthquake_id = #{eqid}
+    ) AS psi
+    WHERE psi.rn = 1
+""")
     List<RoadDamage> selectRoadRepairsByEqid(@Param("eqid") String eqid);
 }
