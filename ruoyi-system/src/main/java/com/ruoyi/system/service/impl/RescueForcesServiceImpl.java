@@ -11,6 +11,7 @@ import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.RescueForces;
 
 
+import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
 import com.ruoyi.system.listener.RescueForcesListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.RescueForcesMapper;
@@ -35,6 +36,10 @@ public class RescueForcesServiceImpl extends
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Resource
+    private RescueForcesMapper rescueForcesMapper;
+
+    @Override
     public List<RescueForces> importExcelRescueForces(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);
@@ -138,4 +143,8 @@ public class RescueForcesServiceImpl extends
         return "删除成功";
     }
 
+    @Override
+    public List<RescueForces> RescueForcesByEqId(String eqid) {
+        return rescueForcesMapper.RescueForcesByEqId(eqid);
+    }
 }

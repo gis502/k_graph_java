@@ -31,6 +31,11 @@ public class SafetyProtectionController {
     public AjaxResult insert(@RequestBody SafetyProtection safetyProtection) {
         try {
             safetyProtection.setIfDelete("false");
+
+            if (checkPort(safetyProtection)) {
+                return AjaxResult.error("已经存在，请勿重新添加");
+            }
+
             changePort(safetyProtection);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -136,10 +141,27 @@ public class SafetyProtectionController {
      * 改
      */
     @PutMapping("/update")
-    public boolean update(@RequestBody SafetyProtection safetyProtection) throws IOException, InterruptedException {
+    public AjaxResult update(@RequestBody SafetyProtection safetyProtection)  throws IOException, InterruptedException {
+
+        if (checkPort(safetyProtection)) {
+            return AjaxResult.error("已经存在，请勿重新添加");
+        }
+
         this.removeById(safetyProtection.getUuid());
         this.insert(safetyProtection);
-        return safetyProtectionService.updateById(safetyProtection);
+
+        return AjaxResult.success(safetyProtectionService.updateById(safetyProtection));
+    }
+
+    public boolean checkPort(SafetyProtection safetyProtection) {
+        LambdaQueryWrapper<SafetyProtection> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SafetyProtection::getSource, safetyProtection.getSource())
+                .eq(SafetyProtection::getPort, safetyProtection.getPort())
+                .eq(SafetyProtection::getAgreement, safetyProtection.getAgreement())
+                .eq(SafetyProtection::getTactics, safetyProtection.getTactics())
+                .eq(SafetyProtection::getNotes, safetyProtection.getNotes());
+
+        return safetyProtectionService.count(queryWrapper) > 0; // Returns true if a matching entry exists
     }
 
 

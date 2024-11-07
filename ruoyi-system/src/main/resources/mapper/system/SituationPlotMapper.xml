@@ -25,4 +25,44 @@
   <select id="getPlot" resultType="com.ruoyi.system.domain.entity.SituationPlot">
     select * from situation_plot where earthquake_id=#{eqid}
   </select>
+
+  <insert id="insertSituationPlots" parameterType="java.util.List">
+    INSERT INTO situation_plot (
+    earthquake_id,
+    plot_id,
+    drawtype,
+    icon,
+    severity,
+    plot_type,
+    angle,
+    creation_time,
+    elevation,
+    start_time,
+    end_time,
+    is_deleted,
+    geom
+    ) VALUES
+    <foreach collection="list" item="plotData" separator=",">
+      (
+      #{plotData.earthquakeId},
+      #{plotData.plotId},
+      #{plotData.drawtype},
+      #{plotData.icon},
+      #{plotData.severity},
+      #{plotData.plotType},
+      #{plotData.angle},
+      #{plotData.creationTime},
+      #{plotData.elevation},
+      #{plotData.startTime},
+      #{plotData.endTime},
+      #{plotData.isDeleted},
+      #{plotData.geom}
+      )
+    </foreach>
+  </insert>
+
+  <select id="getCheckPlot" resultType="com.ruoyi.system.domain.entity.SituationPlot">
+    select geom, start_time, end_time from situation_plot where earthquake_id=#{eqid}
+  </select>
+
 </mapper>

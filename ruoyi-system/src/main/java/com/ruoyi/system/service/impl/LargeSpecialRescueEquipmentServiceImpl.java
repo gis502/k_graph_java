@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AfterSeismicInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.LargeSpecialRescueEquipment;
+import com.ruoyi.system.domain.entity.RescueForces;
 import com.ruoyi.system.listener.LargeSpecialRescueEquipmentListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.LargeSpecialRescueEquipmentMapper;
@@ -32,6 +33,9 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         implements LargeSpecialRescueEquipmentService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private LargeSpecialRescueEquipmentMapper largeSpecialRescueEquipmentMapper;
 
     public List<LargeSpecialRescueEquipment> importExcelLargeSpecialRescueEquipment(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -56,7 +60,7 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         inputStream = file.getInputStream();
         LargeSpecialRescueEquipmentListener listener = new LargeSpecialRescueEquipmentListener(baseMapper, totalRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream, AfterSeismicInformation.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream, LargeSpecialRescueEquipment.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
         List<LargeSpecialRescueEquipment> list = listener.getList();
         // 将解析后的数据保存到数据库
@@ -135,5 +139,10 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public List<LargeSpecialRescueEquipment> LargeSpecialRescueEquipmentByEqId(String eqid) {
+        return largeSpecialRescueEquipmentMapper.LargeSpecialRescueEquipmentEqId(eqid);
     }
 }

@@ -12,4 +12,5 @@ public interface CommunicationFacilityDamageRepairStatusService extends IService
 
     List<CommunicationFacilityDamageRepairStatus> importExcelCommunicationFacilityDamageRepairStatus(MultipartFile file, String userName, String eqId) throws IOException;
 
+    List<CommunicationFacilityDamageRepairStatus> facility(String eqid);
 }

@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RedCrossDonations;
-import com.ruoyi.system.domain.entity.RoadDamage;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.CharityOrganizationDonationsListener;
 import com.ruoyi.system.listener.RedCrossDonationsListener;
 import com.ruoyi.system.mapper.CharityOrganizationDonationsMapper;
@@ -36,6 +33,9 @@ public class RedCrossDonationsServiceImpl extends
         implements RedCrossDonationsService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private RedCrossDonationsMapper redCrossDonationsMapper;
 
     @Override
     public List<RedCrossDonations> importExcelRedCrossDonations(MultipartFile file, String userName, String eqId) throws IOException {
@@ -140,4 +140,10 @@ public class RedCrossDonationsServiceImpl extends
         }
         return true;  // 所有单元格都为空，算作空行
     }
+
+    @Override
+    public List<RedCrossDonations> RedCrossDonationsByEqId(String eqid) {
+        return redCrossDonationsMapper.RedCrossDonationsEqId(eqid);
+    }
+
 }

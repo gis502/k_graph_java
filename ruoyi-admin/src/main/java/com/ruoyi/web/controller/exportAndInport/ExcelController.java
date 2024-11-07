@@ -1,20 +1,35 @@
 package com.ruoyi.web.controller.exportAndInport;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.system.config.MapperConfig;
+import com.ruoyi.system.config.PlotConfig;
 import com.ruoyi.system.domain.SysOperLog;
+import com.ruoyi.system.domain.bto.PlotBTO;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.*;
+import com.ruoyi.system.domain.handler.ExcelConverter;
+import com.ruoyi.system.mapper.PlotIconmanagementMapper;
+import com.ruoyi.system.mapper.SituationPlotMapper;
 import com.ruoyi.system.mapper.SysOperLogMapper;
+import com.ruoyi.system.service.SituationPlotService;
 import com.ruoyi.system.service.impl.*;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import com.ruoyi.system.service.strategy.DataExportStrategyContext;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +39,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.ruoyi.system.domain.handler.ExcelConverter.convertContactPhones;
 
 /**
  * 导入导出控制层
@@ -94,8 +115,17 @@ public class ExcelController {
     private HousingSituationServiceImpl housingSituationService;
 
     @Resource
+    private SituationPlotServiceImpl situationPlotServiceImpl;
+    @Resource
     private RescueForcesServiceImpl rescueForcesServiceImpl;
 
+    @Resource
+    private PlotIconmanagementMapper plotIconmanagementMapper;
+
+    @Resource
+    private SituationPlotService situationPlotService;
+    @Autowired
+    private SituationPlotMapper situationPlotMapper;
     @Resource
     private DisasterReliefMaterialsServiceImpl disasterReliefMaterialsServiceImpl;
 
@@ -148,6 +178,145 @@ public class ExcelController {
         }
     }
 
+    @PostMapping("/downloadPlotExcel")
+    @Log(title = "下载标绘数据Excel模板", businessType = BusinessType.EXPORT)
+    public void downloadPlotExcel(HttpServletResponse response, @RequestBody PlotBTO plotBTO) throws IOException {
+        System.out.println("导入的模板与导出的数据：" + plotBTO);
+        try {
+            // 设置响应头
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            String fileName = "标绘数据模板.xlsx";
+            String encodedFileName = URLEncoder.encode(fileName, "UTF-8");
+
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"");
+
+            // 使用 ByteArrayOutputStream 导出数据
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ExcelWriter excelWriter = EasyExcel.write(outputStream).build();
+
+            // 判断plotBTO里的excelContent是否为空
+            if (plotBTO.getExcelContent() != null && !plotBTO.getExcelContent().isEmpty()) {
+                System.out.println("excelContent 不为 null 或空列表");
+
+                // 遍历每个 sheet
+                for (PlotBTO.Sheet sheet : plotBTO.getSheets()) {
+                    // 准备每个 sheet 的数据
+                    List<List<Object>> excelDataList = new ArrayList<>();
+                    List<Object> headerRow = new ArrayList<>();
+
+                    // 添加表头
+                    for (PlotBTO.Field field : sheet.getFields()) {
+                        headerRow.add(field.getName());
+                    }
+                    excelDataList.add(headerRow);
+
+                    // 在这里根据excelContent中的数据进行填充
+
+                    for (Map<String, List<Map<String, Object>>> contentMap : plotBTO.getExcelContent()) {
+                        // 这里假设 contentMap 的 key 就是 sheet 的 name
+                        if (contentMap.containsKey(sheet.getName())) {
+                            List<Map<String, Object>> contentList = contentMap.get(sheet.getName());
+
+                            // 遍历该 sheet 对应的内容列表
+                            for (Map<String, Object> content : contentList) {
+                                List<Object> dataRow = new ArrayList<>();
+                                // 填充每一行的数据
+                                for (PlotBTO.Field field : sheet.getFields()) {
+                                    Object value = content.get(field.getName());
+                                    dataRow.add(value != null ? value : ""); // 如果值为 null，则填充空字符串
+                                }
+                                excelDataList.add(dataRow);
+                            }
+                        }
+                    }
+
+                    // 将数据写入当前 sheet
+                    WriteSheet writeSheet = EasyExcel.writerSheet(sheet.getName()).build();
+                    excelWriter.write(excelDataList, writeSheet);
+                }
+                excelWriter.finish();
+            } else {
+                // 遍历每个 sheet
+                for (PlotBTO.Sheet sheet : plotBTO.getSheets()) {
+                    // 准备每个 sheet 的数据
+                    List<List<Object>> excelDataList = new ArrayList<>();
+                    List<Object> headerRow = new ArrayList<>();
+
+                    // 添加表头
+                    for (PlotBTO.Field field : sheet.getFields()) {
+                        headerRow.add(field.getName());
+                    }
+                    excelDataList.add(headerRow);
+
+                    // 添加100行空行
+                    for (int i = 0; i < 100; i++) {
+                        List<Object> emptyRow = Collections.nCopies(headerRow.size(), ""); // 创建与表头列数相同的空行
+                        excelDataList.add(emptyRow);
+                    }
+
+                    // 将数据写入当前 sheet
+                    WriteSheet writeSheet = EasyExcel.writerSheet(sheet.getName()).build();
+                    excelWriter.write(excelDataList, writeSheet);
+                }
+
+                // 完成 EasyExcel 写入
+                excelWriter.finish();
+            }
+
+            // 使用 Apache POI 添加下拉框
+            try (Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(outputStream.toByteArray()))) {
+                for (PlotBTO.Sheet sheet : plotBTO.getSheets()) {
+                    Sheet excelSheet = workbook.getSheet(sheet.getName());
+
+                    // 重新声明 headerRow
+                    List<Object> headerRow = new ArrayList<>();
+                    for (PlotBTO.Field field : sheet.getFields()) {
+                        headerRow.add(field.getName());
+                    }
+
+                    for (PlotBTO.Field field : sheet.getFields()) {
+                        if ("select".equals(field.getType()) && field.getContent() != null) {
+                            // 提取选择框内容
+                            String[] selectOptions = field.getContent().stream()
+                                    .map(PlotBTO.Content::getLabel)
+                                    .toArray(String[]::new);
+
+                            int columnIndex = headerRow.indexOf(field.getName());
+                            if (columnIndex != -1) {
+                                // 确保行数有效
+                                int lastRowNum = excelSheet.getLastRowNum();
+                                if (lastRowNum >= 2) { // 行数至少要有数据
+                                    // 设置下拉框的范围
+                                    CellRangeAddressList addressList = new CellRangeAddressList(1, lastRowNum, columnIndex, columnIndex);
+                                    DataValidationHelper validationHelper = excelSheet.getDataValidationHelper();
+                                    DataValidationConstraint validationConstraint = validationHelper.createExplicitListConstraint(selectOptions);
+                                    DataValidation validation = validationHelper.createValidation(validationConstraint, addressList);
+                                    excelSheet.addValidationData(validation);
+                                } else {
+                                    System.err.println("没有足够的行数来添加下拉列表。");
+                                }
+                            } else {
+                                System.err.println("未找到字段名称: " + field.getName());
+                            }
+                        }
+                    }
+                }
+
+                // 将更改后的内容写入响应流
+                workbook.write(response.getOutputStream());
+            }
+
+            // 刷新和关闭输出流
+            response.getOutputStream().flush();
+            response.getOutputStream().close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 返回错误信息
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "导出失败: " + e.getMessage());
+        }
+    }
 
     @PostMapping("/getExcelUploadByTime")
     public R getExcelUploadByTime(@RequestParam("time") String time, @RequestParam("requestParams") String requestParams, @RequestParam("username") String username) {
@@ -171,7 +340,6 @@ public class ExcelController {
         }
         return R.ok(message);
     }
-
 
 
     @PostMapping("/importExcel/{userName}&{filename}&{eqId}")
@@ -270,25 +438,180 @@ public class ExcelController {
                 List<LargeSpecialRescueEquipment> largeSpecialRescueEquipment = largeSpecialRescueEquipmentServiceImpl.importExcelLargeSpecialRescueEquipment(file, userName, eqId);
                 return R.ok(largeSpecialRescueEquipment);
             }
-            if (filename.equals("宣传舆论治安-社会秩序统计表")) {
+            if (filename.equals("宣传舆情治安-社会秩序统计表")) {
                 List<SocialOrder> socialOrder = socialOrderServiceImpl.importExcelSocialOrder(file, userName, eqId);
                 return R.ok(socialOrder);
             }
-            else{
-                    return R.fail("上传文件名称错误");
+            if (filename.equals("宣传舆情治安-宣传舆论统计表")) {
+                List<PublicOpinion> publicOpinions = publicOpinionServiceImpl.importExcelPublicOpinion(file, userName, eqId);
+                return R.ok(publicOpinions);
+            } else {
+                return R.fail("上传文件名称错误");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.fail("操作失败: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/importPlotExcel/{filename}&{eqId}")
+    @Log(title = "导入标绘数据", businessType = BusinessType.IMPORT)
+    public R importPlotExcel(@RequestParam("file") MultipartFile file,
+                             @PathVariable(value = "filename") String filename,
+                             @PathVariable(value = "eqId") String eqId) throws IOException {
+        System.out.println("导入了标绘数据");
+        System.out.println("filename: " + filename);
+        System.out.println("eqId: " + eqId);
+
+        List<SituationPlot> plotDataList = new ArrayList<>();
+        List<String> plotProperty = new ArrayList<>();
+        List<String> sheetNames = new ArrayList<>();
+        Map<String, String> sheetIcon = new HashMap<>();
+
+        // 获取映射配置
+        Map<String, String> fieldMapping = new PlotConfig().getFieldMapping();
+        Map<String, String> sheetMapping = new MapperConfig().plotTypeToMapperType();
+
+        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                Sheet sheet = workbook.getSheetAt(i);
+                if (sheet == null || sheet.getPhysicalNumberOfRows() == 0) continue;
+
+                String sheetName = sheet.getSheetName();
+                String mappedSheetName = sheetMapping.get(sheetName); // 获取映射后的sheetName
+                if (mappedSheetName == null) {
+                    System.out.println("No mapping found for sheet: " + sheetName);
+                    continue; // 如果没有映射，跳过该sheet
                 }
-            } catch(Exception e){
-                e.printStackTrace();
-                return R.fail("操作失败: " + e.getMessage());
+                sheetNames.add(sheetName);
+
+                System.out.println("Sheet: " + mappedSheetName); // 使用映射后的名称
+                Row headerRow = sheet.getRow(0);
+                Map<Integer, String> columnFieldMap = new HashMap<>();
+
+                // 仅处理前七个字段
+                int maxColumns = Math.min(7, headerRow.getPhysicalNumberOfCells());
+                for (int col = 0; col < maxColumns; col++) {
+                    Cell cell = headerRow.getCell(col);
+                    String fieldName = fieldMapping.get(cell.getStringCellValue());
+                    if (fieldName != null) {
+                        columnFieldMap.put(col, fieldName);
+                    }
+                }
+
+                for (int rowIndex = 1; rowIndex <= sheet.getPhysicalNumberOfRows(); rowIndex++) {
+                    Row row = sheet.getRow(rowIndex);
+                    if (row == null) continue;
+
+                    SituationPlot plotData = new SituationPlot();
+                    plotData.setPlotId(UUID.randomUUID().toString()); // 每个实例生成唯一的 plotId
+                    boolean rowIsEmpty = true;
+
+                    // 用于存储第八列及其后的字段
+                    Map<String, String> additionalFields = new HashMap<>();
+
+                    // 处理前七列
+                    for (Map.Entry<Integer, String> entry : columnFieldMap.entrySet()) {
+                        Cell cell = row.getCell(entry.getKey());
+                        String fieldName = entry.getValue();
+                        String cellValue = "";
+
+                        if (cell != null) {
+                            switch (cell.getCellType()) {
+                                case STRING:
+                                    cellValue = cell.getStringCellValue();
+                                    break;
+                                case NUMERIC:
+                                    cellValue = String.valueOf(cell.getNumericCellValue());
+                                    break;
+                                case BOOLEAN:
+                                    cellValue = String.valueOf(cell.getBooleanCellValue());
+                                    break;
+                                case FORMULA:
+                                    cellValue = cell.getCellFormula();
+                                    break;
+                                default:
+                                    cellValue = "";
+                            }
+                        }
+
+                        if (!cellValue.isEmpty()) {
+                            rowIsEmpty = false;
+                            try {
+                                Field field = SituationPlot.class.getDeclaredField(fieldName);
+                                field.setAccessible(true);
+
+                                if (field.getType().equals(Double.class)) {
+                                    field.set(plotData, Double.parseDouble(cellValue));
+                                } else if (field.getType().equals(BigDecimal.class)) {
+                                    field.set(plotData, new BigDecimal(cellValue));
+                                } else if (field.getType().equals(LocalDateTime.class)) {
+                                    field.set(plotData, ExcelConverter.convertExcelDate(cell.getNumericCellValue()));
+                                } else {
+                                    field.set(plotData, cellValue);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    // 存储第八列及其后的标题和内容
+                    for (int col = 7; col < row.getPhysicalNumberOfCells(); col++) { // 从第八列开始
+                        Cell cell = row.getCell(col);
+                        String headerName = fieldMapping.get(headerRow.getCell(col).getStringCellValue());
+                        if (cell != null) {
+                            String cellValue = cell.toString().trim(); // 去除多余空白
+                            if (!cellValue.isEmpty()) { // 仅在非空时存储
+                                if (headerName != null) {
+                                    additionalFields.put(headerName, cellValue); // 以表头：内容方式存储
+                                }
+                            }
+                        }
+                    }
+
+                    if (!rowIsEmpty) {
+                        plotData.setPlotType(sheetName); // 使用原始名称
+                        plotDataList.add(plotData);
+
+                        // 格式化属性数据为 `mappedSheetName(字段1=值1, 字段2=值2, ...)`
+                        StringBuilder propertyString = new StringBuilder(mappedSheetName + "(");
+                        propertyString.append("plotId=").append(plotData.getPlotId()).append(", "); // 添加 plotId
+                        additionalFields.forEach((key, value) ->
+                                propertyString.append(key).append("=").append(value).append(", "));
+                        if (propertyString.length() > 2) {
+                            propertyString.setLength(propertyString.length() - 2); // 去掉最后的逗号和空格
+                        }
+                        propertyString.append(")");
+
+                        plotProperty.add(propertyString.toString()); // 添加格式化后的字符串
+                    }
+                }
             }
         }
 
-        @DeleteMapping("/deleteData")
-        public AjaxResult deleteData (@RequestBody Map < String, Object > requestBTO){
-            System.out.println(requestBTO);
-            List<Map<String, Object>> idsList = (List<Map<String, Object>>) requestBTO.get("ids");
-            return AjaxResult.success(dataExportStrategyContext.getStrategy((String) requestBTO.get("flag")).deleteData(idsList));
+        List<PlotIconmanagement> icons = plotIconmanagementMapper.findIconsBySheetNames(sheetNames);
+        for (PlotIconmanagement icon : icons) {
+            sheetIcon.put(icon.getName(), icon.getImg());
         }
 
+        for (SituationPlot plotData : plotDataList) {
+            plotData.setEarthquakeId(eqId);
+            plotData.setIcon(sheetIcon.get(plotData.getPlotType()));
+        }
+        // 联系电话的科学计数法格式改成正常字符串
+        List<String> updatedPlotProperty = convertContactPhones(plotProperty);
+
+        situationPlotService.savePlotDataAndProperties(plotDataList, updatedPlotProperty);
+
+        return R.ok("导入成功");
     }
+
+    @DeleteMapping("/deleteData")
+    public AjaxResult deleteData(@RequestBody Map<String, Object> requestBTO) {
+        System.out.println(requestBTO);
+        List<Map<String, Object>> idsList = (List<Map<String, Object>>) requestBTO.get("ids");
+        return AjaxResult.success(dataExportStrategyContext.getStrategy((String) requestBTO.get("flag")).deleteData(idsList));
+    }
+}
 

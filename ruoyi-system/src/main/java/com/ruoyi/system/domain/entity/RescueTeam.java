@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain.entity;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -20,6 +21,7 @@ public class RescueTeam {
      * 队伍名称
      */
     @TableField(value = "team_name")
+    @ExcelProperty(value = {})
     private String teamName;
 
     /**

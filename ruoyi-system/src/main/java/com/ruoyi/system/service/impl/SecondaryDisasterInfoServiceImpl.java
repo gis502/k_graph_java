@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.BarrierLakeSituation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.RoadDamage;
 import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
@@ -31,6 +32,9 @@ public class SecondaryDisasterInfoServiceImpl extends
         implements SecondaryDisasterInfoService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private SecondaryDisasterInfoMapper secondaryDisasterInfoMapper;
 
     @Override
     public List<SecondaryDisasterInfo> importExcelSecondaryDisasterInfo(MultipartFile file, String userName, String eqId) throws IOException {
@@ -135,4 +139,10 @@ public class SecondaryDisasterInfoServiceImpl extends
         }
         return true;  // 所有单元格都为空，算作空行
     }
+
+    public List<SecondaryDisasterInfo> SecondaryDisasterInfoByEqId(String eqid) {
+        return secondaryDisasterInfoMapper.SecondaryDisasterInfoByEqId(eqid);
+    }
+
+
 }

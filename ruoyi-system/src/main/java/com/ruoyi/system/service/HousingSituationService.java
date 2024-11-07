@@ -14,6 +14,5 @@ public interface HousingSituationService extends IService<HousingSituation>{
     List<HousingSituation> importExcelHousingSituation(MultipartFile file, String userName, String eqId) throws IOException;
 
 
-
-
+    List<HousingSituation> getHousingSituationById(String eqid);
 }

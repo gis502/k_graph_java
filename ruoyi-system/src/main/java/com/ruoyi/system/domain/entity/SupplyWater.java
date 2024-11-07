@@ -51,7 +51,7 @@ public class SupplyWater {
      * 震区名称
      */
     @TableField(value = "earthquake_area_name")
-    @ExcelProperty({"保障安置供水情况", "震区名称"})
+    @ExcelProperty({"保障安置供水情况", "震区（县/区）"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private String earthquakeAreaName;

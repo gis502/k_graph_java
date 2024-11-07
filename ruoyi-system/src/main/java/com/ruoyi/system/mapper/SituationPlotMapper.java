@@ -10,4 +10,8 @@ import java.util.List;
 @Mapper
 public interface SituationPlotMapper extends BaseMapper<SituationPlot> {
     List<SituationPlot> getPlot(@Param("eqid") String eqid);
+
+    void insertSituationPlots(List<SituationPlot> plotDataList);
+
+    List<SituationPlot> getCheckPlot(@Param("eqid") String eqid);
 }

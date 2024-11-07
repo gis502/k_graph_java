@@ -20,9 +20,10 @@ public class HousingSituationListener implements ReadListener<HousingSituation> 
     private int currentRow = 0;
     private String userName;
     private boolean stopReading = false;
+
     public HousingSituationListener(HousingSituationMapper housingSituationMapper,
-                                        int totalRows,
-                                        String userName) {
+                                    int totalRows,
+                                    String userName) {
         this.housingSituationMapper = housingSituationMapper;
         this.totalRows = totalRows;
         this.userName = userName;
@@ -33,7 +34,7 @@ public class HousingSituationListener implements ReadListener<HousingSituation> 
     public void invoke(HousingSituation data, AnalysisContext analysisContext) {
         System.out.println(data);
         // 检查当前行的第一个单元格
-        if (data.getAffectedAreaName() == null||data.getAffectedAreaName().contains("填写单位")) {
+        if (data.getAffectedAreaName() == null || data.getAffectedAreaName().contains("填写单位")) {
             stopReading = true;
         }
         if (stopReading) {

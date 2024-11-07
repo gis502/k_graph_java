@@ -96,6 +96,7 @@ public class MapperConfig {
 
         //震后生成-灾害现场动态信息-次生/衍生灾害处置信息-地面沉降,地面塌陷
         typeMapping.put("地面塌陷", "groundSettlementSinkhole");
+        typeMapping.put("地面沉降", "groundSettlementSinkhole");
 
         //震后生成-灾害现场动态信息-次生/衍生灾害处置信息-地裂缝
         typeMapping.put("地裂缝", "fissure");
@@ -172,5 +173,4 @@ public class MapperConfig {
         // 添加其他类型的映射
         return typeMapping;
     }
-
 }

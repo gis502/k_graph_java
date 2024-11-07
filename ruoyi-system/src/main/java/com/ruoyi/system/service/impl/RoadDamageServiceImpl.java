@@ -12,7 +12,6 @@ import com.ruoyi.system.listener.RoadDamageListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -169,7 +168,6 @@ public class RoadDamageServiceImpl
         }
         return true;  // 所有单元格都为空，算作空行
     }
-
 
     @Override
     public List<RoadDamage> getRoadRepairsByEqid(String eqid) {
