@@ -9,15 +9,18 @@ import java.util.List;
 
 @Mapper
 public interface HousingSituationMapper extends BaseMapper<HousingSituation> {
-    @Select("WITH RankedRecords AS ( " +
-            "    SELECT h.*, " +
-            "           ROW_NUMBER() OVER (PARTITION BY affected_area_name ORDER BY system_insert_time DESC) AS rn " +
-            "    FROM public.housing_situation h " +
-            "    WHERE h.earthquake_identifier = #{eqid} " +
-            ") " +
-            "SELECT * " +
-            "FROM RankedRecords " +
-            "WHERE rn = 1 " +
-            "ORDER BY affected_area_name")
+    @Select("""
+    SELECT psi.*
+    FROM (
+        SELECT psi.*, 
+               ROW_NUMBER() OVER (
+                   PARTITION BY psi.affected_area_name
+                   ORDER BY psi.submission_deadline DESC, psi.system_insert_time DESC
+               ) AS rn
+        FROM housing_situation psi
+        WHERE psi.earthquake_identifier = #{eqid}
+    ) AS psi
+    WHERE psi.rn = 1
+""")
     List<HousingSituation> selectHousingSituationById(String eqid);
 }

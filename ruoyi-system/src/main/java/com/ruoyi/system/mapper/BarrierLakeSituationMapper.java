@@ -30,6 +30,7 @@ public interface BarrierLakeSituationMapper extends BaseMapper<BarrierLakeSituat
         WHERE
             rn = 1
     """)
+
     List<BarrierLakeSituation> BarrierLakeSituationByEqId(String eqid);
 }
 
