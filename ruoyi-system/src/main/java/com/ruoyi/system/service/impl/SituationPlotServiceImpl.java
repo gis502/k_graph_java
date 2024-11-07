@@ -124,12 +124,13 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                 e.printStackTrace();
             }
         } else {
-            throw new IllegalArgumentException("Unknown plot type: " + plotType);
+            //throw new IllegalArgumentException("Unknown plot type: " + plotType);
+            System.out.println("Unknown plot type: " + plotType);
         }
     }
 
     @Override
-    public void updatePlotDetails(String startTime, String endTime,String plotType, String plotId, Object details) {
+    public void updatePlotDetails(String startTime, String endTime, String plotType, String plotId, Object details) {
         // 打印更新前的 plotId 和 details 信息
         //        System.out.println("Updating plotId: " + plotId);
         //        System.out.println("Updating details: " + details);
@@ -140,8 +141,8 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         situationPlot.setEndTime(LocalDateTime.parse(endTime));
 
         UpdateWrapper<SituationPlot> plotUpdateWrapper = new UpdateWrapper<>();
-        plotUpdateWrapper.eq("plot_id",plotId);
-        situationPlotMapper.update(situationPlot,plotUpdateWrapper);
+        plotUpdateWrapper.eq("plot_id", plotId);
+        situationPlotMapper.update(situationPlot, plotUpdateWrapper);
         // 这里假设 plot 信息的更新是可选的，不需要实际的 plot 对象
         // 如果需要，可以根据实际情况调整
 
@@ -176,7 +177,8 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                 e.printStackTrace();
             }
         } else {
-            throw new IllegalArgumentException("Unknown plot type: " + plotType);
+//            throw new IllegalArgumentException("Unknown plot type: " + plotType);
+            System.out.println("Unknown plot type: " + plotType);
         }
     }
 
@@ -226,9 +228,22 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                 return null;
             }
         } else {
-            throw new IllegalArgumentException("Unknown plot type: " + plotType);
+            try {
+                // 1. 查询 situation_plot 表中的信息
+                QueryWrapper<SituationPlot> plotWrapper = new QueryWrapper<>();
+                plotWrapper.eq("plot_id", plotId);  // 使用 plotId 作为查询条件
+                // 获取 situation_plot 表中的记录
+                SituationPlot plotInfo = situationPlotMapper.selectOne(plotWrapper);
+                System.out.println("Plot Query result: " + plotInfo);
+                Map<String, Object> combinedResult = new HashMap<>();
+                combinedResult.put("plotInfo", plotInfo);
+                return combinedResult;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
+
 
     @Override
     public List<Object> getExcelPlotInfo(List<String> plotTypes, List<String> plotIds) {
@@ -291,7 +306,7 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                 // 获取接口上的泛型参数
                 Type[] genericInterfaces = mapperInterface.getGenericInterfaces();
                 for (Type genericInterface : genericInterfaces) {
-                    if (genericInterface instanceof ParameterizedType ) {
+                    if (genericInterface instanceof ParameterizedType) {
                         ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
                         // 返回泛型中的第一个参数，也就是实体类
                         return (Class<?>) parameterizedType.getActualTypeArguments()[0];

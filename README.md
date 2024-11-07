@@ -30,3 +30,8 @@ D:/App/PostgreSQL/16/bin/pg_dump.exe -h 47.92.216.173 -p 7654 -U postgres -F c -
 --2
 D:/App/PostgreSQL/16/bin/pg_restore.exe -U postgres -d yaan -v "D:\yaan_backup_1728195811573.backup"
 ```
+
+>后端进行部署时的命令
+```shell
+nohup java --add-opens java.base/java.lang=ALL-UNNAMED -jar ruoyi-admin.jar &
+```
