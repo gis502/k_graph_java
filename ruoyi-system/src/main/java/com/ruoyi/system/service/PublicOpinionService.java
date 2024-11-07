@@ -10,5 +10,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface PublicOpinionService extends IService<PublicOpinion> {
+
     List<PublicOpinion> importExcelPublicOpinion(MultipartFile file, String userName, String eqId) throws IOException;
+
+    List<PublicOpinion> getpublicopinion(String eqid);
 }
