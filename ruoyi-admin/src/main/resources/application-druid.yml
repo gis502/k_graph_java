@@ -6,7 +6,7 @@ backup:
     db_name: yaan
     db_user: postgres
     db_password: zhangsan
-    pg_dump_path: D:/PostgreSql/bin/pg_dump.exe
+    pg_dump_path: E:/Environment/PostgreSQL/16/bin/pg_dump.exe
 # 数据源配置
 spring:
     datasource:
