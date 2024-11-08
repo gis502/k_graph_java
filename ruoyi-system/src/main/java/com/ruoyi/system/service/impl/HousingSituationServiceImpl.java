@@ -147,3 +147,4 @@ public class HousingSituationServiceImpl
         return housingSituationMapper.selectHousingSituationById(eqid);
     }
 }
+
