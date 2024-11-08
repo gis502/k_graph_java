@@ -16,7 +16,6 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-
 /**
     * 震后生成-地震灾情信息-房屋情况(用户上传数据)
     */
