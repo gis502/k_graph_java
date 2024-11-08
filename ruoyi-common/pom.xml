@@ -69,6 +69,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.3.0</version>
+        </dependency>
 
         <!-- pagehelper 分页插件 -->
         <dependency>
