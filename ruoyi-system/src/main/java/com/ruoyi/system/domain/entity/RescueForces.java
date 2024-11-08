@@ -125,7 +125,7 @@ public class RescueForces {
     @ExcelProperty({"力量物资资金-救援力量情况统计表", "专业力量：安能、…"})
     @ColumnWidth(30)
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
-    private String professionalForcesCount;
+    private Integer professionalForcesCount;
 
     /**
      * 应急安全生产

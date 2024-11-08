@@ -80,11 +80,10 @@ public class MaterialDonation {
     @ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT) // 设置为左对齐
     private Integer drugsDonationCount;
 
-
+    /*
+     * 系统插入时间
+     * */
     @TableField(value = "system_insert_time")
     private LocalDateTime systemInsertTime;
-
-
-
 
 }

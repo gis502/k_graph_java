@@ -13,4 +13,5 @@ public interface RedCrossDonationsService extends IService<RedCrossDonations> {
     List<RedCrossDonations> importExcelRedCrossDonations(MultipartFile file, String userName, String eqId) throws IOException;
 
 
+    List<RedCrossDonations> RedCrossDonationsByEqId(String eqid);
 }

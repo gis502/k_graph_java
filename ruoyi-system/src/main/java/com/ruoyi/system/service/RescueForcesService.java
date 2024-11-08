@@ -10,4 +10,6 @@ import java.util.List;
 
 public interface RescueForcesService extends IService<RescueForces> {
     List<RescueForces> importExcelRescueForces(MultipartFile file, String userName, String eqId) throws IOException;
+
+    List<RescueForces> RescueForcesByEqId(String eqid);
 }
