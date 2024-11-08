@@ -3,10 +3,12 @@ package com.ruoyi.system.domain.bto;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class PlotBTO {
     private List<Sheet> sheets;
+    private List<Map<String, List<Map<String, Object>>>> excelContent;
 
     @Data
     public static class Sheet { // 使用 static 修饰内部类

@@ -10,4 +10,6 @@ import java.util.List;
 
 public interface DisasterReliefMaterialsService extends IService<DisasterReliefMaterials> {
     List<DisasterReliefMaterials> importExcelDisasterReliefMaterials(MultipartFile file, String userName, String eqId) throws IOException;
+
+    List<DisasterReliefMaterials> DisasterReliefMaterialsByEqId(String eqid);
 }

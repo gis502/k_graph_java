@@ -12,5 +12,5 @@ public interface SecondaryDisasterInfoService extends IService<SecondaryDisaster
 
     List<SecondaryDisasterInfo> importExcelSecondaryDisasterInfo(MultipartFile file, String userName, String eqId) throws IOException;
 
-
+    List<SecondaryDisasterInfo> SecondaryDisasterInfoByEqId(String eqid);
 }

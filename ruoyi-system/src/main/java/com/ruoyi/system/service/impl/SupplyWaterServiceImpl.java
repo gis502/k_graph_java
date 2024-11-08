@@ -37,67 +37,6 @@ public class SupplyWaterServiceImpl
     @Resource
     private SupplyWaterMapper supplyWaterMapper;
 
-    /**
-     * @param requestBTO
-     * @return
-     */
-    @Override
-    public IPage<SupplyWater> getPage(RequestBTO requestBTO) {
-        String requestParam = requestBTO.getRequestParams();
-        Page<SupplyWater> supplyWaterPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
-        LambdaQueryWrapper<SupplyWater> wrapper = Wrappers.lambdaQuery(SupplyWater.class)
-                .like(SupplyWater::getEarthquakeName, requestParam);
-        return this.page(supplyWaterPage, wrapper);
-    }
-
-    /**
-     * @param requestBTO
-     * @return
-     */
-    @Override
-    public List<SupplyWater> exportExcelGetData(RequestBTO requestBTO) {
-        String[] ids = requestBTO.getIds();
-        List<SupplyWater> list;
-        if (ids == null || ids.length == 0) {
-            list = this.list().stream()
-                    .sorted(Comparator.comparing(SupplyWater::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
-                            .reversed()).collect(Collectors.toList());
-        } else {
-            list = this.listByIds(Arrays.asList(ids));
-        }
-        return list;
-    }
-
-
-    /**
-     * @param idsList
-     * @return
-     */
-    @Override
-    public String deleteData(List<Map<String, Object>> idsList) {
-        // 假设所有的 ids 都在每个 Map 中的 "uuid" 键下，提取所有的 ids
-        List<String> ids = new ArrayList<>();
-
-        // 遍历 requestBTO 列表，提取每个 Map 中的 "uuid" 键的值
-        for (Map<String, Object> entry : idsList) {
-            if (entry.containsKey("uuid")) {
-                // 获取 "uuid" 并转换为 String 类型
-                String uuid = (String) entry.get("uuid");
-                ids.add(uuid);
-            }
-        }
-
-        // 判断是否有 ids
-        if (ids.isEmpty()) {
-            return "没有提供要删除的 UUID 列表";
-        }
-
-        // 使用 removeByIds 方法批量删除
-        this.removeByIds(ids);
-
-        return "删除成功";
-    }
-
     @Override
     public List<SupplyWater> importExcelSupplyWater(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();

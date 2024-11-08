@@ -13,7 +13,6 @@ import com.ruoyi.system.config.MapperConfig;
 import com.ruoyi.system.config.PlotConfig;
 import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.system.domain.bto.PlotBTO;
-import com.ruoyi.system.domain.bto.PlotRequestBTO;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.domain.handler.ExcelConverter;
@@ -179,58 +178,10 @@ public class ExcelController {
         }
     }
 
-    @PostMapping("/exportPlotExcel")
-    @Log(title = "标绘数据导出", businessType = BusinessType.EXPORT)
-    public void exportPlotExcel(HttpServletResponse response, @RequestBody PlotRequestBTO plotRequestBTO) throws IOException {
-        try {
-            // 设置响应头
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setCharacterEncoding("utf-8");
-            String fileName = URLEncoder.encode(plotRequestBTO.getFileName(), "UTF-8").replaceAll("\\+", "%20");
-            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-
-            // 准备数据用于写入 Excel
-            List<List<Object>> excelDataList = new ArrayList<>();
-
-            // 添加eqTitle作为第一行
-            List<Object> titleRow = Collections.singletonList(plotRequestBTO.getEqTitle());
-            excelDataList.add(titleRow);
-
-            // 动态添加表头
-            List<Object> headerRow = Arrays.stream(plotRequestBTO.getFields())
-                    .collect(Collectors.toList());
-            excelDataList.add(headerRow);
-
-            // 添加数据行
-            for (Map<String, Object> data : plotRequestBTO.getHeadersAndContent()) {
-                List<Object> row = new ArrayList<>();
-                for (String field : plotRequestBTO.getFields()) {
-                    // 根据传入的字段动态获取数据
-                    row.add(data.get(field));
-                }
-                excelDataList.add(row);
-            }
-
-            // 使用 EasyExcel 导出数据
-            EasyExcel.write(response.getOutputStream())
-                    .sheet("点：正在参与队伍")
-                    .registerWriteHandler(new ExcelConverter(0, 0, plotRequestBTO.getFields().length - 1)) // 第0行合并所有列
-                    .doWrite(excelDataList);
-
-            // 刷新和关闭输出流
-            response.getOutputStream().flush();
-            response.getOutputStream().close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            // 返回错误信息
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "导出失败: " + e.getMessage());
-        }
-    }
-
     @PostMapping("/downloadPlotExcel")
-    @Log(title = "下载标绘数据Excel模版", businessType = BusinessType.EXPORT)
+    @Log(title = "下载标绘数据Excel模板", businessType = BusinessType.EXPORT)
     public void downloadPlotExcel(HttpServletResponse response, @RequestBody PlotBTO plotBTO) throws IOException {
+        System.out.println("导入的模板与导出的数据：" + plotBTO);
         try {
             // 设置响应头
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -244,31 +195,74 @@ public class ExcelController {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ExcelWriter excelWriter = EasyExcel.write(outputStream).build();
 
-            // 遍历每个 sheet
-            for (PlotBTO.Sheet sheet : plotBTO.getSheets()) {
-                // 准备每个 sheet 的数据
-                List<List<Object>> excelDataList = new ArrayList<>();
-                List<Object> headerRow = new ArrayList<>();
+            // 判断plotBTO里的excelContent是否为空
+            if (plotBTO.getExcelContent() != null && !plotBTO.getExcelContent().isEmpty()) {
+                System.out.println("excelContent 不为 null 或空列表");
 
-                // 添加表头
-                for (PlotBTO.Field field : sheet.getFields()) {
-                    headerRow.add(field.getName());
+                // 遍历每个 sheet
+                for (PlotBTO.Sheet sheet : plotBTO.getSheets()) {
+                    // 准备每个 sheet 的数据
+                    List<List<Object>> excelDataList = new ArrayList<>();
+                    List<Object> headerRow = new ArrayList<>();
+
+                    // 添加表头
+                    for (PlotBTO.Field field : sheet.getFields()) {
+                        headerRow.add(field.getName());
+                    }
+                    excelDataList.add(headerRow);
+
+                    // 在这里根据excelContent中的数据进行填充
+
+                    for (Map<String, List<Map<String, Object>>> contentMap : plotBTO.getExcelContent()) {
+                        // 这里假设 contentMap 的 key 就是 sheet 的 name
+                        if (contentMap.containsKey(sheet.getName())) {
+                            List<Map<String, Object>> contentList = contentMap.get(sheet.getName());
+
+                            // 遍历该 sheet 对应的内容列表
+                            for (Map<String, Object> content : contentList) {
+                                List<Object> dataRow = new ArrayList<>();
+                                // 填充每一行的数据
+                                for (PlotBTO.Field field : sheet.getFields()) {
+                                    Object value = content.get(field.getName());
+                                    dataRow.add(value != null ? value : ""); // 如果值为 null，则填充空字符串
+                                }
+                                excelDataList.add(dataRow);
+                            }
+                        }
+                    }
+
+                    // 将数据写入当前 sheet
+                    WriteSheet writeSheet = EasyExcel.writerSheet(sheet.getName()).build();
+                    excelWriter.write(excelDataList, writeSheet);
                 }
-                excelDataList.add(headerRow);
+                excelWriter.finish();
+            } else {
+                // 遍历每个 sheet
+                for (PlotBTO.Sheet sheet : plotBTO.getSheets()) {
+                    // 准备每个 sheet 的数据
+                    List<List<Object>> excelDataList = new ArrayList<>();
+                    List<Object> headerRow = new ArrayList<>();
 
-                // 添加100行空行
-                for (int i = 0; i < 100; i++) {
-                    List<Object> emptyRow = Collections.nCopies(headerRow.size(), ""); // 创建与表头列数相同的空行
-                    excelDataList.add(emptyRow);
+                    // 添加表头
+                    for (PlotBTO.Field field : sheet.getFields()) {
+                        headerRow.add(field.getName());
+                    }
+                    excelDataList.add(headerRow);
+
+                    // 添加100行空行
+                    for (int i = 0; i < 100; i++) {
+                        List<Object> emptyRow = Collections.nCopies(headerRow.size(), ""); // 创建与表头列数相同的空行
+                        excelDataList.add(emptyRow);
+                    }
+
+                    // 将数据写入当前 sheet
+                    WriteSheet writeSheet = EasyExcel.writerSheet(sheet.getName()).build();
+                    excelWriter.write(excelDataList, writeSheet);
                 }
 
-                // 将数据写入当前 sheet
-                WriteSheet writeSheet = EasyExcel.writerSheet(sheet.getName()).build();
-                excelWriter.write(excelDataList, writeSheet);
+                // 完成 EasyExcel 写入
+                excelWriter.finish();
             }
-
-            // 完成 EasyExcel 写入
-            excelWriter.finish();
 
             // 使用 Apache POI 添加下拉框
             try (Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(outputStream.toByteArray()))) {
@@ -608,8 +602,7 @@ public class ExcelController {
         // 联系电话的科学计数法格式改成正常字符串
         List<String> updatedPlotProperty = convertContactPhones(plotProperty);
 
-        situationPlotService.savePlotDataList(plotDataList);
-        situationPlotService.savePlotProperty(updatedPlotProperty);
+        situationPlotService.savePlotDataAndProperties(plotDataList, updatedPlotProperty);
 
         return R.ok("导入成功");
     }
@@ -620,6 +613,5 @@ public class ExcelController {
         List<Map<String, Object>> idsList = (List<Map<String, Object>>) requestBTO.get("ids");
         return AjaxResult.success(dataExportStrategyContext.getStrategy((String) requestBTO.get("flag")).deleteData(idsList));
     }
-
 }
 

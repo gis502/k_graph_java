@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.MaterialDonation;
 import com.ruoyi.system.listener.MaterialDonationListener;
@@ -30,6 +31,9 @@ public class MaterialDonationServiceImpl extends
         implements MaterialDonationService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private MaterialDonationMapper materialDonationMapper;
 
     @Override
     public List<MaterialDonation> importExcelMaterialDonation(MultipartFile file, String userName, String eqId) throws IOException, IOException {
@@ -133,5 +137,10 @@ public class MaterialDonationServiceImpl extends
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    @Override
+    public List<MaterialDonation> MaterialDonationByEqId(String eqid) {
+        return materialDonationMapper.MaterialDonationEqId(eqid);
     }
 }
