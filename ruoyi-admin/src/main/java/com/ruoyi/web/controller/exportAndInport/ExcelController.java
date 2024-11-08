@@ -5,6 +5,7 @@ import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
@@ -161,6 +162,10 @@ public class ExcelController {
     @PostMapping("/searchData")
     public AjaxResult searchData(@RequestBody RequestBTO requestBTO) {
 
+        if (requestBTO == null){
+            return AjaxResult.error(MessageConstants.PARAMS_ISNULL);
+        }
+
         switch (requestBTO.getFlag()) {
             case "AfterSeismicInformation":
                 return AjaxResult.success(afterSeismicInformationServiceImpl.searchData(requestBTO));
@@ -168,7 +173,7 @@ public class ExcelController {
                 return AjaxResult.success(aftershockInformationServiceImpl.searchData(requestBTO));
 
             default:
-                return AjaxResult.error("搜索失败");
+                return AjaxResult.error(MessageConstants.SEARCH_Failed);
         }
     }
 

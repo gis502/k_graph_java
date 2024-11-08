@@ -22,7 +22,7 @@ public class News {
      * 序号
      */
     @TableId(value = "id", type = IdType.NONE)
-    private Object id;
+    private String id;
 
     /**
      * 新闻网址
