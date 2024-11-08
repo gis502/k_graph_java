@@ -136,9 +136,9 @@ public class SecondaryDisasterInfoServiceImpl extends
         LambdaQueryWrapper<SecondaryDisasterInfo> queryWrapper = Wrappers.lambdaQuery(SecondaryDisasterInfo.class)
 
                 .or().like(SecondaryDisasterInfo::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(SecondaryDisasterInfo::getAffectedArea, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(SecondaryDisasterInfo::getHazardPoints, requestParams) // 隐患点（处）
                 .or().like(SecondaryDisasterInfo::getThreatenedAreasSecondary, requestParams) // 受威胁地区（乡镇、村）
                 .or().like(SecondaryDisasterInfo::getThreatenedPopulationSecondary, requestParams) // 受威胁群众（户或人）
