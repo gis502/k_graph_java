@@ -390,7 +390,8 @@ public class ExcelController {
     }
 
     @PostMapping("/getExcelUploadByTime")
-    public R getExcelUploadByTime(@RequestParam("time") String time, @RequestParam("requestParams") String requestParams, @RequestParam("username") String username) {
+    public R getExcelUploadByTime(@RequestParam("time") String time, @RequestParam("requestParams") String
+            requestParams, @RequestParam("username") String username) {
         List<SysOperLog> message = null;
         switch (time) {
             case "今日":
@@ -415,7 +416,9 @@ public class ExcelController {
 
     @PostMapping("/importExcel/{userName}&{filename}&{eqId}")
     @Log(title = "导入数据", businessType = BusinessType.IMPORT)
-    public R getAfterShockStatistics(@RequestParam("file") MultipartFile file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String filename, @PathVariable(value = "eqId") String eqId) throws IOException {
+    public R getAfterShockStatistics(@RequestParam("file") MultipartFile
+                                             file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String
+                                             filename, @PathVariable(value = "eqId") String eqId) throws IOException {
         try {
             if (filename.equals("震情伤亡-震情灾情统计表")) {
                 List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName, eqId);

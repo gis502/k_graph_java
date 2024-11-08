@@ -1,18 +1,14 @@
 package com.ruoyi.web.controller.system;
 
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.dto.PlotRequest;
 import com.ruoyi.system.domain.entity.SituationPlot;
 import com.ruoyi.system.service.SituationPlotService;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.enums.BusinessType;
-
 
 import java.util.Collections;
 import java.util.List;
@@ -46,11 +42,10 @@ public class SituationPlotController {
         System.out.println("Plot: " + plot);
         System.out.println("Plot Info: " + plotInfo);
         situationPlotService.save(plot);
-        if (requestBody.getPlotinfo() != null) {
+        if (requestBody.getPlotinfo().size() > 1) {
             // 调用 service 层的 addPlot 方法
             situationPlotService.addPlot(plot.getPlotType(), plotInfo);
             return ResponseEntity.ok("Plot added successfully");
-
         } else {
             return ResponseEntity.ok("Plot added successfully");
         }

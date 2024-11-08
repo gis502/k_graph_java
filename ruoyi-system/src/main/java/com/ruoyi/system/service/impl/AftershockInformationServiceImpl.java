@@ -229,13 +229,13 @@ public class AftershockInformationServiceImpl extends
 
         String requestParams = requestBTO.getRequestParams();
         LambdaQueryWrapper<AftershockInformation> queryWrapper = Wrappers.lambdaQuery(AftershockInformation.class)
+                .or().like(AftershockInformation::getEarthquakeName, requestParams)
+                .or().like(AftershockInformation::getMagnitude, requestParams)
+                .or().like(AftershockInformation::getAffectedArea, requestParams)
+                .or().like(AftershockInformation::getSubmissionDeadline, requestParams)
+                .or().apply("to_char(earthquake_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                .or().apply("to_char(submission_deadline, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
 
-                .or().like(AftershockInformation::getEarthquakeName, requestParams)     // 地震名称
-                .or().like(AftershockInformation::getEarthquakeTime, requestParams)       // 地震震区
-                .or().like(AftershockInformation::getMagnitude, requestParams)       // 地震震区
-                .or().like(AftershockInformation::getAffectedArea, requestParams)       // 地震震区
-
-                .or().like(AftershockInformation::getSubmissionDeadline, requestParams); // 余震分布
 
         return baseMapper.selectPage(aftershockInformationPage, queryWrapper);
     }
