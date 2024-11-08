@@ -122,9 +122,9 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
         LambdaQueryWrapper<CommunicationFacilityDamageRepairStatus> queryWrapper = Wrappers.lambdaQuery(CommunicationFacilityDamageRepairStatus.class)
 
                 .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeName, requestParams) // 地震名称
-                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParams) // 震区（县/区）
-                .or().like(CommunicationFacilityDamageRepairStatus::getReportingDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(CommunicationFacilityDamageRepairStatus::getTotalDisabledBaseStations, requestParams) // 累计退服基站（个）
                 .or().like(CommunicationFacilityDamageRepairStatus::getRestoredBaseStations, requestParams) // 抢通恢复基站（个）
                 .or().like(CommunicationFacilityDamageRepairStatus::getCurrentDisabledBaseStations, requestParams) // 目前退服基站（个）

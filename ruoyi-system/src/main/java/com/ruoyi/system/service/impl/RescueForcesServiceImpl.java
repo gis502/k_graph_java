@@ -153,9 +153,9 @@ public class RescueForcesServiceImpl extends
         LambdaQueryWrapper<RescueForces> queryWrapper = Wrappers.lambdaQuery(RescueForces.class)
 
                 .or().like(RescueForces::getEarthquakeName, requestParams) // 地震名称
-                .or().like(RescueForces::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(RescueForces::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(RescueForces::getSubmissionDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(RescueForces::getPlaCount, requestParams) // 解放军
                 .or().like(RescueForces::getArmedPoliceCount, requestParams) // 武警数量
                 .or().like(RescueForces::getMilitiaCount, requestParams) // 民兵

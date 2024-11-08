@@ -141,9 +141,9 @@ public class HousingSituationServiceImpl
         LambdaQueryWrapper<HousingSituation> queryWrapper = Wrappers.lambdaQuery(HousingSituation.class)
 
                 .or().like(HousingSituation::getEarthquakeName, requestParams) // 地震名称
-                .or().like(HousingSituation::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(HousingSituation::getAffectedAreaName, requestParams) // 震区（县/区）
-                .or().like(HousingSituation::getSubmissionDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(HousingSituation::getCurrentlyDamaged, requestParams) // 目前受损
                 .or().like(HousingSituation::getCurrentlyDisabled, requestParams) // 目前禁用
                 .or().like(HousingSituation::getCurrentlyRestricted, requestParams) // 目前限用

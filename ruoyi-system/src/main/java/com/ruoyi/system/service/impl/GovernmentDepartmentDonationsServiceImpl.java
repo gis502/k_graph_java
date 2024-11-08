@@ -135,9 +135,9 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
         LambdaQueryWrapper<GovernmentDepartmentDonations> queryWrapper = Wrappers.lambdaQuery(GovernmentDepartmentDonations.class)
 
                 .or().like(GovernmentDepartmentDonations::getEarthquakeName, requestParams) // 地震名称
-                .or().like(GovernmentDepartmentDonations::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(GovernmentDepartmentDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(GovernmentDepartmentDonations::getSubmissionDeadline, requestParams) // 填报截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(GovernmentDepartmentDonations::getTodayAmount, requestParams) // 当日
                 .or().like(GovernmentDepartmentDonations::getDonationAmount, requestParams); // 累计
 

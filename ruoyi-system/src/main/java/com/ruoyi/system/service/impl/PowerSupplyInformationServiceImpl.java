@@ -137,9 +137,9 @@ public class PowerSupplyInformationServiceImpl
         LambdaQueryWrapper<PowerSupplyInformation> queryWrapper = Wrappers.lambdaQuery(PowerSupplyInformation.class)
 
                 .or().like(PowerSupplyInformation::getEarthquakeName, requestParams) // 地震名称
-                .or().like(PowerSupplyInformation::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(PowerSupplyInformation::getAffectedArea, requestParams) // 震区（县/区）
-                .or().like(PowerSupplyInformation::getReportingDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(PowerSupplyInformation::getTotalOutOfServiceSubstations, requestParams) // 累计停运变（发）电站（座）
                 .or().like(PowerSupplyInformation::getRestoredSubstations, requestParams) // 已恢复变（发）电站（座）
                 .or().like(PowerSupplyInformation::getToBeRepairedSubstations, requestParams) // 待修复变（发）电站（座）

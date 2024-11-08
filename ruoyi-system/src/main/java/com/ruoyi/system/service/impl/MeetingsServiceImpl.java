@@ -105,10 +105,10 @@ public class MeetingsServiceImpl
         LambdaQueryWrapper<Meetings> queryWrapper = Wrappers.lambdaQuery(Meetings.class)
 
                 .or().like(Meetings::getEarthquakeName, requestParams) // 地震名称
-                .or().like(Meetings::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(Meetings::getMagnitude, requestParams) // 震级
                 .or().like(Meetings::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(Meetings::getReportDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(Meetings::getMeetingCount, requestParams) // 会议（场）
                 .or().like(Meetings::getActivityCount, requestParams) // 活动（场）
                 .or().like(Meetings::getBriefReportCount, requestParams) // 印发简报（份）

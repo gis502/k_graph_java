@@ -139,9 +139,9 @@ public class SupplySituationServiceImpl
         LambdaQueryWrapper<SupplySituation> queryWrapper = Wrappers.lambdaQuery(SupplySituation.class)
 
                 .or().like(SupplySituation::getEarthquakeName, requestParams) // 地震名称
-                .or().like(SupplySituation::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(SupplySituation::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(SupplySituation::getReportDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(SupplySituation::getCentralizedWaterProjectDamage, requestParams); // 集中供水工程受损（处）
 
         return baseMapper.selectPage(supplySituationPage, queryWrapper);

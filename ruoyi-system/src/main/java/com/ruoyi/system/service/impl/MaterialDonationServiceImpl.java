@@ -139,9 +139,9 @@ public class MaterialDonationServiceImpl extends
         LambdaQueryWrapper<MaterialDonation> queryWrapper = Wrappers.lambdaQuery(MaterialDonation.class)
 
                 .or().like(MaterialDonation::getEarthquakeName, requestParams) // 地震名称
-                .or().like(MaterialDonation::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(MaterialDonation::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(MaterialDonation::getReportDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(MaterialDonation::getMaterialDonationCount, requestParams) // 捐赠物资(万件)
                 .or().like(MaterialDonation::getDrugsDonationCount, requestParams); // 药品（箱）
 

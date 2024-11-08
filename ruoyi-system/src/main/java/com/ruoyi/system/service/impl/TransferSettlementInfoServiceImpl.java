@@ -187,10 +187,10 @@ public class TransferSettlementInfoServiceImpl
         LambdaQueryWrapper<TransferSettlementInfo> queryWrapper = Wrappers.lambdaQuery(TransferSettlementInfo.class)
 
                 .or().like(TransferSettlementInfo::getEarthquakeName, requestParams) // 地震名称
-                .or().like(TransferSettlementInfo::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(TransferSettlementInfo::getMagnitude, requestParams) // 震级
                 .or().like(TransferSettlementInfo::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(TransferSettlementInfo::getReportingDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(TransferSettlementInfo::getNewlyTransferred, requestParams) // 新增转移安置（人）
                 .or().like(TransferSettlementInfo::getCumulativeTransferred, requestParams) // 累计转移安置（人）
                 .or().like(TransferSettlementInfo::getCentralizedSettlement, requestParams) // 集中安置（人）

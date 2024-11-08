@@ -120,9 +120,9 @@ public class RoadDamageServiceImpl
         String requestParams = requestBTO.getRequestParams();
         LambdaQueryWrapper<RoadDamage> queryWrapper = Wrappers.lambdaQuery(RoadDamage.class)
                 .or().like(RoadDamage::getEarthquakeName, requestParams) // 地震名称
-                .or().like(RoadDamage::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(RoadDamage::getAffectedArea, requestParams) // 震区（县/区）
-                .or().like(RoadDamage::getReportingDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(RoadDamage::getHighwaysNationalRoads, requestParams) // 高速公路及国道
                 .or().like(RoadDamage::getProvincialRoads, requestParams) // 省道
                 .or().like(RoadDamage::getVillagesWithRoadClosures, requestParams) // 目前道路中断村

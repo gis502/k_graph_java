@@ -140,9 +140,9 @@ public class SupplyWaterServiceImpl
         LambdaQueryWrapper<SupplyWater> queryWrapper = Wrappers.lambdaQuery(SupplyWater.class)
 
                 .or().like(SupplyWater::getEarthquakeName, requestParams) // 地震名称
-                .or().like(SupplyWater::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(SupplyWater::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(SupplyWater::getReportDeadline, requestParams) // 统计截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(SupplyWater::getWaterSupplyPoints, requestParams); // 保障安置点供水（处）
 
         return baseMapper.selectPage(supplyWaterPage, queryWrapper);

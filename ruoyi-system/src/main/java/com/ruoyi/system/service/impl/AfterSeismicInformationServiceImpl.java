@@ -88,13 +88,12 @@ public class AfterSeismicInformationServiceImpl extends
 
         String requestParams = requestBTO.getRequestParams();
         LambdaQueryWrapper<AfterSeismicInformation> queryWrapper = Wrappers.lambdaQuery(AfterSeismicInformation.class)
-                .like(AfterSeismicInformation::getEarthquakeIdentifier, requestParams)
-                .or().like(AfterSeismicInformation::getEarthquakeName, requestParams)
+                .like(AfterSeismicInformation::getEarthquakeName, requestParams)
                 .or().like(AfterSeismicInformation::getAffectedCountyDistrict, requestParams)
                 .or().like(AfterSeismicInformation::getAffectedPopulation, requestParams)
                 .or().like(AfterSeismicInformation::getMagnitude, requestParams)
-                .or().apply("to_char(earthquake_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
-                .or().apply("to_char(submission_deadline, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(afterSeismicInformationPage, queryWrapper);
     }

@@ -140,9 +140,9 @@ public class CharityOrganizationDonationsServiceImpl extends
         LambdaQueryWrapper<CharityOrganizationDonations> queryWrapper = Wrappers.lambdaQuery(CharityOrganizationDonations.class)
 
                 .or().like(CharityOrganizationDonations::getEarthquakeName, requestParams) // 地震名称
-                .or().like(CharityOrganizationDonations::getEarthquakeTime, requestParams) // 地震时间
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(CharityOrganizationDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(CharityOrganizationDonations::getSubmissionDeadline, requestParams) // 填报截止时间
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
                 .or().like(CharityOrganizationDonations::getTodayAmount, requestParams) // 当日
                 .or().like(CharityOrganizationDonations::getDonationAmount, requestParams); // 累计
 
