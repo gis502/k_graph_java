@@ -153,6 +153,24 @@ public class EmergencyResourcesController {
         return disasterReliefSuppliesService.list();
     }
 
+    //应急物资储备页面--增加功能
+    @PostMapping("/addDisasterReserves")
+    public boolean addDisasterReserves(@RequestBody DisasterReliefSupplies disasterReliefSupplies) {
+        return disasterReliefSuppliesService.save(disasterReliefSupplies);
+    }
+
+    //应急物资储备页面--删除功能
+    @DeleteMapping("/deleteDisasterReserves/{uuid}")
+    public boolean deleteDisasterReserves(@PathVariable Long uuid) {
+        return disasterReliefSuppliesService.removeById(uuid);
+    }
+
+    //应急物资储备页面--修改功能
+    @PutMapping("/updateDisasterReserves")
+    public boolean updateDisasterReserves(@RequestBody DisasterReliefSupplies disasterReliefSupplies) {
+        return disasterReliefSuppliesService.updateById(disasterReliefSupplies);
+    }
+
     //    应急物资储备页面--搜索功能 介绍：<县(区)、地址、联系人、联系电话>搜索具体的内容；<合计总件套数、救灾帐篷(顶)、棉被(床)>等等数量字段，仅搜索字段名且字段数据数量>0
     @PostMapping("/searchDisasterReserves")
     public List<DisasterReliefSupplies> searchDisasterReserves(@RequestParam("inputData") String inputData) {
@@ -218,6 +236,25 @@ public class EmergencyResourcesController {
         return rescueTeamsInfoService.list();
     }
 
+    //救援队伍页面--增加功能
+    @PostMapping("/addEmergencyTeam")
+    public boolean addEmergencyTeam(@RequestBody RescueTeamsInfo rescueTeamInfo) {
+        return rescueTeamsInfoService.save(rescueTeamInfo);
+    }
+
+    //救援队伍页面--删除功能
+    @DeleteMapping("/deleteEmergencyTeam/{uuid}")
+    public boolean deleteEmergencyTeam(@PathVariable Long uuid) {
+        return rescueTeamsInfoService.removeById(uuid);
+    }
+
+    //救援队伍页面--修改功能
+    @PutMapping("/updateEmergencyTeam")
+    public boolean updateEmergencyTeam(@RequestBody RescueTeamsInfo rescueTeamInfo) {
+        return rescueTeamsInfoService.updateById(rescueTeamInfo);
+    }
+
+
     //    救援队伍页面--搜索功能 介绍：<级别名称、地址、负责人、负责人电话、数据来源、组织结构、队伍类型名称>等等搜索具体的内容；<总人数>数量字段，仅搜索字段名且字段数据数量>0
     @PostMapping("/searchEmergencyTeam")
     public List<RescueTeamsInfo> searchEmergencyTeam(@RequestParam("inputData") String inputData) {
@@ -275,6 +312,26 @@ public class EmergencyResourcesController {
     public List<EmergencyShelters> sheltersList() {
         return emergencySheltersService.list();
     }
+
+    //    避难场所页面--增加功能
+    @PostMapping("/addEmergencyShelters")
+    public boolean addEmergencyShelters(@RequestBody EmergencyShelters emergencyShelters) {
+        return emergencySheltersService.save(emergencyShelters);
+    }
+
+
+    //救援队伍页面--删除功能
+    @DeleteMapping("/deleteEmergencyShelters/{uuid}")
+    public boolean deleteEmergencyShelters(@PathVariable Long uuid) {
+        return emergencySheltersService.removeById(uuid);
+    }
+
+    //救援队伍页面--修改功能
+    @PutMapping("/updateEmergencyShelters")
+    public boolean updateEmergencyShelters(@RequestBody EmergencyShelters emergencyShelters) {
+        return emergencySheltersService.updateById(emergencyShelters);
+    }
+
 
     //    避难场所页面--搜索功能 介绍：<名字、地址、负责人、负责人电话、数据来源>等等搜索具体的内容；<容纳人数>数量字段，仅搜索字段名且字段数据数量>0
     @PostMapping("/searchEmergencyShelters")
