@@ -6,7 +6,7 @@ backup:
     db_name: yaan
     db_user: postgres
     db_password: zhangsan
-    pg_dump_path: D:/PostgreSql/bin/pg_dump.exe
+    pg_dump_path: E:/Environment/PostgreSQL/16/bin/pg_dump.exe
 # 数据源配置
 spring:
     datasource:
@@ -14,24 +14,24 @@ spring:
         driverClassName: org.postgresql.Driver
         druid:
 #             主库数据源
-            master:
-                 url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-                 username: postgres
-                 password: zhangsan
 #            master:
-#                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-#                username: postgres
-#                password: 123456
+#                 url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+#                 username: postgres
+#                 password: zhangsan
+            master:
+                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+                username: postgres
+                password: 1234
             # 从库数据源
-            slave:
-#                enabled: true
-#                url: jdbc:postgresql://47.92.216.173:7655/ruoyi?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-#                username: postgres
-#                password: zhangsan
-                 enabled: true
-                 url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-                 username: postgres
-                 password: 123456
+#            slave:
+##                enabled: true
+##                url: jdbc:postgresql://47.92.216.173:7655/ruoyi?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+##                username: postgres
+##                password: zhangsan
+#                 enabled: true
+#                 url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+#                 username: postgres
+#                 password: 123456
             # 初始连接数
             initialSize: 5
             # 最小连接池数量

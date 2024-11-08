@@ -6,6 +6,7 @@ import com.alibaba.excel.write.metadata.WriteSheet;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
@@ -150,10 +151,36 @@ public class ExcelController {
     @Resource
     private MaterialDonationServiceImpl materialDonationService;
 
+
+    /**
+     * 搜索
+     *
+     * @param requestBTO 查询参数
+     * @return AjaxResult
+     */
+    @PostMapping("/searchData")
+    public AjaxResult searchData(@RequestBody RequestBTO requestBTO) {
+
+        if (requestBTO == null){
+            return AjaxResult.error(MessageConstants.PARAMS_ISNULL);
+        }
+
+        switch (requestBTO.getFlag()) {
+            case "AfterSeismicInformation":
+                return AjaxResult.success(afterSeismicInformationServiceImpl.searchData(requestBTO));
+            case "AftershockInformation":
+                return AjaxResult.success(aftershockInformationServiceImpl.searchData(requestBTO));
+
+            default:
+                return AjaxResult.error(MessageConstants.SEARCH_Failed);
+        }
+    }
+
+
+
     @PostMapping("/getData")
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
         return AjaxResult.success(dataExportStrategyContext.getStrategy(requestBTO.getFlag()).getPage(requestBTO));
-
     }
 
     @PostMapping("/exportExcel")
@@ -319,7 +346,8 @@ public class ExcelController {
     }
 
     @PostMapping("/getExcelUploadByTime")
-    public R getExcelUploadByTime(@RequestParam("time") String time, @RequestParam("requestParams") String requestParams, @RequestParam("username") String username) {
+    public R getExcelUploadByTime(@RequestParam("time") String time, @RequestParam("requestParams") String
+            requestParams, @RequestParam("username") String username) {
         List<SysOperLog> message = null;
         switch (time) {
             case "今日":
@@ -344,7 +372,9 @@ public class ExcelController {
 
     @PostMapping("/importExcel/{userName}&{filename}&{eqId}")
     @Log(title = "导入数据", businessType = BusinessType.IMPORT)
-    public R getAfterShockStatistics(@RequestParam("file") MultipartFile file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String filename, @PathVariable(value = "eqId") String eqId) throws IOException {
+    public R getAfterShockStatistics(@RequestParam("file") MultipartFile
+                                             file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String
+                                             filename, @PathVariable(value = "eqId") String eqId) throws IOException {
         try {
             if (filename.equals("震情伤亡-震情灾情统计表")) {
                 List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName, eqId);
