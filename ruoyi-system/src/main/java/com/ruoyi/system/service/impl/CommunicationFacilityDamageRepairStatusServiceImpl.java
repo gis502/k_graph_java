@@ -119,13 +119,20 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
         Page<CommunicationFacilityDamageRepairStatus> communicationFacilityDamageRepairStatusPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<CommunicationFacilityDamageRepairStatus> queryWrapper = Wrappers.lambdaQuery(CommunicationFacilityDamageRepairStatus.class)
 
-                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParams) // 震区（县/区）
-                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CommunicationFacilityDamageRepairStatus::getCurrentInterruptedVillagesCount, requestParams); // 目前通信中断村
+                .eq(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .like(CommunicationFacilityDamageRepairStatus::getEarthquakeName, requestParams) // 地震名称
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParams) // 震区（县/区）
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .like(CommunicationFacilityDamageRepairStatus::getCurrentInterruptedVillagesCount, requestParams); // 目前通信中断村
+
         return baseMapper.selectPage(communicationFacilityDamageRepairStatusPage, queryWrapper);
     }
 

@@ -136,12 +136,17 @@ public class SupplySituationServiceImpl
         Page<SupplySituation> supplySituationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<SupplySituation> queryWrapper = Wrappers.lambdaQuery(SupplySituation.class)
 
-                .or().like(SupplySituation::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(SupplySituation::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+                .eq(SupplySituation::getEarthquakeId, eqId)
+                .like(SupplySituation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(SupplySituation::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(SupplySituation::getEarthquakeId, eqId)
+                .like(SupplySituation::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(SupplySituation::getEarthquakeId, eqId)
+                .apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(supplySituationPage, queryWrapper);
     }

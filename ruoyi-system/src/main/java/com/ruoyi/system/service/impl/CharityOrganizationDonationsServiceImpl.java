@@ -137,12 +137,17 @@ public class CharityOrganizationDonationsServiceImpl extends
         Page<CharityOrganizationDonations> charityOrganizationDonationsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<CharityOrganizationDonations> queryWrapper = Wrappers.lambdaQuery(CharityOrganizationDonations.class)
 
-                .or().like(CharityOrganizationDonations::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CharityOrganizationDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+                .eq(CharityOrganizationDonations::getEarthquakeId, eqId)
+                .like(CharityOrganizationDonations::getEarthquakeName, requestParams) // 地震名称
+                .or().like(CharityOrganizationDonations::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(CharityOrganizationDonations::getEarthquakeId, eqId)
+                .like(CharityOrganizationDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(CharityOrganizationDonations::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
 
         return baseMapper.selectPage(charityOrganizationDonationsPage, queryWrapper);

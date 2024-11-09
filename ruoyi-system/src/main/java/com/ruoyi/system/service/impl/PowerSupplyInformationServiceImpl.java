@@ -134,13 +134,19 @@ public class PowerSupplyInformationServiceImpl
         Page<PowerSupplyInformation> powerSupplyInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<PowerSupplyInformation> queryWrapper = Wrappers.lambdaQuery(PowerSupplyInformation.class)
 
-                .or().like(PowerSupplyInformation::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(PowerSupplyInformation::getAffectedArea, requestParams) // 震区（县/区）
-                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, requestParams); // 目前主网供电中断村
+                .eq(PowerSupplyInformation::getEarthquakeId, eqId)
+                .like(PowerSupplyInformation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                .like(PowerSupplyInformation::getAffectedArea, requestParams) // 震区（县/区）\
+                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                .like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, requestParams); // 目前主网供电中断村
 
         return baseMapper.selectPage(powerSupplyInformationPage, queryWrapper);
     }

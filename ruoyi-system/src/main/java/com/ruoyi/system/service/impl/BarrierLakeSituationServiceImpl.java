@@ -135,16 +135,21 @@ public class BarrierLakeSituationServiceImpl extends
         Page<BarrierLakeSituation> barrierLakeSituationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<BarrierLakeSituation> queryWrapper = Wrappers.lambdaQuery(BarrierLakeSituation.class)
 
-                .or().like(BarrierLakeSituation::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(BarrierLakeSituation::getAffectedArea, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(BarrierLakeSituation::getBarrierLake, requestParams) // 堰塞湖
-                .or().like(BarrierLakeSituation::getThreatenedAreas, requestParams) // 受威胁地区(乡镇、村)
-                .or().like(BarrierLakeSituation::getThreatenedPopulation, requestParams) // 受威胁群众(户或人)
-                .or().like(BarrierLakeSituation::getEvacuation, requestParams); // 避险转移(户或人)
+                .eq(BarrierLakeSituation::getEarthquakeId, eqId)
+                .like(BarrierLakeSituation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .like(BarrierLakeSituation::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .like(BarrierLakeSituation::getBarrierLake, requestParams) // 堰塞湖
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .like(BarrierLakeSituation::getThreatenedAreas, requestParams); // 受威胁地区(乡镇、村)
 
         return baseMapper.selectPage(barrierLakeSituationPage, queryWrapper);
     }

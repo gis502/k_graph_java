@@ -14,6 +14,7 @@ import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +66,7 @@ public class TrafficControlSectionsServiceImpl
      */
     @Override
     public List<TrafficControlSections> exportExcelGetData(RequestBTO requestBTO) {
-        String [] ids = requestBTO.getIds();
+        String[] ids = requestBTO.getIds();
         List<TrafficControlSections> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
@@ -107,21 +108,29 @@ public class TrafficControlSectionsServiceImpl
     @Override
     public IPage<TrafficControlSections> searchData(RequestBTO requestBTO) {
 
-        Page<TrafficControlSections> trafficControlSectionsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+        Page<TrafficControlSections> trafficControlSectionsPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<TrafficControlSections> queryWrapper = Wrappers.lambdaQuery(TrafficControlSections.class)
 
-                .or().like(TrafficControlSections::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(TrafficControlSections::getAffectedArea, requestParams) // 震区（县/区）
-                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+                .eq(TrafficControlSections::getEarthquakeId, eqId)
+                .like(TrafficControlSections::getEarthquakeName, requestParams) // 地震名称
+                .or().like(TrafficControlSections::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                .or().like(TrafficControlSections::getEarthquakeId, eqId)
+                .like(TrafficControlSections::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(TrafficControlSections::getEarthquakeId, eqId)
+                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                .or().like(TrafficControlSections::getEarthquakeId, eqId)
+                .like(TrafficControlSections::getTrafficControlSection, requestParams);
 
         return baseMapper.selectPage(trafficControlSectionsPage, queryWrapper);
     }
 
     @Autowired
     private EarthquakeListMapper earthquakesListMapper;
+
     @Override
     public List<TrafficControlSections> importExcelTrafficControlSections(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -168,6 +177,7 @@ public class TrafficControlSectionsServiceImpl
         saveBatch(list);
         return list;
     }
+
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {

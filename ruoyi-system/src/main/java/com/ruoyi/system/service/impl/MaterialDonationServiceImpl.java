@@ -136,12 +136,17 @@ public class MaterialDonationServiceImpl extends
         Page<MaterialDonation> materialDonationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<MaterialDonation> queryWrapper = Wrappers.lambdaQuery(MaterialDonation.class)
 
-                .or().like(MaterialDonation::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(MaterialDonation::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+                .eq(MaterialDonation::getEarthquakeId, eqId)
+                .like(MaterialDonation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(MaterialDonation::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(MaterialDonation::getEarthquakeId, eqId)
+                .like(MaterialDonation::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(MaterialDonation::getEarthquakeId, eqId)
+                .apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(materialDonationPage, queryWrapper);
     }

@@ -102,13 +102,18 @@ public class MeetingsServiceImpl
         Page<Meetings> meetingsPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<Meetings> queryWrapper = Wrappers.lambdaQuery(Meetings.class)
-
-                .or().like(Meetings::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams="%" + requestParams + "%")// 震级
-                .or().like(Meetings::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+                .eq(Meetings::getEarthquakeId, eqId)
+                .like(Meetings::getEarthquakeName, requestParams) // 地震名称
+                .or().like(Meetings::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(Meetings::getEarthquakeId, eqId)
+                .apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams="%" + requestParams + "%")// 震级
+                .or().like(Meetings::getEarthquakeId, eqId)
+                .like(Meetings::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(Meetings::getEarthquakeId, eqId)
+                .apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(meetingsPage, queryWrapper);
     }
