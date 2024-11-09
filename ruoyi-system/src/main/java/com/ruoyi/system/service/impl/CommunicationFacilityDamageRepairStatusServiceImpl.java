@@ -125,12 +125,6 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParams) // 震区（县/区）
                 .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CommunicationFacilityDamageRepairStatus::getTotalDisabledBaseStations, requestParams) // 累计退服基站（个）
-                .or().like(CommunicationFacilityDamageRepairStatus::getRestoredBaseStations, requestParams) // 抢通恢复基站（个）
-                .or().like(CommunicationFacilityDamageRepairStatus::getCurrentDisabledBaseStations, requestParams) // 目前退服基站（个）
-                .or().like(CommunicationFacilityDamageRepairStatus::getTotalDamagedCableLength, requestParams) // 累计受损光缆（公里）
-                .or().like(CommunicationFacilityDamageRepairStatus::getRepairedCableLength, requestParams) // 抢通恢复光缆（公里）
-                .or().like(CommunicationFacilityDamageRepairStatus::getCurrentPendingRepairCableLength, requestParams) // 目前待修复光缆（公里）
                 .or().like(CommunicationFacilityDamageRepairStatus::getCurrentInterruptedVillagesCount, requestParams); // 目前通信中断村
         return baseMapper.selectPage(communicationFacilityDamageRepairStatusPage, queryWrapper);
     }

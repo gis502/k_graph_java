@@ -56,4 +56,10 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
         queryWrapper.orderByDesc("occurrence_time");
         return earthquakeListMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public List<EarthquakeList> getGeomById(String id) {
+        return earthquakeListMapper.getGeomById(id);
+    }
+
 }

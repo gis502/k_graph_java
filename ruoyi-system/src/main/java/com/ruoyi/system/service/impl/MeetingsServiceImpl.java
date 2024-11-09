@@ -106,14 +106,10 @@ public class MeetingsServiceImpl
 
                 .or().like(Meetings::getEarthquakeName, requestParams) // 地震名称
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(Meetings::getMagnitude, requestParams) // 震级
+                .or().apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams="%" + requestParams + "%")// 震级
                 .or().like(Meetings::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(Meetings::getMeetingCount, requestParams) // 会议（场）
-                .or().like(Meetings::getActivityCount, requestParams) // 活动（场）
-                .or().like(Meetings::getBriefReportCount, requestParams) // 印发简报（份）
-                .or().like(Meetings::getNoticeCount, requestParams) // 印发通知（份）
-                .or().like(Meetings::getMeetingMinutesCount, requestParams); // 会议纪要（份）
+                .or().apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
         return baseMapper.selectPage(meetingsPage, queryWrapper);
     }
 

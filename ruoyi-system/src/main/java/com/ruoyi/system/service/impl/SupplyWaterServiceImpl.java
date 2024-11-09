@@ -142,8 +142,7 @@ public class SupplyWaterServiceImpl
                 .or().like(SupplyWater::getEarthquakeName, requestParams) // 地震名称
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(SupplyWater::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(SupplyWater::getWaterSupplyPoints, requestParams); // 保障安置点供水（处）
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(supplyWaterPage, queryWrapper);
     }

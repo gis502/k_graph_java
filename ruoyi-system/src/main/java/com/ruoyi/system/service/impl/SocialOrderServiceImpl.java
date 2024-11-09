@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.BarrierLakeSituation;
+import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
 import com.ruoyi.system.domain.entity.SocialOrder;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.SupplySituation;
@@ -34,6 +35,9 @@ public class SocialOrderServiceImpl extends
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private SocialOrderMapper socialOrderMapper;
 
     @Override
     public List<SocialOrder> importExcelSocialOrder(MultipartFile file, String userName, String eqId) throws IOException {
@@ -140,9 +144,7 @@ public class SocialOrderServiceImpl extends
                 .or().like(SocialOrder::getEarthquakeName, requestParams) // 地震名称
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(SocialOrder::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(SocialOrder::getReportedRescueInfo, requestParams) // 接报救助信息（起）
-                .or().like(SocialOrder::getPoliceForce, requestParams); // 投入警力（人）
+                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(socialOrderPage, queryWrapper);
     }
@@ -157,5 +159,8 @@ public class SocialOrderServiceImpl extends
         return true;  // 所有单元格都为空，算作空行
     }
 
-
+    @Override
+    public List<SocialOrder> getsocialoption(String eqid) {
+        return socialOrderMapper.getsocialoption(eqid);
+    }
 }
