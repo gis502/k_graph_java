@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AfterSeismicInformation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.LargeSpecialRescueEquipment;
-import com.ruoyi.system.domain.entity.RescueForces;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.LargeSpecialRescueEquipmentListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.LargeSpecialRescueEquipmentMapper;
@@ -139,6 +136,25 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<LargeSpecialRescueEquipment> searchData(RequestBTO requestBTO) {
+
+        Page<LargeSpecialRescueEquipment> largeSpecialRescueEquipmentPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<LargeSpecialRescueEquipment> queryWrapper = Wrappers.lambdaQuery(LargeSpecialRescueEquipment.class)
+
+                .or().like(LargeSpecialRescueEquipment::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().like(LargeSpecialRescueEquipment::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().like(LargeSpecialRescueEquipment::getHelicopterCount, requestParams) // 直升机
+                .or().like(LargeSpecialRescueEquipment::getBridgeBoatCount, requestParams) // 舟桥
+                .or().like(LargeSpecialRescueEquipment::getWingDroneCount, requestParams); // 翼龙无人机
+
+        return baseMapper.selectPage(largeSpecialRescueEquipmentPage, queryWrapper);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.ruoyi.system.domain.entity.BarrierLakeSituation;
 import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
 import com.ruoyi.system.domain.entity.SocialOrder;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.SupplySituation;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.SocialOrderListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -130,6 +131,24 @@ public class SocialOrderServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<SocialOrder> searchData(RequestBTO requestBTO) {
+
+        Page<SocialOrder> socialOrderPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<SocialOrder> queryWrapper = Wrappers.lambdaQuery(SocialOrder.class)
+
+                .or().like(SocialOrder::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().like(SocialOrder::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().like(SocialOrder::getReportedRescueInfo, requestParams) // 接报救助信息（起）
+                .or().like(SocialOrder::getPoliceForce, requestParams); // 投入警力（人）
+
+        return baseMapper.selectPage(socialOrderPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {
