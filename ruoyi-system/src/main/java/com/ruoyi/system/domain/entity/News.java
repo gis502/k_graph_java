@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -12,12 +16,13 @@ import lombok.Data;
     */
 @Data
 @TableName(value = "news")
+@Builder
 public class News {
     /**
      * 序号
      */
     @TableId(value = "id", type = IdType.NONE)
-    private Object id;
+    private String id;
 
     /**
      * 新闻网址
@@ -35,7 +40,7 @@ public class News {
      * 发布时间
      */
     @TableField(value = "publish_time")
-    private Date publishTime;
+    private LocalDateTime publishTime;
 
     /**
      * 地震ID
@@ -65,5 +70,5 @@ public class News {
      * 标志（来源网站标志）
      */
     @TableField(value = "source_logo")
-    private Object sourceLogo;
+    private String sourceLogo;
 }

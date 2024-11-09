@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RiskConstructionGeohazards;
-import com.ruoyi.system.domain.entity.RoadDamage;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.RiskConstructionGeohazardsListener;
 import com.ruoyi.system.listener.RoadDamageListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -34,6 +32,9 @@ public class RiskConstructionGeohazardsServiceImpl extends
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private RiskConstructionGeohazardsMapper riskConstructionGeohazardsMapper;
 
     @Override
     public List<RiskConstructionGeohazards> importExcelRiskConstructionGeohazards(MultipartFile file, String userName, String eqId) throws IOException {
@@ -130,6 +131,28 @@ public class RiskConstructionGeohazardsServiceImpl extends
         return "删除成功";
     }
 
+    @Override
+    public IPage<RiskConstructionGeohazards> searchData(RequestBTO requestBTO) {
+
+        Page<RiskConstructionGeohazards> riskConstructionGeohazardsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<RiskConstructionGeohazards> queryWrapper = Wrappers.lambdaQuery(RiskConstructionGeohazards.class)
+
+                .or().like(RiskConstructionGeohazards::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RiskConstructionGeohazards::getQuakeAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RiskConstructionGeohazards::getExistingRiskPoints, requestParams) // 既有隐患点（处）
+                .or().like(RiskConstructionGeohazards::getNewRiskPoints, requestParams) // 新增隐患点（处）
+                .or().like(RiskConstructionGeohazards::getConstructionPoints, requestParams) // 排查在建工程（处）
+                .or().like(RiskConstructionGeohazards::getInfrastructureCheckpoints, requestParams) // 排查基础设施（处）
+                .or().like(RiskConstructionGeohazards::getAlarmCount, requestParams) // 预警发布（次）
+                .or().like(RiskConstructionGeohazards::getEvacuationCount, requestParams); // 转移避险（人次）
+
+        return baseMapper.selectPage(riskConstructionGeohazardsPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
@@ -138,6 +161,10 @@ public class RiskConstructionGeohazardsServiceImpl extends
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    public List<RiskConstructionGeohazards> RiskConstructionGeohazardsByEqId(String eqid) {
+        return riskConstructionGeohazardsMapper.RiskConstructionGeohazardsByEqId(eqid);
     }
 
 }

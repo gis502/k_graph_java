@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RedCrossDonations;
-import com.ruoyi.system.domain.entity.RoadDamage;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.CharityOrganizationDonationsListener;
 import com.ruoyi.system.listener.RedCrossDonationsListener;
 import com.ruoyi.system.mapper.CharityOrganizationDonationsMapper;
@@ -36,6 +33,9 @@ public class RedCrossDonationsServiceImpl extends
         implements RedCrossDonationsService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private RedCrossDonationsMapper redCrossDonationsMapper;
 
     @Override
     public List<RedCrossDonations> importExcelRedCrossDonations(MultipartFile file, String userName, String eqId) throws IOException {
@@ -131,6 +131,24 @@ public class RedCrossDonationsServiceImpl extends
         return "删除成功";
     }
 
+    @Override
+    public IPage<RedCrossDonations> searchData(RequestBTO requestBTO) {
+
+        Page<RedCrossDonations> redCrossDonationsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<RedCrossDonations> queryWrapper = Wrappers.lambdaQuery(RedCrossDonations.class)
+
+                .or().like(RedCrossDonations::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RedCrossDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RedCrossDonations::getTodayAmount, requestParams) // 当日
+                .or().like(RedCrossDonations::getDonationAmount, requestParams); // 累计
+
+        return baseMapper.selectPage(redCrossDonationsPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
@@ -140,4 +158,10 @@ public class RedCrossDonationsServiceImpl extends
         }
         return true;  // 所有单元格都为空，算作空行
     }
+
+    @Override
+    public List<RedCrossDonations> RedCrossDonationsByEqId(String eqid) {
+        return redCrossDonationsMapper.RedCrossDonationsEqId(eqid);
+    }
+
 }

@@ -1,8 +1,11 @@
 package com.ruoyi.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
 import com.ruoyi.system.domain.entity.GovernmentDepartmentDonations;
+import com.ruoyi.system.domain.entity.MaterialDonation;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,5 +17,7 @@ public interface GovernmentDepartmentDonationsService extends IService<Governmen
     List<GovernmentDepartmentDonations> importExcelGovernmentDepartmentDonations(MultipartFile file, String userName, String eqId) throws IOException;
 
 
+    List<GovernmentDepartmentDonations> GovernmentDepartmentDonationsByEqId(String eqid);
 
+    IPage<GovernmentDepartmentDonations> searchData(RequestBTO requestBTO);
 }

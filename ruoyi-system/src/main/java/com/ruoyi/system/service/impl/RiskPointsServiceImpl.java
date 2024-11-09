@@ -11,12 +11,15 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RiskPointsServiceImpl
         extends ServiceImpl<RiskPointsMapper, RiskPoints>
         implements RiskPointsService {
-    @Resource  RiskPointsMapper riskPointsMapper;
+    @Resource
+    RiskPointsMapper riskPointsMapper;
+
     @Override
     public List<RiskPoints> riskPointslist(LambdaQueryWrapper<RiskPoints> wrapper, Double epicentreLongitude, Double epicentreLatitude) {
         List<RiskPoints> riskPoints = riskPointsMapper.selectList(wrapper);
@@ -31,23 +34,13 @@ public class RiskPointsServiceImpl
                 point.setDistance(distance); // 假设 RiskPoints 类中有 distance 字段
             }
         }
-        // 根据 riskLevel 排序，顺序为 大型 > 中型 > 小型
-        riskPoints.sort(Comparator.comparingInt(point -> {
-            switch (point.getRiskLevel()) {
-                case "大型":
-                    return 1;
-                case "中型":
-                    return 2;
-                case "小型":
-                    return 3;
-                default:
-                    return 4; // 其他级别排在最后
-            }
-        }));
-
-//        System.out.println("这是riskPoints啊啊啊啊啊啊"+riskPoints);
-        return riskPoints;
+        // 按照 distance 从小到大排序，并只取前 10 条数据
+        return riskPoints.stream()
+                .sorted(Comparator.comparingDouble(RiskPoints::getDistance))
+                .limit(10)
+                .collect(Collectors.toList());
     }
+
     // 计算两点之间的直线距离（假设使用 Haversine 公式）
     private double calculateDistance(Double lon1, Double lat1, Double lon2, Double lat2) {
         final int R = 6371; // 地球半径，单位为公里

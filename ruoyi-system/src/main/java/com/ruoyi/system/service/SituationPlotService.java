@@ -21,7 +21,5 @@ public interface SituationPlotService extends IService<SituationPlot>{
 
     List<SituationPlot> getSituationPlotsByEqId(String eqid);
 
-    void savePlotDataList(List<SituationPlot> plotDataList);
-
-    void savePlotProperty(List<String> plotProperty);
+    void savePlotDataAndProperties(List<SituationPlot> plotDataList, List<String> updatedPlotProperty);
 }

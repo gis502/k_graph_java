@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.MaterialDonation;
+import com.ruoyi.system.domain.entity.SupplySituation;
 import com.ruoyi.system.listener.MaterialDonationListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.MaterialDonationMapper;
@@ -30,6 +32,9 @@ public class MaterialDonationServiceImpl extends
         implements MaterialDonationService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private MaterialDonationMapper materialDonationMapper;
 
     @Override
     public List<MaterialDonation> importExcelMaterialDonation(MultipartFile file, String userName, String eqId) throws IOException, IOException {
@@ -125,6 +130,24 @@ public class MaterialDonationServiceImpl extends
         return "删除成功";
     }
 
+    @Override
+    public IPage<MaterialDonation> searchData(RequestBTO requestBTO) {
+
+        Page<MaterialDonation> materialDonationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<MaterialDonation> queryWrapper = Wrappers.lambdaQuery(MaterialDonation.class)
+
+                .or().like(MaterialDonation::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(MaterialDonation::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(MaterialDonation::getMaterialDonationCount, requestParams) // 捐赠物资(万件)
+                .or().like(MaterialDonation::getDrugsDonationCount, requestParams); // 药品（箱）
+
+        return baseMapper.selectPage(materialDonationPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
@@ -133,5 +156,10 @@ public class MaterialDonationServiceImpl extends
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    @Override
+    public List<MaterialDonation> MaterialDonationByEqId(String eqid) {
+        return materialDonationMapper.MaterialDonationEqId(eqid);
     }
 }

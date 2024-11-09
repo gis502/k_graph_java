@@ -11,6 +11,8 @@ import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.RescueForces;
 
 
+import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
+import com.ruoyi.system.domain.entity.SupplySituation;
 import com.ruoyi.system.listener.RescueForcesListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.RescueForcesMapper;
@@ -34,6 +36,9 @@ public class RescueForcesServiceImpl extends
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private RescueForcesMapper rescueForcesMapper;
 
     @Override
     public List<RescueForces> importExcelRescueForces(MultipartFile file, String userName, String eqId) throws IOException {
@@ -139,4 +144,36 @@ public class RescueForcesServiceImpl extends
         return "删除成功";
     }
 
+    @Override
+    public IPage<RescueForces> searchData(RequestBTO requestBTO) {
+
+        Page<RescueForces> rescueForcesPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<RescueForces> queryWrapper = Wrappers.lambdaQuery(RescueForces.class)
+
+                .or().like(RescueForces::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RescueForces::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RescueForces::getPlaCount, requestParams) // 解放军
+                .or().like(RescueForces::getArmedPoliceCount, requestParams) // 武警数量
+                .or().like(RescueForces::getMilitiaCount, requestParams) // 民兵
+                .or().like(RescueForces::getFireRescueCount, requestParams) // 消防救援
+                .or().like(RescueForces::getForestFireRescueCount, requestParams) // 森林消防
+                .or().like(RescueForces::getProfessionalForcesCount, requestParams) // 专业力量：安能、…
+                .or().like(RescueForces::getEmergencyProductionSafetyCount, requestParams) // 应急安全生产
+                .or().like(RescueForces::getMedicalRescueCount, requestParams) // 医疗救援
+                .or().like(RescueForces::getTransportationCommunicationPowerCount, requestParams) // 交通通信电力等力量
+                .or().like(RescueForces::getAirRescueCount, requestParams) // 空中救援
+                .or().like(RescueForces::getVolunteerRescueTeamCount, requestParams) // 志愿抢险队
+                .or().like(RescueForces::getPartyMemberCommandoCount, requestParams); // 党员突击队
+
+        return baseMapper.selectPage(rescueForcesPage, queryWrapper);
+    }
+
+    @Override
+    public List<RescueForces> RescueForcesByEqId(String eqid) {
+        return rescueForcesMapper.RescueForcesByEqId(eqid);
+    }
 }

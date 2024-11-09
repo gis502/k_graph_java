@@ -29,6 +29,9 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
+    @Resource
+    private GovernmentDepartmentDonationsMapper govDonationsMapper;
+
     @Override
     public List<GovernmentDepartmentDonations> importExcelGovernmentDepartmentDonations(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -123,6 +126,24 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
         return "删除成功";
     }
 
+    @Override
+    public IPage<GovernmentDepartmentDonations> searchData(RequestBTO requestBTO) {
+
+        Page<GovernmentDepartmentDonations> governmentDepartmentDonationsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<GovernmentDepartmentDonations> queryWrapper = Wrappers.lambdaQuery(GovernmentDepartmentDonations.class)
+
+                .or().like(GovernmentDepartmentDonations::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(GovernmentDepartmentDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(GovernmentDepartmentDonations::getTodayAmount, requestParams) // 当日
+                .or().like(GovernmentDepartmentDonations::getDonationAmount, requestParams); // 累计
+
+        return baseMapper.selectPage(governmentDepartmentDonationsPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
@@ -131,6 +152,11 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    @Override
+    public List<GovernmentDepartmentDonations> GovernmentDepartmentDonationsByEqId(String eqid) {
+        return govDonationsMapper.GovernmentDepartmentDonationsEqId(eqid);
     }
 
 }

@@ -26,19 +26,11 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "WHERE earthquake_identifier = #{eqid}")
     CasualtyReport getCasualtiesStatsById(@Param("eqid") String eqid);
 
-//    @Select("SELECT " +
-//            "SUM(total_deceased) AS total_deceased, " +
-//            "SUM(total_missing) AS total_missing, " +
-//            "SUM(total_injured) AS total_injured, " +
-//            "MAX(submission_deadline) AS submission_deadline " +
-//            "FROM public.casualty_report " +
-//            "WHERE earthquake_identifier = #{eqid}")
-//    CasualtyReport getTotal(@Param("eqid") String eqid);
-
     @Select("SELECT cr.affected_area_name, " +
             "SUM(cr.total_deceased) AS total_deceased, " +
             "SUM(cr.total_missing) AS total_missing, " +
             "SUM(cr.total_injured) AS total_injured, " +
+            "MAX(cr.submission_deadline) AS submission_deadline," +
             "cr.system_insert_time " +
             "FROM public.casualty_report cr " +
             "JOIN ( " +
@@ -51,14 +43,6 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "WHERE cr.earthquake_identifier = #{eqid} " +
             "GROUP BY cr.affected_area_name, cr.system_insert_time")
     List<CasualtyReport> getTotal(@Param("eqid") String eqid);
-//    @Select("SELECT " +
-//            "SUM(total_deceased) AS total_deceased, " +
-//            "SUM(total_missing) AS total_missing, " +
-//            "SUM(total_injured) AS total_injured, " +
-//            "MAX(submission_deadline) AS submission_deadline " +
-//            "FROM public.casualty_report " +
-//            "WHERE earthquake_identifier = #{eqid}")
-//    CasualtyReport getTotal(@Param("eqid") String eqid);
 
     @Select("SELECT cr.affected_area_name, " +
             "SUM(cr.total_deceased) AS total_deceased, " +

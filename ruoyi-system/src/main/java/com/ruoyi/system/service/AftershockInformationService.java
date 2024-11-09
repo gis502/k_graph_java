@@ -1,5 +1,8 @@
 package com.ruoyi.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.AfterSeismicInformation;
 import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,4 +26,7 @@ public interface AftershockInformationService extends IService<AftershockInforma
     List<Map<String, Object>> getTotal(String eqid);
 
     List<Map<String, Object>> getAfterShockInformation(String eqid);
+
+    IPage<AftershockInformation> searchData(RequestBTO requestBTO);
+
 }

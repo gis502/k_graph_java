@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alibaba.excel.EasyExcel;
+import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -222,6 +223,21 @@ public class AftershockInformationServiceImpl extends
         return aftershockDataList;
     }
 
+    @Override
+    public IPage<AftershockInformation> searchData(RequestBTO requestBTO) {
+        Page<AftershockInformation> aftershockInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<AftershockInformation> queryWrapper = Wrappers.lambdaQuery(AftershockInformation.class)
+                .like(AftershockInformation::getEarthquakeName, requestParams)     // 地震名称
+                .or().like(AftershockInformation::getMagnitude, requestParams)       // 地震震区
+                .or().like(AftershockInformation::getAffectedArea, requestParams)       // 地震震区
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+
+        return baseMapper.selectPage(aftershockInformationPage, queryWrapper);
+    }
 
 
     // 判断某行是否为空

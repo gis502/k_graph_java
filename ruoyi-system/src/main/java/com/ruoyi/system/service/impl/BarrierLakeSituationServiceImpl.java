@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.BarrierLakeSituation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RiskConstructionGeohazards;
-import com.ruoyi.system.domain.entity.RoadDamage;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.RiskConstructionGeohazardsListener;
 import com.ruoyi.system.mapper.BarrierLakeSituationMapper;
@@ -34,6 +31,9 @@ public class BarrierLakeSituationServiceImpl extends
         implements BarrierLakeSituationService, DataExportStrategy {
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private BarrierLakeSituationMapper barrierLakeSituationMapper;
 
     @Override
     public List<BarrierLakeSituation> importExcelBarrierLakeSituation(MultipartFile file, String userName, String eqId) throws IOException {
@@ -129,6 +129,26 @@ public class BarrierLakeSituationServiceImpl extends
         return "删除成功";
     }
 
+    @Override
+    public IPage<BarrierLakeSituation> searchData(RequestBTO requestBTO) {
+
+        Page<BarrierLakeSituation> barrierLakeSituationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<BarrierLakeSituation> queryWrapper = Wrappers.lambdaQuery(BarrierLakeSituation.class)
+
+                .or().like(BarrierLakeSituation::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(BarrierLakeSituation::getAffectedArea, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(BarrierLakeSituation::getBarrierLake, requestParams) // 堰塞湖
+                .or().like(BarrierLakeSituation::getThreatenedAreas, requestParams) // 受威胁地区(乡镇、村)
+                .or().like(BarrierLakeSituation::getThreatenedPopulation, requestParams) // 受威胁群众(户或人)
+                .or().like(BarrierLakeSituation::getEvacuation, requestParams); // 避险转移(户或人)
+
+        return baseMapper.selectPage(barrierLakeSituationPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
@@ -137,5 +157,9 @@ public class BarrierLakeSituationServiceImpl extends
             }
         }
         return true;  // 所有单元格都为空，算作空行
+    }
+
+    public List<BarrierLakeSituation> BarrierLakeSituationByEqId(String eqid) {
+        return barrierLakeSituationMapper.BarrierLakeSituationByEqId(eqid);
     }
 }
