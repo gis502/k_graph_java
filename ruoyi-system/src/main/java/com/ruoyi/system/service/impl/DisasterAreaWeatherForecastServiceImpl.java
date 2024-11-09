@@ -133,9 +133,9 @@ public class DisasterAreaWeatherForecastServiceImpl extends
         LambdaQueryWrapper<DisasterAreaWeatherForecast> queryWrapper = Wrappers.lambdaQuery(DisasterAreaWeatherForecast.class)
 
                 .or().like(DisasterAreaWeatherForecast::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(DisasterAreaWeatherForecast::getAffectedAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(DisasterAreaWeatherForecast::getWeatherForecast, requestParams); // 未来三天气象情况
 
         return baseMapper.selectPage(disasterAreaWeatherForecastPage, queryWrapper);
