@@ -140,9 +140,9 @@ public class RedCrossDonationsServiceImpl extends
         LambdaQueryWrapper<RedCrossDonations> queryWrapper = Wrappers.lambdaQuery(RedCrossDonations.class)
 
                 .or().like(RedCrossDonations::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(RedCrossDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(RedCrossDonations::getTodayAmount, requestParams) // 当日
                 .or().like(RedCrossDonations::getDonationAmount, requestParams); // 累计
 

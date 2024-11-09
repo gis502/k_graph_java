@@ -138,9 +138,9 @@ public class BarrierLakeSituationServiceImpl extends
         LambdaQueryWrapper<BarrierLakeSituation> queryWrapper = Wrappers.lambdaQuery(BarrierLakeSituation.class)
 
                 .or().like(BarrierLakeSituation::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(BarrierLakeSituation::getAffectedArea, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(BarrierLakeSituation::getBarrierLake, requestParams) // 堰塞湖
                 .or().like(BarrierLakeSituation::getThreatenedAreas, requestParams) // 受威胁地区(乡镇、村)
                 .or().like(BarrierLakeSituation::getThreatenedPopulation, requestParams) // 受威胁群众(户或人)

@@ -147,9 +147,9 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         LambdaQueryWrapper<LargeSpecialRescueEquipment> queryWrapper = Wrappers.lambdaQuery(LargeSpecialRescueEquipment.class)
 
                 .or().like(LargeSpecialRescueEquipment::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(LargeSpecialRescueEquipment::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(LargeSpecialRescueEquipment::getHelicopterCount, requestParams) // 直升机
                 .or().like(LargeSpecialRescueEquipment::getBridgeBoatCount, requestParams) // 舟桥
                 .or().like(LargeSpecialRescueEquipment::getWingDroneCount, requestParams); // 翼龙无人机

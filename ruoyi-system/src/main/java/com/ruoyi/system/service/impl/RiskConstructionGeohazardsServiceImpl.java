@@ -140,9 +140,9 @@ public class RiskConstructionGeohazardsServiceImpl extends
         LambdaQueryWrapper<RiskConstructionGeohazards> queryWrapper = Wrappers.lambdaQuery(RiskConstructionGeohazards.class)
 
                 .or().like(RiskConstructionGeohazards::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(RiskConstructionGeohazards::getQuakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(RiskConstructionGeohazards::getExistingRiskPoints, requestParams) // 既有隐患点（处）
                 .or().like(RiskConstructionGeohazards::getNewRiskPoints, requestParams) // 新增隐患点（处）
                 .or().like(RiskConstructionGeohazards::getConstructionPoints, requestParams) // 排查在建工程（处）
