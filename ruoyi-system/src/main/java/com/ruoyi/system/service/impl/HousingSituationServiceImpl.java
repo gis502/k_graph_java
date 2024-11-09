@@ -132,6 +132,26 @@ public class HousingSituationServiceImpl
         return "删除成功";
     }
 
+    @Override
+    public IPage<HousingSituation> searchData(RequestBTO requestBTO) {
+
+        Page<HousingSituation> housingSituationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<HousingSituation> queryWrapper = Wrappers.lambdaQuery(HousingSituation.class)
+
+                .or().like(HousingSituation::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().like(HousingSituation::getAffectedAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().like(HousingSituation::getCurrentlyDamaged, requestParams) // 目前受损
+                .or().like(HousingSituation::getCurrentlyDisabled, requestParams) // 目前禁用
+                .or().like(HousingSituation::getCurrentlyRestricted, requestParams) // 目前限用
+                .or().like(HousingSituation::getCurrentlyAvailable, requestParams); // 目前可用
+
+        return baseMapper.selectPage(housingSituationPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

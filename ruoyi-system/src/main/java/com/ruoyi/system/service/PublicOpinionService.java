@@ -1,6 +1,9 @@
 package com.ruoyi.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.LargeSpecialRescueEquipment;
 import com.ruoyi.system.domain.entity.PowerSupplyInformation;
 import com.ruoyi.system.domain.entity.PublicOpinion;
 import com.ruoyi.system.domain.entity.RedCrossDonations;
@@ -14,4 +17,6 @@ public interface PublicOpinionService extends IService<PublicOpinion> {
     List<PublicOpinion> importExcelPublicOpinion(MultipartFile file, String userName, String eqId) throws IOException;
 
     List<PublicOpinion> getpublicopinion(String eqid);
+
+    IPage<PublicOpinion> searchData(RequestBTO requestBTO);
 }

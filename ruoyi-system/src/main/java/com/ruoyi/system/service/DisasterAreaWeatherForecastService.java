@@ -1,6 +1,8 @@
 package com.ruoyi.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.DisasterAreaWeatherForecast;
 import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +14,6 @@ public interface DisasterAreaWeatherForecastService extends IService<DisasterAre
 
     List<DisasterAreaWeatherForecast> importExcelDisasterAreaWeatherForecast(MultipartFile file, String userName, String eqId) throws IOException;
 
-
+    IPage<DisasterAreaWeatherForecast> searchData(RequestBTO requestBTO);
 
 }
