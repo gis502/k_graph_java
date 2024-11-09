@@ -89,15 +89,9 @@ public class CasualtyReportServiceImpl
 
                 .or().like(CasualtyReport::getEarthquakeName, requestParams)
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CasualtyReport::getMagnitude, requestParams)
+                .or().apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams="%" + requestParams + "%")
                 .or().like(CasualtyReport::getAffectedAreaName, requestParams)
-                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CasualtyReport::getNewlyDeceased, requestParams)
-                .or().like(CasualtyReport::getNewlyMissing, requestParams)
-                .or().like(CasualtyReport::getNewlyInjured, requestParams)
-                .or().like(CasualtyReport::getTotalDeceased, requestParams)
-                .or().like(CasualtyReport::getTotalMissing, requestParams)
-                .or().like(CasualtyReport::getTotalInjured, requestParams);
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
         return baseMapper.selectPage(casualtyReportPage, queryWrapper);
     }
 

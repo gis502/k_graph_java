@@ -188,7 +188,7 @@ public class TransferSettlementInfoServiceImpl
 
                 .or().like(TransferSettlementInfo::getEarthquakeName, requestParams) // 地震名称
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(TransferSettlementInfo::getMagnitude, requestParams) // 震级
+                .or().apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams="%" + requestParams + "%")// 震级
                 .or().like(TransferSettlementInfo::getEarthquakeAreaName, requestParams) // 震区（县/区）
                 .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(TransferSettlementInfo::getNewlyTransferred, requestParams) // 新增转移安置（人）

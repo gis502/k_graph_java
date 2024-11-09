@@ -146,12 +146,7 @@ public class PublicOpinionServiceImpl
                 .or().like(PublicOpinion::getEarthquakeName, requestParams) // 地震名称
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(PublicOpinion::getEarthquakeZoneName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(PublicOpinion::getPublicityReport, requestParams) // 宣传报道（篇）
-                .or().like(PublicOpinion::getProvincialMediaReport, requestParams) // 中省主要媒体报道（篇）
-                .or().like(PublicOpinion::getPublicOpinionRiskWarning, requestParams) // 舆情风险提示（条）
-                .or().like(PublicOpinion::getPressConference, requestParams) // 发布会（场）
-                .or().like(PublicOpinion::getNegativeOpinionDisposal, requestParams); // 处置负面舆论（条）
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(publicOpinionPage, queryWrapper);
     }

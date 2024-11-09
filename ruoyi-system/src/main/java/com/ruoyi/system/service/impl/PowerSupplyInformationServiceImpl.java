@@ -140,16 +140,7 @@ public class PowerSupplyInformationServiceImpl
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(PowerSupplyInformation::getAffectedArea, requestParams) // 震区（县/区）
                 .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(PowerSupplyInformation::getTotalOutOfServiceSubstations, requestParams) // 累计停运变（发）电站（座）
-                .or().like(PowerSupplyInformation::getRestoredSubstations, requestParams) // 已恢复变（发）电站（座）
-                .or().like(PowerSupplyInformation::getToBeRepairedSubstations, requestParams) // 待修复变（发）电站（座）
-                .or().like(PowerSupplyInformation::getTotalTripCircuits, requestParams) // 累计跳闸线路（条）
-                .or().like(PowerSupplyInformation::getRestoredCircuits, requestParams) // 已恢复线路（条）
-                .or().like(PowerSupplyInformation::getToBeRestoredCircuits, requestParams) // 待恢复线路（条）
-                .or().like(PowerSupplyInformation::getTotalBlackoutUsers, requestParams) // 累计主网停电用户数（户）
-                .or().like(PowerSupplyInformation::getRestoredPowerUsers, requestParams) // 已恢复主网供电用户数（户）
-                .or().like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, requestParams) // 目前主网供电中断村
-                .or().like(PowerSupplyInformation::getEmergencyPowerUsers, requestParams); // 应急供电用户数（户）
+                .or().like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, requestParams); // 目前主网供电中断村
 
         return baseMapper.selectPage(powerSupplyInformationPage, queryWrapper);
     }

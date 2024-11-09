@@ -115,10 +115,8 @@ public class TrafficControlSectionsServiceImpl
                 .or().like(TrafficControlSections::getEarthquakeName, requestParams) // 地震名称
                 .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(TrafficControlSections::getAffectedArea, requestParams) // 震区（县/区）
-                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(TrafficControlSections::getTotalPassesIssued, requestParams) // 累计发放通行证（张）
-                .or().like(TrafficControlSections::getControlDiversionPoints, requestParams) // 设置管制分流点（处）
-                .or().like(TrafficControlSections::getTrafficControlSection, requestParams); // 交通管制路段
+                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
         return baseMapper.selectPage(trafficControlSectionsPage, queryWrapper);
     }
 

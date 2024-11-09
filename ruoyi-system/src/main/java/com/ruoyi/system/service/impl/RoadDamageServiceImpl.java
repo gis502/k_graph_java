@@ -127,11 +127,7 @@ public class RoadDamageServiceImpl
                 .or().like(RoadDamage::getProvincialRoads, requestParams) // 省道
                 .or().like(RoadDamage::getVillagesWithRoadClosures, requestParams) // 目前道路中断村
                 .or().like(RoadDamage::getUnderRepair, requestParams) // 正在抢修
-                .or().like(RoadDamage::getRestoredRoads, requestParams) // 恢复道路
-                .or().like(RoadDamage::getTotalCoordinatedTransportCapacity, requestParams) // 累计协调运力（车）
-                .or().like(RoadDamage::getTotalRoadDamageKm, requestParams) // 道路损毁（公里）
-                .or().like(RoadDamage::getRestoredKm, requestParams) // 已抢通（公里）
-                .or().like(RoadDamage::getPendingRepairKm, requestParams); // 待抢修（公里）
+                .or().like(RoadDamage::getRestoredRoads, requestParams); // 恢复道路
         return baseMapper.selectPage(roadDamagePage, queryWrapper);
     }
 
