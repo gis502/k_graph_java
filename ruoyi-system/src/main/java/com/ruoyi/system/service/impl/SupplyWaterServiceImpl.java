@@ -131,6 +131,23 @@ public class SupplyWaterServiceImpl
         return "删除成功";
     }
 
+    @Override
+    public IPage<SupplyWater> searchData(RequestBTO requestBTO) {
+
+        Page<SupplyWater> supplyWaterPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        LambdaQueryWrapper<SupplyWater> queryWrapper = Wrappers.lambdaQuery(SupplyWater.class)
+
+                .or().like(SupplyWater::getEarthquakeName, requestParams) // 地震名称
+                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().like(SupplyWater::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().like(SupplyWater::getWaterSupplyPoints, requestParams); // 保障安置点供水（处）
+
+        return baseMapper.selectPage(supplyWaterPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

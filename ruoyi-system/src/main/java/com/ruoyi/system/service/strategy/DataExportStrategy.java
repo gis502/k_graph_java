@@ -66,4 +66,6 @@ public interface DataExportStrategy {
     }
 
     String deleteData(List<Map<String, Object>> idsList);
+
+
 }
