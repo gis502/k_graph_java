@@ -148,9 +148,9 @@ public class DisasterReliefMaterialsServiceImpl extends
         LambdaQueryWrapper<DisasterReliefMaterials> queryWrapper = Wrappers.lambdaQuery(DisasterReliefMaterials.class)
 
                 .or().like(DisasterReliefMaterials::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(DisasterReliefMaterials::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(DisasterReliefMaterials::getCurrentDisasterSuppliesTotal, requestParams) // 当前救灾物资总数（万件）
                 .or().like(DisasterReliefMaterials::getAllocatedSuppliesTotal, requestParams) // 调拨安置类物资（万件）
                 .or().like(DisasterReliefMaterials::getTentsCount, requestParams) // 帐篷（顶）

@@ -138,9 +138,9 @@ public class SocialOrderServiceImpl extends
         LambdaQueryWrapper<SocialOrder> queryWrapper = Wrappers.lambdaQuery(SocialOrder.class)
 
                 .or().like(SocialOrder::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(SocialOrder::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
+                .or().apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
                 .or().like(SocialOrder::getReportedRescueInfo, requestParams) // 接报救助信息（起）
                 .or().like(SocialOrder::getPoliceForce, requestParams); // 投入警力（人）
 
