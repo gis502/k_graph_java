@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AfterSeismicInformation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.LargeSpecialRescueEquipment;
-import com.ruoyi.system.domain.entity.RescueForces;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.LargeSpecialRescueEquipmentListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.LargeSpecialRescueEquipmentMapper;
@@ -139,6 +136,28 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<LargeSpecialRescueEquipment> searchData(RequestBTO requestBTO) {
+
+        Page<LargeSpecialRescueEquipment> largeSpecialRescueEquipmentPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+
+        LambdaQueryWrapper<LargeSpecialRescueEquipment> queryWrapper = Wrappers.lambdaQuery(LargeSpecialRescueEquipment.class)
+
+                .eq(LargeSpecialRescueEquipment::getEarthquakeId, eqId)
+                .like(LargeSpecialRescueEquipment::getEarthquakeName, requestParams) // 地震名称
+                .or().like(LargeSpecialRescueEquipment::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(LargeSpecialRescueEquipment::getEarthquakeId, eqId)
+                .like(LargeSpecialRescueEquipment::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(LargeSpecialRescueEquipment::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+        return baseMapper.selectPage(largeSpecialRescueEquipmentPage, queryWrapper);
     }
 
     @Override

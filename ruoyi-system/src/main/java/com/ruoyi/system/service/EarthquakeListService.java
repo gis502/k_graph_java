@@ -15,4 +15,5 @@ public interface EarthquakeListService extends IService<EarthquakeList>{
     List<EarthquakeList> selectAllEq();
 
 
+    List<EarthquakeList> getGeomById(String id);
 }

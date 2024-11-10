@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.TrafficControlSections;
 import com.ruoyi.system.listener.CommunicationFacilityDamageRepairStatusListener;
 import com.ruoyi.system.mapper.CommunicationFacilityDamageRepairStatusMapper;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -111,6 +112,30 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
 
         return "删除成功";
     }
+
+    @Override
+    public IPage<CommunicationFacilityDamageRepairStatus> searchData(RequestBTO requestBTO) {
+
+        Page<CommunicationFacilityDamageRepairStatus> communicationFacilityDamageRepairStatusPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<CommunicationFacilityDamageRepairStatus> queryWrapper = Wrappers.lambdaQuery(CommunicationFacilityDamageRepairStatus.class)
+
+                .eq(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .like(CommunicationFacilityDamageRepairStatus::getEarthquakeName, requestParams) // 地震名称
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParams) // 震区（县/区）
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                .like(CommunicationFacilityDamageRepairStatus::getCurrentInterruptedVillagesCount, requestParams); // 目前通信中断村
+
+        return baseMapper.selectPage(communicationFacilityDamageRepairStatusPage, queryWrapper);
+    }
+
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
     @Override

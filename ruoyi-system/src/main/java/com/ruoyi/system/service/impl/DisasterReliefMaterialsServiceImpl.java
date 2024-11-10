@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.DisasterReliefMaterials;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RescueForces;
-import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.DisasterReliefMaterialsListener;
 import com.ruoyi.system.listener.RescueForcesListener;
 import com.ruoyi.system.mapper.DisasterReliefMaterialsMapper;
@@ -140,6 +137,27 @@ public class DisasterReliefMaterialsServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<DisasterReliefMaterials> searchData(RequestBTO requestBTO) {
+
+        Page<DisasterReliefMaterials> disasterReliefMaterialsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<DisasterReliefMaterials> queryWrapper = Wrappers.lambdaQuery(DisasterReliefMaterials.class)
+
+                .eq(DisasterReliefMaterials::getEarthquakeId, eqId)
+                .like(DisasterReliefMaterials::getEarthquakeName, requestParams) // 地震名称
+                .or().like(DisasterReliefMaterials::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(DisasterReliefMaterials::getEarthquakeId, eqId)
+                .like(DisasterReliefMaterials::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(DisasterReliefMaterials::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+        return baseMapper.selectPage(disasterReliefMaterialsPage, queryWrapper);
     }
 
     @Override

@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.BarrierLakeSituation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RoadDamage;
-import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.SecondaryDisasterInfoListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.SecondaryDisasterInfoMapper;
@@ -128,6 +125,29 @@ public class SecondaryDisasterInfoServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<SecondaryDisasterInfo> searchData(RequestBTO requestBTO) {
+
+        Page<SecondaryDisasterInfo> secondaryDisasterInfoPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<SecondaryDisasterInfo> queryWrapper = Wrappers.lambdaQuery(SecondaryDisasterInfo.class)
+
+                .eq(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .like(SecondaryDisasterInfo::getEarthquakeName, requestParams) // 地震名称
+                .or().like(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .like(SecondaryDisasterInfo::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .like(SecondaryDisasterInfo::getThreatenedAreasSecondary, requestParams);
+
+        return baseMapper.selectPage(secondaryDisasterInfoPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

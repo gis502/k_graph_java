@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.Meetings;
 import com.ruoyi.system.domain.entity.TrafficControlSections;
 import com.ruoyi.system.listener.RoadDamageListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -110,6 +111,36 @@ public class RoadDamageServiceImpl
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<RoadDamage> searchData(RequestBTO requestBTO) {
+        Page<RoadDamage> roadDamagePage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+
+        LambdaQueryWrapper<RoadDamage> queryWrapper = Wrappers.lambdaQuery(RoadDamage.class)
+                .eq(RoadDamage::getEarthquakeId, eqId)
+                .like(RoadDamage::getEarthquakeName, requestParams) // 地震名称
+                .or().like(RoadDamage::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RoadDamage::getEarthquakeId, eqId)
+                .like(RoadDamage::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(RoadDamage::getEarthquakeId, eqId)
+                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RoadDamage::getEarthquakeId, eqId)
+                .like(RoadDamage::getHighwaysNationalRoads, requestParams) // 高速公路及国道
+                .or().like(RoadDamage::getEarthquakeId, eqId)
+                .like(RoadDamage::getProvincialRoads, requestParams) // 省道
+                .or().like(RoadDamage::getEarthquakeId, eqId)
+                .like(RoadDamage::getVillagesWithRoadClosures, requestParams) // 目前道路中断村
+                .or().like(RoadDamage::getEarthquakeId, eqId)
+                .like(RoadDamage::getUnderRepair, requestParams) // 正在抢修
+                .or().like(RoadDamage::getEarthquakeId, eqId)
+                .like(RoadDamage::getRestoredRoads, requestParams); // 恢复道路
+
+        return baseMapper.selectPage(roadDamagePage, queryWrapper);
     }
 
     @Override

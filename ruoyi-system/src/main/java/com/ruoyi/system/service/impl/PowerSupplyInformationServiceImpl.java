@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AftershockInformation;
+import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.listener.PowerSupplyInformationListener;
@@ -125,6 +126,29 @@ public class PowerSupplyInformationServiceImpl
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<PowerSupplyInformation> searchData(RequestBTO requestBTO) {
+
+        Page<PowerSupplyInformation> powerSupplyInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<PowerSupplyInformation> queryWrapper = Wrappers.lambdaQuery(PowerSupplyInformation.class)
+
+                .eq(PowerSupplyInformation::getEarthquakeId, eqId)
+                .like(PowerSupplyInformation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                .like(PowerSupplyInformation::getAffectedArea, requestParams) // 震区（县/区）\
+                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                .like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, requestParams); // 目前主网供电中断村
+
+        return baseMapper.selectPage(powerSupplyInformationPage, queryWrapper);
     }
 
     @Override

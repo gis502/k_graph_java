@@ -1,5 +1,8 @@
 package com.ruoyi.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ruoyi.system.domain.bto.RequestBTO;
+import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.CasualtyReport;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Param;
@@ -18,4 +21,6 @@ public interface CasualtyReportService extends IService<CasualtyReport>{
 //    CasualtyReport getTotal(String eqid);
 
     List<CasualtyReport> getCasualty(String eqid);
+
+    IPage<CasualtyReport> searchData(RequestBTO requestBTO);
 }

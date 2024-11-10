@@ -131,6 +131,27 @@ public class SupplyWaterServiceImpl
         return "删除成功";
     }
 
+    @Override
+    public IPage<SupplyWater> searchData(RequestBTO requestBTO) {
+
+        Page<SupplyWater> supplyWaterPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<SupplyWater> queryWrapper = Wrappers.lambdaQuery(SupplyWater.class)
+
+                .eq(SupplyWater::getEarthquakeId, eqId)
+                .like(SupplyWater::getEarthquakeName, requestParams) // 地震名称
+                .or().like(SupplyWater::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(SupplyWater::getEarthquakeId, eqId)
+                .like(SupplyWater::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(SupplyWater::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+        return baseMapper.selectPage(supplyWaterPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

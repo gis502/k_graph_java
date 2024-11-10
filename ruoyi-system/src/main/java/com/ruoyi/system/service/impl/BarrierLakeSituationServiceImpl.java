@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.BarrierLakeSituation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RiskConstructionGeohazards;
-import com.ruoyi.system.domain.entity.RoadDamage;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.RiskConstructionGeohazardsListener;
 import com.ruoyi.system.mapper.BarrierLakeSituationMapper;
@@ -130,6 +127,31 @@ public class BarrierLakeSituationServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<BarrierLakeSituation> searchData(RequestBTO requestBTO) {
+
+        Page<BarrierLakeSituation> barrierLakeSituationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<BarrierLakeSituation> queryWrapper = Wrappers.lambdaQuery(BarrierLakeSituation.class)
+
+                .eq(BarrierLakeSituation::getEarthquakeId, eqId)
+                .like(BarrierLakeSituation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .like(BarrierLakeSituation::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .like(BarrierLakeSituation::getBarrierLake, requestParams) // 堰塞湖
+                .or().like(BarrierLakeSituation::getEarthquakeId, eqId)
+                .like(BarrierLakeSituation::getThreatenedAreas, requestParams); // 受威胁地区(乡镇、村)
+
+        return baseMapper.selectPage(barrierLakeSituationPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

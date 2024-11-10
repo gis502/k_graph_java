@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.BarrierLakeSituation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.PublicOpinion;
+import com.ruoyi.system.domain.entity.SupplySituation;
 import com.ruoyi.system.domain.entity.SocialOrder;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.PublicOpinionListener;
@@ -132,6 +133,27 @@ public class PublicOpinionServiceImpl
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<PublicOpinion> searchData(RequestBTO requestBTO) {
+
+        Page<PublicOpinion> publicOpinionPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<PublicOpinion> queryWrapper = Wrappers.lambdaQuery(PublicOpinion.class)
+
+                .eq(PublicOpinion::getEarthquakeId, eqId)
+                .like(PublicOpinion::getEarthquakeName, requestParams) // 地震名称
+                .or().like(PublicOpinion::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(PublicOpinion::getEarthquakeId, eqId)
+                .like(PublicOpinion::getEarthquakeZoneName, requestParams) // 震区（县/区）
+                .or().like(PublicOpinion::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+        return baseMapper.selectPage(publicOpinionPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

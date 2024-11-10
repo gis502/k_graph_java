@@ -12,6 +12,7 @@ import com.ruoyi.system.domain.entity.RescueForces;
 
 
 import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
+import com.ruoyi.system.domain.entity.SupplySituation;
 import com.ruoyi.system.listener.RescueForcesListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.RescueForcesMapper;
@@ -141,6 +142,27 @@ public class RescueForcesServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<RescueForces> searchData(RequestBTO requestBTO) {
+
+        Page<RescueForces> rescueForcesPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<RescueForces> queryWrapper = Wrappers.lambdaQuery(RescueForces.class)
+
+                .eq(RescueForces::getEarthquakeId, eqId)
+                .like(RescueForces::getEarthquakeName, requestParams) // 地震名称
+                .or().like(RescueForces::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RescueForces::getEarthquakeId, eqId)
+                .like(RescueForces::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(RescueForces::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+        return baseMapper.selectPage(rescueForcesPage, queryWrapper);
     }
 
     @Override

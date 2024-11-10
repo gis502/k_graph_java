@@ -2,12 +2,10 @@ package com.ruoyi.web.controller.system;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.EqFormDto;
 import com.ruoyi.system.domain.dto.GeometryDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.service.EarthquakeListService;
-import org.apache.ibatis.annotations.Delete;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -251,4 +249,10 @@ public class EarthquakeListController {
         // 更新地震信息
         return earthquakeListService.updateById(earthquakeList);
     }
+
+    @GetMapping("getGeomById")
+    public List<EarthquakeList> getGeomById(@RequestParam(value = "id") String id) {
+        return earthquakeListService.getGeomById(id);
+    }
+
 }

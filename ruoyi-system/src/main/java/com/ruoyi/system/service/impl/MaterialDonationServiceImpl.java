@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.MaterialDonation;
+import com.ruoyi.system.domain.entity.SupplySituation;
 import com.ruoyi.system.listener.MaterialDonationListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.mapper.MaterialDonationMapper;
@@ -127,6 +128,27 @@ public class MaterialDonationServiceImpl extends
         this.removeByIds(ids);
 
         return "删除成功";
+    }
+
+    @Override
+    public IPage<MaterialDonation> searchData(RequestBTO requestBTO) {
+
+        Page<MaterialDonation> materialDonationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<MaterialDonation> queryWrapper = Wrappers.lambdaQuery(MaterialDonation.class)
+
+                .eq(MaterialDonation::getEarthquakeId, eqId)
+                .like(MaterialDonation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(MaterialDonation::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(MaterialDonation::getEarthquakeId, eqId)
+                .like(MaterialDonation::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(MaterialDonation::getEarthquakeId, eqId)
+                .apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+        return baseMapper.selectPage(materialDonationPage, queryWrapper);
     }
 
     private boolean isRowEmpty(Row row) {

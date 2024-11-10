@@ -132,6 +132,27 @@ public class HousingSituationServiceImpl
         return "删除成功";
     }
 
+    @Override
+    public IPage<HousingSituation> searchData(RequestBTO requestBTO) {
+
+        Page<HousingSituation> housingSituationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<HousingSituation> queryWrapper = Wrappers.lambdaQuery(HousingSituation.class)
+
+                .eq(HousingSituation::getEarthquakeIdentifier, eqId)
+                .like(HousingSituation::getEarthquakeName, requestParams) // 地震名称
+                .or().like(HousingSituation::getEarthquakeIdentifier, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(HousingSituation::getEarthquakeIdentifier, eqId)
+                .like(HousingSituation::getAffectedAreaName, requestParams) // 震区（县/区）
+                .or().like(HousingSituation::getEarthquakeIdentifier, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+        return baseMapper.selectPage(housingSituationPage, queryWrapper);
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
@@ -147,3 +168,4 @@ public class HousingSituationServiceImpl
         return housingSituationMapper.selectHousingSituationById(eqid);
     }
 }
+

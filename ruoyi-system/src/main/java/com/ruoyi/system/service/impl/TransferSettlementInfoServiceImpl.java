@@ -3,10 +3,10 @@ package com.ruoyi.system.service.impl;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AftershockInformation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.listener.TransferSettlementInfoListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.mapper.TransferSettlementInfoMapper;
-import com.ruoyi.system.domain.entity.TransferSettlementInfo;
 import com.ruoyi.system.service.TransferSettlementInfoService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -179,4 +178,28 @@ public class TransferSettlementInfoServiceImpl
 
         return "删除成功";
     }
+
+    @Override
+    public IPage<TransferSettlementInfo> searchData(RequestBTO requestBTO) {
+        Page<TransferSettlementInfo> transferSettlementInfoPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+
+        String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
+
+        LambdaQueryWrapper<TransferSettlementInfo> queryWrapper = Wrappers.lambdaQuery(TransferSettlementInfo.class)
+                .eq(TransferSettlementInfo::getEarthquakeId, eqId)
+                .like(TransferSettlementInfo::getEarthquakeName, requestParams) // 地震名称
+                .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
+                .apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams="%" + requestParams + "%")// 震级
+                .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
+                .like(TransferSettlementInfo::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
+                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+
+        return baseMapper.selectPage(transferSettlementInfoPage, queryWrapper);
+    }
+
 }
