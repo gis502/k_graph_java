@@ -3,22 +3,48 @@ package com.ruoyi.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.system.domain.entity.TransferSettlementInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-
 @Mapper
 public interface TransferSettlementInfoMapper extends BaseMapper<TransferSettlementInfo> {
-    @Select("SELECT " +
-            "SUM(emergency_shelters) AS emergency_shelters, " +
-            "SUM(temporary_shelters) AS temporary_shelters, " +
-            "SUM(newly_transferred) AS newly_transferred, " +
-            "SUM(cumulative_transferred) AS cumulative_transferred,"+
-            "MAX(system_inserttime) AS system_inserttime " +
-            "FROM public.transfer_settlement_info " +
-            "WHERE earthquake_id = #{eqid}")
-    List<TransferSettlementInfo> getTotal(String eqid);
+
+    @Select("""
+        SELECT DISTINCT ON (earthquake_area_name) *
+        FROM transfer_settlement_info
+        WHERE earthquake_id = #{eqid}
+        ORDER BY earthquake_area_name, reporting_deadline DESC, system_inserttime DESC
+    """)
+    List<TransferSettlementInfo> getTotal(@Param("eqid") String eqid);
+
+
+
+//    @Select("SELECT " +
+//            "   earthquake_id, " +
+//            "   earthquake_area_name, " +
+//            "   (SELECT reporting_deadline " +
+//            "    FROM transfer_settlement_info t2 " +
+//            "    WHERE t2.earthquake_area_name = t1.earthquake_area_name " +
+//            "    AND t2.earthquake_id = t1.earthquake_id " +
+//            "    ORDER BY reporting_deadline DESC, system_inserttime DESC " +
+//            "    LIMIT 1) AS reporting_deadline, " +
+//            "   (SELECT system_inserttime " +
+//            "    FROM transfer_settlement_info t2 " +
+//            "    WHERE t2.earthquake_area_name = t1.earthquake_area_name " +
+//            "    AND t2.earthquake_id = t1.earthquake_id " +
+//            "    ORDER BY reporting_deadline DESC, system_inserttime DESC " +
+//            "    LIMIT 1) AS system_inserttime, " +
+//            "   SUM(emergency_shelters) AS emergency_shelters, " +
+//            "   SUM(temporary_shelters) AS temporary_shelters, " +
+//            "   SUM(newly_transferred) AS newly_transferred, " +
+//            "   SUM(cumulative_transferred) AS cumulative_transferred, " +
+//            "   SUM(centralized_settlement) AS centralized_settlement " +
+//            "FROM transfer_settlement_info t1 " +
+//            "WHERE earthquake_id = #{eqid} " +
+//            "GROUP BY earthquake_area_name, earthquake_id " +
+//            "ORDER BY earthquake_area_name")
 
     @Select("SELECT tsi.earthquake_area_name, " +
             "SUM(tsi.emergency_shelters) AS emergency_shelters, " +

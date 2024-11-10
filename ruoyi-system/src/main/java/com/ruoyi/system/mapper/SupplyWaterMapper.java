@@ -10,15 +10,18 @@ import java.util.List;
 
 @Mapper
 public interface SupplyWaterMapper extends BaseMapper<SupplyWater> {
-    @Select("SELECT earthquake_area_name, " +
-            "MAX(water_supply_points) AS water_supply_points, " +
-            "MAX(report_deadline) AS report_deadline, " +
-            "MAX(system_insert_time) AS system_insert_time, " +
-            "MAX(earthquake_time) AS earthquake_time, " +
-            "MAX(earthquake_name) AS earthquake_name " +
-            "FROM public.supply_water " +
-            "WHERE earthquake_id = #{eqid} " +
-            "GROUP BY earthquake_area_name " +
-            "ORDER BY earthquake_area_name")
+    @Select("""
+    SELECT psi.*
+    FROM (
+        SELECT psi.*, 
+               ROW_NUMBER() OVER (
+                   PARTITION BY psi.earthquake_area_name 
+                   ORDER BY psi.report_deadline DESC, psi.system_insert_time DESC
+               ) AS rn
+        FROM supply_water psi
+        WHERE psi.earthquake_id = #{eqid}
+    ) AS psi
+    WHERE psi.rn = 1
+""")
     List<SupplyWater> selectSupplyWaterById(String eqid);
 }

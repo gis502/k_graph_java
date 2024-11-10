@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.QueryBTO;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AfterSeismicInformation;
+import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.RoadDamage;
 import com.ruoyi.system.listener.AfterSeismicInformationListener;
@@ -19,6 +20,7 @@ import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,16 +86,21 @@ public class AfterSeismicInformationServiceImpl extends
     @Override
     public IPage<AfterSeismicInformation> searchData(RequestBTO requestBTO) {
 
-        Page<AfterSeismicInformation> afterSeismicInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+        Page<AfterSeismicInformation> afterSeismicInformationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<AfterSeismicInformation> queryWrapper = Wrappers.lambdaQuery(AfterSeismicInformation.class)
+                .eq(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
                 .like(AfterSeismicInformation::getEarthquakeName, requestParams)
-                .or().like(AfterSeismicInformation::getAffectedCountyDistrict, requestParams)
-                .or().like(AfterSeismicInformation::getAffectedPopulation, requestParams)
-                .or().like(AfterSeismicInformation::getMagnitude, requestParams)
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+                .or().like(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
+                .like(AfterSeismicInformation::getAffectedAreaName, requestParams)
+                .or().like(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                .or().like(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
+                .apply("cast(magnitude as text) LIKE {0}", "%" + requestParams + "%")
+                .or().like(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
 
         return baseMapper.selectPage(afterSeismicInformationPage, queryWrapper);
     }
@@ -110,7 +117,7 @@ public class AfterSeismicInformationServiceImpl extends
 
     @Override
     public List<?> exportExcelGetData(RequestBTO requestBTO) {
-        String [] ids = requestBTO.getIds();
+        String[] ids = requestBTO.getIds();
         List<AfterSeismicInformation> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()

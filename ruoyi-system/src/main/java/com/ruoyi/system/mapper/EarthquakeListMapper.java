@@ -17,4 +17,8 @@ public interface EarthquakeListMapper extends BaseMapper<EarthquakeList> {
     @Select("SELECT * FROM earthquake_list WHERE eqid = CAST(#{eqId} AS UUID)")
     List<EarthquakeList> findEarthquakeIdByTimeAndPosition(@Param("eqId") String eqId);
 
+    @Select("SELECT geom FROM earthquake_list WHERE eqid = #{id}")
+    List<EarthquakeList> getGeomById(@Param("id") String id);
+
+
 }

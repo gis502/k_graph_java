@@ -8,33 +8,28 @@ import java.util.List;
 
 @Mapper
 public interface ZhongduanVillageMapper {
-    @Select("""
-    WITH road_damage AS (
-        SELECT DISTINCT villages_with_road_closures, system_insert_time
-        FROM road_damage
-        WHERE earthquake_id = #{eqid}
-    ),
-    power_supply AS (
-        SELECT DISTINCT currently_blacked_out_villages, system_insert_time
-        FROM power_supply_information
-        WHERE earthquake_id = #{eqid}
-    ),
-    communication_facility AS (
-        SELECT DISTINCT current_interrupted_villages_count, system_insertion_time
-        FROM communication_facility_damage_repair_status
-        WHERE earthquake_id = #{eqid}
-    )
-    SELECT
-        COUNT(DISTINCT rd.villages_with_road_closures) AS RoadBlockVillage,
-        COUNT(DISTINCT ps.currently_blacked_out_villages) AS CurrentlyBlackedOutVillages,
-        COUNT(DISTINCT cf.current_interrupted_villages_count) AS CurrentInterruptedVillages,
-        GREATEST(
-            COALESCE(MAX(rd.system_insert_time), NULL),
-            COALESCE(MAX(ps.system_insert_time), NULL),
-            COALESCE(MAX(cf.system_insertion_time), NULL)
-        ) AS insertTime
-    FROM road_damage rd, power_supply ps, communication_facility cf
-""")
 
+    @Select("SELECT " +
+            "(SELECT COUNT(DISTINCT current_interrupted_villages_count) " +
+            " FROM communication_facility_damage_repair_status " +
+            " WHERE earthquake_id = #{eqid}) AS CurrentInterruptedVillages, " +
+            "(SELECT COUNT(DISTINCT currently_blacked_out_villages) " +
+            " FROM power_supply_information " +
+            " WHERE earthquake_id = #{eqid}) AS CurrentlyBlackedOutVillages, " +
+            "(SELECT COUNT(DISTINCT villages_with_road_closures) " +
+            " FROM road_damage " +
+            " WHERE earthquake_id = #{eqid}) AS RoadBlockVillage, " +
+            "(SELECT MAX(reporting_deadline) " +
+            " FROM (SELECT reporting_deadline " +
+            "       FROM communication_facility_damage_repair_status " +
+            "       WHERE earthquake_id = #{eqid} " +
+            "       UNION ALL " +
+            "       SELECT reporting_deadline " +
+            "       FROM power_supply_information " +
+            "       WHERE earthquake_id = #{eqid} " +
+            "       UNION ALL " +
+            "       SELECT reporting_deadline " +
+            "       FROM road_damage " +
+            "       WHERE earthquake_id = #{eqid}) AS all_reportings) AS insertTime")
     List<ZhongduanVillage> selectVillageByEqid(String eqid);
 }

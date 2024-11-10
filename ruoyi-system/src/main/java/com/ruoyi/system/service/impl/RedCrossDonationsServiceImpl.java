@@ -137,14 +137,17 @@ public class RedCrossDonationsServiceImpl extends
         Page<RedCrossDonations> redCrossDonationsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<RedCrossDonations> queryWrapper = Wrappers.lambdaQuery(RedCrossDonations.class)
 
-                .or().like(RedCrossDonations::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(RedCrossDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(RedCrossDonations::getTodayAmount, requestParams) // 当日
-                .or().like(RedCrossDonations::getDonationAmount, requestParams); // 累计
+                .eq(RedCrossDonations::getEarthquakeId, eqId)
+                .like(RedCrossDonations::getEarthquakeName, requestParams) // 地震名称
+                .or().like(RedCrossDonations::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RedCrossDonations::getEarthquakeId, eqId)
+                .like(RedCrossDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(RedCrossDonations::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(redCrossDonationsPage, queryWrapper);
     }

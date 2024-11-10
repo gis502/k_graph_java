@@ -12,16 +12,18 @@ import java.util.List;
 public interface PowerSupplyInformationMapper extends BaseMapper<PowerSupplyInformation> {
 
     @Select("""
-        SELECT psi.*
+    SELECT psi.*
+    FROM (
+        SELECT psi.*, 
+               ROW_NUMBER() OVER (
+                   PARTITION BY psi.affected_area 
+                   ORDER BY psi.reporting_deadline DESC, psi.system_insert_time DESC
+               ) AS rn
         FROM power_supply_information psi
-        JOIN (
-            SELECT affected_area, MAX(system_insert_time) AS latest_time
-            FROM power_supply_information
-            WHERE earthquake_id = #{eqid}
-            GROUP BY affected_area
-        ) AS latest ON psi.affected_area = latest.affected_area
-        AND psi.system_insert_time = latest.latest_time
         WHERE psi.earthquake_id = #{eqid}
-    """)
+    ) AS psi
+    WHERE psi.rn = 1
+""")
     List<PowerSupplyInformation> getPowerSupply(@Param("eqid") String eqid);
+
 }
