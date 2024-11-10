@@ -10,6 +10,7 @@ public class RequestBTO {
     private String [] ids;
     private String userId;
     private String flag;
+    private String queryEqId;
     private String requestParams;
     private long currentPage;
     private long pageSize;

@@ -12,8 +12,18 @@ import java.util.List;
 @Mapper
 public interface CommunicationFacilityDamageRepairStatusMapper extends BaseMapper<CommunicationFacilityDamageRepairStatus> {
 
-    @Select("SELECT * FROM communication_facility_damage_repair_status WHERE earthquake_id = #{eqid} " +
-            "AND system_insertion_time = (SELECT MAX(system_insertion_time) " +
-            "FROM communication_facility_damage_repair_status AS r WHERE r.earthquake_zone_name = communication_facility_damage_repair_status.earthquake_zone_name)")
+    @Select("""
+    SELECT psi.*
+    FROM (
+        SELECT psi.*, 
+               ROW_NUMBER() OVER (
+                   PARTITION BY psi.earthquake_zone_name
+                   ORDER BY psi.reporting_deadline DESC, psi.system_insertion_time DESC
+               ) AS rn
+        FROM communication_facility_damage_repair_status psi
+        WHERE psi.earthquake_id = #{eqid}
+    ) AS psi
+    WHERE psi.rn = 1
+""")
     List<CommunicationFacilityDamageRepairStatus> facility(@Param("eqid") String eqid);
 }

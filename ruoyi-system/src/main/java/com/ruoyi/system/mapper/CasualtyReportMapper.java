@@ -30,16 +30,18 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "SUM(cr.total_deceased) AS total_deceased, " +
             "SUM(cr.total_missing) AS total_missing, " +
             "SUM(cr.total_injured) AS total_injured, " +
-            "MAX(cr.submission_deadline) AS submission_deadline," +
+            "MAX(cr.submission_deadline) AS submission_deadline, " +
             "cr.system_insert_time " +
             "FROM public.casualty_report cr " +
             "JOIN ( " +
-            "    SELECT affected_area_name, MAX(system_insert_time) AS latest_deadline " +
+            "    SELECT affected_area_name, MAX(submission_deadline) AS latest_submission_deadline, " +
+            "           MAX(system_insert_time) AS latest_system_insert_time " +
             "    FROM public.casualty_report " +
             "    WHERE earthquake_identifier = #{eqid} " +
             "    GROUP BY affected_area_name " +
             ") sub ON cr.affected_area_name = sub.affected_area_name " +
-            "AND cr.system_insert_time = sub.latest_deadline " +
+            "AND cr.submission_deadline = sub.latest_submission_deadline " +
+            "AND cr.system_insert_time = sub.latest_system_insert_time " +
             "WHERE cr.earthquake_identifier = #{eqid} " +
             "GROUP BY cr.affected_area_name, cr.system_insert_time")
     List<CasualtyReport> getTotal(@Param("eqid") String eqid);

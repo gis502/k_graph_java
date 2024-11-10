@@ -10,8 +10,8 @@ import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.BarrierLakeSituation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.PublicOpinion;
-import com.ruoyi.system.domain.entity.SocialOrder;
 import com.ruoyi.system.domain.entity.SupplySituation;
+import com.ruoyi.system.domain.entity.SocialOrder;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.PublicOpinionListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
@@ -141,17 +141,17 @@ public class PublicOpinionServiceImpl
         Page<PublicOpinion> publicOpinionPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<PublicOpinion> queryWrapper = Wrappers.lambdaQuery(PublicOpinion.class)
 
-                .or().like(PublicOpinion::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(PublicOpinion::getEarthquakeZoneName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(PublicOpinion::getPublicityReport, requestParams) // 宣传报道（篇）
-                .or().like(PublicOpinion::getProvincialMediaReport, requestParams) // 中省主要媒体报道（篇）
-                .or().like(PublicOpinion::getPublicOpinionRiskWarning, requestParams) // 舆情风险提示（条）
-                .or().like(PublicOpinion::getPressConference, requestParams) // 发布会（场）
-                .or().like(PublicOpinion::getNegativeOpinionDisposal, requestParams); // 处置负面舆论（条）
+                .eq(PublicOpinion::getEarthquakeId, eqId)
+                .like(PublicOpinion::getEarthquakeName, requestParams) // 地震名称
+                .or().like(PublicOpinion::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(PublicOpinion::getEarthquakeId, eqId)
+                .like(PublicOpinion::getEarthquakeZoneName, requestParams) // 震区（县/区）
+                .or().like(PublicOpinion::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(publicOpinionPage, queryWrapper);
     }

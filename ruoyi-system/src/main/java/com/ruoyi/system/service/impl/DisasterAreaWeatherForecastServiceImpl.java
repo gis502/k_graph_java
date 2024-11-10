@@ -130,13 +130,19 @@ public class DisasterAreaWeatherForecastServiceImpl extends
         Page<DisasterAreaWeatherForecast> disasterAreaWeatherForecastPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<DisasterAreaWeatherForecast> queryWrapper = Wrappers.lambdaQuery(DisasterAreaWeatherForecast.class)
 
-                .or().like(DisasterAreaWeatherForecast::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(DisasterAreaWeatherForecast::getAffectedAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(DisasterAreaWeatherForecast::getWeatherForecast, requestParams); // 未来三天气象情况
+                .eq(DisasterAreaWeatherForecast::getEarthquakeId, eqId)
+                .like(DisasterAreaWeatherForecast::getEarthquakeName, requestParams) // 地震名称
+                .or().like(DisasterAreaWeatherForecast::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(DisasterAreaWeatherForecast::getEarthquakeId, eqId)
+                .like(DisasterAreaWeatherForecast::getAffectedAreaName, requestParams) // 震区（县/区）
+                .or().like(DisasterAreaWeatherForecast::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(DisasterAreaWeatherForecast::getEarthquakeId, eqId)
+                .like(DisasterAreaWeatherForecast::getWeatherForecast, requestParams); // 未来三天气象情况
 
         return baseMapper.selectPage(disasterAreaWeatherForecastPage, queryWrapper);
     }

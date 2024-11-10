@@ -150,24 +150,17 @@ public class RescueForcesServiceImpl extends
         Page<RescueForces> rescueForcesPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<RescueForces> queryWrapper = Wrappers.lambdaQuery(RescueForces.class)
 
-                .or().like(RescueForces::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(RescueForces::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(RescueForces::getPlaCount, requestParams) // 解放军
-                .or().like(RescueForces::getArmedPoliceCount, requestParams) // 武警数量
-                .or().like(RescueForces::getMilitiaCount, requestParams) // 民兵
-                .or().like(RescueForces::getFireRescueCount, requestParams) // 消防救援
-                .or().like(RescueForces::getForestFireRescueCount, requestParams) // 森林消防
-                .or().like(RescueForces::getProfessionalForcesCount, requestParams) // 专业力量：安能、…
-                .or().like(RescueForces::getEmergencyProductionSafetyCount, requestParams) // 应急安全生产
-                .or().like(RescueForces::getMedicalRescueCount, requestParams) // 医疗救援
-                .or().like(RescueForces::getTransportationCommunicationPowerCount, requestParams) // 交通通信电力等力量
-                .or().like(RescueForces::getAirRescueCount, requestParams) // 空中救援
-                .or().like(RescueForces::getVolunteerRescueTeamCount, requestParams) // 志愿抢险队
-                .or().like(RescueForces::getPartyMemberCommandoCount, requestParams); // 党员突击队
+                .eq(RescueForces::getEarthquakeId, eqId)
+                .like(RescueForces::getEarthquakeName, requestParams) // 地震名称
+                .or().like(RescueForces::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(RescueForces::getEarthquakeId, eqId)
+                .like(RescueForces::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(RescueForces::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(rescueForcesPage, queryWrapper);
     }

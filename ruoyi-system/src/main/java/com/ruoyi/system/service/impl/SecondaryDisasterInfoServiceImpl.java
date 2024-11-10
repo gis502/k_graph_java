@@ -133,16 +133,19 @@ public class SecondaryDisasterInfoServiceImpl extends
         Page<SecondaryDisasterInfo> secondaryDisasterInfoPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<SecondaryDisasterInfo> queryWrapper = Wrappers.lambdaQuery(SecondaryDisasterInfo.class)
 
-                .or().like(SecondaryDisasterInfo::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(SecondaryDisasterInfo::getAffectedArea, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(SecondaryDisasterInfo::getHazardPoints, requestParams) // 隐患点（处）
-                .or().like(SecondaryDisasterInfo::getThreatenedAreasSecondary, requestParams) // 受威胁地区（乡镇、村）
-                .or().like(SecondaryDisasterInfo::getThreatenedPopulationSecondary, requestParams) // 受威胁群众（户或人）
-                .or().like(SecondaryDisasterInfo::getEvacuationSecondary, requestParams); // 避险转移（户或人）
+                .eq(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .like(SecondaryDisasterInfo::getEarthquakeName, requestParams) // 地震名称
+                .or().like(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .like(SecondaryDisasterInfo::getAffectedArea, requestParams) // 震区（县/区）
+                .or().like(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(SecondaryDisasterInfo::getEarthquakeId, eqId)
+                .like(SecondaryDisasterInfo::getThreatenedAreasSecondary, requestParams);
 
         return baseMapper.selectPage(secondaryDisasterInfoPage, queryWrapper);
     }

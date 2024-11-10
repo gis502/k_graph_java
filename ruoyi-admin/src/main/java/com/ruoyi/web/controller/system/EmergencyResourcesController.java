@@ -9,6 +9,11 @@ import com.ruoyi.system.service.impl.EmergencySheltersServiceImpl;
 import com.ruoyi.system.service.impl.RescueTeamsInfoServiceImpl;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
@@ -163,12 +168,32 @@ public class EmergencyResourcesController {
     //应急物资储备页面--增加功能
     @PostMapping("/addDisasterReserves")
     public boolean addDisasterReserves(@RequestBody DisasterReliefSupplies disasterReliefSupplies) {
+        // 打印收到的 geom 字段
+        System.out.println("Received geom: " + disasterReliefSupplies.getGeom());
+        // 经度验证
+        Double longitude = disasterReliefSupplies.getLongitude();
+        if (longitude == null) {
+            throw new IllegalArgumentException("经度不能为空");
+        }
+        if (longitude < -180 || longitude > 180) {
+            throw new IllegalArgumentException("经度应在 -180 到 180 之间");
+        }
+
+        // 纬度验证
+        Double latitude = disasterReliefSupplies.getLatitude();
+        if (latitude == null) {
+            throw new IllegalArgumentException("纬度不能为空");
+        }
+        if (latitude < -90 || latitude > 90) {
+            throw new IllegalArgumentException("纬度应在 -90 到 90 之间");
+        }
+
         return disasterReliefSuppliesService.save(disasterReliefSupplies);
     }
 
     //应急物资储备页面--删除功能
     @DeleteMapping("/deleteDisasterReserves/{uuid}")
-    public boolean deleteDisasterReserves(@PathVariable Long uuid) {
+    public boolean deleteDisasterReserves(@PathVariable String uuid) {
         return disasterReliefSuppliesService.removeById(uuid);
     }
 
@@ -251,7 +276,7 @@ public class EmergencyResourcesController {
 
     //救援队伍页面--删除功能
     @DeleteMapping("/deleteEmergencyTeam/{uuid}")
-    public boolean deleteEmergencyTeam(@PathVariable Long uuid) {
+    public boolean deleteEmergencyTeam(@PathVariable String uuid) {
         return rescueTeamsInfoService.removeById(uuid);
     }
 
@@ -327,15 +352,16 @@ public class EmergencyResourcesController {
     }
 
 
-    //救援队伍页面--删除功能
+    //避难场所页面--删除功能
     @DeleteMapping("/deleteEmergencyShelters/{uuid}")
-    public boolean deleteEmergencyShelters(@PathVariable Long uuid) {
+    public boolean deleteEmergencyShelters(@PathVariable String uuid) {
         return emergencySheltersService.removeById(uuid);
     }
 
-    //救援队伍页面--修改功能
+    //避难场所页面--修改功能
     @PutMapping("/updateEmergencyShelters")
     public boolean updateEmergencyShelters(@RequestBody EmergencyShelters emergencyShelters) {
+        System.out.println("修改表单："+emergencyShelters);
         return emergencySheltersService.updateById(emergencyShelters);
     }
 

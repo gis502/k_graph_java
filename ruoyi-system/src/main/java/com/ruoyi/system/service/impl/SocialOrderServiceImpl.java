@@ -139,14 +139,17 @@ public class SocialOrderServiceImpl extends
         Page<SocialOrder> socialOrderPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<SocialOrder> queryWrapper = Wrappers.lambdaQuery(SocialOrder.class)
 
-                .or().like(SocialOrder::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(SocialOrder::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(SocialOrder::getReportedRescueInfo, requestParams) // 接报救助信息（起）
-                .or().like(SocialOrder::getPoliceForce, requestParams); // 投入警力（人）
+                .eq(SocialOrder::getEarthquakeId, eqId)
+                .like(SocialOrder::getEarthquakeName, requestParams) // 地震名称
+                .or().like(SocialOrder::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(SocialOrder::getEarthquakeId, eqId)
+                .like(SocialOrder::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(SocialOrder::getEarthquakeId, eqId)
+                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(socialOrderPage, queryWrapper);
     }
