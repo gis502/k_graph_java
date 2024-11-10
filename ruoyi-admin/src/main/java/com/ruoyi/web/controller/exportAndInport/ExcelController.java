@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
@@ -149,7 +150,6 @@ public class ExcelController {
     @Resource
     private MaterialDonationServiceImpl materialDonationServiceImpl;
 
-
     /**
      * 搜索
      *
@@ -159,67 +159,69 @@ public class ExcelController {
     @PostMapping("/searchData")
     public AjaxResult searchData(@RequestBody RequestBTO requestBTO) {
 
+        log.info("传入的Eqid为：{}", requestBTO.getQueryEqId());
+
+        // 1. 先对eqid的数据进行查询获取
+        // 2.
+
         switch (requestBTO.getFlag()) {
             case "AfterSeismicInformation":
+
+                requestBTO.getQueryEqId();
+
                 return AjaxResult.success(afterSeismicInformationServiceImpl.searchData(requestBTO));
             case "AftershockInformation":
                 return AjaxResult.success(aftershockInformationServiceImpl.searchData(requestBTO));
-            case  "CasualtyReport":
+            case "CasualtyReport":
                 return AjaxResult.success(caseCacheServiceImpl.searchData(requestBTO));
-            case"TransferSettlementInfoServiceImpl":
+            case "TransferSettlementInfo":
                 return AjaxResult.success(transferSettlementInfoServiceImpl.searchData(requestBTO));
-            case"Meetings":
+            case "Meetings":
                 return AjaxResult.success(meetingsServiceImpl.searchData(requestBTO));
-            case"RoadDamage":
+            case "RoadDamage":
                 return AjaxResult.success(roadDamageServiceImpl.searchData(requestBTO));
-            case"TrafficControlSections":
+            case "TrafficControlSections":
                 return AjaxResult.success(trafficControlSectionsServiceImpl.searchData(requestBTO));
-            case"CommunicationFacilityDamageRepairStatus":
+            case "CommunicationFacilityDamageRepairStatus":
                 return AjaxResult.success(communicationFacilityDamageRepairStatusServiceImpl.searchData(requestBTO));
-            case"PowerSupplyInformation":
+            case "PowerSupplyInformation":
                 return AjaxResult.success(powerSupplyInformationServiceImpl.searchData(requestBTO));
-            case"HousingSituation":
+            case "HousingSituation":
                 return AjaxResult.success(housingSituationServiceImpl.searchData(requestBTO));
-            case"SupplySituation":
+            case "SupplySituation":
                 return AjaxResult.success(supplySituationServiceImpl.searchData(requestBTO));
-            case"SupplyWater":
+            case "SupplyWater":
                 return AjaxResult.success(supplyWaterServiceImpl.searchData(requestBTO));
-            case"RiskConstructionGeohazards":
+            case "RiskConstructionGeohazards":
                 return AjaxResult.success(riskConstructionGeohazardsServiceImpl.searchData(requestBTO));
-            case"BarrierLakeSituation":
+            case "BarrierLakeSituation":
                 return AjaxResult.success(barrierLakeSituationServiceImpl.searchData(requestBTO));
-            case"SecondaryDisasterInfo":
+            case "SecondaryDisasterInfo":
                 return AjaxResult.success(secondaryDisasterInfoServiceImpl.searchData(requestBTO));
-            case"DisasterAreaWeatherForecast":
+            case "DisasterAreaWeatherForecast":
                 return AjaxResult.success(disasterAreaWeatherForecastServiceImpl.searchData(requestBTO));
-            case"RescueForces":
+            case "RescueForces":
                 return AjaxResult.success(rescueForcesServiceImpl.searchData(requestBTO));
-            case"LargeSpecialRescueEquipment":
+            case "LargeSpecialRescueEquipment":
                 return AjaxResult.success(largeSpecialRescueEquipmentServiceImpl.searchData(requestBTO));
-            case"DisasterReliefMaterials":
+            case "DisasterReliefMaterials":
                 return AjaxResult.success(disasterReliefMaterialsServiceImpl.searchData(requestBTO));
-            case"MaterialDonation":
+            case "MaterialDonation":
                 return AjaxResult.success(materialDonationServiceImpl.searchData(requestBTO));
-            case"GovernmentDepartmentDonations":
+            case "GovernmentDepartmentDonations":
                 return AjaxResult.success(governmentDepartmentDonationsServiceImpl.searchData(requestBTO));
-            case"CharityOrganizationDonations":
+            case "CharityOrganizationDonations":
                 return AjaxResult.success(charityOrganizationDonationsServiceImpl.searchData(requestBTO));
-            case"RedCrossDonations":
+            case "RedCrossDonations":
                 return AjaxResult.success(redCrossDonationsServiceImpl.searchData(requestBTO));
-            case"PublicOpinion":
+            case "PublicOpinion":
                 return AjaxResult.success(publicOpinionServiceImpl.searchData(requestBTO));
-            case"SocialOrder":
+            case "SocialOrder":
                 return AjaxResult.success(socialOrderServiceImpl.searchData(requestBTO));
-
-
-
-
-
             default:
-                return AjaxResult.error("搜索失败");
+                return AjaxResult.error(MessageConstants.SEARCH_Failed);
         }
     }
-
 
 
     @PostMapping("/getData")

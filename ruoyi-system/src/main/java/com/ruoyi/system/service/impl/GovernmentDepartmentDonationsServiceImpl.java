@@ -132,14 +132,17 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
         Page<GovernmentDepartmentDonations> governmentDepartmentDonationsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
+        String eqId = requestBTO.getQueryEqId();
         LambdaQueryWrapper<GovernmentDepartmentDonations> queryWrapper = Wrappers.lambdaQuery(GovernmentDepartmentDonations.class)
 
-                .or().like(GovernmentDepartmentDonations::getEarthquakeName, requestParams) // 地震名称
-                .or().apply("to_char(earthquake_time,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(GovernmentDepartmentDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().apply("to_char(submission_deadline,'YYY-MM-DD HH24:MI:SS') LIKE{0}","%"+ requestParams + "%")
-                .or().like(GovernmentDepartmentDonations::getTodayAmount, requestParams) // 当日
-                .or().like(GovernmentDepartmentDonations::getDonationAmount, requestParams); // 累计
+                .eq(GovernmentDepartmentDonations::getEarthquakeId, eqId)
+                .like(GovernmentDepartmentDonations::getEarthquakeName, requestParams) // 地震名称
+                .or().like(GovernmentDepartmentDonations::getEarthquakeId, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(GovernmentDepartmentDonations::getEarthquakeId, eqId)
+                .like(GovernmentDepartmentDonations::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                .or().like(GovernmentDepartmentDonations::getEarthquakeId, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
         return baseMapper.selectPage(governmentDepartmentDonationsPage, queryWrapper);
     }
