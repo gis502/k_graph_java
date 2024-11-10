@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.system;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.system.domain.entity.OrthophotoImage;
@@ -20,11 +22,12 @@ import java.time.format.DateTimeFormatter;
 public class OrthophotoImageController {
     @Resource
     private OrthophotoImageService orthophotoImageService;
+
     //增
     @PostMapping("/save")
     public AjaxResult save(@RequestBody OrthophotoImage orthophotoImage) {
 
-        System.out.println("从前端传过来的数据:"+orthophotoImage);
+        System.out.println("从前端传过来的数据:" + orthophotoImage);
         try {
             orthophotoImage.generateUuidIfNotPresent();
             return AjaxResult.success(orthophotoImageService.save(orthophotoImage));
@@ -35,28 +38,31 @@ public class OrthophotoImageController {
     }
 
     //删
-     @DeleteMapping("/removeById")
-     public AjaxResult removeById(@RequestParam(value = "uuid") String uuid) {
-         return AjaxResult.success(orthophotoImageService.removeById(uuid));
-     }
+    @DeleteMapping("/removeById")
+    public AjaxResult removeById(@RequestParam(value = "uuid") String uuid) {
+        return AjaxResult.success(orthophotoImageService.removeById(uuid));
+    }
 
-     //改
-     @PostMapping("/update")
-     public AjaxResult updata(@RequestBody OrthophotoImage orthophotoImage) {
-         return AjaxResult.success(orthophotoImageService.updateById(orthophotoImage));
-     }
+    //改
+    @PostMapping("/update")
+    public AjaxResult updata(@RequestBody OrthophotoImage orthophotoImage) {
+        return AjaxResult.success(orthophotoImageService.updateById(orthophotoImage));
+    }
 
-     //查
+    //查
     @PostMapping("/list")
-    public AjaxResult list(){
+    public AjaxResult list() {
         System.out.println(orthophotoImageService.list());
         return AjaxResult.success(orthophotoImageService.list());
     }
 
+
     @PostMapping("/page")
-    public AjaxResult page(@RequestBody PageDomain pageDomain){
+    public AjaxResult page(@RequestBody PageDomain pageDomain) {
+        Page<OrthophotoImage> page = new Page<>(pageDomain.getPageNum(), pageDomain.getPageSize());
         LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
-        return AjaxResult.success(orthophotoImageService.list(wrapper));
+        Page<OrthophotoImage> resultPage = orthophotoImageService.page(page, wrapper);
+        return AjaxResult.success(resultPage);
     }
 }
 
