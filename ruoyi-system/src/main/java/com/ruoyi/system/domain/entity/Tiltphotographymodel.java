@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public class Tiltphotographymodel {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "time") // 确保格式正确
-    private Date time; // 使用 Date 类型
+    private LocalDate time; // 使用 Date 类型
 
     /**
      * 模型id

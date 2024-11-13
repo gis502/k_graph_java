@@ -1,21 +1,11 @@
 package com.ruoyi.web.controller.system;
-
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.system.domain.entity.OrthophotoImage;
-import com.ruoyi.system.domain.entity.PlotIconmanagement;
 import com.ruoyi.system.service.OrthophotoImageService;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/orthophoto")
@@ -56,14 +46,45 @@ public class OrthophotoImageController {
         return AjaxResult.success(orthophotoImageService.list());
     }
 
-
-    @PostMapping("/page")
-    public AjaxResult page(@RequestBody PageDomain pageDomain) {
-        Page<OrthophotoImage> page = new Page<>(pageDomain.getPageNum(), pageDomain.getPageSize());
+    //搜索
+    @GetMapping("/queryEq")
+    public AjaxResult queryEq(@RequestParam(value = "queryValue") String queryValue) {
         LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
-        Page<OrthophotoImage> resultPage = orthophotoImageService.page(page, wrapper);
-        return AjaxResult.success(resultPage);
+        if (queryValue != null && !queryValue.trim().isEmpty()) {
+            wrapper
+                    .like(OrthophotoImage::getName, queryValue)
+                    .or()
+                    .like(OrthophotoImage::getPath, queryValue)
+                    .or()
+                    .like(OrthophotoImage::getHeight, queryValue)
+                    .or()
+                    .like(OrthophotoImage::getCreateTime, queryValue)
+                    .or()
+                    .like(OrthophotoImage::getAngle, queryValue);
+        }
+        List<OrthophotoImage> resultList = orthophotoImageService.list(wrapper);
+        return AjaxResult.success(resultList);
     }
-}
 
+
+    //筛选
+    @PostMapping("/fromeq")
+    public AjaxResult fromeq(@RequestBody OrthophotoImage orthophotoImage) {
+        LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
+        wrapper
+                .like(orthophotoImage.getName() != null && !orthophotoImage.getName().trim().isEmpty(), OrthophotoImage::getName, orthophotoImage.getName())
+                .or()
+                .like(orthophotoImage.getPath() != null && !orthophotoImage.getPath().trim().isEmpty(), OrthophotoImage::getPath, orthophotoImage.getPath())
+                .or()
+                .like(orthophotoImage.getHeight() != null && !orthophotoImage.getHeight().trim().isEmpty(), OrthophotoImage::getHeight, orthophotoImage.getHeight())
+                .or()
+                .ge(orthophotoImage.getCreateTime() != null, OrthophotoImage::getCreateTime, orthophotoImage.getCreateTime())
+                .or()
+                .like(orthophotoImage.getAngle() != null, OrthophotoImage::getAngle, orthophotoImage.getAngle());
+
+        List<OrthophotoImage> resultList = orthophotoImageService.list(wrapper);
+        return AjaxResult.success(resultList);
+    }
+
+}
 

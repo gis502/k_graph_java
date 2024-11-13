@@ -105,7 +105,8 @@ public class SafetyProtectionController {
      */
 
     @PostMapping("/searchSafetyProtection")
-    public List<SafetyProtection> searchSafetyProtection(@RequestParam("inputData") String inputData) {
+    public List<SafetyProtection> searchSafetyProtection(@RequestParam(value = "data",required = false) String inputData) {
+        System.out.println(inputData);
         LambdaQueryWrapper<SafetyProtection> wrapper = new LambdaQueryWrapper<>();
 
         // 添加查询条件
@@ -119,11 +120,11 @@ public class SafetyProtectionController {
                 .or()
                 .like(SafetyProtection::getTactics, inputData)
                 .or()
-                .apply("CAST(port AS TEXT) = {0}", inputData);
-
+                .apply("CAST(port AS CHAR) = {0}", inputData); // 修改为使用 CHAR 类型，以兼容部分数据库
 
         return safetyProtectionService.list(wrapper);
     }
+
 
     /**
      * 刪
