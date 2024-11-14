@@ -4,9 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.entity.PlotIconmanagement;
 import com.ruoyi.system.service.PlotIconmanagementService;
+import org.apache.commons.io.FileUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,8 +52,43 @@ public class PlotIconmanagementController {
 
     @PostMapping("/addploticon")
     @Log(title = "标会图片管理", businessType = BusinessType.INSERT)
-    public AjaxResult addPlotIcon(@RequestBody PlotIconmanagement plotIcon) {
-        return AjaxResult.success(plotIconmanagementService.save(plotIcon));
+    public AjaxResult addPlotIcon(@RequestBody PlotIconmanagement plotIcon) throws IOException {
+        String base64Data = plotIcon.getImg();
+        String imageName = plotIcon.getName(); // 获取作为文件名的 name 字段
+        try {
+            // 检查 Base64 字符串格式并去掉前缀
+            if (base64Data.contains(",")) {
+                base64Data = base64Data.split(",")[1];
+            }
+
+            // 使用 Base64 MIME 解码器来解码数据
+            byte[] imageBytes = Base64.getMimeDecoder().decode(base64Data);
+
+            // 确定文件保存路径
+            String projectPath = System.getProperty("user.dir");
+            String outputPath = projectPath + "/ruoyi-admin/src/main/resources/Plots/" + imageName + ".png";
+            File outputFile = new File(outputPath);
+
+            // 确保目录存在
+            outputFile.getParentFile().mkdirs();
+
+            // 将字节数组写入文件，生成 PNG 图片
+            FileUtils.writeByteArrayToFile(outputFile, imageBytes);
+
+            // 更新 plotIcon 的 img 字段为文件名
+            plotIcon.setImg(imageName);
+
+            // 保存 plotIcon 对象
+            plotIconmanagementService.save(plotIcon);
+
+            return AjaxResult.success("File saved successfully with name: " + imageName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return AjaxResult.error("Failed to save image: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return AjaxResult.error("Base64 decoding failed: " + e.getMessage());
+        }
     }
 
 }
