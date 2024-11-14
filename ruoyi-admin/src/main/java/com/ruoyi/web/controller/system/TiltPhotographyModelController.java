@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -74,6 +77,7 @@ public class TiltPhotographyModelController {
     //筛选
     @PostMapping("/fromeq")
     public AjaxResult fromeq(@RequestBody Tiltphotographymodel tiltphotographymodel) {
+        System.out.println("哈哈哈哈哈哈哈哈"+tiltphotographymodel);
         LambdaQueryWrapper<Tiltphotographymodel> wrapper = new LambdaQueryWrapper<>();
 
         // 处理字符串类型字段
@@ -98,8 +102,17 @@ public class TiltPhotographyModelController {
 
         // 处理时间字段
         if (tiltphotographymodel.getTime() != null) {
-            wrapper.or().apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + tiltphotographymodel.getTime() + "%");
+            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
+            ZonedDateTime utcTime = tiltphotographymodel.getTime().atZone(ZoneId.of("UTC"));
+            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
+
+            // 格式化为数据库中匹配的格式字符串
+            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // 将格式化后的时间应用到查询中
+            wrapper.or().apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
         }
+
 
         // 处理其他数值类型字段
         if (tiltphotographymodel.getRze() != null) {

@@ -49,6 +49,7 @@ public class OrthophotoImageController {
     //搜索
     @GetMapping("/queryEq")
     public AjaxResult queryEq(@RequestParam(value = "queryValue", required = false) String queryValue) {
+        System.out.println("啊啊啊啊啊啊啊啊啊啊啊"+queryValue);
         LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
         if (queryValue != null && !queryValue.trim().isEmpty()) {
             wrapper
@@ -72,7 +73,6 @@ public class OrthophotoImageController {
     public AjaxResult fromeq(@RequestBody OrthophotoImage orthophotoImage) {
         System.out.println("哈哈哈哈哈哈哈哈哈哈" + orthophotoImage);
         LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
-
         // 处理字符串类型字段
         wrapper.like(
                 orthophotoImage.getName() != null && !orthophotoImage.getName().trim().isEmpty(),
@@ -84,12 +84,10 @@ public class OrthophotoImageController {
                 OrthophotoImage::getPath,
                 orthophotoImage.getPath()
         );
-
         // 处理 height 字段，假设是字符串类型
         if (orthophotoImage.getHeight() != null && !orthophotoImage.getHeight().trim().isEmpty()) {
             wrapper.or().like(OrthophotoImage::getHeight, orthophotoImage.getHeight());
         }
-
         // 处理 create_time 字段，使用范围查询
         if (orthophotoImage.getCreateTime() != null) {
             wrapper.or().ge(OrthophotoImage::getCreateTime, orthophotoImage.getCreateTime());
