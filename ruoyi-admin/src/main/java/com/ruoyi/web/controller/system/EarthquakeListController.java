@@ -83,6 +83,8 @@ public class EarthquakeListController {
         return earthquakeListService.list(QueryWrapper);
     }
 
+
+    //筛选
     @PostMapping("/fromEq")
     public List<EarthquakeList> fromEq(@RequestBody EqFormDto queryDTO) {
         LambdaQueryWrapper<EarthquakeList> queryWrapper = new LambdaQueryWrapper<>();
