@@ -121,7 +121,7 @@ public class SafetyProtectionController {
                 .like(SafetyProtection::getTactics, inputData)
                 .or()
                 .apply("CAST(port AS CHAR) = {0}", inputData); // 修改为使用 CHAR 类型，以兼容部分数据库
-
+        System.out.println("ahhahahahahahaahhah"+safetyProtectionService.list(wrapper));
         return safetyProtectionService.list(wrapper);
     }
 

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -44,9 +45,9 @@ public class Tiltphotographymodel {
     /**
      * 模型添加时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     @TableField(value = "time") // 确保格式正确
-    private LocalDate time; // 使用 Date 类型
+    private LocalDateTime time; // 使用 Date 类型
 
     /**
      * 模型id

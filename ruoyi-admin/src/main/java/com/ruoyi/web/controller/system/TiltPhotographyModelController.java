@@ -75,22 +75,43 @@ public class TiltPhotographyModelController {
     @PostMapping("/fromeq")
     public AjaxResult fromeq(@RequestBody Tiltphotographymodel tiltphotographymodel) {
         LambdaQueryWrapper<Tiltphotographymodel> wrapper = new LambdaQueryWrapper<>();
-        wrapper
-                .like(tiltphotographymodel.getName() != null && !tiltphotographymodel.getName().trim().isEmpty(), Tiltphotographymodel::getName, tiltphotographymodel.getName())
-                .or()
-                .like(tiltphotographymodel.getPath() != null && !tiltphotographymodel.getPath().trim().isEmpty(), Tiltphotographymodel::getPath, tiltphotographymodel.getPath())
-                .or()
-                .like(tiltphotographymodel.getRz() != null, Tiltphotographymodel::getRz, tiltphotographymodel.getRz())
-                .or()
-                .like(tiltphotographymodel.getTz() != null, Tiltphotographymodel::getTz, tiltphotographymodel.getTz())
-                .or()
-                .like(tiltphotographymodel.getTime() != null, Tiltphotographymodel::getTime, tiltphotographymodel.getTime())
-                .or()
-                .like(tiltphotographymodel.getRze() != null, Tiltphotographymodel::getRze, tiltphotographymodel.getRze())
-                .or()
-                .like(tiltphotographymodel.getTze() != null, Tiltphotographymodel::getTze, tiltphotographymodel.getTze())
-                .or()
-                .like(tiltphotographymodel.getModelSize() != null, Tiltphotographymodel::getModelSize, tiltphotographymodel.getModelSize());
+
+        // 处理字符串类型字段
+        wrapper.like(
+                tiltphotographymodel.getName() != null && !tiltphotographymodel.getName().trim().isEmpty(),
+                Tiltphotographymodel::getName,
+                tiltphotographymodel.getName()
+        );
+        wrapper.or().like(
+                tiltphotographymodel.getPath() != null && !tiltphotographymodel.getPath().trim().isEmpty(),
+                Tiltphotographymodel::getPath,
+                tiltphotographymodel.getPath()
+        );
+
+        // 处理数值类型字段，使用 `=` 或将其转换为字符串
+        if (tiltphotographymodel.getRz() != null) {
+            wrapper.or().apply("CAST(rz AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRz() + "%");
+        }
+        if (tiltphotographymodel.getTz() != null) {
+            wrapper.or().apply("CAST(tz AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getTz() + "%");
+        }
+
+        // 处理时间字段
+        if (tiltphotographymodel.getTime() != null) {
+            wrapper.or().apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + tiltphotographymodel.getTime() + "%");
+        }
+
+        // 处理其他数值类型字段
+        if (tiltphotographymodel.getRze() != null) {
+            wrapper.or().apply("CAST(rze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRze() + "%");
+        }
+        if (tiltphotographymodel.getTze() != null) {
+            wrapper.or().apply("CAST(tze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getTze() + "%");
+        }
+        if (tiltphotographymodel.getModelSize() != null) {
+            wrapper.or().apply("CAST(model_size AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getModelSize() + "%");
+        }
+
         List<Tiltphotographymodel> resultList = tiltphotographymodelService.list(wrapper);
         return AjaxResult.success(resultList);
     }
@@ -105,18 +126,19 @@ public class TiltPhotographyModelController {
                     .or()
                     .like(Tiltphotographymodel::getPath, queryValue)
                     .or()
-                    .like(Tiltphotographymodel::getRz, queryValue)
+                    .apply("CAST(rz AS TEXT) LIKE {0}", "%" + queryValue + "%") // 将 rz 转换为字符串
                     .or()
-                    .like(Tiltphotographymodel::getTz, queryValue)
+                    .apply("CAST(tz AS TEXT) LIKE {0}", "%" + queryValue + "%") // 将 tz 转换为字符串
                     .or()
-                    .like(Tiltphotographymodel::getTime, queryValue)
+                    .apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%") // 格式化时间
                     .or()
-                    .like(Tiltphotographymodel::getRze, queryValue)
+                    .apply("CAST(rze AS TEXT) LIKE {0}", "%" + queryValue + "%") // 将 rze 转换为字符串
                     .or()
-                    .like(Tiltphotographymodel::getTze, queryValue)
+                    .apply("CAST(tze AS TEXT) LIKE {0}", "%" + queryValue + "%") // 将 tze 转换为字符串
                     .or()
-                    .like(Tiltphotographymodel::getModelSize, queryValue);
+                    .apply("CAST(model_size AS TEXT) LIKE {0}", "%" + queryValue + "%"); // 将 modelSize 转换为字符串
         }
+
         List<Tiltphotographymodel> resultList = tiltphotographymodelService.list(wrapper);
         return AjaxResult.success(resultList);
     }
