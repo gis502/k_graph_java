@@ -25,23 +25,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select info_id, user_name, ipaddr, login_location, browser, os, status, msg, login_time from sys_logininfor
 		<where>
 			<if test="ipaddr != null and ipaddr != ''">
-				AND ipaddr like concat('%', #{ipaddr}, '%')
+				AND ipaddr LIKE '%' || #{ipaddr} || '%'
 			</if>
 			<if test="status != null and status != ''">
 				AND status = #{status}
 			</if>
 			<if test="userName != null and userName != ''">
-				AND user_name like concat('%', #{userName}, '%')
+				AND user_name LIKE '%' || #{userName} || '%'
 			</if>
 			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
-				and login_time::date &gt;= to_date(#{params.beginTime},'yyyy-MM-dd')
+				AND login_time::date &gt;= to_date(#{params.beginTime}, 'yyyy-MM-dd')
 			</if>
 			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
-				and login_time::date &lt;= to_date(#{params.endTime},'yyyy-MM-dd')
+				AND login_time::date &lt;= to_date(#{params.endTime}, 'yyyy-MM-dd')
 			</if>
 		</where>
 		order by info_id desc
 	</select>
+
 
 	<delete id="deleteLogininforByIds" parameterType="Long">
  		delete from sys_logininfor where info_id::bigint in
