@@ -37,9 +37,6 @@ public class ResourcesConfig implements WebMvcConfigurer
         // 映射 /uploads/** 到文件系统路径 logistics/uploads
         registry.addResourceHandler("/uploads/**").addResourceLocations(externalUploadsPath);
 
-        // 映射 PlotsPic 文件夹中的资源
-        registry.addResourceHandler("/**").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + "/PlotsPic/");
-
         /** 本地文件上传路径 */
         registry.addResourceHandler(Constants.RESOURCE_PREFIX + "/**")
                 .addResourceLocations("file:" + RuoYiConfig.getProfile() + "/");

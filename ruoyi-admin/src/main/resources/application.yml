@@ -52,13 +52,6 @@ user:
 
 # Spring配置
 spring:
-  # 修改请求映射
-  mvc:
-    static-path-pattern: /PlotsPic/**
-  # 修改静态资源目录
-  web:
-    resources:
-      static-locations: [ classpath:/Plots/ ]
   # 资源信息
   messages:
     # 国际化资源文件路径
@@ -83,6 +76,7 @@ spring:
     host: 47.92.216.173
     # 端口，默认为6379
     port: 7655
+#    port: 6379
     # 数据库索引
     database: 0
     # 密码
