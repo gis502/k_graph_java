@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Base64;
 import java.util.List;
-import java.util.UUID;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.enums.BusinessType;
@@ -33,13 +33,64 @@ public class PlotIconmanagementController {
     @PostMapping("/deleteploticon/{uuid}")
     @Log(title = "标会图片管理", businessType = BusinessType.DELETE)
     public AjaxResult deletePlotIcon(@PathVariable("uuid") String id) {
-        return AjaxResult.success(plotIconmanagementService.removeById(id));
+        // 从数据库获取 plotIcon 对象
+        PlotIconmanagement plotIcon = plotIconmanagementService.getById(id);
+        if (plotIcon != null) {
+            // 确定文件路径
+            String projectPath = System.getProperty("user.dir");
+            String filePath = projectPath + "/logistics/uploads/PlotsPic/" + plotIcon.getName()+".png";
+
+            // 删除文件
+            File file = new File(filePath);
+            if (file.exists() && file.delete()) {
+                // 文件删除成功后再删除数据库记录
+                plotIconmanagementService.removeById(id);
+                return AjaxResult.success("File and record deleted successfully.");
+            } else {
+                return AjaxResult.error("Failed to delete file.");
+            }
+        }
+        return AjaxResult.error("Record not found.");
     }
 
     @PostMapping("/updataploticon")
     @Log(title = "标会图片管理", businessType = BusinessType.UPDATE)
     public AjaxResult updataPlotIcon(@RequestBody PlotIconmanagement plotIcon) {
-        return AjaxResult.success(plotIconmanagementService.updateById(plotIcon));
+        // 从数据库获取当前记录
+        PlotIconmanagement existingPlotIcon = plotIconmanagementService.getById((Serializable) plotIcon.getUuid());
+        if (existingPlotIcon == null) {
+            return AjaxResult.error("Record not found.");
+        }
+        // 删除旧图片
+        String projectPath = System.getProperty("user.dir");
+        String oldFilePath = projectPath + "/logistics/uploads/PlotsPic/" + existingPlotIcon.getName();
+        File oldFile = new File(oldFilePath);
+        if (oldFile.exists()) {
+            oldFile.delete();
+        }
+
+        // 保存新图片
+        try {
+            String base64Data = plotIcon.getImg();
+            if (base64Data.contains(",")) {
+                base64Data = base64Data.split(",")[1];
+            }
+            byte[] imageBytes = Base64.getMimeDecoder().decode(base64Data);
+
+            String newFilePath = projectPath + "/logistics/uploads/PlotsPic/" + plotIcon.getName() + ".png";
+            File newFile = new File(newFilePath);
+            newFile.getParentFile().mkdirs();
+            FileUtils.writeByteArrayToFile(newFile, imageBytes);
+
+            plotIcon.setImg(plotIcon.getName());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return AjaxResult.error("Failed to save new image: " + e.getMessage());
+        }
+        // 更新数据库中的记录
+        plotIconmanagementService.updateById(plotIcon);
+        return AjaxResult.success("Record updated successfully.");
     }
 
     @PostMapping("/searchploticon")
@@ -66,7 +117,7 @@ public class PlotIconmanagementController {
 
             // 确定文件保存路径
             String projectPath = System.getProperty("user.dir");
-            String outputPath = projectPath + "/ruoyi-admin/src/main/resources/Plots/" + imageName + ".png";
+            String outputPath = projectPath + "/logistics/uploads/PlotsPic/" + imageName + ".png";
             File outputFile = new File(outputPath);
 
             // 确保目录存在
