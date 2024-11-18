@@ -28,15 +28,28 @@ public interface RoadDamageMapper extends BaseMapper<RoadDamage> {
     List<RoadDamage> selectRoadRepairsByEqid(@Param("eqid") String eqid);
 
 
-    @Select("SELECT * FROM public.road_damage rd " +
-            "JOIN ( " +
-            "    SELECT affected_area, MIN(ABS(EXTRACT(EPOCH FROM (damage_time - #{time})))) AS min_time_diff " +
-            "    FROM public.road_damage " +
+    @Select("SELECT yas.* " +
+            "FROM road_damage yas " +
+            "JOIN LATERAL (" +
+            "    SELECT affected_area, " +
+            "           reporting_deadline, " +
+            "           system_insert_time, " +
+            "           ROW_NUMBER() OVER (" +
+            "               PARTITION BY affected_area " +
+            "               ORDER BY " +
+            "                   ABS(EXTRACT(EPOCH FROM (reporting_deadline - #{time}::timestamp))) ASC, " +
+            "                   ABS(EXTRACT(EPOCH FROM (system_insert_time - #{time}::timestamp))) ASC" +
+            "           ) AS rn " +
+            "    FROM road_damage " +
             "    WHERE earthquake_id = #{eqid} " +
-            "    GROUP BY affected_area " +
-            ") sub ON rd.affected_area = sub.affected_area " +
-            "AND ABS(EXTRACT(EPOCH FROM (rd.damage_time - #{time}))) = sub.min_time_diff " +
-            "WHERE rd.earthquake_id = #{eqid} " +
-            "ORDER BY rd.affected_area")
+            "    AND affected_area = yas.affected_area " +
+            ") sub ON yas.affected_area = sub.affected_area " +
+            "AND yas.reporting_deadline = sub.reporting_deadline " +
+            "AND yas.system_insert_time = sub.system_insert_time " +
+            "WHERE yas.earthquake_id = #{eqid} " +
+            "AND sub.rn = 1 " +
+            "ORDER BY yas.affected_area")
     List<RoadDamage> fromrepair(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
+
+
 }
