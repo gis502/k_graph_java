@@ -28,7 +28,6 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +45,6 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.ruoyi.system.domain.handler.ExcelConverter.convertContactPhones;
 
@@ -166,7 +164,6 @@ public class ExcelController {
 
         switch (requestBTO.getFlag()) {
             case "AfterSeismicInformation":
-                requestBTO.getQueryEqId();
                 return AjaxResult.success(afterSeismicInformationServiceImpl.searchData(requestBTO));
             case "AftershockInformation":
                 return AjaxResult.success(aftershockInformationServiceImpl.searchData(requestBTO));
