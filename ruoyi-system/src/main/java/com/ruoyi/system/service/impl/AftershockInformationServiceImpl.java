@@ -16,13 +16,11 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.mapper.AftershockInformationMapper;
 import com.ruoyi.system.service.AftershockInformationService;
 import org.springframework.web.multipart.MultipartFile;
@@ -243,6 +241,12 @@ public class AftershockInformationServiceImpl extends
 
 
         return baseMapper.selectPage(aftershockInformationPage, queryWrapper);
+    }
+
+    @Override
+    public List<Map<String, Object>> fromAftershock(String eqid, LocalDateTime time) {
+        List<Map<String, Object>> fromAftershock= aftershockInformationMapper.fromAftershock(eqid,time);
+        return fromAftershock;
     }
 
 
