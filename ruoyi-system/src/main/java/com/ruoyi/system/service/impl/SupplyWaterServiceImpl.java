@@ -180,6 +180,13 @@ public class SupplyWaterServiceImpl
         return baseMapper.selectPage(supplyWaterPage, queryWrapper);
     }
 
+    @Override
+    public List<SupplyWater> fromSupplyWater(String eqid, LocalDateTime time) {
+        List<SupplyWater> supplyWaterList = supplyWaterMapper.fromSupplyWater(eqid, time);
+        return supplyWaterList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

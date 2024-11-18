@@ -8,6 +8,7 @@ import com.ruoyi.system.domain.entity.SupplyWater;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SupplyWaterService extends IService<SupplyWater> {
@@ -17,4 +18,6 @@ public interface SupplyWaterService extends IService<SupplyWater> {
     List<SupplyWater> getSupplyWaterById(String eqid);
 
     IPage<SupplyWater> searchData(RequestBTO requestBTO);
+
+    List<SupplyWater> fromSupplyWater(String eqid, LocalDateTime time);
 }
