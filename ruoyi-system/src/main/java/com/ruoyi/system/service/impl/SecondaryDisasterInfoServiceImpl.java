@@ -177,6 +177,13 @@ public class SecondaryDisasterInfoServiceImpl extends
         return baseMapper.selectPage(secondaryDisasterInfoPage, queryWrapper);
     }
 
+    @Override
+    public List<SecondaryDisasterInfo> fromSecondaryDisasterInfo(String eqid, LocalDateTime time) {
+        List<SecondaryDisasterInfo> secondaryDisasterInfoList = secondaryDisasterInfoMapper.fromSecondaryDisasterInfo(eqid, time);
+        return secondaryDisasterInfoList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

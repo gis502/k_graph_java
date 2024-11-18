@@ -8,6 +8,7 @@ import com.ruoyi.system.domain.entity.SecondaryDisasterInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SecondaryDisasterInfoService extends IService<SecondaryDisasterInfo> {
@@ -17,4 +18,6 @@ public interface SecondaryDisasterInfoService extends IService<SecondaryDisaster
     List<SecondaryDisasterInfo> SecondaryDisasterInfoByEqId(String eqid);
 
     IPage<SecondaryDisasterInfo> searchData(RequestBTO requestBTO);
+
+    List<SecondaryDisasterInfo> fromSecondaryDisasterInfo(String eqid, LocalDateTime time);
 }
