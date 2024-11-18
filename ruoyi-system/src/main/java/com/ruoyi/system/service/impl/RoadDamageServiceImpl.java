@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.Meetings;
@@ -19,6 +20,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -120,25 +122,50 @@ public class RoadDamageServiceImpl
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
 
-        LambdaQueryWrapper<RoadDamage> queryWrapper = Wrappers.lambdaQuery(RoadDamage.class)
-                .eq(RoadDamage::getEarthquakeId, eqId)
-                .like(RoadDamage::getEarthquakeName, requestParams) // 地震名称
-                .or().like(RoadDamage::getEarthquakeId, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(RoadDamage::getEarthquakeId, eqId)
-                .like(RoadDamage::getAffectedArea, requestParams) // 震区（县/区）
-                .or().like(RoadDamage::getEarthquakeId, eqId)
-                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(RoadDamage::getEarthquakeId, eqId)
-                .like(RoadDamage::getHighwaysNationalRoads, requestParams) // 高速公路及国道
-                .or().like(RoadDamage::getEarthquakeId, eqId)
-                .like(RoadDamage::getProvincialRoads, requestParams) // 省道
-                .or().like(RoadDamage::getEarthquakeId, eqId)
-                .like(RoadDamage::getVillagesWithRoadClosures, requestParams) // 目前道路中断村
-                .or().like(RoadDamage::getEarthquakeId, eqId)
-                .like(RoadDamage::getUnderRepair, requestParams) // 正在抢修
-                .or().like(RoadDamage::getEarthquakeId, eqId)
-                .like(RoadDamage::getRestoredRoads, requestParams); // 恢复道路
+        LambdaQueryWrapper<RoadDamage> queryWrapper = Wrappers.lambdaQuery(RoadDamage.class);
+
+        if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
+
+            queryWrapper.eq(RoadDamage::getEarthquakeId, eqId)
+                    .like(RoadDamage::getEarthquakeName, requestParams) // 地震名称
+                    .or().like(RoadDamage::getEarthquakeId, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(RoadDamage::getEarthquakeId, eqId)
+                    .like(RoadDamage::getAffectedArea, requestParams) // 震区（县/区）
+                    .or().like(RoadDamage::getEarthquakeId, eqId)
+                    .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(RoadDamage::getEarthquakeId, eqId)
+                    .like(RoadDamage::getHighwaysNationalRoads, requestParams) // 高速公路及国道
+                    .or().like(RoadDamage::getEarthquakeId, eqId)
+                    .like(RoadDamage::getProvincialRoads, requestParams) // 省道
+                    .or().like(RoadDamage::getEarthquakeId, eqId)
+                    .like(RoadDamage::getVillagesWithRoadClosures, requestParams) // 目前道路中断村
+                    .or().like(RoadDamage::getEarthquakeId, eqId)
+                    .like(RoadDamage::getUnderRepair, requestParams) // 正在抢修
+                    .or().like(RoadDamage::getEarthquakeId, eqId)
+                    .like(RoadDamage::getRestoredRoads, requestParams); // 恢复道路
+        }
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
+
+            // 按名称模糊查询
+            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
+                queryWrapper.like(RoadDamage::getAffectedArea, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(RoadDamage::getEarthquakeId, eqId);
+            }
+
+            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
+
+                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
+
+                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
+
+                queryWrapper.between(RoadDamage::getReportingDeadline, startDate, endDate)
+                        .eq(RoadDamage::getEarthquakeId, eqId);
+            }
+        }
 
         return baseMapper.selectPage(roadDamagePage, queryWrapper);
     }

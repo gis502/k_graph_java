@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,7 +44,7 @@ public class CasualtyReportServiceImpl
 
     @Override
     public List<CasualtyReport> exportExcelGetData(RequestBTO requestBTO) {
-        String [] ids = requestBTO.getIds();
+        String[] ids = requestBTO.getIds();
         List<CasualtyReport> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
@@ -82,21 +84,46 @@ public class CasualtyReportServiceImpl
 
     @Override
     public IPage<CasualtyReport> searchData(RequestBTO requestBTO) {
-        Page<CasualtyReport> casualtyReportPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+        Page<CasualtyReport> casualtyReportPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
-        LambdaQueryWrapper<CasualtyReport> queryWrapper = Wrappers.lambdaQuery(CasualtyReport.class)
-                .eq(CasualtyReport::getEarthquakeIdentifier, eqId)
-                .like(CasualtyReport::getEarthquakeName, requestParams)
-                .or().like(CasualtyReport::getEarthquakeIdentifier, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CasualtyReport::getEarthquakeIdentifier, eqId)
-                .apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams="%" + requestParams + "%")
-                .or().like(CasualtyReport::getEarthquakeIdentifier, eqId)
-                .like(CasualtyReport::getAffectedAreaName, requestParams)
-                .or().like(CasualtyReport::getEarthquakeIdentifier, eqId)
-                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+        LambdaQueryWrapper<CasualtyReport> queryWrapper = Wrappers.lambdaQuery(CasualtyReport.class);
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_SEARCH)) {
+
+            queryWrapper.eq(CasualtyReport::getEarthquakeIdentifier, eqId)
+                    .like(CasualtyReport::getEarthquakeName, requestParams)
+                    .or().like(CasualtyReport::getEarthquakeIdentifier, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(CasualtyReport::getEarthquakeIdentifier, eqId)
+                    .apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams = "%" + requestParams + "%")
+                    .or().like(CasualtyReport::getEarthquakeIdentifier, eqId)
+                    .like(CasualtyReport::getAffectedAreaName, requestParams)
+                    .or().like(CasualtyReport::getEarthquakeIdentifier, eqId)
+                    .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
+        }
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
+
+            // 按名称模糊查询
+            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
+                queryWrapper.like(CasualtyReport::getAffectedAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(CasualtyReport::getEarthquakeIdentifier, eqId);
+            }
+
+            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
+
+                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
+
+                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
+
+                queryWrapper.between(CasualtyReport::getSubmissionDeadline, startDate, endDate)
+                        .eq(CasualtyReport::getEarthquakeIdentifier, eqId);
+            }
+        }
 
         return baseMapper.selectPage(casualtyReportPage, queryWrapper);
     }
@@ -210,7 +237,7 @@ public class CasualtyReportServiceImpl
         inputStream = file.getInputStream();
         CasualtyReportListener listener = new CasualtyReportListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream,CasualtyReport.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream, CasualtyReport.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
         List<CasualtyReport> list = listener.getList();
         // 将解析后的数据保存到数据库
@@ -247,6 +274,7 @@ public class CasualtyReportServiceImpl
     public List<CasualtyReport> getCasualty(String eqid) {
         return casualtyReportMapper.getCasualty(eqid);
     }
+
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
