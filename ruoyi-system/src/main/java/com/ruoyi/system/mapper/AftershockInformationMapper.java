@@ -91,5 +91,6 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
             "WHERE yas.earthquake_identifier = #{eqid} " +
             "AND sub.rn = 1 " +
             "ORDER BY yas.affected_area")
+
     List<Map<String, Object>> fromAftershock(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 }
