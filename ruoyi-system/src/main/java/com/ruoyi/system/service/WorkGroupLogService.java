@@ -4,15 +4,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AfterSeismicInformation;
+import com.ruoyi.system.domain.entity.WorkGroupLog;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
-public interface AfterSeismicInformationService extends IService<AfterSeismicInformation> {
+public interface WorkGroupLogService extends IService<WorkGroupLog> {
 
-    List<AfterSeismicInformation> importExcelAfterSeismicInformation(MultipartFile file, String userName, String eqId) throws IOException;
+    List<WorkGroupLog> importExcelWorkGroupLog(MultipartFile file, String userName, String eqId) throws IOException;
 
-    IPage<AfterSeismicInformation> searchData(RequestBTO requestBTO);
+    IPage<WorkGroupLog> searchData(RequestBTO requestBTO);
 
 }
