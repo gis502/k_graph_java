@@ -22,6 +22,7 @@ public class RemotesensingImageController {
     //遥感影像---搜索
     @GetMapping("/queryRI")
     public AjaxResult queryRI(@RequestParam(value = "inputData", required = false) String inputData) {
+        System.out.println("搜索的值"+ inputData);
         LambdaQueryWrapper<RemotesensingImage> wrapper = new LambdaQueryWrapper<>();
         if (inputData != null && !inputData.trim().isEmpty()) {
             wrapper
@@ -35,7 +36,7 @@ public class RemotesensingImageController {
                     .or()
                     .apply("CAST(angle AS TEXT) LIKE {0}", "%" + inputData + "%")
                     .or()
-                    .apply("TO_CHAR(create_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + inputData + "%");
+                    .apply("TO_CHAR(shooting_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + inputData + "%");
         }
         List<RemotesensingImage> resultList = remotesensingImageService.list(wrapper);
         return AjaxResult.success(resultList);
@@ -46,6 +47,7 @@ public class RemotesensingImageController {
     public AjaxResult addRI(@RequestBody RemotesensingImage remotesensingImage){  //使 JSON 数据自动映射到 RemotesensingImage 对象的字段中
         System.out.println("从前端传过来的数据:"+remotesensingImage);
         try {
+
             remotesensingImage.generateUuidIfNotPresent();
             return AjaxResult.success(remotesensingImageService.save(remotesensingImage));
         } catch (Exception e) {
@@ -64,6 +66,7 @@ public class RemotesensingImageController {
     //遥感影像---改
     @PostMapping("/updaRI")
     public AjaxResult updaRI(@RequestBody RemotesensingImage remotesensingImage) {
+        System.out.println("改--从前端传过来的数据:"+remotesensingImage);
         return AjaxResult.success(remotesensingImageService.updateById(remotesensingImage));
     }
 
@@ -77,7 +80,25 @@ public class RemotesensingImageController {
     // 遥感影像---筛选
     @PostMapping("/filterRI")
     public AjaxResult filterRI(@RequestBody RemotesensingImage remotesensingImage) {
+//        System.out.println("需要筛选的字段" + remotesensingImage);
+
         LambdaQueryWrapper<RemotesensingImage> wrapper = new LambdaQueryWrapper<>();
+//        // 处理 `name` 字段  like 用于模糊查询
+//        wrapper.like(
+//                remotesensingImage.getName() != null && !remotesensingImage.getName().trim().isEmpty(),
+//                RemotesensingImage::getName,
+//                remotesensingImage.getName()
+//        );
+//
+//        // 处理 `path` 字段  like 用于模糊查询   表示如果 name 字段不匹配，则继续检查 path 字段是否匹配。如果 path 也不匹配，则继续检查下一个条件，依此类推。
+//        //如果俩个都用wrapper.like，就会生成and的SQL 语句
+//        wrapper.or().like(
+//                remotesensingImage.getPath() != null && !remotesensingImage.getPath().trim().isEmpty(),
+//                RemotesensingImage::getPath,
+//                remotesensingImage.getPath()
+//        );
+
+
         // 名称字段筛选
         if (remotesensingImage.getName() != null && !remotesensingImage.getName().trim().isEmpty()) {
             wrapper.like(RemotesensingImage::getName, remotesensingImage.getName());
@@ -100,6 +121,7 @@ public class RemotesensingImageController {
 
         // 处理 `angle` 字段 eq 用于精确匹配
         if (remotesensingImage.getAngle() != null) {
+//            wrapper.or().apply("CAST(angle AS TEXT) LIKE {0}", "%" + remotesensingImage.getAngle() + "%");
             wrapper.eq(RemotesensingImage::getAngle, remotesensingImage.getAngle());
         }
 
