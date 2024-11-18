@@ -28,7 +28,6 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +45,6 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.ruoyi.system.domain.handler.ExcelConverter.convertContactPhones;
 
@@ -150,6 +148,9 @@ public class ExcelController {
     @Resource
     private MaterialDonationServiceImpl materialDonationServiceImpl;
 
+    @Resource
+    private WorkGroupLogServiceImpl workGroupLogServiceImpl;
+
     /**
      * 搜索
      *
@@ -161,14 +162,8 @@ public class ExcelController {
 
         log.info("传入的Eqid为：{}", requestBTO.getQueryEqId());
 
-        // 1. 先对eqid的数据进行查询获取
-        // 2.
-
         switch (requestBTO.getFlag()) {
             case "AfterSeismicInformation":
-
-                requestBTO.getQueryEqId();
-
                 return AjaxResult.success(afterSeismicInformationServiceImpl.searchData(requestBTO));
             case "AftershockInformation":
                 return AjaxResult.success(aftershockInformationServiceImpl.searchData(requestBTO));
@@ -218,6 +213,8 @@ public class ExcelController {
                 return AjaxResult.success(publicOpinionServiceImpl.searchData(requestBTO));
             case "SocialOrder":
                 return AjaxResult.success(socialOrderServiceImpl.searchData(requestBTO));
+            case "WorkGroupLog":
+                return AjaxResult.success(workGroupLogServiceImpl.searchData(requestBTO));
             default:
                 return AjaxResult.error(MessageConstants.SEARCH_Failed);
         }
@@ -521,6 +518,10 @@ public class ExcelController {
             if (filename.equals("宣传舆情治安-宣传舆论统计表")) {
                 List<PublicOpinion> publicOpinions = publicOpinionServiceImpl.importExcelPublicOpinion(file, userName, eqId);
                 return R.ok(publicOpinions);
+            }
+            if (filename.equals("工作组动态-工作组每日工作动态统计表")) {
+                List<WorkGroupLog> workGroupLogs = workGroupLogServiceImpl.importExcelWorkGroupLog(file, userName, eqId);
+                return R.ok(workGroupLogs);
             } else {
                 return R.fail("上传文件名称错误");
             }

@@ -7,16 +7,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.constant.MessageConstants;
-import com.ruoyi.system.domain.bto.QueryBTO;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AfterSeismicInformation;
-import com.ruoyi.system.domain.entity.AftershockInformation;
+import com.ruoyi.system.domain.entity.WorkGroupLog;
 import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.RoadDamage;
-import com.ruoyi.system.listener.AfterSeismicInformationListener;
-import com.ruoyi.system.mapper.AfterSeismicInformationMapper;
+import com.ruoyi.system.listener.WorkGroupLogListener;
+import com.ruoyi.system.mapper.WorkGroupLogMapper;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
-import com.ruoyi.system.service.AfterSeismicInformationService;
+import com.ruoyi.system.service.WorkGroupLogService;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
@@ -31,16 +28,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class AfterSeismicInformationServiceImpl extends
-        ServiceImpl<AfterSeismicInformationMapper, AfterSeismicInformation>
-        implements AfterSeismicInformationService, DataExportStrategy {
+public class WorkGroupLogServiceImpl extends
+        ServiceImpl<WorkGroupLogMapper, WorkGroupLog>
+        implements WorkGroupLogService, DataExportStrategy {
 
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
 
     @Override
-    public List<AfterSeismicInformation> importExcelAfterSeismicInformation(MultipartFile file, String userName, String eqId) throws IOException {
+    public List<WorkGroupLog> importExcelWorkGroupLog(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);
         Sheet sheet = workbook.getSheetAt(0);
@@ -59,26 +56,26 @@ public class AfterSeismicInformationServiceImpl extends
             }
         }
         inputStream.close();
-// 重新获取 InputStream
+        // 重新获取 InputStream
         inputStream = file.getInputStream();
-        AfterSeismicInformationListener listener = new AfterSeismicInformationListener(baseMapper, actualRows, userName);
+        WorkGroupLogListener listener = new WorkGroupLogListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream, AfterSeismicInformation.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream, WorkGroupLog.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
-        List<AfterSeismicInformation> list = listener.getList();
+        List<WorkGroupLog> list = listener.getList();
         // 将解析后的数据保存到数据库
         // 遍历解析后的数据，根据地震时间与地震名称查找eqList表中的earthquakeId
-        for (AfterSeismicInformation data : list) {
+        for (WorkGroupLog data : list) {
             // 根据地震时间与地震名称查询 earthquakeId
             List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
             System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
             // 设置 earthquakeId
-            data.setEarthquakeIdentifier(earthquakeIdByTimeAndPosition.get(0).getEqid().toString());
+            data.setEarthquakeId(earthquakeIdByTimeAndPosition.get(0).getEqid().toString());
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
             data.setEarthquakeName(earthquakeIdByTimeAndPosition.get(0).getEarthquakeName());
 //            data.setMagnitude(earthquakeIdByTimeAndPosition.get(0).getMagnitude());
             data.setSubmissionDeadline(data.getSubmissionDeadline());
-            data.setSystemInsertTime(LocalDateTime.now());
+            data.setRecordTime(LocalDateTime.now());
         }
         //集合拷贝
         saveBatch(list);
@@ -86,34 +83,42 @@ public class AfterSeismicInformationServiceImpl extends
     }
 
     @Override
-    public IPage<AfterSeismicInformation> searchData(RequestBTO requestBTO) {
+    public IPage<WorkGroupLog> searchData(RequestBTO requestBTO) {
 
-        Page<AfterSeismicInformation> afterSeismicInformationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
-        LambdaQueryWrapper<AfterSeismicInformation> queryWrapper = Wrappers.lambdaQuery(AfterSeismicInformation.class);
+        Page<WorkGroupLog> workGroupLogPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<WorkGroupLog> queryWrapper = Wrappers.lambdaQuery(WorkGroupLog.class);
 
-        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_SEARCH)) {
+        if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
 
-            queryWrapper.eq(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
-                    .like(AfterSeismicInformation::getEarthquakeName, requestParams)
-                    .or().like(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
-                    .like(AfterSeismicInformation::getAffectedAreaName, requestParams)
-                    .or().like(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
+            queryWrapper.eq(WorkGroupLog::getEarthquakeId, eqId)
+                    .like(WorkGroupLog::getEarthquakeName, requestParams)
+                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
+                    .like(WorkGroupLog::getEarthquakeAreaName, requestParams)
+                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
                     .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
-                    .or().like(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
-                    .apply("cast(magnitude as text) LIKE {0}", "%" + requestParams + "%")
-                    .or().like(AfterSeismicInformation::getEarthquakeIdentifier, eqId)
-                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
-
+                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
+                    .like(WorkGroupLog::getWorkGroup, requestParams)
+                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
+                    .like(WorkGroupLog::getReportDepartment, requestParams)
+                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
+                    .like(WorkGroupLog::getWorkStatus, requestParams)
+                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
+                    .like(WorkGroupLog::getWorkIssues, requestParams)
+                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
+                    .like(WorkGroupLog::getRequirementList, requestParams);
         }
 
         if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
 
             // 按名称模糊查询
             if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
-                queryWrapper.like(AfterSeismicInformation::getAffectedAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
-                        .eq(AfterSeismicInformation::getEarthquakeIdentifier, eqId);
+                queryWrapper.like(WorkGroupLog::getEarthquakeAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(WorkGroupLog::getEarthquakeId, eqId);
             }
 
             // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
@@ -124,32 +129,31 @@ public class AfterSeismicInformationServiceImpl extends
                 LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
                 LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
 
-                queryWrapper.between(AfterSeismicInformation::getSubmissionDeadline, startDate, endDate)
-                        .eq(AfterSeismicInformation::getEarthquakeIdentifier, eqId);
+                queryWrapper.between(WorkGroupLog::getSubmissionDeadline, startDate, endDate)
+                        .eq(WorkGroupLog::getEarthquakeId, eqId);
             }
         }
 
-
-        return baseMapper.selectPage(afterSeismicInformationPage, queryWrapper);
+        return baseMapper.selectPage(workGroupLogPage, queryWrapper);
     }
 
     @Override
     public IPage getPage(RequestBTO requestBTO) {
-        Page<AfterSeismicInformation> afterSeismicInformationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        Page<WorkGroupLog> workGroupLogPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         String requestParam = requestBTO.getRequestParams();
-        LambdaQueryWrapper<AfterSeismicInformation> queryWrapper =
-                Wrappers.lambdaQuery(AfterSeismicInformation.class)
-                        .like(AfterSeismicInformation::getEarthquakeIdentifier, requestParam);
-        return this.page(afterSeismicInformationPage, queryWrapper);
+        LambdaQueryWrapper<WorkGroupLog> queryWrapper =
+                Wrappers.lambdaQuery(WorkGroupLog.class)
+                        .like(WorkGroupLog::getEarthquakeId, requestParam);
+        return this.page(workGroupLogPage, queryWrapper);
     }
 
     @Override
     public List<?> exportExcelGetData(RequestBTO requestBTO) {
         String[] ids = requestBTO.getIds();
-        List<AfterSeismicInformation> list;
+        List<WorkGroupLog> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
-                    .sorted(Comparator.comparing(AfterSeismicInformation::getSystemInsertTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .sorted(Comparator.comparing(WorkGroupLog::getRecordTime, Comparator.nullsLast(Comparator.naturalOrder()))
                             .reversed()).collect(Collectors.toList());
         } else {
             list = this.listByIds(Arrays.asList(ids));
