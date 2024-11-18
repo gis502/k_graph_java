@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -18,7 +19,6 @@ public interface TransferSettlementInfoMapper extends BaseMapper<TransferSettlem
         ORDER BY earthquake_area_name, reporting_deadline DESC, system_inserttime DESC
     """)
     List<TransferSettlementInfo> getTotal(@Param("eqid") String eqid);
-
 
 
 //    @Select("SELECT " +
@@ -64,5 +64,17 @@ public interface TransferSettlementInfoMapper extends BaseMapper<TransferSettlem
             "GROUP BY tsi.earthquake_area_name, tsi.reporting_deadline")
     List<TransferSettlementInfo> getTransferInfo(String eqid);
 
+    @Select("SELECT yas.* " +
+            "FROM public.transfer_settlement_info yas " +
+            "JOIN ( " +
+            "    SELECT affected_area, MIN(ABS(EXTRACT(EPOCH FROM (earthquake_time - #{time})))) AS min_time_diff " +
+            "    FROM public.transfer_settlement_info " +
+            "    WHERE earthquake_id = #{eqid} " +
+            "    GROUP BY affected_area " +
+            ") sub ON yas.affected_area = sub.affected_area " +
+            "AND ABS(EXTRACT(EPOCH FROM (yas.earthquake_time - #{time}))) = sub.min_time_diff " +
+            "WHERE yas.earthquake_id = #{eqid} " +
+            "ORDER BY yas.affected_area")
+    List<TransferSettlementInfo> fromtransferSettlementInfo(String eqid, LocalDateTime time);
 
 }

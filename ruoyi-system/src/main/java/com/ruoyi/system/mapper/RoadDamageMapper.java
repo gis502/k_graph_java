@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -25,4 +26,17 @@ public interface RoadDamageMapper extends BaseMapper<RoadDamage> {
     WHERE psi.rn = 1
 """)
     List<RoadDamage> selectRoadRepairsByEqid(@Param("eqid") String eqid);
+
+
+    @Select("SELECT * FROM public.road_damage rd " +
+            "JOIN ( " +
+            "    SELECT affected_area, MIN(ABS(EXTRACT(EPOCH FROM (damage_time - #{time})))) AS min_time_diff " +
+            "    FROM public.road_damage " +
+            "    WHERE earthquake_id = #{eqid} " +
+            "    GROUP BY affected_area " +
+            ") sub ON rd.affected_area = sub.affected_area " +
+            "AND ABS(EXTRACT(EPOCH FROM (rd.damage_time - #{time}))) = sub.min_time_diff " +
+            "WHERE rd.earthquake_id = #{eqid} " +
+            "ORDER BY rd.affected_area")
+    List<RoadDamage> fromrepair(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 }

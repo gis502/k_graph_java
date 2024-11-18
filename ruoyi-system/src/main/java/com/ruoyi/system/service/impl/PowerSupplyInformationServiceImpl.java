@@ -152,6 +152,13 @@ public class PowerSupplyInformationServiceImpl
     }
 
     @Override
+    public List<PowerSupplyInformation> fromPowerSupplyInformation(String eqid, LocalDateTime time) {
+        List<PowerSupplyInformation> powerSupplyInformationList = powerSupplyInformationMapper.fromPowerSupplyInformation(eqid, time);
+        return powerSupplyInformationList;
+    }
+
+
+    @Override
     public List<PowerSupplyInformation> importExcelPowerSupplyInformation(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);

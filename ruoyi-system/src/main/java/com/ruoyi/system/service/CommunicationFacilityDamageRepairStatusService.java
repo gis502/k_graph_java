@@ -8,6 +8,7 @@ import com.ruoyi.system.domain.entity.TrafficControlSections;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CommunicationFacilityDamageRepairStatusService extends IService<CommunicationFacilityDamageRepairStatus>{
@@ -19,4 +20,5 @@ public interface CommunicationFacilityDamageRepairStatusService extends IService
 
     IPage<CommunicationFacilityDamageRepairStatus> searchData(RequestBTO requestBTO);
 
+    List<CommunicationFacilityDamageRepairStatus> fromCommunicationFacilityDamageRepairStatus(String eqid, LocalDateTime time);
 }

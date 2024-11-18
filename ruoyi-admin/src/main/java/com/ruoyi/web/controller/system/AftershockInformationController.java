@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.service.AftershockInformationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +46,7 @@ public class AftershockInformationController {
     //返回离提供时间最近的一条数据
     @GetMapping("/fromAftershock")
     public AjaxResult fromAftershock(@RequestParam("eqid") String eqid,
-                                     @RequestParam("time") LocalDateTime time){
+                                     @RequestParam("time") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime time){
         List<Map<String, Object>> aftershockDataList  = aftershockInformationService.fromAftershock(eqid,time);
         return AjaxResult.success(aftershockDataList);
     }

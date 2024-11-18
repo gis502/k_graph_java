@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
@@ -14,7 +16,7 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
     /**
      * 通过地震标识的eqid进行条件查询
      *
-     * @param  eqid 地震标识id
+     * @param eqid 地震标识id
      * @return 结果
      */
     @Select("SELECT " +
@@ -64,6 +66,17 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "GROUP BY cr.affected_area_name, cr.submission_deadline")
     List<CasualtyReport> getCasualty(@Param("eqid") String eqid);
 
+    @Select("SELECT * FROM public.casualty_report yas " +
+            "JOIN ( " +
+            "    SELECT affected_area, MIN(ABS(EXTRACT(EPOCH FROM (earthquake_time - #{time})))) AS min_time_diff " +
+            "    FROM public.casualty_report " +
+            "    WHERE earthquake_identifier = #{eqid} " +
+            "    GROUP BY affected_area " +
+            ") sub ON yas.affected_area = sub.affected_area " +
+            "AND ABS(EXTRACT(EPOCH FROM (yas.earthquake_time - #{time}))) = sub.min_time_diff " +
+            "WHERE yas.earthquake_identifier = #{eqid} " +
+            "ORDER BY yas.affected_area")
+    List<Map<String, Object>> fromCasualtyReport(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 }
 
 

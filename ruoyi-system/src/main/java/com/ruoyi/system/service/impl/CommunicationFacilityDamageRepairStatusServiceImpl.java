@@ -136,6 +136,13 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
         return baseMapper.selectPage(communicationFacilityDamageRepairStatusPage, queryWrapper);
     }
 
+    @Override
+    public List<CommunicationFacilityDamageRepairStatus> fromCommunicationFacilityDamageRepairStatus(String eqid, LocalDateTime time) {
+        List<CommunicationFacilityDamageRepairStatus> damageRepairStatusList = communicationFacilityDamageRepairStatusMapper.fromCommunicationFacilityDamageRepairStatus(eqid, time);
+        return damageRepairStatusList;
+    }
+
+
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
     @Override

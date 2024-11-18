@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PowerSupplyInformationService extends IService<PowerSupplyInformation>{
@@ -18,4 +19,5 @@ public interface PowerSupplyInformationService extends IService<PowerSupplyInfor
 
     IPage<PowerSupplyInformation> searchData(RequestBTO requestBTO);
 
+    List<PowerSupplyInformation> fromPowerSupplyInformation(String eqid, LocalDateTime time);
 }

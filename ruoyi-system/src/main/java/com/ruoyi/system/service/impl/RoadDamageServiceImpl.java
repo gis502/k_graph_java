@@ -144,6 +144,12 @@ public class RoadDamageServiceImpl
     }
 
     @Override
+    public List<RoadDamage> fromrepair(String eqid, LocalDateTime time) {
+        List<RoadDamage> roadDamageList = roadDamageMapper.fromrepair(eqid,time);
+        return roadDamageList;
+    }
+
+    @Override
     public List<RoadDamage> importExcelRoadDamage(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = WorkbookFactory.create(inputStream);

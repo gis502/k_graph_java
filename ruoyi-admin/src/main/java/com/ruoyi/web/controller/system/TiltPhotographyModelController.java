@@ -77,7 +77,7 @@ public class TiltPhotographyModelController {
     //筛选
     @PostMapping("/fromeq")
     public AjaxResult fromeq(@RequestBody Tiltphotographymodel tiltphotographymodel) {
-        System.out.println("哈哈哈哈哈哈哈哈"+tiltphotographymodel);
+        System.out.println("哈哈哈哈哈哈哈哈" + tiltphotographymodel);
         LambdaQueryWrapper<Tiltphotographymodel> wrapper = new LambdaQueryWrapper<>();
 
         // 处理字符串类型字段
@@ -86,7 +86,7 @@ public class TiltPhotographyModelController {
                 Tiltphotographymodel::getName,
                 tiltphotographymodel.getName()
         );
-        wrapper.or().like(
+        wrapper.like(
                 tiltphotographymodel.getPath() != null && !tiltphotographymodel.getPath().trim().isEmpty(),
                 Tiltphotographymodel::getPath,
                 tiltphotographymodel.getPath()
@@ -94,10 +94,10 @@ public class TiltPhotographyModelController {
 
         // 处理数值类型字段，使用 `=` 或将其转换为字符串
         if (tiltphotographymodel.getRz() != null) {
-            wrapper.or().apply("CAST(rz AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRz() + "%");
+            wrapper.apply("CAST(rz AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRz() + "%");
         }
         if (tiltphotographymodel.getTz() != null) {
-            wrapper.or().apply("CAST(tz AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getTz() + "%");
+            wrapper.apply("CAST(tz AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getTz() + "%");
         }
 
         // 处理时间字段
@@ -110,19 +110,18 @@ public class TiltPhotographyModelController {
             String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             // 将格式化后的时间应用到查询中
-            wrapper.or().apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
+            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
         }
-
 
         // 处理其他数值类型字段
         if (tiltphotographymodel.getRze() != null) {
-            wrapper.or().apply("CAST(rze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRze() + "%");
+            wrapper.apply("CAST(rze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRze() + "%");
         }
         if (tiltphotographymodel.getTze() != null) {
-            wrapper.or().apply("CAST(tze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getTze() + "%");
+            wrapper.apply("CAST(tze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getTze() + "%");
         }
         if (tiltphotographymodel.getModelSize() != null) {
-            wrapper.or().apply("CAST(model_size AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getModelSize() + "%");
+            wrapper.apply("CAST(model_size AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getModelSize() + "%");
         }
 
         List<Tiltphotographymodel> resultList = tiltphotographymodelService.list(wrapper);
