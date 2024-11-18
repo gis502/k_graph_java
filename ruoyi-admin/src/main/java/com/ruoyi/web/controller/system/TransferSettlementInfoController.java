@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.service.TransferSettlementInfoService;
 import com.ruoyi.system.domain.entity.TransferSettlementInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class TransferSettlementInfoController {
 
     @GetMapping("/fromtransferSettlementInfo")
     public AjaxResult fromtransferSettlementInfo(@RequestParam("eqid")String eqid,
-                                                 @RequestParam("time")LocalDateTime time){
+                                                 @RequestParam("time") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime time){
         List<TransferSettlementInfo> transferSettlementInfolist = transferSettlementInfoService.fromtransferSettlementInfo(eqid,time);
         return AjaxResult.success(transferSettlementInfolist);
     }

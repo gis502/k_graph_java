@@ -66,17 +66,32 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "GROUP BY cr.affected_area_name, cr.submission_deadline")
     List<CasualtyReport> getCasualty(@Param("eqid") String eqid);
 
-    @Select("SELECT * FROM public.casualty_report yas " +
-            "JOIN ( " +
-            "    SELECT affected_area, MIN(ABS(EXTRACT(EPOCH FROM (earthquake_time - #{time})))) AS min_time_diff " +
-            "    FROM public.casualty_report " +
+
+
+    @Select("SELECT yas.* " +
+            "FROM casualty_report yas " +
+            "JOIN LATERAL (" +
+            "    SELECT affected_area, " +
+            "           submission_deadline, " +
+            "           system_insert_time, " +
+            "           ROW_NUMBER() OVER (" +
+            "               PARTITION BY affected_area " +
+            "               ORDER BY " +
+            "                   ABS(EXTRACT(EPOCH FROM (submission_deadline - #{time}::timestamp))) ASC, " +
+            "                   ABS(EXTRACT(EPOCH FROM (system_insert_time - #{time}::timestamp))) ASC" +
+            "           ) AS rn " +
+            "    FROM casualty_report " +
             "    WHERE earthquake_identifier = #{eqid} " +
-            "    GROUP BY affected_area " +
+            "    AND affected_area = yas.affected_area " +
             ") sub ON yas.affected_area = sub.affected_area " +
-            "AND ABS(EXTRACT(EPOCH FROM (yas.earthquake_time - #{time}))) = sub.min_time_diff " +
+            "AND yas.submission_deadline = sub.submission_deadline " +
+            "AND yas.system_insert_time = sub.system_insert_time " +
             "WHERE yas.earthquake_identifier = #{eqid} " +
+            "AND sub.rn = 1 " +
             "ORDER BY yas.affected_area")
-    List<Map<String, Object>> fromCasualtyReport(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
+    List<Map<String, Object>> fromCasualty(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
+
+
 }
 
 

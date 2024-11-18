@@ -5,6 +5,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.entity.CasualtyReport;
 import com.ruoyi.system.service.CasualtyReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,7 +44,7 @@ public class CasualtyReportController {
     //返回离提供时间最近的一条数据
     @GetMapping("/fromCasualty")
     public AjaxResult fromCasualty(@RequestParam("eqid") String eqid,
-                                     @RequestParam("time") LocalDateTime time){
+                                     @RequestParam("time") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime time){
         List<Map<String, Object>> aftercasualtyList  = casualtyReportService.fromCasualty(eqid,time);
         return AjaxResult.success(aftercasualtyList);
     }
