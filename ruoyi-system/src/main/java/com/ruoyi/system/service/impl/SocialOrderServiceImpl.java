@@ -182,6 +182,13 @@ public class SocialOrderServiceImpl extends
         return baseMapper.selectPage(socialOrderPage, queryWrapper);
     }
 
+    @Override
+    public List<SocialOrder> fromSocialOrder(String eqid, LocalDateTime time) {
+        List<SocialOrder> socialOrderList = socialOrderMapper.fromSocialOrder(eqid, time);
+        return socialOrderList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);
