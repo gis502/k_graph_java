@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,7 +96,7 @@ public class SupplySituationServiceImpl
 
     @Override
     public List<?> exportExcelGetData(RequestBTO requestBTO) {
-        String [] ids = requestBTO.getIds();
+        String[] ids = requestBTO.getIds();
         List<SupplySituation> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
@@ -133,20 +136,44 @@ public class SupplySituationServiceImpl
     @Override
     public IPage<SupplySituation> searchData(RequestBTO requestBTO) {
 
-        Page<SupplySituation> supplySituationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+        Page<SupplySituation> supplySituationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
-        LambdaQueryWrapper<SupplySituation> queryWrapper = Wrappers.lambdaQuery(SupplySituation.class)
+        LambdaQueryWrapper<SupplySituation> queryWrapper = Wrappers.lambdaQuery(SupplySituation.class);
 
-                .eq(SupplySituation::getEarthquakeId, eqId)
-                .like(SupplySituation::getEarthquakeName, requestParams) // 地震名称
-                .or().like(SupplySituation::getEarthquakeId, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(SupplySituation::getEarthquakeId, eqId)
-                .like(SupplySituation::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(SupplySituation::getEarthquakeId, eqId)
-                .apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+        if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
+
+            queryWrapper.eq(SupplySituation::getEarthquakeId, eqId)
+                    .like(SupplySituation::getEarthquakeName, requestParams) // 地震名称
+                    .or().like(SupplySituation::getEarthquakeId, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(SupplySituation::getEarthquakeId, eqId)
+                    .like(SupplySituation::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                    .or().like(SupplySituation::getEarthquakeId, eqId)
+                    .apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
+        }
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
+
+            // 按名称模糊查询
+            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
+                queryWrapper.like(SupplySituation::getEarthquakeAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(SupplySituation::getEarthquakeId, eqId);
+            }
+
+            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
+
+                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
+
+                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
+
+                queryWrapper.between(SupplySituation::getReportDeadline, startDate, endDate)
+                        .eq(SupplySituation::getEarthquakeId, eqId);
+            }
+        }
 
         return baseMapper.selectPage(supplySituationPage, queryWrapper);
     }
@@ -163,7 +190,7 @@ public class SupplySituationServiceImpl
 
 
     @Override
-    public List<SupplySituation> getSupplySituationById(String eqid){
+    public List<SupplySituation> getSupplySituationById(String eqid) {
         return supplySituationMapper.selectSupplySituationById(eqid);
     }
 
