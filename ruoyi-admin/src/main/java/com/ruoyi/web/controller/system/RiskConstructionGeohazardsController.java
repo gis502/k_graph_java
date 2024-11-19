@@ -34,6 +34,4 @@ public class RiskConstructionGeohazardsController {
         List<RiskConstructionGeohazards> riskConstructionGeohazardsList = riskConstructionGeohazardsService.fromRiskConstructionGeohazards(eqid, time);
         return AjaxResult.success(riskConstructionGeohazardsList);
     }
-
-
 }

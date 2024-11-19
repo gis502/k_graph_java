@@ -130,8 +130,8 @@ public class CasualtyReportServiceImpl
 
     @Override
     public List<Map<String, Object>> fromCasualty(String eqid, LocalDateTime time) {
-        List<Map<String, Object>> aftercasualtyList = casualtyReportMapper.fromCasualty(eqid,time);
-        return aftercasualtyList;
+        List<Map<String, Object>> fromCasualty = casualtyReportMapper.fromCasualty(eqid,time);
+        return fromCasualty;
     }
 
     @Override
