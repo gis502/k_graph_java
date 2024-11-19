@@ -178,6 +178,13 @@ public class SupplySituationServiceImpl
         return baseMapper.selectPage(supplySituationPage, queryWrapper);
     }
 
+    @Override
+    public List<SupplySituation> fromSupplySituation(String eqid, LocalDateTime time) {
+        List<SupplySituation> supplySituationList = supplySituationMapper.fromSupplySituation(eqid, time);
+        return supplySituationList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

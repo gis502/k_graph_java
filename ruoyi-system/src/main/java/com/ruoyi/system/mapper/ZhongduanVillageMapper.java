@@ -32,4 +32,6 @@ public interface ZhongduanVillageMapper {
             "       FROM road_damage " +
             "       WHERE earthquake_id = #{eqid}) AS all_reportings) AS insertTime")
     List<ZhongduanVillage> selectVillageByEqid(String eqid);
+
+
 }

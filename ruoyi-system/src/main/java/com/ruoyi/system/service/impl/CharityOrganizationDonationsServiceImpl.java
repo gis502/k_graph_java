@@ -179,6 +179,12 @@ public class CharityOrganizationDonationsServiceImpl extends
         return baseMapper.selectPage(charityOrganizationDonationsPage, queryWrapper);
     }
 
+    @Override
+    public List<CharityOrganizationDonations> fromCharityOrganizationDonations(String eqid, LocalDateTime time) {
+        List<CharityOrganizationDonations> charityOrganizationDonationsList = charityOrganizationDonationsMapper.fromCharityOrganizationDonations(eqid, time);
+        return charityOrganizationDonationsList;
+    }
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

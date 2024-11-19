@@ -5,6 +5,9 @@ import com.ruoyi.system.domain.entity.OrthophotoImage;
 import com.ruoyi.system.service.OrthophotoImageService;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -73,34 +76,46 @@ public class OrthophotoImageController {
     public AjaxResult fromeq(@RequestBody OrthophotoImage orthophotoImage) {
         System.out.println("哈哈哈哈哈哈哈哈哈哈" + orthophotoImage);
         LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
+
         // 处理字符串类型字段
-        wrapper.like(
-                orthophotoImage.getName() != null && !orthophotoImage.getName().trim().isEmpty(),
-                OrthophotoImage::getName,
-                orthophotoImage.getName()
-        );
-        wrapper.or().like(
-                orthophotoImage.getPath() != null && !orthophotoImage.getPath().trim().isEmpty(),
-                OrthophotoImage::getPath,
-                orthophotoImage.getPath()
-        );
+        if (orthophotoImage.getName() != null && !orthophotoImage.getName().trim().isEmpty()) {
+            wrapper.like(OrthophotoImage::getName, orthophotoImage.getName());
+        }
+
+        if (orthophotoImage.getPath() != null && !orthophotoImage.getPath().trim().isEmpty()) {
+            wrapper.like(OrthophotoImage::getPath, orthophotoImage.getPath());
+        }
+
         // 处理 height 字段，假设是字符串类型
         if (orthophotoImage.getHeight() != null && !orthophotoImage.getHeight().trim().isEmpty()) {
-            wrapper.or().like(OrthophotoImage::getHeight, orthophotoImage.getHeight());
+            wrapper.like(OrthophotoImage::getHeight, orthophotoImage.getHeight());
         }
-        // 处理 create_time 字段，使用范围查询
+
+
+
+        // 处理 create_time 字段，使用本地时区时间格式化和范围查询
         if (orthophotoImage.getCreateTime() != null) {
-            wrapper.or().ge(OrthophotoImage::getCreateTime, orthophotoImage.getCreateTime());
+            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
+            ZonedDateTime utcTime = orthophotoImage.getCreateTime().atZone(ZoneId.of("UTC"));
+            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
+
+            // 格式化为数据库中匹配的格式字符串
+            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // 将格式化后的时间应用到范围查询中
+            wrapper.ge(OrthophotoImage::getCreateTime, formattedTime);
         }
+
 
         // 处理 angle 字段，假设是数值类型
         if (orthophotoImage.getAngle() != null) {
-            wrapper.or().apply("CAST(angle AS TEXT) LIKE {0}", "%" + orthophotoImage.getAngle() + "%");
+            wrapper.apply("CAST(angle AS TEXT) LIKE {0}", "%" + orthophotoImage.getAngle() + "%");
         }
 
         List<OrthophotoImage> resultList = orthophotoImageService.list(wrapper);
         return AjaxResult.success(resultList);
     }
+
 
 }
 

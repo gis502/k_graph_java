@@ -187,6 +187,13 @@ public class LargeSpecialRescueEquipmentServiceImpl extends
     }
 
     @Override
+    public List<LargeSpecialRescueEquipment> fromLargeSpecialRescueEquipment(String eqid, LocalDateTime time) {
+        List<LargeSpecialRescueEquipment> largeSpecialRescueEquipmentList = largeSpecialRescueEquipmentMapper.fromLargeSpecialRescueEquipment(eqid, time);
+        return largeSpecialRescueEquipmentList;
+    }
+
+
+    @Override
     public List<LargeSpecialRescueEquipment> LargeSpecialRescueEquipmentByEqId(String eqid) {
         return largeSpecialRescueEquipmentMapper.LargeSpecialRescueEquipmentEqId(eqid);
     }
