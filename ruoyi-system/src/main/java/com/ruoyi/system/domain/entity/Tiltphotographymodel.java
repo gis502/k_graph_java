@@ -45,7 +45,7 @@ public class Tiltphotographymodel {
     /**
      * 模型添加时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+
     @TableField(value = "time") // 确保格式正确
     private LocalDateTime time; // 使用 Date 类型
 

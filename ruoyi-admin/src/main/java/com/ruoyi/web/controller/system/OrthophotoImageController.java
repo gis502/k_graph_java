@@ -74,7 +74,7 @@ public class OrthophotoImageController {
     //筛选
     @PostMapping("/fromeq")
     public AjaxResult fromeq(@RequestBody OrthophotoImage orthophotoImage) {
-        System.out.println("哈哈哈哈哈哈哈哈哈哈" + orthophotoImage);
+        System.out.println("接收到的 createTime：" + orthophotoImage.getCreateTime());
         LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
 
         // 处理字符串类型字段
@@ -91,9 +91,7 @@ public class OrthophotoImageController {
             wrapper.like(OrthophotoImage::getHeight, orthophotoImage.getHeight());
         }
 
-
-
-        // 处理 create_time 字段，使用本地时区时间格式化和范围查询
+//         处理 create_time 字段，使用本地时区时间格式化和范围查询
         if (orthophotoImage.getCreateTime() != null) {
             // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
             ZonedDateTime utcTime = orthophotoImage.getCreateTime().atZone(ZoneId.of("UTC"));
@@ -105,6 +103,11 @@ public class OrthophotoImageController {
             // 将格式化后的时间应用到范围查询中
             wrapper.ge(OrthophotoImage::getCreateTime, formattedTime);
         }
+//        if (orthophotoImage.getCreateTime() != null) {
+//            // 直接调用实体类的时间字段进行范围查询
+//            wrapper.ge(OrthophotoImage::getCreateTime, orthophotoImage.getCreateTime());
+//        }
+
 
 
         // 处理 angle 字段，假设是数值类型

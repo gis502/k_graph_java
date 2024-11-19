@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.system;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.uuid.UUID;
+import com.ruoyi.system.domain.entity.OrthophotoImage;
 import com.ruoyi.system.domain.entity.Tiltphotographymodel;
 import com.ruoyi.system.service.TiltphotographymodelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +113,10 @@ public class TiltPhotographyModelController {
             // 将格式化后的时间应用到查询中
             wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
         }
-
+//        if (tiltphotographymodel.getTime() != null) {
+//            // 直接调用实体类的时间字段进行范围查询
+//            wrapper.ge(Tiltphotographymodel::getTime, tiltphotographymodel.getTime());
+//        }
         // 处理其他数值类型字段
         if (tiltphotographymodel.getRze() != null) {
             wrapper.apply("CAST(rze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRze() + "%");
