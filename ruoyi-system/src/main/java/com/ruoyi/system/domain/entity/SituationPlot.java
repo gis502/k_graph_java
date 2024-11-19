@@ -105,6 +105,9 @@ public class SituationPlot {
     @JsonInclude(JsonInclude.Include.NON_NULL) // 仅序列化非空字段
     private Geometry geom;
 
+    @TableField(exist = false)
+    private String geomDetails;
+
     @TableField(exist = false) // Indicates no corresponding database column
     private Double longitude;
 
