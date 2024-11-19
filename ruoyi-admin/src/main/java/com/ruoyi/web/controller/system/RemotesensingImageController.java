@@ -6,12 +6,13 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.entity.OrthophotoImage;
 import com.ruoyi.system.service.RemotesensingImageService;
 import com.ruoyi.system.domain.entity.RemotesensingImage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/remotesensing")
 public class RemotesensingImageController {
@@ -22,6 +23,7 @@ public class RemotesensingImageController {
     //遥感影像---搜索
     @GetMapping("/queryRI")
     public AjaxResult queryRI(@RequestParam(value = "inputData", required = false) String inputData) {
+        log.info("inputData"+inputData);
         LambdaQueryWrapper<RemotesensingImage> wrapper = new LambdaQueryWrapper<>();
         if (inputData != null && !inputData.trim().isEmpty()) {
             wrapper
@@ -35,7 +37,7 @@ public class RemotesensingImageController {
                     .or()
                     .apply("CAST(angle AS TEXT) LIKE {0}", "%" + inputData + "%")
                     .or()
-                    .apply("TO_CHAR(create_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + inputData + "%");
+                    .apply("TO_CHAR(shooting_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + inputData + "%");
         }
         List<RemotesensingImage> resultList = remotesensingImageService.list(wrapper);
         return AjaxResult.success(resultList);
@@ -64,6 +66,7 @@ public class RemotesensingImageController {
     //遥感影像---改
     @PostMapping("/updaRI")
     public AjaxResult updaRI(@RequestBody RemotesensingImage remotesensingImage) {
+        log.info("remotesensingImage"+remotesensingImage);
         return AjaxResult.success(remotesensingImageService.updateById(remotesensingImage));
     }
 
