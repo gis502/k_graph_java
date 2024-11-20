@@ -16,4 +16,8 @@ public interface WorkGroupLogService extends IService<WorkGroupLog> {
 
     IPage<WorkGroupLog> searchData(RequestBTO requestBTO);
 
+
+    List<WorkGroupLog> getWordCloudLib(String eqId);
+
+
 }
