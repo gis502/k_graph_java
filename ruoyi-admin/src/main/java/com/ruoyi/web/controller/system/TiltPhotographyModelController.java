@@ -102,21 +102,21 @@ public class TiltPhotographyModelController {
         }
 
         // 处理时间字段
-        if (tiltphotographymodel.getTime() != null) {
-            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
-            ZonedDateTime utcTime = tiltphotographymodel.getTime().atZone(ZoneId.of("UTC"));
-            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
-
-            // 格式化为数据库中匹配的格式字符串
-            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-            // 将格式化后的时间应用到查询中
-            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
-        }
 //        if (tiltphotographymodel.getTime() != null) {
-//            // 直接调用实体类的时间字段进行范围查询
-//            wrapper.ge(Tiltphotographymodel::getTime, tiltphotographymodel.getTime());
+//            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
+//            ZonedDateTime utcTime = tiltphotographymodel.getTime().atZone(ZoneId.of("UTC"));
+//            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
+//
+//            // 格式化为数据库中匹配的格式字符串
+//            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//
+//            // 将格式化后的时间应用到查询中
+//            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
 //        }
+        if (tiltphotographymodel.getTime() != null) {
+            // 直接调用实体类的时间字段进行范围查询
+            wrapper.eq(Tiltphotographymodel::getTime, tiltphotographymodel.getTime());
+        }
         // 处理其他数值类型字段
         if (tiltphotographymodel.getRze() != null) {
             wrapper.apply("CAST(rze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRze() + "%");

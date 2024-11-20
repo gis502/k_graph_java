@@ -92,21 +92,21 @@ public class OrthophotoImageController {
         }
 
 //         处理 create_time 字段，使用本地时区时间格式化和范围查询
-        if (orthophotoImage.getCreateTime() != null) {
-            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
-            ZonedDateTime utcTime = orthophotoImage.getCreateTime().atZone(ZoneId.of("UTC"));
-            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
-
-            // 格式化为数据库中匹配的格式字符串
-            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-            // 将格式化后的时间应用到范围查询中
-            wrapper.ge(OrthophotoImage::getCreateTime, formattedTime);
-        }
 //        if (orthophotoImage.getCreateTime() != null) {
-//            // 直接调用实体类的时间字段进行范围查询
-//            wrapper.ge(OrthophotoImage::getCreateTime, orthophotoImage.getCreateTime());
+//            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
+//            ZonedDateTime utcTime = orthophotoImage.getCreateTime().atZone(ZoneId.of("UTC"));
+//            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
+//
+//            // 格式化为数据库中匹配的格式字符串
+//            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//
+//            // 将格式化后的时间应用到范围查询中
+//            wrapper.ge(OrthophotoImage::getCreateTime, formattedTime);
 //        }
+        if (orthophotoImage.getCreateTime() != null) {
+            // 直接调用实体类的时间字段进行范围查询
+            wrapper.eq(OrthophotoImage::getCreateTime, orthophotoImage.getCreateTime());
+        }
 
 
 
