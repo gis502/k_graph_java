@@ -2,8 +2,10 @@ package com.ruoyi.system.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.constant.MessageConstants;
@@ -15,6 +17,7 @@ import com.ruoyi.system.mapper.WorkGroupLogMapper;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.service.WorkGroupLogService;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class WorkGroupLogServiceImpl extends
         ServiceImpl<WorkGroupLogMapper, WorkGroupLog>
         implements WorkGroupLogService, DataExportStrategy {
@@ -35,6 +39,8 @@ public class WorkGroupLogServiceImpl extends
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+    @Resource
+    private WorkGroupLogMapper workGroupLogMapper;
 
     @Override
     public List<WorkGroupLog> importExcelWorkGroupLog(MultipartFile file, String userName, String eqId) throws IOException {
@@ -197,5 +203,46 @@ public class WorkGroupLogServiceImpl extends
         return true;  // 所有单元格都为空，算作空行
     }
 
+    // 根据区域名称返回上报信息统计数目
+    public List<Map<String, Object>> getAreaUploadData(String eqId) {
+        return workGroupLogMapper.getAreaUploadData(eqId);
+    }
+
+    // 根据上报部门返回上报信息统计数目
+    public List<Map<String, Object>> getWorkGroupData(String eqId) {
+
+        return workGroupLogMapper.getWorkGroupData(eqId);
+    }
+
+    public String getLastDeadlineDateTime(String eqId) {
+        WorkGroupLog selectOne = workGroupLogMapper.selectOne(new QueryWrapper<WorkGroupLog>()
+                .orderBy(true, false,"submission_deadline")
+                .eq("earthquake_id", eqId)
+                .last("LIMIT 1")
+        );
+
+        String lastDateTime = String.valueOf(selectOne.getSubmissionDeadline());
+
+        log.info("lastDateTime->{}", lastDateTime);
+
+        return lastDateTime;
+    }
+
+    //TODO 获取词云分词数据
+    public List<WorkGroupLog> getWordCloudLib(String eqId) {
+
+        List<WorkGroupLog> logList = workGroupLogMapper.selectList(new QueryWrapper<WorkGroupLog>().eq("earthquake_id", eqId));
+        List<String> workStatus = logList.stream().map(WorkGroupLog::getWorkStatus).collect(Collectors.toList());
+        List<String> workIssues = logList.stream().map(WorkGroupLog::getWorkIssues).collect(Collectors.toList());
+        List<String> workRequirement = logList.stream().map(WorkGroupLog::getRequirementList).collect(Collectors.toList());
+
+        ArrayList<String> workList = new ArrayList<>();
+
+        System.out.println("workStatus: {}" + workStatus);
+        System.out.println("workIssues: {}" + workIssues);
+        System.out.println("workRequirement: {}" + workRequirement);
+
+        return null;
+    }
 
 }
