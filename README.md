@@ -1,4 +1,4 @@
-### 项目部署
+### 后端项目
 
 > 问题1：postgreSql 16版本安装时可能会出现和操作系统冲突问题
 
@@ -20,7 +20,8 @@ psql -h localhost -p 5432 -U postgres -d mylocaldb -f ruoyi_backup.sql
 ```
 >导入模块如果出现导入失败之类的错误，请尝试在启动的配置上打开modify options里面的add vm option添加以上语句，看是否能解决。
 ```md
---add-opens java.base/java.util=ALL-UNNAMED
+--add-opens java.base/java.util=ALL-UNNAMED（错误）
+--add-opens java.base/java.lang=ALL-UNNAMED（应该使用这个）
 ```
 
 >备份backup文件
