@@ -2,7 +2,7 @@ package com.ruoyi.common.constant;
 
 /**
  * 用户常量信息
- * 
+ *
  * @author ruoyi
  */
 public class UserConstants
@@ -53,7 +53,7 @@ public class UserConstants
 
     /** Layout组件标识 */
     public final static String LAYOUT = "Layout";
-    
+
     /** ParentView组件标识 */
     public final static String PARENT_VIEW = "ParentView";
 
@@ -75,4 +75,8 @@ public class UserConstants
      */
     public static final int PASSWORD_MIN_LENGTH = 5;
     public static final int PASSWORD_MAX_LENGTH = 20;
+
+
+
+
 }

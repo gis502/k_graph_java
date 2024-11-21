@@ -5,7 +5,7 @@ import io.jsonwebtoken.Claims;
 
 /**
  * 通用常量信息
- * 
+ *
  * @author ruoyi
  */
 public class Constants
@@ -170,4 +170,11 @@ public class Constants
      */
     public static final String[] JOB_ERROR_STR = { "java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
             "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config", "com.ruoyi.generator" };
+
+
+
+    public static final String USER_AGENT = "Mozilla/5.0";
+    public static final String HTTP_URL = "http://tq-test.xixily.com:10340/api/open";
+
+
 }
