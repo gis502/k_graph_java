@@ -40,11 +40,13 @@ public class OrthophotoImage {
     /**
      * 添加时间
      */
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_time") // 确保格式正确
     private LocalDateTime createTime; // 使用 Date 类型
 
     /**
+     2
      * id
      */
     @TableId(value = "uuid", type = IdType.NONE)

@@ -180,6 +180,13 @@ public class RedCrossDonationsServiceImpl extends
         return baseMapper.selectPage(redCrossDonationsPage, queryWrapper);
     }
 
+    @Override
+    public List<RedCrossDonations> fromRedCrossDonations(String eqid, LocalDateTime time) {
+        List<RedCrossDonations> redCrossDonationsList = redCrossDonationsMapper.fromRedCrossDonations(eqid, time);
+        return redCrossDonationsList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

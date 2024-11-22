@@ -194,6 +194,13 @@ public class RescueForcesServiceImpl extends
     }
 
     @Override
+    public List<RescueForces> fromRescueForces(String eqid, LocalDateTime time) {
+        List<RescueForces> rescueForcesList = rescueForcesMapper.fromRescueForces(eqid, time);
+        return rescueForcesList;
+    }
+
+
+    @Override
     public List<RescueForces> RescueForcesByEqId(String eqid) {
         return rescueForcesMapper.RescueForcesByEqId(eqid);
     }

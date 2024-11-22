@@ -187,6 +187,12 @@ public class DisasterReliefMaterialsServiceImpl extends
     }
 
     @Override
+    public List<DisasterReliefMaterials> fromDisasterReliefMaterials(String eqid, LocalDateTime time) {
+        List<DisasterReliefMaterials> disasterReliefMaterialsList = disasterReliefMaterialsMapper.fromDisasterReliefMaterials(eqid, time);
+        return disasterReliefMaterialsList;
+    }
+
+    @Override
     public List<DisasterReliefMaterials> DisasterReliefMaterialsByEqId(String eqid) {
         return disasterReliefMaterialsMapper.DisasterReliefMaterialsByEqId(eqid);
     }

@@ -180,6 +180,13 @@ public class BarrierLakeSituationServiceImpl extends
         return baseMapper.selectPage(barrierLakeSituationPage, queryWrapper);
     }
 
+    @Override
+    public List<BarrierLakeSituation> fromBarrierLakeSituation(String eqid, LocalDateTime time) {
+        List<BarrierLakeSituation> barrierLakeSituationList = barrierLakeSituationMapper.fromBarrierLakeSituation(eqid, time);
+        return barrierLakeSituationList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

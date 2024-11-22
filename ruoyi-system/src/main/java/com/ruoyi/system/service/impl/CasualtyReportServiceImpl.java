@@ -129,6 +129,12 @@ public class CasualtyReportServiceImpl
     }
 
     @Override
+    public List<Map<String, Object>> fromCasualty(String eqid, LocalDateTime time) {
+        List<Map<String, Object>> aftercasualtyList = casualtyReportMapper.fromCasualty(eqid,time);
+        return aftercasualtyList;
+    }
+
+    @Override
     public IPage<CasualtyReport> getPage(RequestBTO requestBTO) {
         Page<CasualtyReport>
                 casualtyReport =
