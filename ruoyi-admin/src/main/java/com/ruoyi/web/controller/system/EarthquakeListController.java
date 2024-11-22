@@ -16,6 +16,7 @@ import com.ruoyi.common.annotation.Log;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -81,6 +82,19 @@ public class EarthquakeListController {
                 .or().apply("to_char(occurrence_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%")
                 .orderByDesc(EarthquakeList::getOccurrenceTime);
         return earthquakeListService.list(QueryWrapper);
+
+
+    }
+
+    public static OffsetDateTime convertToOffsetDateTime(String timeStr) {
+        // 使用 ISO_DATE_TIME 来解析带时区的时间字符串（包含 Z 表示 UTC）
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
+        // 解析为 OffsetDateTime 类型，这样能够正确处理时区（即 'Z' 表示 UTC）
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse(timeStr, formatter);
+
+        // 返回原始的 OffsetDateTime，保持时间的 UTC 时区
+        return offsetDateTime;
     }
 
 
@@ -89,6 +103,7 @@ public class EarthquakeListController {
     public List<EarthquakeList> fromEq(@RequestBody EqFormDto queryDTO) {
         LambdaQueryWrapper<EarthquakeList> queryWrapper = new LambdaQueryWrapper<>();
 
+        System.out.println("55555555555555"+ queryDTO);
         // 按名称模糊查询
         if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
             queryWrapper.like(EarthquakeList::getEarthquakeName, queryDTO.getEarthquakeName());
@@ -97,8 +112,17 @@ public class EarthquakeListController {
         // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
         if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
-            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
+
+            // 直接将前端传递的时间字符串解析为 OffsetDateTime（保留时区信息，处理 UTC）
+            OffsetDateTime startTime = convertToOffsetDateTime(queryDTO.getStartTime());
+            OffsetDateTime endTime = convertToOffsetDateTime(queryDTO.getEndTime());
+
+
+
+            //做了时区转换，向前一天   eg:31---->30
+//            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
+//            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
+
             queryWrapper.between(EarthquakeList::getOccurrenceTime, startTime, endTime);
         }
 
@@ -123,6 +147,8 @@ public class EarthquakeListController {
             queryWrapper.apply("CAST(depth AS NUMERIC) >= {0}", startDepth);
             queryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", endDepth);
         }
+
+
 
         // 按时间倒序排列
         queryWrapper.orderByDesc(EarthquakeList::getOccurrenceTime);

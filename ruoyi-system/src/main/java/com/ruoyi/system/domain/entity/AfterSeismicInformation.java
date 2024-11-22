@@ -33,7 +33,6 @@ public class AfterSeismicInformation {
      * 地震标识，标识地震事件的唯一标识符
      */
     @TableField(value = "earthquake_identifier")
-    @ExcelProperty({"震情受灾", "地震标识"})
     private String earthquakeIdentifier;
 
     /**

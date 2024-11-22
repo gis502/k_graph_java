@@ -59,13 +59,13 @@ public class Tiltphotographymodel {
      * 添加高程后，在z轴上旋转了多少度
      */
     @TableField(value = "rze")
-    private Short rze;
+    private Double rze;
 
     /**
      * 添加高程后，在z轴上的平移量
      */
     @TableField(value = "tze")
-    private Short tze;
+    private Double tze;
 
     /**
      * 模型大小（GB）
