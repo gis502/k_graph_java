@@ -117,13 +117,16 @@ public class TiltPhotographyModelController {
             // 直接调用实体类的时间字段进行范围查询
             wrapper.eq(Tiltphotographymodel::getTime, tiltphotographymodel.getTime());
         }
+
         // 处理其他数值类型字段
         if (tiltphotographymodel.getRze() != null) {
             wrapper.apply("CAST(rze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRze() + "%");
         }
+
         if (tiltphotographymodel.getTze() != null) {
             wrapper.apply("CAST(tze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getTze() + "%");
         }
+
         if (tiltphotographymodel.getModelSize() != null) {
             wrapper.apply("CAST(model_size AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getModelSize() + "%");
         }
