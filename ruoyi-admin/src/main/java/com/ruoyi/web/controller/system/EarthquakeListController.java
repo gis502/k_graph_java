@@ -97,6 +97,8 @@ public class EarthquakeListController {
         return offsetDateTime;
     }
 
+
+    //筛选
     @PostMapping("/fromEq")
     public List<EarthquakeList> fromEq(@RequestBody EqFormDto queryDTO) {
         LambdaQueryWrapper<EarthquakeList> queryWrapper = new LambdaQueryWrapper<>();

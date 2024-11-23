@@ -8,6 +8,7 @@ import com.ruoyi.system.domain.entity.RedCrossDonations;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RedCrossDonationsService extends IService<RedCrossDonations> {
@@ -18,4 +19,6 @@ public interface RedCrossDonationsService extends IService<RedCrossDonations> {
     List<RedCrossDonations> RedCrossDonationsByEqId(String eqid);
 
     IPage<RedCrossDonations> searchData(RequestBTO requestBTO);
+
+    List<RedCrossDonations> fromRedCrossDonations(String eqid, LocalDateTime time);
 }

@@ -1,23 +1,22 @@
 package com.ruoyi.system.domain.entity;
 
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Data
-@TableName(value = "orthophotoimage")
-public class OrthophotoImage {
+@TableName(value = "remotesensingimage")
+public class RemotesensingImage {
+
     /**
      * 名称
      */
@@ -40,13 +39,10 @@ public class OrthophotoImage {
     /**
      * 添加时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_time") // 确保格式正确
     private LocalDateTime createTime; // 使用 Date 类型
 
     /**
-     2
      * id
      */
     @TableId(value = "uuid", type = IdType.NONE)
@@ -66,9 +62,10 @@ public class OrthophotoImage {
 
 
 
-
+    /**
+     * 拍摄时间
+     */
+    @TableField(value = "shooting_time")
+    private LocalDateTime shootingTime;
 
 }
-
-
-

@@ -6,15 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.system.config.MapperConfig;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.lang.reflect.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -343,9 +341,75 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
 
         String eqid = plotDataList.get(0).getEarthquakeId();
 
+        System.out.println("数据在此：");
+        System.out.println(plotDataList);
+        System.out.println(plotProperty);
+
         // 处理 plotDataList 部分
         for (SituationPlot plotData : plotDataList) {
             plotData.setCreationTime(LocalDateTime.now());
+
+            if (plotData.getGeomDetails() != null) {
+                // 获取 drawtype 来决定如何处理 geomDetails
+                String drawType = plotData.getDrawtype();  // 假设 drawType 字段已经存在
+
+                // 解析 geomDetails 字符串，假设格式为 (经度, 纬度)，例如 "(103.11544196, 30.29035906)"
+                String[] points = plotData.getGeomDetails().split("、");  // 分割每个点
+                List<Coordinate> coordinates = new ArrayList<>();
+
+                // 解析每个点的经纬度
+                for (String point : points) {
+                    point = point.replace("(", "").replace(")", "").trim();  // 去除括号
+                    String[] coords = point.split(",");  // 根据逗号分割经纬度
+                    if (coords.length == 2) {
+                        double longitude = Double.parseDouble(coords[0].trim());
+                        double latitude = Double.parseDouble(coords[1].trim());
+                        coordinates.add(new Coordinate(longitude, latitude));
+                    }
+                }
+
+                // 根据 drawtype 判断并生成对应的几何图形
+                if ("线".equalsIgnoreCase(drawType)) {
+                    // 处理 LineString
+                    if (coordinates.size() > 1) {
+                        LineString lineString = geometryFactory.createLineString(coordinates.toArray(new Coordinate[0]));
+                        plotData.setGeom(lineString);
+                    }
+                } else if ("面".equalsIgnoreCase(drawType)) {
+                    // 处理 Polygon
+                    if (coordinates.size() > 2) {
+                        // 判断最后一个点是否与第一个点相同
+                        Coordinate firstPoint = coordinates.get(0);
+                        Coordinate lastPoint = coordinates.get(coordinates.size() - 1);
+
+                        // 如果最后一个点与第一个点不同，自动加上第一个点闭合 Polygon
+                        if (!firstPoint.equals(lastPoint)) {
+                            coordinates.add(firstPoint);
+                        }
+
+                        // 创建 Polygon
+                        Polygon polygon = geometryFactory.createPolygon(coordinates.toArray(new Coordinate[0]));
+                        plotData.setGeom(polygon);
+                    }
+                } else if ("攻击箭头".equalsIgnoreCase(drawType) || "直线箭头".equalsIgnoreCase(drawType) || "钳击箭头".equalsIgnoreCase(drawType)) {
+                    // 处理 MultiPoint
+                    MultiPoint multiPoint = geometryFactory.createMultiPoint(coordinates.toArray(new Coordinate[0]));
+                    plotData.setGeom(multiPoint);
+                }
+
+            } else {
+                // 这里出错！
+                System.out.println("数据：" + plotData);
+                // 组合 longitude 和 latitude 成为 geom
+                double longitude = plotData.getLongitude();
+                double latitude = plotData.getLatitude();
+                if (longitude != 0.0 && latitude != 0.0) {
+                    Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+                    plotData.setGeom(point);
+                }
+            }
+            plotData.setLongitude(null);
+            plotData.setLatitude(null);
 
             // 根据 drawtype 的值进行转换
             switch (plotData.getDrawtype()) {
@@ -358,20 +422,19 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                 case "面":
                     plotData.setDrawtype("polygon");
                     break;
+                case "攻击箭头":
+                    plotData.setDrawtype("attack");
+                    break;
+                case "直线箭头":
+                    plotData.setDrawtype("straight");
+                    break;
+                case "钳击箭头":
+                    plotData.setDrawtype("pincer");
+                    break;
                 default:
                     break;
             }
 
-            // 组合 longitude 和 latitude 成为 geom
-            double longitude = plotData.getLongitude();
-            double latitude = plotData.getLatitude();
-            if (longitude != 0.0 && latitude != 0.0) {
-                Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-                plotData.setGeom(point);
-            }
-
-            plotData.setLongitude(null);
-            plotData.setLatitude(null);
         }
 
         // 从数据库获取目标 geom、start_time 和 end_time 列表
@@ -395,6 +458,7 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
         // 插入不匹配的标绘数据
         situationPlotMapper.insertSituationPlots(filteredPlotDataList);
 
+        System.out.println("标绘数据:" + filteredPlotDataList);
         // 处理 plotProperty 部分
         Map<String, BaseMapper<?>> mapperRegistry = mapperConfig.mapperRegistry();
 
@@ -412,26 +476,41 @@ public class SituationPlotServiceImpl extends ServiceImpl<SituationPlotMapper, S
                     String key = keyValue[0].trim();
                     String value = keyValue[1].trim();
 
-                    Field fieldToSet = clazz.getDeclaredField(key);
-                    fieldToSet.setAccessible(true);
+                    try {
+                        // 尝试获取目标字段
+                        Field fieldToSet = clazz.getDeclaredField(key);
+                        fieldToSet.setAccessible(true);
 
-                    if (fieldToSet.getType() == Double.class) {
-                        fieldToSet.set(entityInstance, Double.parseDouble(value));
-                    } else if (fieldToSet.getType() == Integer.class) {
-                        if (value.contains(".")) {
-                            fieldToSet.set(entityInstance, (int) Math.round(Double.parseDouble(value)));
+                        // 根据字段类型进行赋值
+                        if (fieldToSet.getType() == Double.class) {
+                            fieldToSet.set(entityInstance, Double.parseDouble(value));
+                        } else if (fieldToSet.getType() == Integer.class) {
+                            if (value.contains(".")) {
+                                fieldToSet.set(entityInstance, (int) Math.round(Double.parseDouble(value)));
+                            } else {
+                                fieldToSet.set(entityInstance, Integer.parseInt(value));
+                            }
+                        } else if (fieldToSet.getType() == BigDecimal.class) {
+                            fieldToSet.set(entityInstance, new BigDecimal(value));
                         } else {
-                            fieldToSet.set(entityInstance, Integer.parseInt(value));
+                            fieldToSet.set(entityInstance, value);
                         }
-                    } else {
-                        fieldToSet.set(entityInstance, value);
+                    } catch (NoSuchFieldException e) {
+                        // 打印错误详细信息
+                        System.err.println("Field '" + key + "' not found in class: " + clazz.getName());
+                        e.printStackTrace();
                     }
                 }
 
                 String mapperKey = entityName.toLowerCase();
                 BaseMapper<?> mapper = mapperRegistry.get(mapperKey);
 
+                System.out.println("mapper:"+mapperRegistry.get(mapperKey));
+                System.out.println("对应的mapper:" + mapperKey);
+
+                // 插入属性表
                 if (mapper != null) {
+                    System.out.println("属性数据：" + entityInstance);
                     ((BaseMapper<Object>) mapper).insert(entityInstance);
                     System.out.println("Inserted entity: " + entityInstance);
                 } else {

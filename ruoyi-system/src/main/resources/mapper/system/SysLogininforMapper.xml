@@ -34,14 +34,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				AND user_name LIKE '%' || #{userName} || '%'
 			</if>
 			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
-				and login_time::date &gt;= to_date(#{params.beginTime},'yyyy-MM-dd')
+				AND login_time::date &gt;= to_date(#{params.beginTime}, 'yyyy-MM-dd')
 			</if>
 			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
-				and login_time::date &lt;= to_date(#{params.endTime},'yyyy-MM-dd')
+				AND login_time::date &lt;= to_date(#{params.endTime}, 'yyyy-MM-dd')
 			</if>
 		</where>
 		order by info_id desc
 	</select>
+
 
 	<delete id="deleteLogininforByIds" parameterType="Long">
  		delete from sys_logininfor where info_id::bigint in

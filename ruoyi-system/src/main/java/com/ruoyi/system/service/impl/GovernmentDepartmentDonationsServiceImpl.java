@@ -175,6 +175,13 @@ public class GovernmentDepartmentDonationsServiceImpl extends ServiceImpl<Govern
         return baseMapper.selectPage(governmentDepartmentDonationsPage, queryWrapper);
     }
 
+    @Override
+    public List<GovernmentDepartmentDonations> fromGovernmentDepartmentDonations(String eqid, LocalDateTime time) {
+        List<GovernmentDepartmentDonations> governmentDepartmentDonationsList = govDonationsMapper.fromGovernmentDepartmentDonations(eqid, time);
+        return governmentDepartmentDonationsList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

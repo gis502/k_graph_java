@@ -8,6 +8,7 @@ import com.ruoyi.system.domain.entity.RiskConstructionGeohazards;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BarrierLakeSituationService extends IService<BarrierLakeSituation> {
@@ -17,4 +18,6 @@ public interface BarrierLakeSituationService extends IService<BarrierLakeSituati
     List<BarrierLakeSituation> BarrierLakeSituationByEqId(String eqid);
 
     IPage<BarrierLakeSituation> searchData(RequestBTO requestBTO);
+
+    List<BarrierLakeSituation> fromBarrierLakeSituation(String eqid, LocalDateTime time);
 }

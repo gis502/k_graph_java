@@ -44,6 +44,8 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import static com.ruoyi.system.domain.handler.ExcelConverter.convertContactPhones;
@@ -532,7 +534,6 @@ public class ExcelController {
     }
 
     @PostMapping("/importPlotExcel/{filename}&{eqId}")
-    @Log(title = "导入标绘数据", businessType = BusinessType.IMPORT)
     public R importPlotExcel(@RequestParam("file") MultipartFile file,
                              @PathVariable(value = "filename") String filename,
                              @PathVariable(value = "eqId") String eqId) throws IOException {
@@ -544,6 +545,7 @@ public class ExcelController {
         List<String> plotProperty = new ArrayList<>();
         List<String> sheetNames = new ArrayList<>();
         Map<String, String> sheetIcon = new HashMap<>();
+        Map<String, List<String>> plotIds = new HashMap<>(); // 使用 Map 按 drawType 分类存储 plotId
 
         // 获取映射配置
         Map<String, String> fieldMapping = new PlotConfig().getFieldMapping();
@@ -555,19 +557,33 @@ public class ExcelController {
                 if (sheet == null || sheet.getPhysicalNumberOfRows() == 0) continue;
 
                 String sheetName = sheet.getSheetName();
-                String mappedSheetName = sheetMapping.get(sheetName); // 获取映射后的sheetName
+                String mappedSheetName = sheetMapping.get(sheetName);
                 if (mappedSheetName == null) {
                     System.out.println("No mapping found for sheet: " + sheetName);
-                    continue; // 如果没有映射，跳过该sheet
+                    continue;
                 }
                 sheetNames.add(sheetName);
 
-                System.out.println("Sheet: " + mappedSheetName); // 使用映射后的名称
+                System.out.println("Sheet: " + mappedSheetName);
                 Row headerRow = sheet.getRow(0);
                 Map<Integer, String> columnFieldMap = new HashMap<>();
 
-                // 仅处理前七个字段
-                int maxColumns = Math.min(7, headerRow.getPhysicalNumberOfCells());
+                // 查找“结束时间”的列索引，用于划分标绘与属性数据
+                int endTimeIndex = -1;
+                for (int col = 0; col < headerRow.getPhysicalNumberOfCells(); col++) {
+                    Cell cell = headerRow.getCell(col);
+                    if (cell != null && "结束时间".equals(cell.getStringCellValue().trim())) {
+                        endTimeIndex = col;
+                        break;
+                    }
+                }
+
+                if (endTimeIndex == -1) {
+                    throw new RuntimeException("标题行中未找到 '结束时间' 列");
+                }
+
+                // 处理标绘数据
+                int maxColumns = Math.min(endTimeIndex + 1, headerRow.getPhysicalNumberOfCells());
                 for (int col = 0; col < maxColumns; col++) {
                     Cell cell = headerRow.getCell(col);
                     String fieldName = fieldMapping.get(cell.getStringCellValue());
@@ -575,16 +591,14 @@ public class ExcelController {
                         columnFieldMap.put(col, fieldName);
                     }
                 }
-
                 for (int rowIndex = 1; rowIndex <= sheet.getPhysicalNumberOfRows(); rowIndex++) {
                     Row row = sheet.getRow(rowIndex);
                     if (row == null) continue;
 
                     SituationPlot plotData = new SituationPlot();
                     plotData.setPlotId(UUID.randomUUID().toString()); // 每个实例生成唯一的 plotId
-                    boolean rowIsEmpty = true;
 
-                    // 用于存储第八列及其后的字段
+                    boolean rowIsEmpty = true;
                     Map<String, String> additionalFields = new HashMap<>();
 
                     // 处理前七列
@@ -594,74 +608,105 @@ public class ExcelController {
                         String cellValue = "";
 
                         if (cell != null) {
-                            switch (cell.getCellType()) {
-                                case STRING:
-                                    cellValue = cell.getStringCellValue();
-                                    break;
-                                case NUMERIC:
-                                    cellValue = String.valueOf(cell.getNumericCellValue());
-                                    break;
-                                case BOOLEAN:
-                                    cellValue = String.valueOf(cell.getBooleanCellValue());
-                                    break;
-                                case FORMULA:
-                                    cellValue = cell.getCellFormula();
-                                    break;
-                                default:
-                                    cellValue = "";
-                            }
-                        }
-
-                        if (!cellValue.isEmpty()) {
-                            rowIsEmpty = false;
                             try {
-                                Field field = SituationPlot.class.getDeclaredField(fieldName);
-                                field.setAccessible(true);
+                                switch (cell.getCellType()) {
+                                    case STRING:
+                                        cellValue = cell.getStringCellValue().trim();
+                                        break;
+                                    case NUMERIC:
+                                        if (DateUtil.isCellDateFormatted(cell)) {
+                                            cellValue = ExcelConverter.convertExcelDate(cell.getNumericCellValue()).toString();
+                                        } else {
+                                            cellValue = String.valueOf(cell.getNumericCellValue());
+                                        }
+                                        break;
+                                    case BOOLEAN:
+                                        cellValue = String.valueOf(cell.getBooleanCellValue());
+                                        break;
+                                    case FORMULA:
+                                        try {
+                                            cellValue = String.valueOf(cell.getNumericCellValue());
+                                        } catch (IllegalStateException e) {
+                                            cellValue = cell.getStringCellValue();
+                                        }
+                                        break;
+                                    default:
+                                        cellValue = "";
+                                }
 
-                                if (field.getType().equals(Double.class)) {
-                                    field.set(plotData, Double.parseDouble(cellValue));
-                                } else if (field.getType().equals(BigDecimal.class)) {
-                                    field.set(plotData, new BigDecimal(cellValue));
-                                } else if (field.getType().equals(LocalDateTime.class)) {
-                                    field.set(plotData, ExcelConverter.convertExcelDate(cell.getNumericCellValue()));
-                                } else {
-                                    field.set(plotData, cellValue);
+                                if (!cellValue.isEmpty()) {
+                                    rowIsEmpty = false;
+                                    try {
+                                        Field field = SituationPlot.class.getDeclaredField(fieldName);
+                                        field.setAccessible(true);
+                                        Class<?> fieldType = field.getType();
+
+                                        if (fieldType.equals(Double.class)) {
+                                            field.set(plotData, Double.valueOf(cellValue));
+                                        } else if (fieldType.equals(BigDecimal.class)) {
+                                            field.set(plotData, new BigDecimal(cellValue));
+                                        } else if (fieldType.equals(LocalDateTime.class)) {
+                                            try {
+                                                field.set(plotData, LocalDateTime.parse(cellValue, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                                            } catch (DateTimeParseException e) {
+                                                System.err.println("Invalid date format for field: " + fieldName + ". Skipping.");
+                                            }
+                                        } else if (fieldType.equals(Integer.class)) {
+                                            field.set(plotData, Integer.valueOf(cellValue));
+                                        } else {
+                                            field.set(plotData, cellValue);
+                                        }
+                                    } catch (NoSuchFieldException e) {
+                                        System.err.println("Field not found: " + fieldName);
+                                    } catch (NumberFormatException e) {
+                                        System.err.println("Invalid number format for field: " + fieldName + " - " + cellValue);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                System.err.println("Error processing cell: " + e.getMessage());
                             }
                         }
                     }
 
-                    // 存储第八列及其后的标题和内容
-                    for (int col = 7; col < row.getPhysicalNumberOfCells(); col++) { // 从第八列开始
+                    for (int col = endTimeIndex + 1; col < row.getPhysicalNumberOfCells(); col++) {
                         Cell cell = row.getCell(col);
                         String headerName = fieldMapping.get(headerRow.getCell(col).getStringCellValue());
+
+                        // 因为前端的映射“破坏形式”对应"damageForm"与"damageType"，而『公路破坏点』中字段为后者，故如此处理
+                        if ("roadDamagePoints".equals(mappedSheetName) && "damageForm".equals(headerName)) {
+                            headerName = "damageType";
+                        }
+
                         if (cell != null) {
-                            String cellValue = cell.toString().trim(); // 去除多余空白
-                            if (!cellValue.isEmpty()) { // 仅在非空时存储
+                            String cellValue = cell.toString().trim();
+                            if (!cellValue.isEmpty()) {
                                 if (headerName != null) {
-                                    additionalFields.put(headerName, cellValue); // 以表头：内容方式存储
+                                    additionalFields.put(headerName, cellValue);
                                 }
                             }
                         }
                     }
 
                     if (!rowIsEmpty) {
-                        plotData.setPlotType(sheetName); // 使用原始名称
+                        plotData.setPlotType(sheetName);
                         plotDataList.add(plotData);
 
-                        // 格式化属性数据为 `mappedSheetName(字段1=值1, 字段2=值2, ...)`
                         StringBuilder propertyString = new StringBuilder(mappedSheetName + "(");
-                        propertyString.append("plotId=").append(plotData.getPlotId()).append(", "); // 添加 plotId
+                        propertyString.append("plotId=").append(plotData.getPlotId()).append(", ");
                         additionalFields.forEach((key, value) ->
                                 propertyString.append(key).append("=").append(value).append(", "));
                         if (propertyString.length() > 2) {
-                            propertyString.setLength(propertyString.length() - 2); // 去掉最后的逗号和空格
+                            propertyString.setLength(propertyString.length() - 2);
                         }
                         propertyString.append(")");
 
-                        plotProperty.add(propertyString.toString()); // 添加格式化后的字符串
+                        plotProperty.add(propertyString.toString());
+
+                        // 分类存储 plotId
+                        String drawType = plotData.getDrawtype();
+                        plotIds.computeIfAbsent(drawType, k -> new ArrayList<>()).add((String) plotData.getPlotId());
                     }
                 }
             }
@@ -676,13 +721,20 @@ public class ExcelController {
             plotData.setEarthquakeId(eqId);
             plotData.setIcon(sheetIcon.get(plotData.getPlotType()));
         }
-        // 联系电话的科学计数法格式改成正常字符串
+
         List<String> updatedPlotProperty = convertContactPhones(plotProperty);
 
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("plotIds", plotIds); // 返回分类后的 plotIds
+        responseMap.put("plotDataList", plotDataList); // 完整的 plot 数据
+        responseMap.put("updatedPlotProperty", updatedPlotProperty); // 更新后的属性数据
+
+        // 保存标绘数据及其属性
         situationPlotService.savePlotDataAndProperties(plotDataList, updatedPlotProperty);
 
-        return R.ok("导入成功");
+        return R.ok(responseMap);
     }
+
 
     @DeleteMapping("/deleteData")
     public AjaxResult deleteData(@RequestBody Map<String, Object> requestBTO) {

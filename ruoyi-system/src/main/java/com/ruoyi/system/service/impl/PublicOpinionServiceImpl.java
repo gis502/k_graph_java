@@ -182,6 +182,13 @@ public class PublicOpinionServiceImpl
         return baseMapper.selectPage(publicOpinionPage, queryWrapper);
     }
 
+    @Override
+    public List<PublicOpinion> fromPublicOpinion(String eqid, LocalDateTime time) {
+        List<PublicOpinion> publicOpinionList = publicOpinionMapper.fromPublicOpinion(eqid, time);
+        return publicOpinionList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

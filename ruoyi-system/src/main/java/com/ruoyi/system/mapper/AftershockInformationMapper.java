@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import java.util.Map;
 public interface AftershockInformationMapper extends BaseMapper<AftershockInformation> {
     /**
      * 获取最新的余震数据
+     *
      * @param eqid
      * @return
      */
@@ -35,7 +37,7 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
             "SUM(cr.magnitude_3_3_9) AS magnitude_3_3_9, " +
             "SUM(cr.magnitude_4_4_9) AS magnitude_4_4_9, " +
             "SUM(cr.magnitude_5_5_9) AS magnitude_5_5_9, " +
-            "SUM(cr.magnitude_6) AS magnitude_6, "+
+            "SUM(cr.magnitude_6) AS magnitude_6, " +
             "SUM(cr.total_aftershocks) AS total_aftershocks, " +
             "cr.system_insert_time, " +
             "cr.submission_deadline " +
@@ -68,7 +70,27 @@ public interface AftershockInformationMapper extends BaseMapper<AftershockInform
     List<Map<String, Object>> getAfterShockInformation(String eqid);
 
 
+    @Select("SELECT yas.* " +
+            "FROM aftershock_information yas " +
+            "JOIN LATERAL (" +
+            "    SELECT affected_area, " +
+            "           submission_deadline, " +
+            "           system_insert_time, " +
+            "           ROW_NUMBER() OVER (" +
+            "               PARTITION BY affected_area " +
+            "               ORDER BY " +
+            "                   ABS(EXTRACT(EPOCH FROM (submission_deadline - #{time}::timestamp))) ASC, " +
+            "                   ABS(EXTRACT(EPOCH FROM (system_insert_time - #{time}::timestamp))) ASC" +
+            "           ) AS rn " +
+            "    FROM aftershock_information " +
+            "    WHERE earthquake_identifier = #{eqid} " +
+            "    AND affected_area = yas.affected_area " +
+            ") sub ON yas.affected_area = sub.affected_area " +
+            "AND yas.submission_deadline = sub.submission_deadline " +
+            "AND yas.system_insert_time = sub.system_insert_time " +
+            "WHERE yas.earthquake_identifier = #{eqid} " +
+            "AND sub.rn = 1 " +
+            "ORDER BY yas.affected_area")
 
-
-
+    List<Map<String, Object>> fromAftershock(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 }

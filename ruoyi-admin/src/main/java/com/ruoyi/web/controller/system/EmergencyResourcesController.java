@@ -283,6 +283,7 @@ public class EmergencyResourcesController {
     //救援队伍页面--修改功能
     @PutMapping("/updateEmergencyTeam")
     public boolean updateEmergencyTeam(@RequestBody RescueTeamsInfo rescueTeamInfo) {
+        System.out.println("救援队伍："+rescueTeamInfo);
         return rescueTeamsInfoService.updateById(rescueTeamInfo);
     }
 

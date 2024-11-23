@@ -9,6 +9,7 @@ import com.ruoyi.system.domain.entity.PowerSupplyInformation;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface HousingSituationService extends IService<HousingSituation>{
@@ -21,4 +22,6 @@ public interface HousingSituationService extends IService<HousingSituation>{
 
     IPage<HousingSituation> searchData(RequestBTO requestBTO);
 
+
+    List<HousingSituation> fromHousingSituation(String eqid, LocalDateTime time);
 }
