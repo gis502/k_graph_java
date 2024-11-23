@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RoadDamageService extends IService<RoadDamage>{
@@ -17,4 +18,6 @@ public interface RoadDamageService extends IService<RoadDamage>{
     List<RoadDamage> importExcelRoadDamage(MultipartFile file, String userName, String eqId) throws IOException;
 
     IPage<RoadDamage> searchData(RequestBTO requestBTO);
+
+    List<RoadDamage> fromrepair(String eqid, LocalDateTime time);
 }

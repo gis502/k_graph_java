@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -18,7 +19,6 @@ public interface TransferSettlementInfoMapper extends BaseMapper<TransferSettlem
         ORDER BY earthquake_area_name, reporting_deadline DESC, system_inserttime DESC
     """)
     List<TransferSettlementInfo> getTotal(@Param("eqid") String eqid);
-
 
 
 //    @Select("SELECT " +
@@ -63,6 +63,29 @@ public interface TransferSettlementInfoMapper extends BaseMapper<TransferSettlem
             "WHERE tsi.earthquake_id = #{eqid} " +
             "GROUP BY tsi.earthquake_area_name, tsi.reporting_deadline")
     List<TransferSettlementInfo> getTransferInfo(String eqid);
+
+    @Select("SELECT yas.* " +
+            "FROM transfer_settlement_info yas " +
+            "JOIN LATERAL (" +
+            "    SELECT affected_area, " +
+            "           reporting_deadline, " +
+            "           system_inserttime, " +
+            "           ROW_NUMBER() OVER (" +
+            "               PARTITION BY affected_area " +
+            "               ORDER BY " +
+            "                   ABS(EXTRACT(EPOCH FROM (reporting_deadline - #{time}::timestamp))) ASC, " +
+            "                   ABS(EXTRACT(EPOCH FROM (system_inserttime - #{time}::timestamp))) ASC" +
+            "           ) AS rn " +
+            "    FROM transfer_settlement_info " +
+            "    WHERE earthquake_id = #{eqid} " +
+            "    AND affected_area = yas.affected_area " +
+            ") sub ON yas.affected_area = sub.affected_area " +
+            "AND yas.reporting_deadline = sub.reporting_deadline " +
+            "AND yas.system_inserttime = sub.system_inserttime " +
+            "WHERE yas.earthquake_id = #{eqid} " +
+            "AND sub.rn = 1 " +
+            "ORDER BY yas.affected_area")
+    List<TransferSettlementInfo> fromtransferSettlementInfo(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 
 
 }

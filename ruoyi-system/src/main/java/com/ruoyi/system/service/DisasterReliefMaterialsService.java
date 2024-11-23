@@ -9,6 +9,7 @@ import com.ruoyi.system.domain.entity.RescueForces;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DisasterReliefMaterialsService extends IService<DisasterReliefMaterials> {
@@ -17,4 +18,6 @@ public interface DisasterReliefMaterialsService extends IService<DisasterReliefM
     List<DisasterReliefMaterials> DisasterReliefMaterialsByEqId(String eqid);
 
     IPage<DisasterReliefMaterials> searchData(RequestBTO requestBTO);
+
+    List<DisasterReliefMaterials> fromDisasterReliefMaterials(String eqid, LocalDateTime time);
 }

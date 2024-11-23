@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -38,12 +40,13 @@ public class OrthophotoImage {
     /**
      * 添加时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(value = "create_time")
-    private String createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(value = "create_time") // 确保格式正确
+    private LocalDateTime createTime; // 使用 Date 类型
 
     /**
+     2
      * id
      */
     @TableId(value = "uuid", type = IdType.NONE)

@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
 import lombok.Data;
 import org.locationtech.jts.geom.Geometry;
 import org.n52.jackson.datatype.jts.GeometryDeserializer;
@@ -53,6 +55,7 @@ public class EmergencyShelters {
     /**
      * 可容纳人数
      */
+
     @TableField(value = "capacity")
     private Integer capacity;
 
@@ -110,6 +113,7 @@ public class EmergencyShelters {
 //    @TableField(value = "start_time")
 //    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 //    private Date startTime;
+
     @TableField(value = "start_time")
     private LocalDateTime startTime;
 

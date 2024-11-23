@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alibaba.excel.EasyExcel;
-import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.listener.AftershockInformationListener;
@@ -13,22 +12,15 @@ import com.ruoyi.system.mapper.EarthquakeListMapper;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.mapper.AftershockInformationMapper;
 import com.ruoyi.system.service.AftershockInformationService;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,14 +32,12 @@ import java.util.Comparator;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Service
 public class AftershockInformationServiceImpl extends
         ServiceImpl<AftershockInformationMapper, AftershockInformation>
         implements AftershockInformationService, DataExportStrategy {
     @Autowired
     private AftershockInformationMapper aftershockInformationMapper;
-
     @Override
     public IPage<AftershockInformation> getPage(RequestBTO requestBTO) {
         Page<AftershockInformation> aftershockInformation = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
@@ -82,8 +72,7 @@ public class AftershockInformationServiceImpl extends
                         .or()
                         .like(AftershockInformation::getAffectedRange, requestParam)
                         .or()
-                        .like(AftershockInformation::getRelationshipWithMainshock, requestParam);
-        ;
+                        .like(AftershockInformation::getRelationshipWithMainshock, requestParam);;
 
 
         return this.page(aftershockInformation, queryWrapper);
@@ -91,7 +80,7 @@ public class AftershockInformationServiceImpl extends
 
     @Override
     public List<AftershockInformation> exportExcelGetData(RequestBTO requestBTO) {
-        String[] ids = requestBTO.getIds();
+        String [] ids = requestBTO.getIds();
         List<AftershockInformation> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
@@ -170,9 +159,9 @@ public class AftershockInformationServiceImpl extends
     }
 
 
+
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
-
     @Override
     public List<AftershockInformation> importExcelAftershockInformation(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -197,7 +186,7 @@ public class AftershockInformationServiceImpl extends
         inputStream = file.getInputStream();
         AftershockInformationListener listener = new AftershockInformationListener(baseMapper, totalRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream, AftershockInformation.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream,AftershockInformation.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
         List<AftershockInformation> list = listener.getList();
         // 将解析后的数据保存到数据库
@@ -234,49 +223,30 @@ public class AftershockInformationServiceImpl extends
 
     @Override
     public IPage<AftershockInformation> searchData(RequestBTO requestBTO) {
-        Page<AftershockInformation> aftershockInformationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        Page<AftershockInformation> aftershockInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
-        LambdaQueryWrapper<AftershockInformation> queryWrapper = Wrappers.lambdaQuery(AftershockInformation.class);
-
-        if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
-
-            queryWrapper.eq(AftershockInformation::getEarthquakeIdentifier, eqId)
-                    .like(AftershockInformation::getEarthquakeName, requestParams)
-                    .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
-                    .like(AftershockInformation::getAffectedArea, requestParams)
-                    .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
-                    .apply("cast(magnitude as text) LIKE {0}", "%" + requestParams + "%")
-                    .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
-                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
-                    .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
-                    .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
-        }
-
-        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
-
-            // 按名称模糊查询
-            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
-                queryWrapper.like(AftershockInformation::getAffectedArea, requestBTO.getFormVO().getEarthquakeAreaName())
-                        .eq(AftershockInformation::getEarthquakeIdentifier, eqId);
-            }
-
-            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
-            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
-
-                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
-
-                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
-                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
-
-                queryWrapper.between(AftershockInformation::getSubmissionDeadline, startDate, endDate)
-                        .eq(AftershockInformation::getEarthquakeIdentifier, eqId);
-            }
-        }
+        LambdaQueryWrapper<AftershockInformation> queryWrapper = Wrappers.lambdaQuery(AftershockInformation.class)
+                .eq(AftershockInformation::getEarthquakeIdentifier, eqId)
+                .like(AftershockInformation::getEarthquakeName, requestParams)
+                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
+                .like(AftershockInformation::getAffectedArea, requestParams)
+                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
+                .apply("cast(magnitude as text) LIKE {0}", "%" + requestParams + "%")
+                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
+                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
+                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
 
 
         return baseMapper.selectPage(aftershockInformationPage, queryWrapper);
+    }
+
+    @Override
+    public List<Map<String, Object>> fromAftershock(String eqid, LocalDateTime time) {
+        List<Map<String, Object>> fromAftershock= aftershockInformationMapper.fromAftershock(eqid,time);
+        return fromAftershock;
     }
 
 

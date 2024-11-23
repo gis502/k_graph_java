@@ -9,6 +9,7 @@ import com.ruoyi.system.domain.entity.MaterialDonation;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MaterialDonationService extends IService<MaterialDonation> {
@@ -18,4 +19,6 @@ public interface MaterialDonationService extends IService<MaterialDonation> {
     List<MaterialDonation> MaterialDonationByEqId(String eqid);
 
     IPage<MaterialDonation> searchData(RequestBTO requestBTO);
+
+    List<MaterialDonation> fromMaterialDonation(String eqid, LocalDateTime time);
 }
