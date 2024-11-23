@@ -14,14 +14,14 @@ spring:
         driverClassName: org.postgresql.Driver
         druid:
 #             主库数据源
-            master:
-                 url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-                 username: postgres
-                 password: zhangsan
 #            master:
-#                url: jdbc:postgresql://localhost:5432/yaans?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-#                username: postgres
-#                password: 1234
+#                 url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+#                 username: postgres
+#                 password: zhangsan
+            master:
+                url: jdbc:postgresql://localhost:5432/yaans?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+                username: postgres
+                password: 1234
             # 从库数据源
 #            slave:
 ##                enabled: true
