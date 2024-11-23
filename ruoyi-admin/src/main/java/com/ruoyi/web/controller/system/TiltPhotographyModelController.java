@@ -168,9 +168,9 @@ public class TiltPhotographyModelController {
             wrapper
                     .like(Tiltphotographymodel::getName, inputData)
                     .or()
-                    .like(Tiltphotographymodel::getTz, inputData)
+                    .apply("CAST(tz AS TEXT) LIKE {0}", "%" + inputData + "%") // 将 tz 转换为字符串
                     .or()
-                    .like(Tiltphotographymodel::getTze, inputData);
+                    .apply("CAST(tze AS TEXT) LIKE {0}", "%" + inputData + "%"); // 将 tze 转换为字符串
         }
         List<Tiltphotographymodel> resultList = tiltphotographymodelService.list(wrapper);
         return AjaxResult.success(resultList);
