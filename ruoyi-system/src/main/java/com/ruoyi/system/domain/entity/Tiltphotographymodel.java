@@ -6,7 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -43,9 +46,10 @@ public class Tiltphotographymodel {
     /**
      * 模型添加时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "time") // 确保格式正确
-    private Date time; // 使用 Date 类型
+    private LocalDateTime time; // 使用 Date 类型
 
     /**
      * 模型id
@@ -57,13 +61,13 @@ public class Tiltphotographymodel {
      * 添加高程后，在z轴上旋转了多少度
      */
     @TableField(value = "rze")
-    private Short rze;
+    private Double rze;
 
     /**
      * 添加高程后，在z轴上的平移量
      */
     @TableField(value = "tze")
-    private Short tze;
+    private Double tze;
 
     /**
      * 模型大小（GB）

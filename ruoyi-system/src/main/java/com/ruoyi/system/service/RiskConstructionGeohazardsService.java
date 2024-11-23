@@ -9,6 +9,7 @@ import com.ruoyi.system.domain.entity.SupplyWater;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RiskConstructionGeohazardsService extends IService<RiskConstructionGeohazards>{
@@ -18,4 +19,6 @@ public interface RiskConstructionGeohazardsService extends IService<RiskConstruc
     List<RiskConstructionGeohazards> RiskConstructionGeohazardsByEqId(String eqid);
 
     IPage<RiskConstructionGeohazards> searchData(RequestBTO requestBTO);
+
+    List<RiskConstructionGeohazards> fromRiskConstructionGeohazards(String eqid, LocalDateTime time);
 }

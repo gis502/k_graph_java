@@ -230,4 +230,10 @@ public class TransferSettlementInfoServiceImpl
         return baseMapper.selectPage(transferSettlementInfoPage, queryWrapper);
     }
 
+    @Override
+    public List<TransferSettlementInfo> fromtransferSettlementInfo(String eqid, LocalDateTime time) {
+        List<TransferSettlementInfo> transferSettlementInfolist =  transferSettlementInfoMapper.fromtransferSettlementInfo(eqid,time);
+        return transferSettlementInfolist;
+    }
+
 }

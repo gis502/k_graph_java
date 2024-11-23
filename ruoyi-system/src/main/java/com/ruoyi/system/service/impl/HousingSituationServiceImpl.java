@@ -181,6 +181,13 @@ public class HousingSituationServiceImpl
         return baseMapper.selectPage(housingSituationPage, queryWrapper);
     }
 
+    @Override
+    public List<HousingSituation> fromHousingSituation(String eqid, LocalDateTime time) {
+        List<HousingSituation> housingSituationList = housingSituationMapper.fromHousingSituation(eqid, time);
+        return housingSituationList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

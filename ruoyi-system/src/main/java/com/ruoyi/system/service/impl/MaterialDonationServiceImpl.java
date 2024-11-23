@@ -180,6 +180,13 @@ public class MaterialDonationServiceImpl extends
         return baseMapper.selectPage(materialDonationPage, queryWrapper);
     }
 
+    @Override
+    public List<MaterialDonation> fromMaterialDonation(String eqid, LocalDateTime time) {
+        List<MaterialDonation> materialDonationList = materialDonationMapper.fromMaterialDonation(eqid, time);
+        return materialDonationList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

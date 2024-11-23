@@ -178,6 +178,13 @@ public class RiskConstructionGeohazardsServiceImpl extends
         return baseMapper.selectPage(riskConstructionGeohazardsPage, queryWrapper);
     }
 
+    @Override
+    public List<RiskConstructionGeohazards> fromRiskConstructionGeohazards(String eqid, LocalDateTime time) {
+        List<RiskConstructionGeohazards> riskConstructionGeohazardsList = riskConstructionGeohazardsMapper.fromRiskConstructionGeohazards(eqid, time);
+        return riskConstructionGeohazardsList;
+    }
+
+
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
             Cell cell = row.getCell(cellIndex);

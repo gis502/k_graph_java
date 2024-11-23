@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SupplySituationService extends IService<SupplySituation>{
@@ -19,4 +20,5 @@ public interface SupplySituationService extends IService<SupplySituation>{
 
     IPage<SupplySituation> searchData(RequestBTO requestBTO);
 
+    List<SupplySituation> fromSupplySituation(String eqid, LocalDateTime time);
 }
