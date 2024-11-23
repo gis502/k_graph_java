@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.system;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.uuid.UUID;
+import com.ruoyi.system.domain.entity.OrthophotoImage;
 import com.ruoyi.system.domain.entity.Tiltphotographymodel;
 import com.ruoyi.system.service.TiltphotographymodelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,25 +102,31 @@ public class TiltPhotographyModelController {
         }
 
         // 处理时间字段
+//        if (tiltphotographymodel.getTime() != null) {
+//            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
+//            ZonedDateTime utcTime = tiltphotographymodel.getTime().atZone(ZoneId.of("UTC"));
+//            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
+//
+//            // 格式化为数据库中匹配的格式字符串
+//            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//
+//            // 将格式化后的时间应用到查询中
+//            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
+//        }
         if (tiltphotographymodel.getTime() != null) {
-            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
-            ZonedDateTime utcTime = tiltphotographymodel.getTime().atZone(ZoneId.of("UTC"));
-            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
-
-            // 格式化为数据库中匹配的格式字符串
-            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-            // 将格式化后的时间应用到查询中
-            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
+            // 直接调用实体类的时间字段进行范围查询
+            wrapper.eq(Tiltphotographymodel::getTime, tiltphotographymodel.getTime());
         }
 
         // 处理其他数值类型字段
         if (tiltphotographymodel.getRze() != null) {
             wrapper.apply("CAST(rze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getRze() + "%");
         }
+
         if (tiltphotographymodel.getTze() != null) {
             wrapper.apply("CAST(tze AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getTze() + "%");
         }
+
         if (tiltphotographymodel.getModelSize() != null) {
             wrapper.apply("CAST(model_size AS TEXT) LIKE {0}", "%" + tiltphotographymodel.getModelSize() + "%");
         }
