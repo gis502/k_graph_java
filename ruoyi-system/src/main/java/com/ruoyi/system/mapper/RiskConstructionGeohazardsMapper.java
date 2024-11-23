@@ -37,24 +37,24 @@ public interface RiskConstructionGeohazardsMapper extends BaseMapper<RiskConstru
     @Select("SELECT yas.* " +
             "FROM risk_construction_geohazards yas " +
             "JOIN LATERAL (" +
-            "    SELECT affected_area, " +
+            "    SELECT quake_area_name, " +
             "           report_deadline, " +
             "           system_insert_time, " +
             "           ROW_NUMBER() OVER (" +
-            "               PARTITION BY affected_area " +
+            "               PARTITION BY quake_area_name " +
             "               ORDER BY " +
             "                   ABS(EXTRACT(EPOCH FROM (report_deadline - #{time}::timestamp))) ASC, " +
             "                   ABS(EXTRACT(EPOCH FROM (system_insert_time - #{time}::timestamp))) ASC" +
             "           ) AS rn " +
             "    FROM risk_construction_geohazards " +
             "    WHERE earthquake_id = #{eqid} " +
-            "    AND affected_area = yas.affected_area " +
-            ") sub ON yas.affected_area = sub.affected_area " +
+            "    AND quake_area_name = yas.quake_area_name " +
+            ") sub ON yas.quake_area_name = sub.quake_area_name " +
             "AND yas.report_deadline = sub.report_deadline " +
             "AND yas.system_insert_time = sub.system_insert_time " +
             "WHERE yas.earthquake_id = #{eqid} " +
             "AND sub.rn = 1 " +
-            "ORDER BY yas.affected_area")
+            "ORDER BY yas.quake_area_name")
     List<RiskConstructionGeohazards> fromRiskConstructionGeohazards(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 
 }

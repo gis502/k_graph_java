@@ -71,24 +71,24 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
     @Select("SELECT yas.* " +
             "FROM casualty_report yas " +
             "JOIN LATERAL (" +
-            "    SELECT affected_area, " +
+            "    SELECT affected_area_name, " +
             "           submission_deadline, " +
             "           system_insert_time, " +
             "           ROW_NUMBER() OVER (" +
-            "               PARTITION BY affected_area " +
+            "               PARTITION BY affected_area_name " +
             "               ORDER BY " +
             "                   ABS(EXTRACT(EPOCH FROM (submission_deadline - #{time}::timestamp))) ASC, " +
             "                   ABS(EXTRACT(EPOCH FROM (system_insert_time - #{time}::timestamp))) ASC" +
             "           ) AS rn " +
             "    FROM casualty_report " +
             "    WHERE earthquake_identifier = #{eqid} " +
-            "    AND affected_area = yas.affected_area " +
-            ") sub ON yas.affected_area = sub.affected_area " +
+            "    AND affected_area_name = yas.affected_area_name " +
+            ") sub ON yas.affected_area_name = sub.affected_area_name " +
             "AND yas.submission_deadline = sub.submission_deadline " +
             "AND yas.system_insert_time = sub.system_insert_time " +
             "WHERE yas.earthquake_identifier = #{eqid} " +
             "AND sub.rn = 1 " +
-            "ORDER BY yas.affected_area")
+            "ORDER BY yas.affected_area_name")
     List<Map<String, Object>> fromCasualty(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 
 

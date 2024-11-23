@@ -30,24 +30,24 @@ public interface SupplyWaterMapper extends BaseMapper<SupplyWater> {
     @Select("SELECT yas.* " +
             "FROM supply_water yas " +
             "JOIN LATERAL (" +
-            "    SELECT affected_area, " +
+            "    SELECT earthquake_area_name, " +
             "           report_deadline, " +
             "           system_insert_time, " +
             "           ROW_NUMBER() OVER (" +
-            "               PARTITION BY affected_area " +
+            "               PARTITION BY earthquake_area_name " +
             "               ORDER BY " +
             "                   ABS(EXTRACT(EPOCH FROM (report_deadline - #{time}::timestamp))) ASC, " +
             "                   ABS(EXTRACT(EPOCH FROM (system_insert_time - #{time}::timestamp))) ASC" +
             "           ) AS rn " +
             "    FROM supply_water " +
             "    WHERE earthquake_id = #{eqid} " +
-            "    AND affected_area = yas.affected_area " +
-            ") sub ON yas.affected_area = sub.affected_area " +
+            "    AND earthquake_area_name = yas.earthquake_area_name " +
+            ") sub ON yas.earthquake_area_name = sub.earthquake_area_name " +
             "AND yas.report_deadline = sub.report_deadline " +
             "AND yas.system_insert_time = sub.system_insert_time " +
             "WHERE yas.earthquake_id = #{eqid} " +
             "AND sub.rn = 1 " +
-            "ORDER BY yas.affected_area")
+            "ORDER BY yas.earthquake_area_name")
     List<SupplyWater> fromSupplyWater(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 
 }
