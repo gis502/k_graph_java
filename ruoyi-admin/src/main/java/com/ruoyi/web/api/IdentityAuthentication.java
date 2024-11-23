@@ -1,11 +1,10 @@
 package com.ruoyi.web.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruoyi.system.service.api.service.ThirdPartyHttpClientService;
+import com.ruoyi.system.service.api.ThirdPartyHttpClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -109,7 +108,6 @@ public class IdentityAuthentication {
      * @param e 异常信息
      *
      */
-
     @Recover
     public void recover(Exception e) {
         log.error("获取 token 失败，已重试超过最大次数，错误信息: {}", e.getMessage());

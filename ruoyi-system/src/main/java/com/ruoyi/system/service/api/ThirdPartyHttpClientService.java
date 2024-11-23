@@ -1,4 +1,4 @@
-package com.ruoyi.system.service.api.service;
+package com.ruoyi.system.service.api;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author: xiaodemos
@@ -133,7 +135,7 @@ public class ThirdPartyHttpClientService {
             if (jsonBody != null) {
                 // 拼接URL，将参数添加到URL的查询部分
                 fullUrl = "http://tq-test.xixily.com:10340/api/open" + url + "?" + queryParams;
-            }else{
+            } else {
                 fullUrl = "http://tq-test.xixily.com:10340/api/open" + url;
             }
 
@@ -179,16 +181,35 @@ public class ThirdPartyHttpClientService {
         log.info("开始将json对象转换为查询字符串...");
         StringBuilder queryString = new StringBuilder();
 
+        // 定义日期时间格式化器
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         if (jsonBody != null) {
             for (String key : jsonBody.keySet()) {
                 try {
-                    String value = jsonBody.getString(key);
-                    if (queryString.length() > 0) {
-                        queryString.append("&");
+                    Object rawValue = jsonBody.get(key);
+                    String value = null;
+
+                    if (rawValue instanceof LocalDateTime) {
+                        // 如果是 LocalDateTime，格式化为字符串
+                        value = ((LocalDateTime) rawValue).format(dateTimeFormatter);
+                    } else if (rawValue != null) {
+                        // 其他类型直接调用 toString
+                        value = rawValue.toString();
                     }
-                    queryString.append(URLEncoder.encode(key, "UTF-8"))
-                            .append("=")
-                            .append(URLEncoder.encode(value, "UTF-8"));
+
+                    // 过滤掉 null 值
+                    if (value != null) {
+
+                        if (!queryString.isEmpty()) {
+                            queryString.append("&");
+                        }
+                        // 仅对键进行 URL 编码，值保持原始格式，空格替换为 %20
+                        queryString.append(URLEncoder.encode(key, "UTF-8"))
+                                .append("=")
+                                // 将空格替换为 %20
+                                .append(value.replace(" ", "%20"));
+                    }
                 } catch (Exception e) {
                     log.error("Error encoding key-value pair: {}={}", key, jsonBody.get(key), e);
                 }
