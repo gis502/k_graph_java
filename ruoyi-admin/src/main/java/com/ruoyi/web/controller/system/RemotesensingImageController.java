@@ -2,6 +2,10 @@ package com.ruoyi.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.entity.OrthophotoImage;
 import com.ruoyi.system.service.RemotesensingImageService;
@@ -10,6 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +32,6 @@ public class RemotesensingImageController {
     //遥感影像---搜索
     @GetMapping("/queryRI")
     public AjaxResult queryRI(@RequestParam(value = "inputData", required = false) String inputData) {
-        log.info("inputData"+inputData);
         LambdaQueryWrapper<RemotesensingImage> wrapper = new LambdaQueryWrapper<>();
         if (inputData != null && !inputData.trim().isEmpty()) {
             wrapper
@@ -66,7 +74,6 @@ public class RemotesensingImageController {
     //遥感影像---改
     @PostMapping("/updaRI")
     public AjaxResult updaRI(@RequestBody RemotesensingImage remotesensingImage) {
-        log.info("remotesensingImage"+remotesensingImage);
         return AjaxResult.success(remotesensingImageService.updateById(remotesensingImage));
     }
 
@@ -96,9 +103,17 @@ public class RemotesensingImageController {
             wrapper.eq(RemotesensingImage::getHeight, remotesensingImage.getHeight());
         }
 
-        // 处理 `createTime` 字段 ge 表示大于或等于，用于范围查询，特别是处理日期或数值字段。
+        // 处理时间字段
         if (remotesensingImage.getCreateTime() != null) {
-            wrapper.ge(RemotesensingImage::getCreateTime, remotesensingImage.getCreateTime());
+            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
+            ZonedDateTime utcTime = remotesensingImage.getCreateTime().atZone(ZoneId.of("UTC"));
+            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
+
+            // 格式化为数据库中匹配的格式字符串
+            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // 将格式化后的时间应用到查询中
+            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
         }
 
         // 处理 `angle` 字段 eq 用于精确匹配
@@ -108,7 +123,15 @@ public class RemotesensingImageController {
 
         // 处理 `shootingTime` 字段  ge 表示大于或等于，用于范围查询，特别是处理日期或数值字段。
         if (remotesensingImage.getShootingTime() != null) {
-            wrapper.ge(RemotesensingImage::getShootingTime, remotesensingImage.getShootingTime());
+            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
+            ZonedDateTime utcTime = remotesensingImage.getShootingTime().atZone(ZoneId.of("UTC"));
+            ZonedDateTime localTime = utcTime.withZoneSameInstant(ZoneId.systemDefault());
+
+            // 格式化为数据库中匹配的格式字符串
+            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // 将格式化后的时间应用到查询中
+            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
         }
 
         List<RemotesensingImage> resultList = remotesensingImageService.list(wrapper);
