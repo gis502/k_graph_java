@@ -37,24 +37,24 @@ public interface PublicOpinionMapper extends BaseMapper<PublicOpinion> {
     @Select("SELECT yas.* " +
             "FROM public_opinion yas " +
             "JOIN LATERAL (" +
-            "    SELECT affected_area, " +
+            "    SELECT earthquake_zone_name, " +
             "           submission_deadline, " +
             "           system_insert_time, " +
             "           ROW_NUMBER() OVER (" +
-            "               PARTITION BY affected_area " +
+            "               PARTITION BY earthquake_zone_name " +
             "               ORDER BY " +
             "                   ABS(EXTRACT(EPOCH FROM (submission_deadline - #{time}::timestamp))) ASC, " +
             "                   ABS(EXTRACT(EPOCH FROM (system_insert_time - #{time}::timestamp))) ASC" +
             "           ) AS rn " +
             "    FROM public_opinion " +
             "    WHERE earthquake_id = #{eqid} " +
-            "    AND affected_area = yas.affected_area " +
-            ") sub ON yas.affected_area = sub.affected_area " +
+            "    AND earthquake_zone_name = yas.earthquake_zone_name " +
+            ") sub ON yas.earthquake_zone_name = sub.earthquake_zone_name " +
             "AND yas.submission_deadline = sub.submission_deadline " +
             "AND yas.system_insert_time = sub.system_insert_time " +
             "WHERE yas.earthquake_id = #{eqid} " +
             "AND sub.rn = 1 " +
-            "ORDER BY yas.affected_area")
+            "ORDER BY yas.earthquake_zone_name")
     List<PublicOpinion> fromPublicOpinion(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 
 }

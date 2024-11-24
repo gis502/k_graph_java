@@ -23,8 +23,6 @@ public class CharityOrganizationDonationsController {
     @Autowired
     private CharityOrganizationDonationsService charityOrganizationDonationsService;
 
-
-
     @GetMapping("/charityorganizationdonations")
     public List<CharityOrganizationDonations> redcrossdonations(@RequestParam String eqid) {
         return charityOrganizationDonationsService.CharityOrganizationDonationsByEqId(eqid);

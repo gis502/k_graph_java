@@ -14,6 +14,7 @@ public class PlotConfig {
         fieldMapping.put("绘制类型", "drawtype");
         fieldMapping.put("经度", "longitude");
         fieldMapping.put("纬度", "latitude");
+        fieldMapping.put("经纬度集合", "geomDetails");
         fieldMapping.put("高程", "elevation");
         fieldMapping.put("角度", "angle");
         fieldMapping.put("开始时间", "startTime");
