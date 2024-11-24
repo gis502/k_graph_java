@@ -6,7 +6,7 @@ backup:
     db_name: yaan
     db_user: postgres
     db_password: zhangsan
-    pg_dump_path: E:/Environment/PostgreSQL/16/bin/pg_dump.exe
+    pg_dump_path: D:Software/postgreSql/bin/pg_dump.exe
 # 数据源配置
 spring:
     datasource:
@@ -21,13 +21,13 @@ spring:
             master:
                 url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
                 username: postgres
-                password: 1234
+                password: 123456
             # 从库数据源
-#            slave:
-##                enabled: true
-##                url: jdbc:postgresql://47.92.216.173:7655/ruoyi?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-##                username: postgres
-##                password: zhangsan
+            slave:
+#                enabled: true
+#                url: jdbc:postgresql://47.92.216.173:7655/ruoyi?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+#                username: postgres
+#                password: zhangsan
 #                 enabled: true
 #                 url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
 #                 username: postgres

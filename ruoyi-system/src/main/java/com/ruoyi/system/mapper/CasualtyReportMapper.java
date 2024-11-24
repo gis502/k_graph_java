@@ -64,6 +64,9 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "GROUP BY cr.affected_area_name, cr.submission_deadline")
     List<CasualtyReport> getCasualty(@Param("eqid") String eqid);
 
+    @Select("SELECT * FROM public.casualty_report WHERE earthquake_identifier = #{eqid} ORDER BY submission_deadline")
+    List<CasualtyReport> getAllRecordInfo(@Param("eqid") String eqid);
+
 }
 
 
