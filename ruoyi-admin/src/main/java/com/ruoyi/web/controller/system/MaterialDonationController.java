@@ -23,8 +23,6 @@ public class MaterialDonationController {
     @Autowired
     private MaterialDonationService materialDonationService;
 
-
-
     @GetMapping("/materialdonation")
     public List<MaterialDonation> materialdonation(@RequestParam String eqid) {
         return materialDonationService.MaterialDonationByEqId(eqid);

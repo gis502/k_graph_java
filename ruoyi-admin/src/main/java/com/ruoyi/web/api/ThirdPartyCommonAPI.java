@@ -1,10 +1,8 @@
 package com.ruoyi.web.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruoyi.system.domain.dto.EqCeicListDTO;
-import com.ruoyi.system.domain.dto.EqEventGetPageDTO;
-import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
-import com.ruoyi.system.service.api.service.ThirdPartyHttpClientService;
+import com.ruoyi.system.domain.dto.*;
+import com.ruoyi.system.service.api.ThirdPartyHttpClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,7 +14,7 @@ import javax.annotation.Resource;
 /**
  * @author: xiaodemos
  * @date: 2024-11-23 4:53
- * @description: 获取第三方接口实现类
+ * @description: 获取第三方接口实现
  */
 
 @Slf4j
@@ -101,12 +99,93 @@ public class ThirdPartyCommonAPI {
         String res = httpClientService.doGet(token, "/eqevent/getBatch", jsonBody);
 
         return res;
-
     }
 
-    public String getSeismicEventReassessmentByPost(String event) {
-
+    /**
+     * @param params 前端传入的参数
+     * @author: xiaodemos
+     * @date: 2024/11/23 17:45
+     * @description: 重新启动评估
+     * @return: 返回地震评估批次编码 string
+     */
+    public String getSeismicEventReassessmentByPost(EqEventReassessmentDTO params) {
+        //TODO 暂时不用
         return "";
     }
+
+    /**
+     * @param params 前端传入的参数
+     * @author: xiaodemos
+     * @date: 2024/11/23 17:50
+     * @description: 获取评估结果
+     * @return: 返回评估结果 Map<string,string>
+     */
+    public String getSeismicEventGetResultByGet(EqEventGetResultDTO params) {
+
+        String token = cacheTemplate.opsForValue().get("token");
+
+        JSONObject jsonBody = params.toJSONObject();
+
+        String res = httpClientService.doGet(token, "/eqevent/getResult", jsonBody);
+
+        return res;
+    }
+
+    /**
+     * @param params 前端传入的参数  type参数类型（geojson、shpfile），默认geojson文件
+     * @author: xiaodemos
+     * @date: 2024/11/23 17:50
+     * @description: 获取地震事件评估影响场
+     * @return: 返回文件件路径 string
+     */
+    public String getSeismicEventGetYxcByGet(EqEventGetYxcDTO params) {
+
+        String token = cacheTemplate.opsForValue().get("token");
+
+        JSONObject jsonBody = params.toJSONObject();
+
+        String res = httpClientService.doGet(token, "/eqevent/getYxc", jsonBody);
+
+        return res;
+    }
+
+    /**
+     * @param params 前端传入的参数
+     * @author: xiaodemos
+     * @date: 2024/11/23 17:59
+     * @description: 获取地震灾情报告
+     * @return: 返回地震灾情报告 List
+     */
+    public String getSeismicEventGetReportByGET(EqEventGetReportDTO params) {
+
+        String token = cacheTemplate.opsForValue().get("token");
+
+        JSONObject jsonBody = params.toJSONObject();
+
+        String res = httpClientService.doGet(token, "/eqevent/getReport", jsonBody);
+
+        return res;
+    }
+
+    /**
+     * @param params 前端传入的参数
+     * @author: xiaodemos
+     * @date: 2024/11/23 18:02
+     * @description: 获取地震专题图
+     * @return: 返回专题图路径 List
+     */
+    public String getSeismicEventGetGetMapByGet(EqEventGetMapDTO params) {
+
+        String token = cacheTemplate.opsForValue().get("token");
+
+        JSONObject jsonBody = params.toJSONObject();
+
+        String res = httpClientService.doGet(token, "/eqevent/getMap", jsonBody);
+
+        return res;
+    }
+
+    //TODO 增加接口
+
 
 }

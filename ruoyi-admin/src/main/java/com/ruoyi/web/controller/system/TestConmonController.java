@@ -1,8 +1,7 @@
 package com.ruoyi.web.controller.system;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.system.domain.dto.EqEventGetPageDTO;
-import com.ruoyi.system.service.api.service.ThirdPartyHttpClientService;
+import com.ruoyi.system.service.api.ThirdPartyHttpClientService;
 import com.ruoyi.web.api.IdentityAuthentication;
 import com.ruoyi.web.api.ThirdPartyCommonAPI;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import javax.annotation.Resource;
  * @date: 2024-11-23 14:36
  * @description: 用于测试接口
  */
-
 
 @RestController
 @RequestMapping("test")
