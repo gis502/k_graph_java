@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.RiskConstructionGeohazardsListener;
@@ -22,6 +23,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,7 +96,7 @@ public class RiskConstructionGeohazardsServiceImpl extends
 
     @Override
     public List<?> exportExcelGetData(RequestBTO requestBTO) {
-        String [] ids = requestBTO.getIds();
+        String[] ids = requestBTO.getIds();
         List<RiskConstructionGeohazards> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
@@ -134,23 +136,54 @@ public class RiskConstructionGeohazardsServiceImpl extends
     @Override
     public IPage<RiskConstructionGeohazards> searchData(RequestBTO requestBTO) {
 
-        Page<RiskConstructionGeohazards> riskConstructionGeohazardsPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+        Page<RiskConstructionGeohazards> riskConstructionGeohazardsPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
-        LambdaQueryWrapper<RiskConstructionGeohazards> queryWrapper = Wrappers.lambdaQuery(RiskConstructionGeohazards.class)
+        LambdaQueryWrapper<RiskConstructionGeohazards> queryWrapper = Wrappers.lambdaQuery(RiskConstructionGeohazards.class);
 
-                .eq(RiskConstructionGeohazards::getEarthquakeId, eqId)
-                .like(RiskConstructionGeohazards::getEarthquakeName, requestParams) // 地震名称
-                .or().like(RiskConstructionGeohazards::getEarthquakeId, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(RiskConstructionGeohazards::getEarthquakeId, eqId)
-                .like(RiskConstructionGeohazards::getQuakeAreaName, requestParams) // 震区（县/区）
-                .or().like(RiskConstructionGeohazards::getEarthquakeId, eqId)
-                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+        if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
+
+            queryWrapper.eq(RiskConstructionGeohazards::getEarthquakeId, eqId)
+                    .like(RiskConstructionGeohazards::getEarthquakeName, requestParams) // 地震名称
+                    .or().like(RiskConstructionGeohazards::getEarthquakeId, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(RiskConstructionGeohazards::getEarthquakeId, eqId)
+                    .like(RiskConstructionGeohazards::getQuakeAreaName, requestParams) // 震区（县/区）
+                    .or().like(RiskConstructionGeohazards::getEarthquakeId, eqId)
+                    .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
+        }
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
+
+            // 按名称模糊查询
+            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
+                queryWrapper.like(RiskConstructionGeohazards::getQuakeAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(RiskConstructionGeohazards::getEarthquakeId, eqId);
+            }
+
+            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
+
+                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
+
+                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
+
+                queryWrapper.between(RiskConstructionGeohazards::getReportDeadline, startDate, endDate)
+                        .eq(RiskConstructionGeohazards::getEarthquakeId, eqId);
+            }
+        }
 
         return baseMapper.selectPage(riskConstructionGeohazardsPage, queryWrapper);
     }
+
+    @Override
+    public List<RiskConstructionGeohazards> fromRiskConstructionGeohazards(String eqid, LocalDateTime time) {
+        List<RiskConstructionGeohazards> riskConstructionGeohazardsList = riskConstructionGeohazardsMapper.fromRiskConstructionGeohazards(eqid, time);
+        return riskConstructionGeohazardsList;
+    }
+
 
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {

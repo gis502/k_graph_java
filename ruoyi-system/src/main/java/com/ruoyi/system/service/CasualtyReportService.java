@@ -9,7 +9,9 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface CasualtyReportService extends IService<CasualtyReport>{
 
@@ -23,4 +25,8 @@ public interface CasualtyReportService extends IService<CasualtyReport>{
     List<CasualtyReport> getAllRecordInfo(String eqid);
 
     IPage<CasualtyReport> searchData(RequestBTO requestBTO);
+
+    List<Map<String, Object>> fromCasualty(String eqid, LocalDateTime time);
 }
+
+

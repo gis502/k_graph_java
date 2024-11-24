@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.CharityOrganizationDonations;
 import com.ruoyi.system.domain.entity.EarthquakeList;
@@ -23,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,23 +136,56 @@ public class MaterialDonationServiceImpl extends
     @Override
     public IPage<MaterialDonation> searchData(RequestBTO requestBTO) {
 
-        Page<MaterialDonation> materialDonationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+        Page<MaterialDonation> materialDonationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
-        LambdaQueryWrapper<MaterialDonation> queryWrapper = Wrappers.lambdaQuery(MaterialDonation.class)
+        LambdaQueryWrapper<MaterialDonation> queryWrapper = Wrappers.lambdaQuery(MaterialDonation.class);
 
-                .eq(MaterialDonation::getEarthquakeId, eqId)
-                .like(MaterialDonation::getEarthquakeName, requestParams) // 地震名称
-                .or().like(MaterialDonation::getEarthquakeId, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(MaterialDonation::getEarthquakeId, eqId)
-                .like(MaterialDonation::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(MaterialDonation::getEarthquakeId, eqId)
-                .apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
+        if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
+
+            queryWrapper.eq(MaterialDonation::getEarthquakeId, eqId)
+                    .like(MaterialDonation::getEarthquakeName, requestParams) // 地震名称
+                    .or().like(MaterialDonation::getEarthquakeId, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(MaterialDonation::getEarthquakeId, eqId)
+                    .like(MaterialDonation::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                    .or().like(MaterialDonation::getEarthquakeId, eqId)
+                    .apply("to_char(report_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
+
+        }
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
+
+            // 按名称模糊查询
+            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
+                queryWrapper.like(MaterialDonation::getEarthquakeAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(MaterialDonation::getEarthquakeId, eqId);
+            }
+
+            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
+
+                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
+
+                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
+
+                queryWrapper.between(MaterialDonation::getReportDeadline, startDate, endDate)
+                        .eq(MaterialDonation::getEarthquakeId, eqId);
+            }
+        }
 
         return baseMapper.selectPage(materialDonationPage, queryWrapper);
     }
+
+    @Override
+    public List<MaterialDonation> fromMaterialDonation(String eqid, LocalDateTime time) {
+        List<MaterialDonation> materialDonationList = materialDonationMapper.fromMaterialDonation(eqid, time);
+        return materialDonationList;
+    }
+
 
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {

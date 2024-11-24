@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.AftershockInformationListener;
@@ -14,9 +15,11 @@ import com.ruoyi.system.service.strategy.DataExportStrategy;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,7 @@ public class TransferSettlementInfoServiceImpl
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
     @Override
     public IPage<TransferSettlementInfo> getPage(RequestBTO requestBTO) {
         Page<TransferSettlementInfo>
@@ -72,7 +76,7 @@ public class TransferSettlementInfoServiceImpl
 
     @Override
     public List<TransferSettlementInfo> exportExcelGetData(RequestBTO requestBTO) {
-        String [] ids = requestBTO.getIds();
+        String[] ids = requestBTO.getIds();
         List<TransferSettlementInfo> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
@@ -109,7 +113,7 @@ public class TransferSettlementInfoServiceImpl
         inputStream = file.getInputStream();
         TransferSettlementInfoListener listener = new TransferSettlementInfoListener(baseMapper, actualRows, userName);
         // 读取Excel文件，从第4行开始
-        EasyExcel.read(inputStream,TransferSettlementInfo.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
+        EasyExcel.read(inputStream, TransferSettlementInfo.class, listener).headRowNumber(Integer.valueOf(2)).sheet().doRead();
         // 获取解析后的数据
         List<TransferSettlementInfo> list = listener.getList();
         // 将解析后的数据保存到数据库
@@ -134,12 +138,12 @@ public class TransferSettlementInfoServiceImpl
     }
 
     @Override
-    public List<TransferSettlementInfo> getTotal(String eqid){
+    public List<TransferSettlementInfo> getTotal(String eqid) {
         return transferSettlementInfoMapper.getTotal(eqid);
     }
 
     @Override
-    public List<TransferSettlementInfo> getTransferInfo(String eqid){
+    public List<TransferSettlementInfo> getTransferInfo(String eqid) {
         return transferSettlementInfoMapper.getTransferInfo(eqid);
     }
 
@@ -181,25 +185,55 @@ public class TransferSettlementInfoServiceImpl
 
     @Override
     public IPage<TransferSettlementInfo> searchData(RequestBTO requestBTO) {
-        Page<TransferSettlementInfo> transferSettlementInfoPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+        Page<TransferSettlementInfo> transferSettlementInfoPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
+        LambdaQueryWrapper<TransferSettlementInfo> queryWrapper = Wrappers.lambdaQuery(TransferSettlementInfo.class);
 
-        LambdaQueryWrapper<TransferSettlementInfo> queryWrapper = Wrappers.lambdaQuery(TransferSettlementInfo.class)
-                .eq(TransferSettlementInfo::getEarthquakeId, eqId)
-                .like(TransferSettlementInfo::getEarthquakeName, requestParams) // 地震名称
-                .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
-                .apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams="%" + requestParams + "%")// 震级
-                .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
-                .like(TransferSettlementInfo::getEarthquakeAreaName, requestParams) // 震区（县/区）
-                .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
-                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_SEARCH)) {
 
+            queryWrapper.eq(TransferSettlementInfo::getEarthquakeId, eqId)
+                    .like(TransferSettlementInfo::getEarthquakeName, requestParams) // 地震名称
+                    .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
+                    .apply("CAST(magnitude AS TEXT) LIKE {0}", requestParams = "%" + requestParams + "%")// 震级
+                    .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
+                    .like(TransferSettlementInfo::getEarthquakeAreaName, requestParams) // 震区（县/区）
+                    .or().like(TransferSettlementInfo::getEarthquakeId, eqId)
+                    .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%");
+
+        }
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
+
+            // 按名称模糊查询
+            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
+                queryWrapper.like(TransferSettlementInfo::getEarthquakeAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(TransferSettlementInfo::getEarthquakeId, eqId);
+            }
+
+            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
+
+                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
+
+                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
+
+                queryWrapper.between(TransferSettlementInfo::getReportingDeadline, startDate, endDate)
+                        .eq(TransferSettlementInfo::getEarthquakeId, eqId);
+            }
+        }
 
         return baseMapper.selectPage(transferSettlementInfoPage, queryWrapper);
+    }
+
+    @Override
+    public List<TransferSettlementInfo> fromtransferSettlementInfo(String eqid, LocalDateTime time) {
+        List<TransferSettlementInfo> transferSettlementInfolist =  transferSettlementInfoMapper.fromtransferSettlementInfo(eqid,time);
+        return transferSettlementInfolist;
     }
 
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
@@ -15,10 +16,12 @@ import com.ruoyi.system.mapper.EarthquakeListMapper;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,7 +41,6 @@ public class PowerSupplyInformationServiceImpl
 
     @Resource
     private PowerSupplyInformationMapper powerSupplyInformationMapper;
-
 
 
     /**
@@ -86,7 +88,7 @@ public class PowerSupplyInformationServiceImpl
      */
     @Override
     public List<PowerSupplyInformation> exportExcelGetData(RequestBTO requestBTO) {
-        String [] ids = requestBTO.getIds();
+        String[] ids = requestBTO.getIds();
         List<PowerSupplyInformation> list;
         if (ids == null || ids.length == 0) {
             list = this.list().stream()
@@ -131,25 +133,56 @@ public class PowerSupplyInformationServiceImpl
     @Override
     public IPage<PowerSupplyInformation> searchData(RequestBTO requestBTO) {
 
-        Page<PowerSupplyInformation> powerSupplyInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
+        Page<PowerSupplyInformation> powerSupplyInformationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
 
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
-        LambdaQueryWrapper<PowerSupplyInformation> queryWrapper = Wrappers.lambdaQuery(PowerSupplyInformation.class)
+        LambdaQueryWrapper<PowerSupplyInformation> queryWrapper = Wrappers.lambdaQuery(PowerSupplyInformation.class);
 
-                .eq(PowerSupplyInformation::getEarthquakeId, eqId)
-                .like(PowerSupplyInformation::getEarthquakeName, requestParams) // 地震名称
-                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
-                .like(PowerSupplyInformation::getAffectedArea, requestParams) // 震区（县/区）\
-                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
-                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
-                .like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, requestParams); // 目前主网供电中断村
+        if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
+
+            queryWrapper.eq(PowerSupplyInformation::getEarthquakeId, eqId)
+                    .like(PowerSupplyInformation::getEarthquakeName, requestParams) // 地震名称
+                    .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                    .like(PowerSupplyInformation::getAffectedArea, requestParams) // 震区（县/区）\
+                    .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                    .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(PowerSupplyInformation::getEarthquakeId, eqId)
+                    .like(PowerSupplyInformation::getCurrentlyBlackedOutVillages, requestParams); // 目前主网供电中断村
+        }
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
+
+            // 按名称模糊查询
+            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
+                queryWrapper.like(PowerSupplyInformation::getAffectedArea, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(PowerSupplyInformation::getEarthquakeId, eqId);
+            }
+
+            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
+
+                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
+
+                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
+
+                queryWrapper.between(PowerSupplyInformation::getReportingDeadline, startDate, endDate)
+                        .eq(PowerSupplyInformation::getEarthquakeId, eqId);
+            }
+        }
 
         return baseMapper.selectPage(powerSupplyInformationPage, queryWrapper);
     }
+
+    @Override
+    public List<PowerSupplyInformation> fromPowerSupplyInformation(String eqid, LocalDateTime time) {
+        List<PowerSupplyInformation> powerSupplyInformationList = powerSupplyInformationMapper.fromPowerSupplyInformation(eqid, time);
+        return powerSupplyInformationList;
+    }
+
 
     @Override
     public List<PowerSupplyInformation> importExcelPowerSupplyInformation(MultipartFile file, String userName, String eqId) throws IOException {
@@ -196,6 +229,7 @@ public class PowerSupplyInformationServiceImpl
         saveBatch(list);
         return list;
     }
+
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {

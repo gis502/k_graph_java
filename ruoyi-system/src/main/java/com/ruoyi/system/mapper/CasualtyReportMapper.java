@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
@@ -14,7 +16,7 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
     /**
      * 通过地震标识的eqid进行条件查询
      *
-     * @param  eqid 地震标识id
+     * @param eqid 地震标识id
      * @return 结果
      */
     @Select("SELECT " +
@@ -63,6 +65,29 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "WHERE cr.earthquake_identifier = #{eqid} " +
             "GROUP BY cr.affected_area_name, cr.submission_deadline")
     List<CasualtyReport> getCasualty(@Param("eqid") String eqid);
+
+    @Select("SELECT yas.* " +
+            "FROM casualty_report yas " +
+            "JOIN LATERAL (" +
+            "    SELECT affected_area_name, " +
+            "           submission_deadline, " +
+            "           system_insert_time, " +
+            "           ROW_NUMBER() OVER (" +
+            "               PARTITION BY affected_area_name " +
+            "               ORDER BY " +
+            "                   ABS(EXTRACT(EPOCH FROM (submission_deadline - #{time}::timestamp))) ASC, " +
+            "                   ABS(EXTRACT(EPOCH FROM (system_insert_time - #{time}::timestamp))) ASC" +
+            "           ) AS rn " +
+            "    FROM casualty_report " +
+            "    WHERE earthquake_identifier = #{eqid} " +
+            "    AND affected_area_name = yas.affected_area_name " +
+            ") sub ON yas.affected_area_name = sub.affected_area_name " +
+            "AND yas.submission_deadline = sub.submission_deadline " +
+            "AND yas.system_insert_time = sub.system_insert_time " +
+            "WHERE yas.earthquake_identifier = #{eqid} " +
+            "AND sub.rn = 1 " +
+            "ORDER BY yas.affected_area_name")
+    List<Map<String, Object>> fromCasualty(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 
     @Select("SELECT * FROM public.casualty_report WHERE earthquake_identifier = #{eqid} ORDER BY submission_deadline")
     List<CasualtyReport> getAllRecordInfo(@Param("eqid") String eqid);

@@ -11,14 +11,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * redis配置
- * 
+ *
  * @author ruoyi
  */
 @Configuration
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport
 {
-    @Bean
+    @Bean(name = "redisTemplate")
     @SuppressWarnings(value = { "unchecked", "rawtypes" })
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory)
     {
@@ -38,6 +38,27 @@ public class RedisConfig extends CachingConfigurerSupport
         template.afterPropertiesSet();
         return template;
     }
+
+    /**
+     * @author:  xiaodemos
+     * @date:  2024/11/23 4:02
+     * @description:  用于存储 token 的 redisTemplate 模板
+     * @param connectionFactory 设置redis连接工厂
+     *
+     * @return: 返回cacheTemplate模板
+     */
+    @Bean(name = "cacheTemplate")
+    public RedisTemplate<String, String> cacheTemplate(RedisConnectionFactory connectionFactory){
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(connectionFactory);
+
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+
+        redisTemplate.afterPropertiesSet();
+        return redisTemplate;
+    }
+
 
     @Bean
     public DefaultRedisScript<Long> limitScript()

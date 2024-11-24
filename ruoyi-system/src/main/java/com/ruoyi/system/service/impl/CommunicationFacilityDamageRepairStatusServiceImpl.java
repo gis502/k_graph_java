@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.CommunicationFacilityDamageRepairStatus;
 import com.ruoyi.system.domain.entity.EarthquakeList;
@@ -23,6 +24,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -120,21 +122,52 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
 
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
-        LambdaQueryWrapper<CommunicationFacilityDamageRepairStatus> queryWrapper = Wrappers.lambdaQuery(CommunicationFacilityDamageRepairStatus.class)
+        LambdaQueryWrapper<CommunicationFacilityDamageRepairStatus> queryWrapper = Wrappers.lambdaQuery(CommunicationFacilityDamageRepairStatus.class);
 
-                .eq(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
-                .like(CommunicationFacilityDamageRepairStatus::getEarthquakeName, requestParams) // 地震名称
-                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
-                .like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParams) // 震区（县/区）
-                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
-                .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
-                .like(CommunicationFacilityDamageRepairStatus::getCurrentInterruptedVillagesCount, requestParams); // 目前通信中断村
+        if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
+
+            queryWrapper.eq(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                    .like(CommunicationFacilityDamageRepairStatus::getEarthquakeName, requestParams) // 地震名称
+                    .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                    .like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestParams) // 震区（县/区）
+                    .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                    .apply("to_char(reporting_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
+                    .or().like(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId)
+                    .like(CommunicationFacilityDamageRepairStatus::getCurrentInterruptedVillagesCount, requestParams); // 目前通信中断村
+        }
+
+        if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
+
+            // 按名称模糊查询
+            if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
+                queryWrapper.like(CommunicationFacilityDamageRepairStatus::getEarthquakeZoneName, requestBTO.getFormVO().getEarthquakeAreaName())
+                        .eq(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId);
+            }
+
+            // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+            if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
+
+                String[] dates = requestBTO.getFormVO().getOccurrenceTime().split("至");
+
+                LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
+
+                queryWrapper.between(CommunicationFacilityDamageRepairStatus::getReportingDeadline, startDate, endDate)
+                        .eq(CommunicationFacilityDamageRepairStatus::getEarthquakeId, eqId);
+            }
+        }
 
         return baseMapper.selectPage(communicationFacilityDamageRepairStatusPage, queryWrapper);
     }
+
+    @Override
+    public List<CommunicationFacilityDamageRepairStatus> fromCommunicationFacilityDamageRepairStatus(String eqid, LocalDateTime time) {
+        List<CommunicationFacilityDamageRepairStatus> damageRepairStatusList = communicationFacilityDamageRepairStatusMapper.fromCommunicationFacilityDamageRepairStatus(eqid, time);
+        return damageRepairStatusList;
+    }
+
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;

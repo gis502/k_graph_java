@@ -8,6 +8,7 @@ import com.ruoyi.system.domain.entity.RescueForces;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LargeSpecialRescueEquipmentService extends IService<LargeSpecialRescueEquipment> {
@@ -17,4 +18,5 @@ public interface LargeSpecialRescueEquipmentService extends IService<LargeSpecia
 
     IPage<LargeSpecialRescueEquipment> searchData(RequestBTO requestBTO);
 
+    List<LargeSpecialRescueEquipment> fromLargeSpecialRescueEquipment(String eqid, LocalDateTime time);
 }

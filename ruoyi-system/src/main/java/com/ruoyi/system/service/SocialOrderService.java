@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.entity.SocialOrder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SocialOrderService extends IService<SocialOrder> {
@@ -18,4 +19,6 @@ public interface SocialOrderService extends IService<SocialOrder> {
     List<SocialOrder> getsocialoption(String eqid);
 
     IPage<SocialOrder> searchData(RequestBTO requestBTO);
+
+    List<SocialOrder> fromSocialOrder(String eqid, LocalDateTime time);
 }

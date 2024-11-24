@@ -9,6 +9,7 @@ import com.ruoyi.system.domain.entity.RescueForces;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RescueForcesService extends IService<RescueForces> {
@@ -18,4 +19,5 @@ public interface RescueForcesService extends IService<RescueForces> {
 
     IPage<RescueForces> searchData(RequestBTO requestBTO);
 
+    List<RescueForces> fromRescueForces(String eqid, LocalDateTime time);
 }
