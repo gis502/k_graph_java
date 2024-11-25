@@ -66,8 +66,6 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "GROUP BY cr.affected_area_name, cr.submission_deadline")
     List<CasualtyReport> getCasualty(@Param("eqid") String eqid);
 
-
-
     @Select("SELECT yas.* " +
             "FROM casualty_report yas " +
             "JOIN LATERAL (" +
@@ -91,6 +89,8 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "ORDER BY yas.affected_area_name")
     List<Map<String, Object>> fromCasualty(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
 
+    @Select("SELECT * FROM public.casualty_report WHERE earthquake_identifier = #{eqid} ORDER BY submission_deadline")
+    List<CasualtyReport> getAllRecordInfo(@Param("eqid") String eqid);
 
 }
 

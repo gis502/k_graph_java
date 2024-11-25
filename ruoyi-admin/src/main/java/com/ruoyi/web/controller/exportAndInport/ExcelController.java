@@ -227,7 +227,6 @@ public class ExcelController {
     public AjaxResult getData(@RequestBody RequestBTO requestBTO) {
         return AjaxResult.success(dataExportStrategyContext.getStrategy(requestBTO.getFlag()).getPage(requestBTO));
     }
-
     @PostMapping("/exportExcel")
     @Log(title = "数据导出", businessType = BusinessType.EXPORT)
     public void exportExcel(HttpServletResponse response, @RequestBody RequestBTO RequestBTO) throws IOException {

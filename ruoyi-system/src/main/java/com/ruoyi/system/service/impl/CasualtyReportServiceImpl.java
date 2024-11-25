@@ -212,7 +212,6 @@ public class CasualtyReportServiceImpl
         return this.page(casualtyReport, lambdaQueryWrapper);
     }
 
-
     @Override
     public List<CasualtyReport> importExcelCasualtyReport(MultipartFile file, String userName, String eqId) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -274,7 +273,10 @@ public class CasualtyReportServiceImpl
     public List<CasualtyReport> getCasualty(String eqid) {
         return casualtyReportMapper.getCasualty(eqid);
     }
-
+    @Override
+    public List<CasualtyReport> getAllRecordInfo(String eqid) {
+        return casualtyReportMapper.getAllRecordInfo(eqid);
+    }
     // 判断某行是否为空
     private boolean isRowEmpty(Row row) {
         for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
