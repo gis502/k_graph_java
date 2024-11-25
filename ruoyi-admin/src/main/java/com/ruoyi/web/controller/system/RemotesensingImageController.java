@@ -39,11 +39,7 @@ public class RemotesensingImageController {
                     .or()
                     .like(RemotesensingImage::getPath, inputData)
                     .or()
-                    .like(RemotesensingImage::getHeight, inputData)
-                    .or()
                     .apply("TO_CHAR(create_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + inputData + "%")
-                    .or()
-                    .apply("CAST(angle AS TEXT) LIKE {0}", "%" + inputData + "%")
                     .or()
                     .apply("TO_CHAR(shooting_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + inputData + "%");
         }
@@ -97,12 +93,6 @@ public class RemotesensingImageController {
         if (remotesensingImage.getPath() != null && !remotesensingImage.getPath().trim().isEmpty()) {
             wrapper.like(RemotesensingImage::getPath, remotesensingImage.getPath());
         }
-
-        // 处理 `height` 字段  eq 用于精确匹配
-        if (remotesensingImage.getHeight() != null && !remotesensingImage.getHeight().trim().isEmpty()) {
-            wrapper.eq(RemotesensingImage::getHeight, remotesensingImage.getHeight());
-        }
-
         // 处理时间字段
         if (remotesensingImage.getCreateTime() != null) {
             // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
@@ -114,11 +104,6 @@ public class RemotesensingImageController {
 
             // 将格式化后的时间应用到查询中
             wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
-        }
-
-        // 处理 `angle` 字段 eq 用于精确匹配
-        if (remotesensingImage.getAngle() != null) {
-            wrapper.eq(RemotesensingImage::getAngle, remotesensingImage.getAngle());
         }
 
         // 处理 `shootingTime` 字段  ge 表示大于或等于，用于范围查询，特别是处理日期或数值字段。
