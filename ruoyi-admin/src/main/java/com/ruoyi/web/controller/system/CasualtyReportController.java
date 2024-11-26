@@ -40,16 +40,14 @@ public class CasualtyReportController {
     public List<CasualtyReport> getAll(@RequestParam String eqid) {
         return casualtyReportService.getCasualty(eqid);
     }
+
     //返回离提供时间最近的一条数据
     @GetMapping("/fromCasualty")
     public AjaxResult fromCasualty(@RequestParam("eqid") String eqid,
-                                   @RequestParam("time") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime time){
+                                     @RequestParam("time") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime time){
         List<Map<String, Object>> aftercasualtyList  = casualtyReportService.fromCasualty(eqid,time);
         return AjaxResult.success(aftercasualtyList);
     }
-    //获取所有记录
-    @GetMapping("/getAllRecordInfo")
-    public List<CasualtyReport> getAllRecordInfo(@RequestParam String eqid) {
-        return casualtyReportService.getAllRecordInfo(eqid);
-    }
+
+
 }

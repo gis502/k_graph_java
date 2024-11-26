@@ -11,10 +11,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  *
  * @author ruoyi
  */
-@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
+
 @EnableScheduling
+@EnableConfigurationProperties
+@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class RuoYiApplication
 {
+
     public static void main(String[] args)
     {
         // System.setProperty("spring.devtools.restart.enabled", "false");
