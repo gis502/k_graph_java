@@ -103,7 +103,7 @@ public class RemotesensingImageController {
             String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             // 将格式化后的时间应用到查询中
-            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
+            wrapper.apply("TO_CHAR(create_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
         }
 
         // 处理 `shootingTime` 字段  ge 表示大于或等于，用于范围查询，特别是处理日期或数值字段。
@@ -116,7 +116,7 @@ public class RemotesensingImageController {
             String formattedTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             // 将格式化后的时间应用到查询中
-            wrapper.apply("TO_CHAR(time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
+            wrapper.apply("TO_CHAR(shooting_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + formattedTime + "%");
         }
 
         List<RemotesensingImage> resultList = remotesensingImageService.list(wrapper);
