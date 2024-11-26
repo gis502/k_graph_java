@@ -9,11 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+
+//指挥大屏最下角轮播图
+
 @RestController
 @RequestMapping("/system")
 public class DistrictEconomyController {
     @Autowired
     private DistrictEconomyService districtEconomyService;
+
 
     @GetMapping("/getDistrictEconomy")
     public List<DistrictEconomy> getDistrictEconomy(@RequestParam Integer time) {
