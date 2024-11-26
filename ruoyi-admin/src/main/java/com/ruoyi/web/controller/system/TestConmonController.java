@@ -1,9 +1,9 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.system.domain.dto.EqEventGetPageDTO;
-import com.ruoyi.system.service.api.ThirdPartyHttpClientService;
 import com.ruoyi.web.api.IdentityAuthentication;
-import com.ruoyi.web.api.ThirdPartyCommonAPI;
+import com.ruoyi.web.api.ThirdPartyCommonApi;
+import com.ruoyi.web.api.ThirdPartyHttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,14 +21,14 @@ import javax.annotation.Resource;
 @RequestMapping("test")
 public class TestConmonController {
     @Autowired
-    private ThirdPartyHttpClientService httpClientService;
+    private ThirdPartyHttpClients httpClientService;
     @Resource
     @Qualifier("cacheTemplate")
     private RedisTemplate<String,String> cacheTemplate;
     @Resource
     private IdentityAuthentication identityAuthentication;
     @Resource
-    private ThirdPartyCommonAPI thirdPartyCommonAPI;
+    private ThirdPartyCommonApi thirdPartyCommonAPI;
     @GetMapping("/get/resp")
     public String GetResp(){
 

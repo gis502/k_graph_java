@@ -2,7 +2,6 @@ package com.ruoyi.web.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.system.domain.dto.*;
-import com.ruoyi.system.service.api.ThirdPartyHttpClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,9 +18,9 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Component
-public class ThirdPartyCommonAPI {
+public class ThirdPartyCommonApi {
     @Resource
-    private ThirdPartyHttpClientService httpClientService;
+    private ThirdPartyHttpClients httpClientService;
     @Resource
     @Qualifier("cacheTemplate")
     private RedisTemplate<String, String> cacheTemplate;

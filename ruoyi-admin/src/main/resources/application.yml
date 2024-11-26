@@ -77,15 +77,15 @@ spring:
   # redis 配置
   redis:
     # 地址
-   # host: 47.92.216.173
+    # host: 47.92.216.173
     host: localhost
     # 端口，默认为6379
-   # port: 7655
+    # port: 7655
     port: 6379
     # 数据库索引
     database: 0
     # 密码
-   # password: zhangsan
+    # password: zhangsan
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -98,6 +98,22 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+  # mqtt配置
+  mqtt:
+    # 需要订阅的地址
+    url: tcp://broker.emqx.io:1883
+    provider:
+      clientId: mqttx_dd84bd5c
+    consumer:
+      clientId: mqttx_f4bddc40
+    # username: 8099H9XE
+    # password: 4OUWTTWN
+    # timeout: 10
+    # keepalive: 20
+    # 需要订阅的主题
+    eewtopic: EEW/JSON/TEST/9897b507fe0143d6a0d05517781bbc7f
+    eqrtopic: EQR/JSON/TEST/9897b507fe0143d6a0d05517781bbc7f
+    acktopic: EEW/ACK
 
 # token配置
 token:
@@ -143,4 +159,9 @@ xss:
   excludes: /system/notice
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+
+# 第三方接口配置
+third-party:
+  username: test
+  passowrd: testtest
 
