@@ -1,6 +1,7 @@
 package com.ruoyi.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 public class EqList {
 
     // 地震唯一标识符
-    @TableField(value = "eqid")
+    @TableId(value = "eqid")
     private String eqId;
 
     // 地震名称

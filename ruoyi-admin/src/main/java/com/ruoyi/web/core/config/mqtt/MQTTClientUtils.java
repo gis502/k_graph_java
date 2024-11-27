@@ -18,7 +18,6 @@ public class MQTTClientUtils {
 
     @Autowired
     private MQTTConfigBuilder mqttConfig;
-
     private MqttClient mqttClient;
 
     @Resource

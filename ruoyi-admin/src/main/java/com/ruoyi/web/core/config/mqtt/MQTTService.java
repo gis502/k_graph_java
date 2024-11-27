@@ -32,7 +32,7 @@ public class MQTTService {
      * @param qos qos
      * @param message 具体消息
      */
-    public void sendMessage(String topicName,int qos, String message){
+    public void sendMessage(String topicName,int qos, String message) {
         mqttClientUtils.publish(topicName, qos, message);
     }
 }
