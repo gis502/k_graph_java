@@ -456,10 +456,6 @@ public class SeismicTriggerService {
         }
     }
 
-
-
-
-
     /**
      * 获取专题图并存到本地
      * @param params
@@ -521,11 +517,6 @@ public class SeismicTriggerService {
             downloadFileFromUrl(fileUrl, targetFile);
         }
     }
-
-
-
-
-
 
     /**
      * 获取地震影响场并存到本地
@@ -593,6 +584,3 @@ public class SeismicTriggerService {
     }
 
 }
-
-
-
