@@ -62,7 +62,7 @@
 		left join sys_role ro on ur.role_id = ro.role_id
 		where ur.user_id = #{params.userId}
 		<if test="menuName != null and menuName != ''">
-			AND m.menu_name like concat('%', #{menuName}, '%')
+			AND  m.menu_name LIKE '%' || #{menuName} || '%'
 		</if>
 		<if test="visible != null and visible != ''">
 			AND m.visible = #{visible}
@@ -199,4 +199,4 @@
 		delete from sys_menu where menu_id = #{menuId}
 	</delete>
 
-</mapper> 
+</mapper>

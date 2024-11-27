@@ -18,7 +18,7 @@ public class EqEventTriggerDTO {
 
     private String event;   //地震事件编码
     private String eqName;  //地震名称
-    private LocalDateTime eqTime;  //地震时间
+    private String eqTime;  //地震时间
     private String eqAddr;  //震中位置
     private Double longitude;      //经度
     private Double latitude;      //纬度
@@ -33,13 +33,13 @@ public class EqEventTriggerDTO {
         JSONObject jsonObject = new JSONObject();
 
         // Manually convert LocalDateTime fields to String, as FastJSON doesn't support LocalDateTime by default
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedEqTime = eqTime != null ? eqTime.format(formatter) : null;
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        String formattedEqTime = eqTime != null ? eqTime.format(formatter) : null;
 
         // Put values into the JSON object
         jsonObject.put("event", event);
         jsonObject.put("eqName", eqName);
-        jsonObject.put("eqTime", formattedEqTime);
+        jsonObject.put("eqTime", eqTime);
         jsonObject.put("eqAddr", eqAddr);
         jsonObject.put("longitude", longitude);
         jsonObject.put("latitude", latitude);

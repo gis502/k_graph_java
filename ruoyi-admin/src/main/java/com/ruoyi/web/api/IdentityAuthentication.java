@@ -1,7 +1,6 @@
 package com.ruoyi.web.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruoyi.system.service.api.ThirdPartyHttpClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author: xiaodemos
  * @date: 2024-11-22 12:03
- * @description: 通用请求第三方接口
+ * @description: 进行身份验证 获取、更新 token
  */
 
 @Slf4j
@@ -26,7 +25,7 @@ import java.util.concurrent.TimeoutException;
 public class IdentityAuthentication {
 
     @Autowired
-    private ThirdPartyHttpClientService httpClientService;
+    private ThirdPartyHttpClients httpClientService;
     @Resource
     @Qualifier("cacheTemplate")
     private RedisTemplate<String, String> cacheTemplate;

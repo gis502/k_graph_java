@@ -1,4 +1,4 @@
-package com.ruoyi.system.service.api;
+package com.ruoyi.web.api;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter;
  */
 @Slf4j
 @Component
-public class ThirdPartyHttpClientService {
+public class ThirdPartyHttpClients {
 
     /**
      * 发送post请求
