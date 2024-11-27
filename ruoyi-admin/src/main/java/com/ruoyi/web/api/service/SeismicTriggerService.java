@@ -3,11 +3,18 @@ package com.ruoyi.web.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.exception.AsyncExecuteException;
 import com.ruoyi.common.exception.DataSaveException;
 import com.ruoyi.common.exception.ParamsIsEmptyException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.domain.dto.EqEventGetMapDTO;
+import com.ruoyi.system.domain.dto.EqEventGetReportDTO;
+import com.ruoyi.system.domain.dto.EqEventGetYxcDTO;
+import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
+import com.ruoyi.system.domain.entity.AssessmentOutput;
 import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.AssessmentBatch;
 import com.ruoyi.system.domain.entity.EqList;
@@ -23,7 +30,18 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Resource;
+import java.util.List;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -39,7 +57,6 @@ import java.util.concurrent.ExecutionException;
 @Service
 @Transactional
 public class SeismicTriggerService {
-
     @Resource
     private ThirdPartyCommonApi thirdPartyCommonApi;
     @Resource
@@ -352,4 +369,230 @@ public class SeismicTriggerService {
         }
     }
 
+    // 获取灾情报告并存到本地
+    public List<AssessmentOutput> getReport(EqEventGetReportDTO params) {
+
+        String seismicEventGetReportByGET = thirdPartyCommonApi.getSeismicEventGetReportByGET(params);
+
+        // 将从第三方接口获取到的String数据转换成map,再拿出data,再将data里的数据转换成List,最终得到Report_result
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> responseMap = objectMapper.readValue(seismicEventGetReportByGET, Map.class);
+
+            if (responseMap != null && responseMap.get("code").equals(200)) {
+                String dataJson = objectMapper.writeValueAsString(responseMap.get("data"));
+                List<AssessmentOutput> Report_result = objectMapper.readValue(dataJson, new TypeReference<List<AssessmentOutput>>() {});
+
+                // 调用文件下载方法
+                downloadFiles(Report_result);  // 下载文件并存储到本地
+                return Report_result;
+            } else {
+                throw new RuntimeException("API 返回错误信息: " + responseMap.get("msg"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("解析 seismicEventGetReportByGET 时出错: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 处理文件下载逻辑
+     *
+     * @param assessmentOutputs 包含文件信息的 AssessmentOutput 列表
+     */
+    private void downloadFiles(List<AssessmentOutput> assessmentOutputs) {
+        for (AssessmentOutput output : assessmentOutputs) {
+            String sourceFile = output.getSourceFile();  // 获取文件路径
+            String eqqueueId = output.getEqqueueId();   // 获取地震队列ID
+
+            // 生成目标文件保存路径
+            String saveDir = "D:\\雅安灾损文件\\" + eqqueueId + "\\灾情报告";
+            File dir = new File(saveDir);
+            if (!dir.exists()) {
+                dir.mkdirs();  // 如果目录不存在则创建
+            }
+
+            // 拼接完整的文件URL
+            String fileUrl = "http://tq-test.xixily.com:10340" + sourceFile;
+
+            // 获取文件名（从 sourceFile 中提取文件名）
+            String fileName = new File(sourceFile).getName();
+
+            // 目标文件路径
+            File targetFile = new File(saveDir, fileName);
+
+            // 调用方法下载文件
+            downloadFileFromUrl(fileUrl, targetFile);
+        }
+    }
+
+    /**
+     * 从 URL 下载文件并保存到指定路径
+     *
+     * @param fileUrl 文件的 URL
+     * @param targetFile 目标文件
+     */
+    private void downloadFileFromUrl(String fileUrl, File targetFile) {
+        try {
+            URL url = new URL(fileUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            // 获取输入流并保存到文件
+            try (InputStream inputStream = connection.getInputStream();
+                 OutputStream outputStream = new FileOutputStream(targetFile)) {
+
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                System.out.println("文件已下载并保存: " + targetFile.getAbsolutePath());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("下载文件失败: " + fileUrl);
+        }
+    }
+
+
+
+
+
+    /**
+     * 获取专题图并存到本地
+     * @param params
+     * @return
+     */
+
+    public List<AssessmentOutput> getMap(EqEventGetMapDTO params) {
+
+        String seismicEventGetMapByGET = thirdPartyCommonApi.getSeismicEventGetGetMapByGet(params);
+
+        // 将从第三方接口获取到的String数据转换成map,再拿出data,再将data里的数据转换成List,最终得到Map_result
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> responseMap = objectMapper.readValue(seismicEventGetMapByGET, Map.class);
+
+            if (responseMap != null && responseMap.get("code").equals(200)) {
+                String dataJson = objectMapper.writeValueAsString(responseMap.get("data"));
+                List<AssessmentOutput> Map_result = objectMapper.readValue(dataJson, new TypeReference<List<AssessmentOutput>>() {});
+
+                // 调用文件下载方法
+                downloadMapFiles(Map_result);  // 下载文件并存储到本地
+                return Map_result;
+            } else {
+                throw new RuntimeException("API 返回错误信息: " + responseMap.get("msg"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("解析 seismicEventGetMapByGET 时出错: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 处理专题图文件下载逻辑
+     *
+     * @param assessmentOutputs 包含文件信息的 AssessmentOutput 列表
+     */
+    private void downloadMapFiles(List<AssessmentOutput> assessmentOutputs) {
+        for (AssessmentOutput output : assessmentOutputs) {
+            String sourceFile = output.getSourceFile();  // 获取文件路径
+            String eqqueueId = output.getEqqueueId();   // 获取地震队列ID
+
+            // 生成目标文件保存路径
+            String saveDir = "D:\\雅安灾损文件\\" + eqqueueId + "\\专题图";
+            File dir = new File(saveDir);
+            if (!dir.exists()) {
+                dir.mkdirs();  // 如果目录不存在则创建
+            }
+
+            // 拼接完整的文件URL
+            String fileUrl = "http://tq-test.xixily.com:10340" + sourceFile;
+
+            // 获取文件名（从 sourceFile 中提取文件名）
+            String fileName = new File(sourceFile).getName();
+
+            // 目标文件路径
+            File targetFile = new File(saveDir, fileName);
+
+            // 调用方法下载文件
+            downloadFileFromUrl(fileUrl, targetFile);
+        }
+    }
+
+
+
+
+
+
+    /**
+     * 获取地震影响场并存到本地
+     */
+    public List<AssessmentOutput> getYxc(EqEventGetYxcDTO params) {
+
+        String seismicEventGetImpactFieldByGET = thirdPartyCommonApi.getSeismicEventGetYxcByGet(params);
+
+        // 将从第三方接口获取到的String数据转换成map,再拿出data,再将data里的数据转换成List,最终得到Yxc_result
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> responseMap = objectMapper.readValue(seismicEventGetImpactFieldByGET, Map.class);
+
+            if (responseMap != null && responseMap.get("code").equals(200)) {
+                String dataJson = objectMapper.writeValueAsString(responseMap.get("data"));
+                List<AssessmentOutput> Yxc_result = objectMapper.readValue(dataJson, new TypeReference<List<AssessmentOutput>>() {});
+
+                // 调用文件下载方法
+                downloadImpactFieldFiles(Yxc_result);  // 下载文件并存储到本地
+                return Yxc_result;
+            } else {
+                throw new RuntimeException("API 返回错误信息: " + responseMap.get("msg"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("解析 seismicEventGetImpactFieldByGET 时出错: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 处理地震影响场文件下载逻辑
+     *
+     * @param assessmentOutputs 包含文件信息的 AssessmentOutput 列表
+     */
+    private void downloadImpactFieldFiles(List<AssessmentOutput> assessmentOutputs) {
+        for (AssessmentOutput output : assessmentOutputs) {
+            String sourceFile = output.getSourceFile();  // 获取文件路径
+            String eqqueueId = output.getEqqueueId();   // 获取地震队列ID
+
+            // 生成目标文件保存路径
+            String saveDir = "D:\\雅安灾损文件\\" + eqqueueId + "\\地震影响场";
+            File dir = new File(saveDir);
+            if (!dir.exists()) {
+                dir.mkdirs();  // 如果目录不存在则创建
+            }
+
+            // 拼接完整的文件URL
+            String fileUrl = "http://tq-test.xixily.com:10340" + sourceFile;
+
+            // 获取文件名（从 sourceFile 中提取文件名）
+            String fileName = new File(sourceFile).getName();
+
+            // 目标文件路径
+            File targetFile = new File(saveDir, fileName);
+
+            // 检查目标文件是否已存在
+            if (targetFile.exists()) {
+                System.out.println("文件已存在，跳过下载: " + targetFile.getAbsolutePath());
+                continue;
+            }
+
+            // 调用方法下载文件
+            downloadFileFromUrl(fileUrl, targetFile);
+        }
+    }
+
 }
+
+
+
