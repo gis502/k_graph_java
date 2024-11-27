@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Builder;
 import lombok.Data;
 import org.locationtech.jts.geom.Geometry;
 import org.n52.jackson.datatype.jts.GeometryDeserializer;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
  */
 
 @Data
+@Builder
 @TableName("eqlist")
 public class EqList {
 
@@ -48,7 +50,7 @@ public class EqList {
 
     // 震级
     @TableField(value = "magnitude")
-    private String magnitude;
+    private Double magnitude;
 
     // 地震烈度
     @TableField(value = "intensity")

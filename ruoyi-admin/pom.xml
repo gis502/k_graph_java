@@ -119,6 +119,18 @@
             <artifactId>spring-integration-mqtt</artifactId>
             <version>5.3.2.RELEASE</version>
         </dependency>
+        <!--jackson-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>1.20.0</version>
+        </dependency>
+
 
     </dependencies>
 
