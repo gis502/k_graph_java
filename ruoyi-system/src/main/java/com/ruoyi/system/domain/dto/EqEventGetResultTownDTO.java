@@ -6,19 +6,16 @@ import lombok.Data;
 
 /**
  * @author: xiaodemos
- * @date: 2024-11-23 17:48
- * @description: 获取评估结果DTO
+ * @date: 2024-11-26 16:56
+ * @description: 乡镇级评估结果
  */
-
 
 @Data
 @Builder
-public class EqEventGetResultDTO {
+public class EqEventGetResultTownDTO {
 
     private String event;
     private String eqqueueId;
-    private String type;
-
 
     public JSONObject toJSONObject() {
         // Create a JSONObject using FastJSON
@@ -27,7 +24,6 @@ public class EqEventGetResultDTO {
         // Put values into the JSON object
         jsonObject.put("event", event);
         jsonObject.put("eqqueueId", eqqueueId);
-        jsonObject.put("type", type);
 
         return jsonObject;
     }

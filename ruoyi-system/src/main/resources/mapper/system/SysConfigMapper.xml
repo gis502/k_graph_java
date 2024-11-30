@@ -42,13 +42,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectConfigVo"/>
         <where>
 			<if test="configName != null and configName != ''">
-				AND config_name like concat('%', #{configName}, '%')
+                AND config_name LIKE '%' || #{configName} || '%'
 			</if>
 			<if test="configType != null and configType != ''">
 				AND config_type = #{configType}
 			</if>
 			<if test="configKey != null and configKey != ''">
-				AND config_key like concat('%', #{configKey}, '%')
+                AND config_key LIKE '%' || #{configKey} || '%'
 			</if>
 			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
 				and to_char(create_time,'yyyy-MM-dd') &gt;= to_char(#{params.beginTime},'yyyy-MM-dd')

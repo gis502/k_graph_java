@@ -20,9 +20,9 @@ public interface CasualtyReportService extends IService<CasualtyReport>{
     CasualtyReport getCasualtiesStatsById(String eqid);
 
     List<CasualtyReport> getTotal(String eqid);
+//    CasualtyReport getTotal(String eqid);
 
     List<CasualtyReport> getCasualty(String eqid);
-    List<CasualtyReport> getAllRecordInfo(String eqid);
 
     IPage<CasualtyReport> searchData(RequestBTO requestBTO);
 
