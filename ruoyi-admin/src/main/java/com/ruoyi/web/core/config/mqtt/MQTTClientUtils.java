@@ -23,12 +23,13 @@ public class MQTTClientUtils {
     @Resource
     private MessageCallbackListener messageCallbackListener;
 
+
     public MQTTClientUtils createDevOpsMQTTClient() {
         this.createMQTTClient();
         return this;
     }
 
-    private MQTTClientUtils connect() {
+    public MQTTClientUtils connect() {
         try {
             this.mqttClient.connect(mqttConfig.getOptions());
             log.info("MQTTClient连接成功！");
@@ -39,7 +40,7 @@ public class MQTTClientUtils {
         return this;
     }
 
-    private MqttClient createMQTTClient() {
+    public MqttClient createMQTTClient() {
         try{
             this.mqttClient = new MqttClient( mqttConfig.getHost(), mqttConfig.getClientId());
             log.info("MQTTClient创建成功！");
