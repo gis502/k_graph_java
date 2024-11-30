@@ -26,27 +26,33 @@ public class DistrictEconomy {
     private Integer year;
 
     /**
-     * 经济对应年份
+     * 最高海拔
      */
     @TableField(value = "highest_altitude")
     private String highestAltitude;
 
     /**
-     * 经济对应年份
+     * 最低海拔
      */
     @TableField(value = "minimum_altitude")
     private String minimumAltitude;
 
     /**
-     * 经济对应年份
+     * 地形
      */
     @TableField(value = "terrain")
     private String terrain;
 
     /**
-     * 经济对应年份
+     * 地貌
      */
     @TableField(value = "landform")
     private String landform;
+
+    /**
+     * 同比增长率
+     */
+    @TableField(value = "growth_rate")
+    private String growthRate;
 
 }
