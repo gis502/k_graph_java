@@ -185,6 +185,7 @@ public class ThirdPartyCommonApi {
     }
 
     //TODO 增加接口
+
     /**
      * @param params 前端传入的参数
      * @author: jiangshaung
@@ -192,7 +193,7 @@ public class ThirdPartyCommonApi {
      * @description: 获取乡镇级评估结果
      * @return: 返回乡镇级评估结果 List
      */
-    public String getSeismicEventGetGetResultTownByGet(EqEventGetResultTownDTO params){
+    public String getSeismicEventGetGetResultTownByGet(EqEventGetResultTownDTO params) {
 
         String token = cacheTemplate.opsForValue().get("token");
 
@@ -208,10 +209,9 @@ public class ThirdPartyCommonApi {
      * @author: jiangshaung
      * @date: 2024/11/24 15:35
      * @description: 删除地震事件
-     * @return: 返回是否删除成功(true或flase)
+     * @return: 返回是否删除成功 (true 或 false )
      */
-
-    public String getSeismicEventGetDeleteByPost(String event){
+    public String getSeismicEventGetDeleteByPost(String event) {
 
         String token = cacheTemplate.opsForValue().get("token");
 

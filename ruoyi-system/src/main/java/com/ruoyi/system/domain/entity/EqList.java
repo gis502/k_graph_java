@@ -1,10 +1,12 @@
 package com.ruoyi.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Builder;
 import lombok.Data;
 import org.locationtech.jts.geom.Geometry;
 import org.n52.jackson.datatype.jts.GeometryDeserializer;
@@ -19,11 +21,12 @@ import java.time.LocalDateTime;
  */
 
 @Data
+@Builder
 @TableName("eqlist")
 public class EqList {
 
     // 地震唯一标识符
-    @TableField(value = "eqid")
+    @TableId(value = "eqid")
     private String eqId;
 
     // 地震名称
@@ -48,7 +51,7 @@ public class EqList {
 
     // 震级
     @TableField(value = "magnitude")
-    private String magnitude;
+    private Double magnitude;
 
     // 地震烈度
     @TableField(value = "intensity")

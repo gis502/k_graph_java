@@ -19,7 +19,9 @@ import javax.annotation.Resource;
 
 @Service
 @Slf4j
-public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> {
+public class EqListServiceImpl
+        extends ServiceImpl<EqListMapper, EqList>
+        implements IEqListService{
 
 
 

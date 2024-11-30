@@ -1,15 +1,17 @@
 package com.ruoyi.system.domain.dto;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * @author: xiaodemos
  * @date: 2024-11-26 16:56
- * @description: 乡镇及评估结果
+ * @description: 乡镇级评估结果
  */
 
 @Data
+@Builder
 public class EqEventGetResultTownDTO {
 
     private String event;

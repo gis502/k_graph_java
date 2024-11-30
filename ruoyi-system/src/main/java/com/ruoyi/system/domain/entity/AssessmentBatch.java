@@ -2,6 +2,7 @@ package com.ruoyi.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -11,6 +12,7 @@ import lombok.Data;
  */
 
 @Data
+@Builder
 @TableName("assessment_batch")
 public class AssessmentBatch {
 
@@ -22,7 +24,7 @@ public class AssessmentBatch {
     private String eqId;
     // 评估批次
     @TableField(value = "batch")
-    private String batch;
+    private Integer batch;
     // 启动类型（0自动,1手动）
     @TableField(value = "type")
     private String type;
