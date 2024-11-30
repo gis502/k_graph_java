@@ -3,7 +3,7 @@ package com.ruoyi.web.controller.system;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.uuid.UUID;
-import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.OrthophotoImage;
 import com.ruoyi.system.domain.entity.Tiltphotographymodel;
 import com.ruoyi.system.service.TiltphotographymodelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +67,7 @@ public class TiltPhotographyModelController {
         int data = tiltphotographymodelService.updataModelNoElevation(model);
         return data;
     }
+
     @PostMapping("/updatamodelelevation")
     public int updataModelElevation(@RequestBody Tiltphotographymodel model) {
         int data = tiltphotographymodelService.updataModelElevation(model);
@@ -157,21 +158,6 @@ public class TiltPhotographyModelController {
                     .apply("CAST(model_size AS TEXT) LIKE {0}", "%" + queryValue + "%"); // 将 modelSize 转换为字符串
         }
 
-        List<Tiltphotographymodel> resultList = tiltphotographymodelService.list(wrapper);
-        return AjaxResult.success(resultList);
-    }
-    //搜索
-    @GetMapping("/queryName")
-    public AjaxResult queryName(@RequestParam(value = "inputData", required = false) String inputData) {
-        LambdaQueryWrapper<Tiltphotographymodel> wrapper = new LambdaQueryWrapper<>();
-        if (inputData != null && !inputData.trim().isEmpty()) {
-            wrapper
-                    .like(Tiltphotographymodel::getName, inputData)
-                    .or()
-                    .apply("CAST(tz AS TEXT) LIKE {0}", "%" + inputData + "%") // 将 tz 转换为字符串
-                    .or()
-                    .apply("CAST(tze AS TEXT) LIKE {0}", "%" + inputData + "%"); // 将 tze 转换为字符串
-        }
         List<Tiltphotographymodel> resultList = tiltphotographymodelService.list(wrapper);
         return AjaxResult.success(resultList);
     }

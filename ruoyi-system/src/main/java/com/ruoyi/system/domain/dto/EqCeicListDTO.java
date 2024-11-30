@@ -1,6 +1,7 @@
 package com.ruoyi.system.domain.dto;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 
 
 @Data
+@Builder
 public class EqCeicListDTO {
 
     private LocalDateTime eqtime;
