@@ -39,7 +39,6 @@ public class OrthophotoImage {
     private LocalDateTime createTime; // 使用 Date 类型
 
     /**
-     2
      * id
      */
     @TableId(value = "uuid", type = IdType.NONE)
