@@ -49,5 +49,8 @@ public class CasualtyReportController {
         return AjaxResult.success(aftercasualtyList);
     }
 
-
+    @GetMapping("/getAllRecordInfo")
+    public List<CasualtyReport> getAllRecordInfo(@RequestParam String eqid) {
+        return casualtyReportService.getAllRecordInfo(eqid);
+    }
 }

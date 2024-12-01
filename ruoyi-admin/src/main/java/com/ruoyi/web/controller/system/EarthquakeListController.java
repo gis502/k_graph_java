@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.system;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.EqFormDto;
 import com.ruoyi.system.domain.dto.GeometryDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
@@ -111,11 +112,11 @@ public class EarthquakeListController {
 
         // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
         if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-            // 直接将前端传递的时间字符串解析为 OffsetDateTime（保留时区信息，处理 UTC）
-            OffsetDateTime startTime = convertToOffsetDateTime(queryDTO.getStartTime());
-            OffsetDateTime endTime = convertToOffsetDateTime(queryDTO.getEndTime());
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//
+//            // 直接将前端传递的时间字符串解析为 OffsetDateTime（保留时区信息，处理 UTC）
+//            OffsetDateTime startTime = convertToOffsetDateTime(queryDTO.getStartTime());
+//            OffsetDateTime endTime = convertToOffsetDateTime(queryDTO.getEndTime());
 
 
 
@@ -123,7 +124,7 @@ public class EarthquakeListController {
 //            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
 //            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
 
-            queryWrapper.between(EarthquakeList::getOccurrenceTime, startTime, endTime);
+            queryWrapper.between(EarthquakeList::getOccurrenceTime,queryDTO.getStartTime() ,queryDTO.getEndTime() );
         }
 
         // 验证并添加震级筛选条件
@@ -179,8 +180,8 @@ public class EarthquakeListController {
     }
 
     @PostMapping("/addEq")
-    public boolean addEq(@Valid @RequestBody EarthquakeList earthquakeList) {
-
+    public AjaxResult addEq(@Valid @RequestBody EarthquakeList earthquakeList) {
+        earthquakeList.generateUuidIfNotPresent();
         // 震级验证
         String magnitudeStr = earthquakeList.getMagnitude();
         if (magnitudeStr == null || magnitudeStr.isEmpty()) {
@@ -254,7 +255,7 @@ public class EarthquakeListController {
         earthquakeList.setGeom(point);
 
         // 保存地震信息
-        return earthquakeListService.save(earthquakeList);
+        return AjaxResult.success(earthquakeListService.save(earthquakeList));
     }
 
     @PostMapping("/updataeq")
