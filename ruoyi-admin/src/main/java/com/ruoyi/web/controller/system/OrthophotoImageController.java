@@ -60,11 +60,7 @@ public class OrthophotoImageController {
                     .or()
                     .like(OrthophotoImage::getPath, queryValue)
                     .or()
-                    .like(OrthophotoImage::getHeight, queryValue)
-                    .or()
-                    .apply("TO_CHAR(create_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%")
-                    .or()
-                    .apply("CAST(angle AS TEXT) LIKE {0}", "%" + queryValue + "%");
+                    .apply("TO_CHAR(create_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%");
         }
         List<OrthophotoImage> resultList = orthophotoImageService.list(wrapper);
         return AjaxResult.success(resultList);
@@ -86,11 +82,6 @@ public class OrthophotoImageController {
             wrapper.like(OrthophotoImage::getPath, orthophotoImage.getPath());
         }
 
-        // 处理 height 字段，假设是字符串类型
-        if (orthophotoImage.getHeight() != null && !orthophotoImage.getHeight().trim().isEmpty()) {
-            wrapper.like(OrthophotoImage::getHeight, orthophotoImage.getHeight());
-        }
-
 //         处理 create_time 字段，使用本地时区时间格式化和范围查询
 //        if (orthophotoImage.getCreateTime() != null) {
 //            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
@@ -103,17 +94,12 @@ public class OrthophotoImageController {
 //            // 将格式化后的时间应用到范围查询中
 //            wrapper.ge(OrthophotoImage::getCreateTime, formattedTime);
 //        }
+
         if (orthophotoImage.getCreateTime() != null) {
             // 直接调用实体类的时间字段进行范围查询
             wrapper.eq(OrthophotoImage::getCreateTime, orthophotoImage.getCreateTime());
         }
 
-
-
-        // 处理 angle 字段，假设是数值类型
-        if (orthophotoImage.getAngle() != null) {
-            wrapper.apply("CAST(angle AS TEXT) LIKE {0}", "%" + orthophotoImage.getAngle() + "%");
-        }
 
         List<OrthophotoImage> resultList = orthophotoImageService.list(wrapper);
         return AjaxResult.success(resultList);

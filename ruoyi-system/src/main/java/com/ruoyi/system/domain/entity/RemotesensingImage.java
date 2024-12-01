@@ -30,13 +30,6 @@ public class RemotesensingImage {
     private String path;
 
     /**
-     * 高度
-     */
-    @TableField(value = "height")
-    private String height;
-
-
-    /**
      * 添加时间
      */
     @TableField(value = "create_time") // 确保格式正确
@@ -48,18 +41,13 @@ public class RemotesensingImage {
     @TableId(value = "uuid", type = IdType.NONE)
     private String uuid;
 
-    /**
-     * 旋转角度
-     */
-    @TableField(value = "angle")
-    private BigDecimal angle;
+
     // 在保存前检查UUID是否为空，如果为空则自动生成
     public void generateUuidIfNotPresent() {
         if (this.uuid == null || this.uuid.trim().isEmpty()) {
             this.uuid = UUID.randomUUID().toString();
         }
     }
-
 
 
     /**

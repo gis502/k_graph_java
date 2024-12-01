@@ -19,7 +19,7 @@ spring:
                  username: postgres
                  password: zhangsan
 #            master:
-#                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+#                url: jdbc:postgresql://localhost:5432/yaanlocal?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
 #                username: postgres
 #                password: 123456
             # 从库数据源
