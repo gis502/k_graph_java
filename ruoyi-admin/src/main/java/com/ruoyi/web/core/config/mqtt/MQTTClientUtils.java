@@ -149,8 +149,16 @@ public class MQTTClientUtils {
         //那么接收到消息后该切面并不会生效，所以不建议这么做,以下是修改过后的。
 
         //上面两句放到外面好吧!!!评论的大哥想的有点多，还要写个上下文获取bean...
+        mqttClientUtils.subscribe("EEW/JSON/TEST/9897b507fe0143d6a0d05517781bbc7f", 0, messageCallbackListener);
+        mqttClientUtils.subscribe("EQR/JSON/TEST/9897b507fe0143d6a0d05517781bbc7f", 0, messageCallbackListener);
+        mqttClientUtils.subscribe("EEW/ACK", 0, messageCallbackListener);
         mqttClientUtils.subscribe("testtopic/123", 0, messageCallbackListener);
+
+
     }
+
+
+
 }
 
 
