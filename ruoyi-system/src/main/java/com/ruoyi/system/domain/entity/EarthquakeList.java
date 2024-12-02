@@ -15,12 +15,13 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.n52.jackson.datatype.jts.GeometryDeserializer;
 import org.n52.jackson.datatype.jts.GeometrySerializer;
-
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
     * 震后生成-地震震情信息-地震列表
@@ -32,7 +33,7 @@ public class EarthquakeList {
      * 唯一标识符
      */
     @TableId(value = "eqid", type = IdType.NONE)
-    private Object eqid;
+    private String eqid;
 
     /**
      * 地震名称
@@ -72,6 +73,8 @@ public class EarthquakeList {
     /**
      * 发震时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "请填写完整")
     @TableField(value = "occurrence_time")
     private LocalDateTime occurrenceTime;
@@ -124,6 +127,13 @@ public class EarthquakeList {
         } else {
             this.longitude = null;
             this.latitude = null;
+        }
+    }
+
+    // 在保存前检查 UUID 是否为空，如果为空则自动生成
+    public void generateUuidIfNotPresent() {
+        if (this.eqid == null || this.eqid.trim().isEmpty()) {
+            this.eqid = UUID.randomUUID().toString();
         }
     }
 }

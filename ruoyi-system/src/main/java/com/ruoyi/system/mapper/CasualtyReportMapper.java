@@ -90,8 +90,8 @@ public interface CasualtyReportMapper extends BaseMapper<CasualtyReport> {
             "AND sub.rn = 1 " +
             "ORDER BY yas.affected_area_name")
     List<Map<String, Object>> fromCasualty(@Param("eqid") String eqid, @Param("time") LocalDateTime time);
-
-
+    @Select("SELECT * FROM public.casualty_report WHERE earthquake_identifier = #{eqid} ORDER BY submission_deadline")
+    List<CasualtyReport> getAllRecordInfo(@Param("eqid") String eqid);
 }
 
 

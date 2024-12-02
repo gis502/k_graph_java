@@ -1,5 +1,6 @@
 package com.ruoyi.web.core.config.mqtt;
 
+import com.ruoyi.common.utils.file.FileUtils;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -34,6 +35,9 @@ public class MessageCallbackListener implements IMqttMessageListener, MqttCallba
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         String messageBody = new String(message.getPayload(), StandardCharsets.UTF_8);
         System.out.println("收到消息：" + topic + ", 消息内容是：" + messageBody);
+
+        FileUtils.writeToFile("D:/mqtt/message.txt", "收到消息：" + topic + ", 消息内容是：" + messageBody);
+
     }
 
     @Override
