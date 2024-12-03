@@ -38,7 +38,7 @@ public class PlotIconmanagementController {
         if (plotIcon != null) {
             // 确定文件路径
             String projectPath = System.getProperty("user.dir");
-            String filePath = projectPath + "/logistics/uploads/PlotsPic/" + plotIcon.getName()+".png";
+            String filePath = projectPath + "/logistics/uploads/PlotsPic/" + plotIcon.getName() + ".png";
 
             // 删除文件
             File file = new File(filePath);
@@ -61,6 +61,15 @@ public class PlotIconmanagementController {
         if (existingPlotIcon == null) {
             return AjaxResult.error("Record not found.");
         }
+
+        // 保存时图片没有变化时，不进行修改
+        boolean isBase64 = plotIcon.getImg().startsWith("data:image/jpeg;base64");
+        if (!isBase64) {
+            plotIcon.setImg(null);
+            plotIconmanagementService.updateById(plotIcon);
+            return AjaxResult.success("Record updated successfully.");
+        }
+
         // 删除旧图片
         String projectPath = System.getProperty("user.dir");
         String oldFilePath = projectPath + "/logistics/uploads/PlotsPic/" + existingPlotIcon.getName();
@@ -106,6 +115,7 @@ public class PlotIconmanagementController {
     public AjaxResult addPlotIcon(@RequestBody PlotIconmanagement plotIcon) throws IOException {
         String base64Data = plotIcon.getImg();
         String imageName = plotIcon.getName(); // 获取作为文件名的 name 字段
+
         try {
             // 检查 Base64 字符串格式并去掉前缀
             if (base64Data.contains(",")) {
