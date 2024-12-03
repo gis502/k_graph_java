@@ -16,6 +16,8 @@ import com.ruoyi.common.annotation.Log;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -196,6 +198,11 @@ public class EarthquakeListController {
         if (magnitude < 3 || magnitude > 10) {
             throw new IllegalArgumentException("震级必须在 3 到 10 之间");
         }
+        // 保留震级小数点后 1 位
+        BigDecimal magnitudeBigDecimal = new BigDecimal(magnitude);
+        magnitudeBigDecimal = magnitudeBigDecimal.setScale(1, RoundingMode.HALF_UP); // 保留 1 位小数
+
+        earthquakeList.setMagnitude(magnitudeBigDecimal.toString()); // 设置格式化后的震级
 
         // 深度验证
         String depthStr = earthquakeList.getDepth();
@@ -282,6 +289,22 @@ public class EarthquakeListController {
     @GetMapping("getGeomById")
     public List<EarthquakeList> getGeomById(@RequestParam(value = "id") String id) {
         return earthquakeListService.getGeomById(id);
+    }
+
+    //关于态势标会5.0级以上的模糊查询
+    @GetMapping("/queryName")
+    public AjaxResult queryName(@RequestParam(value = "inputData", required = false) String inputData) {
+        LambdaQueryWrapper<EarthquakeList> wrapper = new LambdaQueryWrapper<>();
+        if (inputData != null && !inputData.trim().isEmpty()) {
+            wrapper
+                    .like(EarthquakeList::getEarthquakeName, inputData)
+                    .or()
+                    .like(EarthquakeList::getMagnitude, inputData)
+                    .or()
+                    .apply("TO_CHAR(occurrence_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + inputData + "%");
+        }
+        List<EarthquakeList> resultList = earthquakeListService.list(wrapper);
+        return AjaxResult.success(resultList);
     }
 
 }
