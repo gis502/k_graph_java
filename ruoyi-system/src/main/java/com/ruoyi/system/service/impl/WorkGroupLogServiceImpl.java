@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.constant.MessageConstants;
+import com.ruoyi.common.exception.ParamsIsEmptyException;
+import com.ruoyi.common.exception.ResultNullPointException;
 import com.ruoyi.system.domain.bto.RequestBTO;
 import com.ruoyi.system.domain.entity.WorkGroupLog;
 import com.ruoyi.system.domain.entity.EarthquakeList;
@@ -32,9 +34,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class WorkGroupLogServiceImpl extends
-        ServiceImpl<WorkGroupLogMapper, WorkGroupLog>
-        implements WorkGroupLogService, DataExportStrategy {
+public class WorkGroupLogServiceImpl extends ServiceImpl<WorkGroupLogMapper, WorkGroupLog> implements WorkGroupLogService, DataExportStrategy {
 
 
     @Resource
@@ -99,32 +99,14 @@ public class WorkGroupLogServiceImpl extends
 
         if (MessageConstants.CONDITION_SEARCH.equals(requestBTO.getCondition())) {
 
-            queryWrapper.eq(WorkGroupLog::getEarthquakeId, eqId)
-                    .like(WorkGroupLog::getEarthquakeName, requestParams)
-                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
-                    .like(WorkGroupLog::getEarthquakeAreaName, requestParams)
-                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
-                    .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
-                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
-                    .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%")
-                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
-                    .like(WorkGroupLog::getWorkGroup, requestParams)
-                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
-                    .like(WorkGroupLog::getReportDepartment, requestParams)
-                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
-                    .like(WorkGroupLog::getWorkStatus, requestParams)
-                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
-                    .like(WorkGroupLog::getWorkIssues, requestParams)
-                    .or().like(WorkGroupLog::getEarthquakeId, eqId)
-                    .like(WorkGroupLog::getRequirementList, requestParams);
+            queryWrapper.eq(WorkGroupLog::getEarthquakeId, eqId).like(WorkGroupLog::getEarthquakeName, requestParams).or().like(WorkGroupLog::getEarthquakeId, eqId).like(WorkGroupLog::getEarthquakeAreaName, requestParams).or().like(WorkGroupLog::getEarthquakeId, eqId).apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%").or().like(WorkGroupLog::getEarthquakeId, eqId).apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + requestParams + "%").or().like(WorkGroupLog::getEarthquakeId, eqId).like(WorkGroupLog::getWorkGroup, requestParams).or().like(WorkGroupLog::getEarthquakeId, eqId).like(WorkGroupLog::getReportDepartment, requestParams).or().like(WorkGroupLog::getEarthquakeId, eqId).like(WorkGroupLog::getWorkStatus, requestParams).or().like(WorkGroupLog::getEarthquakeId, eqId).like(WorkGroupLog::getWorkIssues, requestParams).or().like(WorkGroupLog::getEarthquakeId, eqId).like(WorkGroupLog::getRequirementList, requestParams);
         }
 
         if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
 
             // 按名称模糊查询
             if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
-                queryWrapper.like(WorkGroupLog::getEarthquakeAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
-                        .eq(WorkGroupLog::getEarthquakeId, eqId);
+                queryWrapper.like(WorkGroupLog::getEarthquakeAreaName, requestBTO.getFormVO().getEarthquakeAreaName()).eq(WorkGroupLog::getEarthquakeId, eqId);
             }
 
             // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
@@ -135,8 +117,7 @@ public class WorkGroupLogServiceImpl extends
                 LocalDateTime startDate = LocalDateTime.parse(dates[0], DateTimeFormatter.ISO_DATE_TIME);
                 LocalDateTime endDate = LocalDateTime.parse(dates[1], DateTimeFormatter.ISO_DATE_TIME);
 
-                queryWrapper.between(WorkGroupLog::getSubmissionDeadline, startDate, endDate)
-                        .eq(WorkGroupLog::getEarthquakeId, eqId);
+                queryWrapper.between(WorkGroupLog::getSubmissionDeadline, startDate, endDate).eq(WorkGroupLog::getEarthquakeId, eqId);
             }
         }
 
@@ -147,9 +128,7 @@ public class WorkGroupLogServiceImpl extends
     public IPage getPage(RequestBTO requestBTO) {
         Page<WorkGroupLog> workGroupLogPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         String requestParam = requestBTO.getRequestParams();
-        LambdaQueryWrapper<WorkGroupLog> queryWrapper =
-                Wrappers.lambdaQuery(WorkGroupLog.class)
-                        .like(WorkGroupLog::getEarthquakeId, requestParam);
+        LambdaQueryWrapper<WorkGroupLog> queryWrapper = Wrappers.lambdaQuery(WorkGroupLog.class).like(WorkGroupLog::getEarthquakeId, requestParam);
         return this.page(workGroupLogPage, queryWrapper);
     }
 
@@ -158,9 +137,7 @@ public class WorkGroupLogServiceImpl extends
         String[] ids = requestBTO.getIds();
         List<WorkGroupLog> list;
         if (ids == null || ids.length == 0) {
-            list = this.list().stream()
-                    .sorted(Comparator.comparing(WorkGroupLog::getRecordTime, Comparator.nullsLast(Comparator.naturalOrder()))
-                            .reversed()).collect(Collectors.toList());
+            list = this.list().stream().sorted(Comparator.comparing(WorkGroupLog::getRecordTime, Comparator.nullsLast(Comparator.naturalOrder())).reversed()).collect(Collectors.toList());
         } else {
             list = this.listByIds(Arrays.asList(ids));
         }
@@ -210,22 +187,31 @@ public class WorkGroupLogServiceImpl extends
 
     // 根据上报部门返回上报信息统计数目
     public List<Map<String, Object>> getWorkGroupData(String eqId) {
-
         return workGroupLogMapper.getWorkGroupData(eqId);
     }
 
     public String getLastDeadlineDateTime(String eqId) {
-        WorkGroupLog selectOne = workGroupLogMapper.selectOne(new QueryWrapper<WorkGroupLog>()
-                .orderBy(true, false,"submission_deadline")
-                .eq("earthquake_id", eqId)
-                .last("LIMIT 1")
-        );
 
-        String lastDateTime = String.valueOf(selectOne.getSubmissionDeadline());
+        if (eqId == "" || eqId.isEmpty() || eqId.equals("")) {
+            return "";
+        }
 
-        log.info("lastDateTime->{}", lastDateTime);
+        try {
+            WorkGroupLog selectOne = workGroupLogMapper
+                    .selectOne(new QueryWrapper<WorkGroupLog>()
+                            .orderBy(true, false, "submission_deadline")
+                            .eq("earthquake_id", eqId)
+                            .last("LIMIT 1"));
+            String lastDateTime = String.valueOf(selectOne.getSubmissionDeadline());
+            log.info("lastDateTime->{}", lastDateTime);
 
-        return lastDateTime;
+            return lastDateTime;
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 
     //TODO 获取词云分词数据
