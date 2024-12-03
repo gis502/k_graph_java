@@ -1,10 +1,17 @@
 package com.ruoyi.common.utils.file;
 
 import java.io.*;
+import java.net.URI;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.ruoyi.common.constant.Constants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import com.ruoyi.common.config.RuoYiConfig;
@@ -12,6 +19,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
 import org.apache.commons.io.FilenameUtils;
+
 
 /**
  * 文件处理工具类
@@ -21,6 +29,30 @@ import org.apache.commons.io.FilenameUtils;
 public class FileUtils
 {
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
+
+    /**
+     * @author:  xiaodemos
+     * @date:  2024/12/2 22:45
+     * @description:
+     * @param relativeFilePath 相对路径
+     * @param saveDir 保存地址
+     *
+     * @return:
+     */
+    public static void downloadFile(String relativeFilePath, String saveDir) throws IOException, InterruptedException {
+        String baseUrl = Constants.HEAD_URL;
+        String fileUrl = baseUrl + relativeFilePath;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder(URI.create(fileUrl)).build();
+
+        HttpResponse<Path> response = client.send(request,
+                HttpResponse.BodyHandlers.ofFile(
+                        Paths.get(saveDir, relativeFilePath.substring(relativeFilePath.lastIndexOf("/") + 1))
+                ));
+
+        System.out.println("File downloaded to: " + response.body());
+    }
 
     public static void writeToFile(String fileName, String content) {
         try (BufferedWriter writer = new BufferedWriter(

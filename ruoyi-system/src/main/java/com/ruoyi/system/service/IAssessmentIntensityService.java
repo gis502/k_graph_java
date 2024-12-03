@@ -5,4 +5,5 @@ import com.ruoyi.system.domain.entity.AssessmentIntensity;
 
 
 public interface IAssessmentIntensityService extends IService<AssessmentIntensity> {
+
 }

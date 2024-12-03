@@ -33,6 +33,7 @@ public class WorkGroupLogController {
         hashMap.put("areaUploadData", areaUploadData);
 
         hashMap.put("workGroupData", workGroupData);
+
         hashMap.put("lastTime", lastDeadlineDateTime);
 
         AjaxResult wordCloudLib = getWordCloudLib(eqid);
@@ -46,9 +47,7 @@ public class WorkGroupLogController {
     @GetMapping("/getWordCloudLib")
     public AjaxResult getWordCloudLib(@RequestParam String eqId) {
 
-
         workGroupLogService.getWordCloudLib(eqId);
-
 
         return AjaxResult.success();
 
