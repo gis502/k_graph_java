@@ -16,6 +16,8 @@ import com.ruoyi.common.annotation.Log;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -196,6 +198,11 @@ public class EarthquakeListController {
         if (magnitude < 3 || magnitude > 10) {
             throw new IllegalArgumentException("震级必须在 3 到 10 之间");
         }
+        // 保留震级小数点后 1 位
+        BigDecimal magnitudeBigDecimal = new BigDecimal(magnitude);
+        magnitudeBigDecimal = magnitudeBigDecimal.setScale(1, RoundingMode.HALF_UP); // 保留 1 位小数
+
+        earthquakeList.setMagnitude(magnitudeBigDecimal.toString()); // 设置格式化后的震级
 
         // 深度验证
         String depthStr = earthquakeList.getDepth();
