@@ -1,20 +1,13 @@
 package com.ruoyi.web.api.service;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.exception.AsyncExecuteException;
 import com.ruoyi.common.exception.DataSaveException;
-import com.ruoyi.common.exception.ParamsIsEmptyException;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.file.FileUtils;
-import com.ruoyi.system.domain.dto.EqEventGetMapDTO;
-import com.ruoyi.system.domain.dto.EqEventGetReportDTO;
 import com.ruoyi.system.domain.dto.EqEventGetYxcDTO;
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.entity.*;
@@ -33,27 +26,9 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-
-import java.net.URI;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Resource;
-import java.util.List;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;

@@ -21,6 +21,4 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AssessmentResultServiceImpl extends ServiceImpl<AssessmentResultMapper, AssessmentResult> implements IAssessmentResultService {
 
-
-
 }
