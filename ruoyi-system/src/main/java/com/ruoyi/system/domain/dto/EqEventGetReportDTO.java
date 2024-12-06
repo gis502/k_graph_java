@@ -1,6 +1,7 @@
 package com.ruoyi.system.domain.dto;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -10,8 +11,8 @@ import lombok.Data;
  */
 
 @Data
+@Builder
 public class EqEventGetReportDTO {
-
 
     private String event;
     private String eqqueueId;

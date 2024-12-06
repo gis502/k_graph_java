@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author: xiaodemos
  * @date: 2024-11-27 2:49
- * @description: 乡镇级评估结果返回dto
+ * @description: 乡镇级评估结果返回vo
  */
 
 @Data

@@ -33,7 +33,7 @@ public class AssessmentOutput {
     @TableField(value = "file_extension")
     private String fileExtension; // 扩展名
     @TableField(value = "file_size")
-    private String fileSize; // 文件大小
+    private Double fileSize; // 文件大小
     @TableField(value = "source_file")
     private String sourceFile; // 文件路径
     @TableField(value = "local_source_file")

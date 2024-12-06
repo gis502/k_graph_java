@@ -173,7 +173,7 @@ public class ThirdPartyCommonApi {
      * @description: 获取地震专题图
      * @return: 返回专题图路径 List
      */
-    public String getSeismicEventGetGetMapByGet(EqEventGetMapDTO params) {
+    public String getSeismicEventGetMapByGet(EqEventGetMapDTO params) {
 
         String token = cacheTemplate.opsForValue().get("token");
 
