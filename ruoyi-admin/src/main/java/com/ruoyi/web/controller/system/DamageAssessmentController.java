@@ -1,27 +1,34 @@
 package com.ruoyi.web.controller.system;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.system.domain.dto.EqEventGetMapDTO;
+import com.ruoyi.system.domain.dto.EqEventGetReportDTO;
+import com.ruoyi.system.domain.dto.EqEventGetResultTownDTO;
 import com.ruoyi.system.domain.entity.BuildingDamage;
 import com.ruoyi.system.domain.entity.EconomicLoss;
 import com.ruoyi.system.domain.entity.SeismicIntensityCircle;
 import com.ruoyi.system.service.PersonDes2019Service;
 import com.ruoyi.system.service.SeismicIntensityCircleService;
-import com.ruoyi.system.service.SichuanPopdensityPointService;
 import com.ruoyi.system.service.YaanJsonService;
+import com.ruoyi.web.api.ThirdPartyCommonApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.system.mapper.EconomicLossMapper;
 import com.ruoyi.system.service.*;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 欢迎来到『灾损评估』
+ */
 @RestController
 @RequestMapping("/damageassessment")
 public class DamageAssessmentController {
@@ -37,6 +44,13 @@ public class DamageAssessmentController {
     @Autowired
     private EconomicLossService economicLossService;
 
+    private final ThirdPartyCommonApi thirdPartyCommonApi;
+
+    @Autowired
+    public DamageAssessmentController(ThirdPartyCommonApi thirdPartyCommonApi) {
+        this.thirdPartyCommonApi = thirdPartyCommonApi;
+    }
+
     @PostMapping("/saveIntensityCircle")
     @Log(title = "灾损评估-烈度圈", businessType = BusinessType.INSERT)
     public float saveIntensityCircle(@RequestBody List<Map<String, Object>> savecircles) {
@@ -45,11 +59,10 @@ public class DamageAssessmentController {
         List<SeismicIntensityCircle> circledata = seismicIntensityCircleService.selectCircleByEqid(eqid);
 //        System.out.println(circledata);
 //
-        if(circledata.size()!=0){
+        if (circledata.size() != 0) {
 //            System.out.println("数据库中该地震烈度圈已存在");
             return 1;
-        }
-        else{
+        } else {
             for (Map<String, Object> circle : savecircles) {
                 SeismicIntensityCircle seismicIntensityCircle = new SeismicIntensityCircle();
 
@@ -69,7 +82,7 @@ public class DamageAssessmentController {
         eqid = eqid.replace("\"", "");
         Map<String, Object> response = new HashMap<>();
         //震中烈度
-        Integer Centerintensity=seismicIntensityCircleService.selectCenterintensityByEqid(eqid);
+        Integer Centerintensity = seismicIntensityCircleService.selectCenterintensityByEqid(eqid);
         //查烈度圈最大圈外圈
         String circlestr = seismicIntensityCircleService.selectBigOutCircleByEqid(eqid);
         // 使用正则表达式匹配并提取所需的部分
@@ -77,22 +90,23 @@ public class DamageAssessmentController {
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(circlestr);
         //总伤亡人数评估
-        double casualAll=0;
-        String Outcir="";
+        double casualAll = 0;
+        String Outcir = "";
         if (m.find()) {
             Outcir = "CURVEPOLYGON(CIRCULARSTRING(" + m.group(1) + "))";  //取烈度圈最外面一圈
 
-            int count=personDes2019Service.getCountinCirle(Outcir); //是否有人口密度栅格落入烈度圈范围
-            if(count==0){casualAll=0;}
-            else{
-                double des=personDes2019Service.getavgdesinCirle(Outcir); //烈度圈中方平均人口密度
-                if(Centerintensity>8){  //烈度大于八度。人员密度中原来基础上加上150（公式）
-                    des=des+150;
+            int count = personDes2019Service.getCountinCirle(Outcir); //是否有人口密度栅格落入烈度圈范围
+            if (count == 0) {
+                casualAll = 0;
+            } else {
+                double des = personDes2019Service.getavgdesinCirle(Outcir); //烈度圈中方平均人口密度
+                if (Centerintensity > 8) {  //烈度大于八度。人员密度中原来基础上加上150（公式）
+                    des = des + 150;
                 }
                 double centerIntensityLog = Math.log(Centerintensity); //中心烈度
                 double peopleDesLog = Math.log(des); //烈度圈中方平均人口密度
                 //总人数 带入公式
-                casualAll= Math.round(
+                casualAll = Math.round(
                         Math.exp(
                                 Math.exp(
                                         3.1571892494732325 * centerIntensityLog +
@@ -102,15 +116,14 @@ public class DamageAssessmentController {
                         )
                 );
             }
-        }
-        else {
-            casualAll=0;
+        } else {
+            casualAll = 0;
         }
         response.put("casualAll", casualAll);
 
 
         //每个行政区权重计算
-        List<String> arrName=new ArrayList<>(Arrays.asList("雨城区", "名山区", "荥经县", "汉源县", "石棉县", "天全县", "芦山县", "宝兴县")); //行政区
+        List<String> arrName = new ArrayList<>(Arrays.asList("雨城区", "名山区", "荥经县", "汉源县", "石棉县", "天全县", "芦山县", "宝兴县")); //行政区
         double totalWeightedRatio = 0; // 所有区域的加权比率总和
         Map<String, Double> weightedRatios = new HashMap<>(); // 用于存储每个区县的加权比率
         Map<String, Double> populationRatios = new HashMap<String, Double>() {{  //人员占比
@@ -125,19 +138,17 @@ public class DamageAssessmentController {
         }};
 
         //
-        if(casualAll!=0){
+        if (casualAll != 0) {
 //            double sum=0;
 
             for (String item : arrName) {
-                String itemAreaStr=yaanJsonService.getAreaStr(item);
-                String intersectionArea=yaanJsonService.getintersectionArea(itemAreaStr,Outcir);  //行政区和烈度圈相交地面
-                if(intersectionArea=="POLYGON EMPTY"){  //不相交
+                String itemAreaStr = yaanJsonService.getAreaStr(item);
+                String intersectionArea = yaanJsonService.getintersectionArea(itemAreaStr, Outcir);  //行政区和烈度圈相交地面
+                if (intersectionArea == "POLYGON EMPTY") {  //不相交
 //                    response.put(item, 0);
                     weightedRatios.put(item, 0.0);
-                }
-
-                else{ //烈度圈与行政区相交
-                    double areaRatio=yaanJsonService.computeIntersectionRatio(intersectionArea,Outcir); //行政区和烈度圈相交比率
+                } else { //烈度圈与行政区相交
+                    double areaRatio = yaanJsonService.computeIntersectionRatio(intersectionArea, Outcir); //行政区和烈度圈相交比率
                     System.out.println("areaRatio");
                     System.out.println(areaRatio);
                     double populationRatio = populationRatios.getOrDefault(item, 0.0); //人员占比
@@ -157,17 +168,21 @@ public class DamageAssessmentController {
         System.out.println("totalWeightedRatio");
         System.out.println(totalWeightedRatio);
         //每个区县人员
-        if(totalWeightedRatio!=0){
-            double sum=0;
+        if (totalWeightedRatio != 0) {
+            double sum = 0;
             for (String item : arrName) {
                 double weightedRatio = weightedRatios.getOrDefault(item, 0.0); //人员占比
-                     double itemcasual=Math.round(weightedRatio*casualAll/totalWeightedRatio);  //比率乘以总人数
-                     sum+=itemcasual;
-                    response.put(item, itemcasual);
+                double itemcasual = Math.round(weightedRatio * casualAll / totalWeightedRatio);  //比率乘以总人数
+                sum += itemcasual;
+                response.put(item, itemcasual);
             }
-            if(sum==0){response.put("yaancasual", "无");}
-            else if(sum>casualAll){response.put("casualAll", sum);}
-            else {response.put("yaancasual", sum);}
+            if (sum == 0) {
+                response.put("yaancasual", "无");
+            } else if (sum > casualAll) {
+                response.put("casualAll", sum);
+            } else {
+                response.put("yaancasual", sum);
+            }
         }
 
 
@@ -185,16 +200,48 @@ public class DamageAssessmentController {
         return economicLossService.selectEconomicLossByEqid(eqid);
     }
 
-    @PostMapping("saveBuildingDamage")
+    @PostMapping("/saveBuildingDamage")
     public void saveBuildingDamage(@RequestBody List<Map<String, Object>> buildingDamageList) {
         buildingDamageService.saveBuildingDamage(buildingDamageList);
     }
 
-    @PostMapping("saveEconomicLoss")
+    @PostMapping("/saveEconomicLoss")
     public void saveEconomicLoss(@RequestBody List<Map<String, Object>> economicLossList) {
         economicLossService.saveEconomicLoss(economicLossList);
     }
 
+    /**
+     * 灾损接口调用，根据不同的type返回不同数据
+     * @param type
+     * @param params
+     * @return
+     */
+    @PostMapping("/getDA")
+    public String getDA(@RequestParam String type, @RequestBody Map<String, Object> params) {
+        // 使用 ObjectMapper 将 Map 转换为 DTO
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        switch (type) {
+            // 乡镇级专题数据
+            case "getTownResult" -> {
+                EqEventGetResultTownDTO resultTownDTO = objectMapper.convertValue(params, EqEventGetResultTownDTO.class);
+                return thirdPartyCommonApi.getSeismicEventGetGetResultTownByGet(resultTownDTO);
+            }
+            // 专题图
+            case "getMap" -> {
+                EqEventGetMapDTO mapDTO = objectMapper.convertValue(params, EqEventGetMapDTO.class);
+                return thirdPartyCommonApi.getSeismicEventGetMapByGet(mapDTO);
+            }
+            // 灾情报告
+            case "getReport" -> {
+                EqEventGetReportDTO reportDTO = objectMapper.convertValue(params, EqEventGetReportDTO.class);
+                return thirdPartyCommonApi.getSeismicEventGetReportByGET(reportDTO);
+            }
+            default -> {
+                return "无对应类型";
+            }
+        }
+    }
 }
 
 

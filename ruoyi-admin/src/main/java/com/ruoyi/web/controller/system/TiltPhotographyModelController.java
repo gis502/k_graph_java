@@ -162,4 +162,20 @@ public class TiltPhotographyModelController {
         return AjaxResult.success(resultList);
     }
 
+    //搜索
+    @GetMapping("/queryName")
+    public AjaxResult queryName(@RequestParam(value = "inputData", required = false) String inputData) {
+        LambdaQueryWrapper<Tiltphotographymodel> wrapper = new LambdaQueryWrapper<>();
+        if (inputData != null && !inputData.trim().isEmpty()) {
+            wrapper
+                    .like(Tiltphotographymodel::getName, inputData)
+                    .or()
+                    .apply("CAST(tz AS TEXT) LIKE {0}", "%" + inputData + "%") // 将 tz 转换为字符串
+                    .or()
+                    .apply("CAST(tze AS TEXT) LIKE {0}", "%" + inputData + "%"); // 将 tze 转换为字符串
+        }
+        List<Tiltphotographymodel> resultList = tiltphotographymodelService.list(wrapper);
+        return AjaxResult.success(resultList);
+    }
+
 }

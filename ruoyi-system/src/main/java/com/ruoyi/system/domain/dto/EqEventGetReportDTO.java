@@ -2,6 +2,8 @@ package com.ruoyi.system.domain.dto;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -17,7 +19,13 @@ public class EqEventGetReportDTO {
     private String event;
     private String eqqueueId;
 
-     public JSONObject toJSONObject() {
+    @JsonCreator
+    public EqEventGetReportDTO(@JsonProperty("event") String event, @JsonProperty("eqqueueId") String eqqueueId) {
+        this.event = event;
+        this.eqqueueId = eqqueueId;
+    }
+
+    public JSONObject toJSONObject() {
         // Create a JSONObject using FastJSON
         JSONObject jsonObject = new JSONObject();
 
