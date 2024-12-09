@@ -58,8 +58,8 @@ public class IdentityAuthentication {
             int expireIn = data.getInteger("expire_in");
             String token = data.getString("token");
 
-            log.info("获取到的token为：" + token);
-            log.info("token有效期为：" + expireIn);
+            // log.info("获取到的token为：" + token);
+            // log.info("token有效期为：" + expireIn);
 
             storeTokenInRedis(token, expireIn);
 
@@ -96,7 +96,8 @@ public class IdentityAuthentication {
 
         String authenticToken = getAuthenticToken();
 
-        log.info("Scheduled task completed: refreshed token: {}", authenticToken);
+        // log.info("Scheduled task completed: refreshed token: {}", authenticToken);
+        log.info("Scheduled task completed...");
 
     }
 
@@ -105,7 +106,6 @@ public class IdentityAuthentication {
      * @date:  2024/11/23 4:48
      * @description:  恢复到异常时
      * @param e 异常信息
-     *
      */
     @Recover
     public void recover(Exception e) {

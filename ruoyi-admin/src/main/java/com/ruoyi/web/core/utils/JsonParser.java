@@ -22,7 +22,6 @@ public class JsonParser {
 
     /**
      * 通用的 JSON 解析方法
-     *
      * @param jsonString 需要反序列化的 JSON 字符串
      * @param clazz      目标类型的 Class 对象
      * @param <T>        目标类型的类型参数

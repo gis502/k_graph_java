@@ -174,9 +174,8 @@ public class Constants
 
 
     public static final String USER_AGENT = "Mozilla/5.0";
-    public static final String HEAD_URL = "http://tq-test.xixily.com:10340/";
-    public static final String HEAD_URLs = "http://tq-test.xixily.com:10340";
-    public static final String FILE_FULL_NAME = "D:\\yaan_assessment_result\\";
+    public static final String HEAD_URL = "http://10.16.7.69";
+    public static final String FILE_FULL_NAME = "D:/yaan_assessment_result/";
 
 
 

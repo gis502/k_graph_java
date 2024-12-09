@@ -52,7 +52,7 @@ public class ThirdPartyHttpClients {
 
         try {
 
-            HttpPost httpPost = new HttpPost("http://tq-test.xixily.com:10340/api/open" + url);
+            HttpPost httpPost = new HttpPost("http://10.16.7.69/zaisun/api/open" + url);
 
             log.info("设置http post请求参数...");
 
@@ -134,9 +134,9 @@ public class ThirdPartyHttpClients {
 
             if (jsonBody != null) {
                 // 拼接URL，将参数添加到URL的查询部分
-                fullUrl = "http://tq-test.xixily.com:10340/api/open" + url + "?" + queryParams;
+                fullUrl = "http://10.16.7.69/zaisun/api/open" + url + "?" + queryParams;
             } else {
-                fullUrl = "http://tq-test.xixily.com:10340/api/open" + url;
+                fullUrl = "http://10.16.7.69/zaisun/api/open" + url;
             }
 
             HttpGet httpGet = new HttpGet(fullUrl);

@@ -108,8 +108,14 @@ public class ThirdPartyCommonApi {
      * @return: 返回地震评估批次编码 string
      */
     public String getSeismicEventReassessmentByPost(EqEventReassessmentDTO params) {
-        //TODO 暂时不用
-        return "";
+
+        String token = cacheTemplate.opsForValue().get("token");
+
+        JSONObject jsonBody = params.toJSONObject();
+
+        String res = httpClientService.doPost(token, "/eqevent/reassessment", jsonBody);
+
+        return res;
     }
 
     /**

@@ -152,8 +152,8 @@ public class MQTTClientUtils {
         mqttClientUtils.subscribe("EEW/JSON/TEST/9897b507fe0143d6a0d05517781bbc7f", 0, messageCallbackListener);
         mqttClientUtils.subscribe("EQR/JSON/TEST/9897b507fe0143d6a0d05517781bbc7f", 0, messageCallbackListener);
         mqttClientUtils.subscribe("EEW/ACK", 0, messageCallbackListener);
-        mqttClientUtils.subscribe("testtopic/123", 0, messageCallbackListener);
 
+        mqttClientUtils.subscribe("testtopic/123", 0, messageCallbackListener);
 
 
     }

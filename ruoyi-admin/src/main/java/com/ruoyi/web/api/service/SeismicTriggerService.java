@@ -1,8 +1,5 @@
 package com.ruoyi.web.api.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mchange.v2.beans.BeansUtils;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.exception.*;
@@ -53,7 +50,7 @@ public class SeismicTriggerService {
     @Resource
     private AssessmentOutputServiceImpl assessmentOutputService;
 
-    public boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
+    private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
 
     /**
      * @param params 手动触发的地震事件参数
@@ -62,18 +59,20 @@ public class SeismicTriggerService {
      * @description: 地震事件触发时，将进行地震影响场、烈度圈、乡镇级、经济建筑人员伤亡的灾损评估。
      * 异步的将评估结果保存到数据库，并且下载灾情报告和专题图到本地，路径存储到数据库中。
      * 触发的地震数据将同步到双方的数据库中。
+     * @return 返回各数据保存是否成功的状态码，如果返回false，表示数据保存失败，如果返回true，表示数据保存成功
      */
     @Transactional(rollbackFor = Exception.class)
-    public void seismicEventTrigger(EqEventTriggerDTO params) {
+    public boolean seismicEventTrigger(EqEventTriggerDTO params) {
         String eqqueueId = null;
         try {
             // 把前端上传的数据保存到第三方数据库中
-            eqqueueId = handleThirdPartySeismicTrigger(params);
-            eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
+            // eqqueueId = handleThirdPartySeismicTrigger(params);
+            // eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
+            eqqueueId = "T2024110313362251182600";
 
             // 如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
             if (StringUtils.isEmpty(eqqueueId)) {
-                throw new ParamsIsEmptyException(MessageConstants.RETURN_PARAMS_IS_EMPTY);
+                throw new ParamsIsEmptyException(MessageConstants.RETURN_IS_EMPTY);
             }
 
             // 数据插入到第三方数据库成功后，插入到本地数据库
@@ -90,6 +89,9 @@ public class SeismicTriggerService {
 
             // 异步获取灾情报告评估结果
             handleDisasterReportAssessment(params, eqqueueId);
+
+            // 返回每个阶段的保存数据状态
+            return isSaved();
 
         } catch (Exception ex) {
             // 如果事务回滚，执行补偿机制，重新保存到第三方接口
@@ -152,6 +154,10 @@ public class SeismicTriggerService {
             String fileJsonstring = future.get();  // 等待异步任务完成并获取返回结果
             String filePath = JsonParser.parseJsonToFileField(fileJsonstring);
 
+            if (filePath == "" | filePath.isEmpty() || filePath.equals("")) {
+                throw new ResultNullPointException(MessageConstants.RETURN_IS_EMPTY);
+            }
+
             saveIntensity(params, filePath, eqqueueId, "geojson");  // 把数据插入到己方数据库
 
             FileUtils.downloadFile(filePath, Constants.FILE_FULL_NAME);     // 下载文件并保存到本地
@@ -176,10 +182,16 @@ public class SeismicTriggerService {
         try {
 
             String seismicEventResultTown = future.get();  // 等待异步任务完成并获取返回结果
+
             ResultEventGetResultTownDTO resultEventGetResultTownDTO = JsonParser.parseJson(
                     seismicEventResultTown,
                     ResultEventGetResultTownDTO.class);
+
             List<ResultEventGetResultTownVO> eventGetResultTownDTOData = resultEventGetResultTownDTO.getData();
+
+            if (eventGetResultTownDTOData.size() == MessageConstants.RESULT_ZERO) {
+                throw new ResultNullPointException(MessageConstants.RETURN_IS_EMPTY);
+            }
 
             saveTownResult(eventGetResultTownDTOData);  // 保存到己方数据库
 
@@ -206,6 +218,10 @@ public class SeismicTriggerService {
             ResultEventGetMapDTO resultEventGetMapDTO = JsonParser.parseJson(eventGetMap, ResultEventGetMapDTO.class);
             List<ResultEventGetMapVO> eventGetMapDTOData = resultEventGetMapDTO.getData();
 
+            if (eventGetMapDTOData.size() == MessageConstants.RESULT_ZERO ){
+                throw new ResultNullPointException(MessageConstants.RETURN_IS_EMPTY);
+            }
+
             saveMap(eventGetMapDTOData, params.getEvent());  // 保存到己方数据库
 
         } catch (InterruptedException | ExecutionException e) {
@@ -229,9 +245,13 @@ public class SeismicTriggerService {
 
             String eventGetReport = stringCompletableFutureByEventGetReport.get();// 等待异步任务完成并获取返回结果
             ResultEventGetReportDTO resultEventGetReportDTO = JsonParser.parseJson(eventGetReport, ResultEventGetReportDTO.class);
-            List<ResultEventGetReportVO> eventGetMapDTOData = resultEventGetReportDTO.getData();
+            List<ResultEventGetReportVO> eventGetReportDTOData = resultEventGetReportDTO.getData();
 
-            saveReport(eventGetMapDTOData, params.getEvent());  // 保存到己方数据库
+            if (eventGetReportDTOData.size() == MessageConstants.RESULT_ZERO ){
+                throw new ResultNullPointException(MessageConstants.RETURN_IS_EMPTY);
+            }
+
+            saveReport(eventGetReportDTOData, params.getEvent());  // 保存到己方数据库
 
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -478,24 +498,12 @@ public class SeismicTriggerService {
         });
     }
 
-
     /**
-     * @param asyncIntensity 保存地震影响场数据状态
-     * @param asyncTown 保存乡镇级评估结果数据状态
-     * @param asyncOutputMap  保存专题图产出数据状态
-     * @param asyncOutputReport 保存灾情报告数据状态
      * @author: xiaodemos
      * @date: 2024/12/6 13:19
      * @description: 用于判断地震触发后获取到的灾损评估数据是否保存到己方数据库成功
      * @return: 返回True 或者 False
      */
-
-    public boolean isSaved(boolean asyncIntensity,
-                           boolean asyncTown,
-                           boolean asyncOutputMap,
-                           boolean asyncOutputReport) {
-
-        return asyncIntensity && asyncTown && asyncOutputMap && asyncOutputReport;
-    }
+    public boolean isSaved() { return asyncIntensity && asyncTown && asyncOutputMap && asyncOutputReport; }
 
 }

@@ -2,6 +2,7 @@ package com.ruoyi.system.domain.dto;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.time.format.DateTimeFormatter;
  */
 
 @Data
+@Builder
 public class EqEventTriggerDTO {
 
     private String event;   //地震事件编码

@@ -22,6 +22,7 @@ public class MessageCallbackListener implements IMqttMessageListener, MqttCallba
     @Resource
     private MQTTClientUtils mqttClientUtils;
 
+
     @Override
     public void connectionLost(Throwable throwable) {
 
@@ -37,6 +38,7 @@ public class MessageCallbackListener implements IMqttMessageListener, MqttCallba
         System.out.println("收到消息：" + topic + ", 消息内容是：" + messageBody);
 
         FileUtils.writeToFile("D:/mqtt/message.txt", "收到消息：" + topic + ", 消息内容是：" + messageBody);
+
 
     }
 

@@ -39,7 +39,7 @@ public class FileUtils {
 
 
     /**
-     * @param fileUrl  文件的完整下载路径
+     * @param fileUrl 文件的完整下载路径
      * @throws IOException 如果下载过程中发生错误
      * @author: xiaodemos
      * @date: 2024/12/2 22:45
@@ -48,15 +48,16 @@ public class FileUtils {
      */
     public static void downloadFile(String fileUrl, String baseSavePath) throws IOException {
         // 构建完整的下载路径
-        String fullDownloadPath = Constants.HEAD_URLs + fileUrl;
+        String fullDownloadPath = Constants.HEAD_URL + fileUrl;
         URL url = new URL(fullDownloadPath);
         URLConnection connection = url.openConnection();
         connection.connect();
 
         // 从URL中提取文件名
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+
         // 使用年月日的方式创建分层文件夹
-        String saveDir = baseSavePath; // 确保baseSavePath以斜杠开头
+        String saveDir = baseSavePath + fileName; // 确保baseSavePath以斜杠开头
         // 创建文件夹
         new File(saveDir).mkdirs();
 
@@ -71,7 +72,7 @@ public class FileUtils {
             while ((count = inputStream.read(data)) != -1) {
                 fileOutputStream.write(data, 0, count);
             }
-        } // try-with-resources语句会自动关闭资源
+        }
     }
 
     public static void writeToFile(String fileName, String content) {
