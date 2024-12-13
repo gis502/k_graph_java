@@ -1,5 +1,6 @@
 package com.ruoyi.common.utils;
 
+
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
