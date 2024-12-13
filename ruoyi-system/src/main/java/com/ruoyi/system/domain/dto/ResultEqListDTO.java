@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 
 
 @Data
+@Builder
 public class ResultEqListDTO {
 
     private String eqId;
@@ -39,7 +40,7 @@ public class ResultEqListDTO {
     // 震源深度
     private String depth;
     // 地震发生时间
-    private LocalDateTime occurrenceTime;
+    private String occurrenceTime;
     // 地震类型（Z正式，Y演练，T测试）
     private String eqType;
     // 来源（0:12322、1:手动触发）
@@ -54,6 +55,7 @@ public class ResultEqListDTO {
     private String type;
 
     private Double longitude;
+
     private Double latitude;
 
 }

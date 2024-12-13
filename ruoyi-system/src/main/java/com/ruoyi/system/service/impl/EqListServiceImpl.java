@@ -5,15 +5,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.system.domain.bto.QueryParams;
 import com.ruoyi.system.domain.dto.EqEventDTO;
+import com.ruoyi.system.domain.dto.ResultEqListDTO;
 import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.IEqListService;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -61,22 +61,52 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
      * @description: 返回所有eqlist中的数据
      * @return: 返回所有eqlist中的数据
      */
-    public List<EqList> eqEventGetList(QueryParams queryParams) {
+    public List<ResultEqListDTO> eqEventGetList(QueryParams queryParams) {
 
         Page<EqList> pages = new Page<>(queryParams.getPageNum(), queryParams.getPageSize());
 
-        LambdaQueryWrapper<EqList> wrapper = Wrappers
-                .lambdaQuery(EqList.class)
-                .eq(EqList::getIsDeleted, 0);
+        LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(EqList::getIsDeleted, 0);
 
         Page<EqList> listPage = eqListMapper.selectPage(pages, wrapper);
 
-        log.info("请求参数：{}",listPage);
-
-
         List<EqList> records = listPage.getRecords();
 
-        return records;
+        List<ResultEqListDTO> dtos = new ArrayList<>(); //创建Dto对象
+
+        log.info("records 数据：{}",records);
+
+        for (EqList record : records) {
+
+            Geometry geom = record.getGeom();
+            double longitude = geom.getCoordinate().x;
+            double latitude = geom.getCoordinate().y;
+
+            ResultEqListDTO dto = ResultEqListDTO.builder()
+                    .longitude(longitude)
+                    .latitude(latitude)
+                    .depth(record.getDepth())
+                    .eqAddrCode(record.getEqAddrCode())
+                    .source(record.getSource())
+                    .eqType(record.getEqType())
+                    .occurrenceTime(record.getOccurrenceTime())
+                    .pac(record.getPac())
+                    .earthquakeFullName(record.getEarthquakeFullName())
+                    .earthquakeName(record.getEarthquakeName())
+                    .eqAddr(record.getEqAddr())
+                    .eqId(record.getEqId())
+                    .eqqueueId(record.getEqqueueId())
+                    .intensity(record.getIntensity())
+                    .magnitude(record.getMagnitude())
+                    .townCode(record.getTownCode())
+                    .type(record.getType())
+
+                    .build();
+
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 
     /**
@@ -86,18 +116,29 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
      * @description: 根据事件编码查询地震的详情信息
      * @return:
      */
-    public EqList eqEventGetDetailsInfo(EqEventDTO dto) {
+    public ResultEqListDTO eqEventGetDetailsInfo(EqEventDTO dto) {
 
-        LambdaQueryWrapper wrapper = Wrappers
-                .lambdaQuery(EqList.class)
-                .like(EqList::getEqId, dto.getEqId())
-                .or().like(EqList::getEqqueueId, dto.getEqqueueId())
-                .ge(EqList::getMagnitude, 4) //大于四级的地震
-                .eq(EqList::getIsDeleted, 0);
+        LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper();
+
+        wrapper.ge(EqList::getMagnitude, 4); //大于四级的地震
+        wrapper.eq(EqList::getIsDeleted, 0);
+        wrapper.like(EqList::getEqId, dto.getEqId());
+        wrapper.or().like(EqList::getEqqueueId, dto.getEqqueueId());
 
         EqList eq = eqListMapper.selectOne(wrapper);
 
-        return eq;
+        Geometry geom = eq.getGeom();
+        double longitude = geom.getCoordinate().x;
+        double latitude = geom.getCoordinate().y;
+
+        ResultEqListDTO listDTO = ResultEqListDTO.builder().longitude(longitude)
+                .longitude(longitude)
+                .latitude(latitude)
+                .build();
+
+        BeanUtils.copyBeanProp(eq, listDTO);
+
+        return listDTO;
     }
 
 }

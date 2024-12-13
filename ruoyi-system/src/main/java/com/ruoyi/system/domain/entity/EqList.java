@@ -56,7 +56,7 @@ public class EqList {
     private String depth;
     // 地震发生时间
     @TableField(value = "occurrence_time")
-    private LocalDateTime occurrenceTime;
+    private String occurrenceTime;
     // 地震类型（Z正式，Y演练，T测试）
     @TableField(value = "eq_type")
     private String eqType;
@@ -77,20 +77,7 @@ public class EqList {
     private String type;
     @TableField(value = "is_deleted")
     private Integer isDeleted;
-    @TableField(exist= false)
-    private Double longitude;
-    @TableField(exist= false)
-    private Double latitude;
 
-    public void setGeom(Geometry geom) {
-        this.geom = geom;
-        if (geom != null) {
-            this.longitude = geom.getCoordinate().x;
-            this.latitude = geom.getCoordinate().y;
-        } else {
-            this.longitude = null;
-            this.latitude = null;
-        }
-    }
+
 
 }

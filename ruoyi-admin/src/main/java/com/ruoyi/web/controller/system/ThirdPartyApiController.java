@@ -101,9 +101,7 @@ public class ThirdPartyApiController {
     @GetMapping("/eq/list")
     public AjaxResult eqEventGetList(@RequestBody QueryParams queryParams) {
 
-        log.info("请求参数：{}",queryParams);
-
-        List<EqList> lists = eqListService.eqEventGetList(queryParams);
+        List<ResultEqListDTO> lists = eqListService.eqEventGetList(queryParams);
 
         return AjaxResult.success(lists);
     }
@@ -118,9 +116,9 @@ public class ThirdPartyApiController {
     @GetMapping("/eq/info")
     public AjaxResult eqEventGetDetailsInfo(@RequestBody EqEventDTO dto) {
 
-        EqList eqList = eqListService.eqEventGetDetailsInfo(dto);
+        ResultEqListDTO resultEqListDTO = eqListService.eqEventGetDetailsInfo(dto);
 
-        return AjaxResult.success(eqList);
+        return AjaxResult.success(resultEqListDTO);
     }
 
     /**

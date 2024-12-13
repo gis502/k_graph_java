@@ -467,7 +467,7 @@ public class SeismicTriggerService {
                 .geom(point)
                 .depth(resultEventGetPageVO.getEqDepth().toString())
                 .magnitude(resultEventGetPageVO.getEqMagnitude())
-                //.occurrenceTime(params.getEqTime())     //这里是上传dto时保存的地震时间
+                .occurrenceTime(params.getEqTime())     //这里是上传dto时保存的地震时间
                 .pac("")
                 .type("")
                 .isDeleted(0)
