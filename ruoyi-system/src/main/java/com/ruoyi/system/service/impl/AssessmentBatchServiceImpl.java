@@ -31,16 +31,21 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
      * @description: 对地震批次进行更新
      * @return: 对数据变更是否成功
      */
-//    public boolean updateBatchState(String state){
-//
-//        AssessmentBatch.builder()
-//                .state(state)
-//                .build();
-//
-//        assessmentBatchMapper.update();
-//
-//        return true;
-//    }
+    public boolean updateBatchState(String eqId, String eqqueueId, int state) {
+
+        AssessmentBatch batch = AssessmentBatch.builder()
+                .eqId(eqId)
+                .eqqueueId(eqqueueId)
+                .state(state)
+                .build();
+
+        int updated = assessmentBatchMapper.update(batch,
+                new LambdaQueryWrapper<>(batch)
+                        .eq(AssessmentBatch::getEqId, eqId)
+        );
+
+        return updated > 0 ? true : false;
+    }
 
     /**
      * @param params 更新的地震数据
@@ -56,6 +61,26 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
         AssessmentBatch assessmentBatch = assessmentBatchMapper.selectOne(wrapper);
 
         return assessmentBatch.getBatch();
+    }
+
+    /**
+     * @param event 地震事件编码
+     * @author: xiaodemos
+     * @date: 2024/12/10 9:47
+     * @description: 对批次表的数据进行逻辑删除
+     * @return: 返回删除的状态
+     */
+    public Boolean deletedBatchData(String event) {
+
+        LambdaQueryWrapper<AssessmentBatch> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AssessmentBatch::getEqId, event);
+
+        int flag = assessmentBatchMapper.update(AssessmentBatch
+                .builder()
+                .isDeleted(1)
+                .build(), wrapper);
+
+        return flag > 0 ? true : false;
     }
 
 }

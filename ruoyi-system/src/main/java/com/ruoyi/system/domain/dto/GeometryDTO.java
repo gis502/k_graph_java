@@ -9,7 +9,6 @@ public class GeometryDTO {
     @JsonDeserialize(using = PointDeserializer.class)
     private Point point;
 
-
     public Point getPoint() {
         return point;
     }

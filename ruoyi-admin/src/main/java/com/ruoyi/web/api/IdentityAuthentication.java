@@ -58,8 +58,8 @@ public class IdentityAuthentication {
             int expireIn = data.getInteger("expire_in");
             String token = data.getString("token");
 
-            // log.info("获取到的token为：" + token);
-            // log.info("token有效期为：" + expireIn);
+            log.info("获取到的token为：" + token);
+            log.info("token有效期为：" + expireIn);
 
             storeTokenInRedis(token, expireIn);
 

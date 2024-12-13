@@ -8,14 +8,15 @@ public class MessageConstants {
     public static final String RETURN_IS_EMPTY = "返回结果为空";
     public static final String DATA_SAVE_FAILED = "数据插入异常";
     public static final String FILE_DOWNLOAD_ERROR = "文件下载失败";
-    public static final String SEISMIC_TRIGGER_SUCCESS = "地震触发成功";
-    public static final String SEISMIC_REASSESSMENT_SUCCESS = "重新启动评估成功";
+    public static final String SEISMIC_TRIGGER_SUCCESS = "地震触发成功，正在进行灾损评估中...";
+    public static final String SEISMIC_REASSESSMENT_SUCCESS = "重新启动评估成功，正在进行灾损评估中...";
     public static final String JJR_ASYNC_EXECUTE_ERROR = "经济、建筑、人员伤亡 在进行灾损评估的异步执行任务时出错";
     public static final String YXC_ASYNC_EXECUTE_ERROR = "地震影响场 在进行灾损评估的异步执行任务时出错";
     public static final String XZ_ASYNC_EXECUTE_ERROR = "乡镇级 在进行灾损评估的异步执行任务时出错";
     public static final String ZTT_ASYNC_EXECUTE_ERROR = "专题图 在进行灾损评估的异步执行任务时出错";
     public static final String BG_ASYNC_EXECUTE_ERROR = "灾情报告 在进行灾损评估的异步执行任务时出错";
     public static final String THIRD_PARTY_API_ERROR = "调用第三方接口时失败，请重试";
+    public static final String SEISMIC_DELETED_ERROR = "删除地震数据失败";
 
     // 功能条件：1，搜索  2，筛选
     public static final Integer CONDITION_SEARCH = 1;

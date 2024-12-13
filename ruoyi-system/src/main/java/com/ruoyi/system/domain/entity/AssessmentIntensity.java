@@ -31,6 +31,7 @@ public class AssessmentIntensity {
     private String localFile; // 本地文件路径
     @TableField(value = "file_type")
     private String fileType; // 文件类型
-
+    @TableField(value = "is_deleted")
+    private Integer isDeleted;
 
 }

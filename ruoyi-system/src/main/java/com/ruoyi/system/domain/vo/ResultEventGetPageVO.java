@@ -24,7 +24,7 @@ public class ResultEventGetPageVO {
     @JsonProperty("latitude")
     private Double latitude;
     @JsonProperty("eqMagnitude")
-    private Double eqMagnitude;
+    private String eqMagnitude;
     @JsonProperty("eqDepth")
     private Double eqDepth;
     @JsonProperty("eqFullName")

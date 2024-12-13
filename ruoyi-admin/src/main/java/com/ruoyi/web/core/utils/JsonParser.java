@@ -7,6 +7,8 @@ import com.ruoyi.system.domain.dto.ResultEventGetReportDTO;
 import com.ruoyi.system.domain.dto.ResultEventGetResultTownDTO;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author: xiaodemos
@@ -88,6 +90,46 @@ public class JsonParser {
         }
     }
 
+    /**
+     * @author:  xiaodemos
+     * @date:  2024/12/10 9:25
+     * @description: 删除第三方的数据，是否删除成功
+     * @param jsonString 第三方接口取到的json数据
+     * @return: 返回解析的第三方bool值
+     */
+    public static boolean parseJsonToBooleanField(String jsonString) {
+        // 创建ObjectMapper实例
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // 解析JSON字符串为JsonNode对象
+            JsonNode rootNode = objectMapper.readTree(jsonString);
+
+            // 获取 "data" 对象下的 "eqqueueId" 字段
+            boolean flag = rootNode.path("data").asBoolean();// 获取data节点
+
+            return flag;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String parseJsonToObjectField(String jsonString) {
+        // 创建ObjectMapper实例
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // 解析JSON字符串为JsonNode对象
+            JsonNode rootNode = objectMapper.readTree(jsonString);
+
+            // 获取 "data" 对象下的 "eqqueueId" 字段
+            String flag = rootNode.path("data").asText();// 获取data节点
+
+            return flag;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
 
 }

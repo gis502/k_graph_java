@@ -1,14 +1,21 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.constant.MessageConstants;
-import com.ruoyi.system.domain.dto.EqEventReassessmentDTO;
+import com.ruoyi.system.domain.bto.QueryParams;
+import com.ruoyi.system.domain.dto.*;
+import com.ruoyi.system.domain.entity.AssessmentIntensity;
+import com.ruoyi.system.domain.entity.AssessmentOutput;
+import com.ruoyi.system.domain.entity.AssessmentResult;
+import com.ruoyi.system.domain.entity.EqList;
+import com.ruoyi.system.service.impl.AssessmentIntensityServiceImpl;
+import com.ruoyi.system.service.impl.AssessmentOutputServiceImpl;
+import com.ruoyi.system.service.impl.AssessmentResultServiceImpl;
+import com.ruoyi.system.service.impl.EqListServiceImpl;
 import com.ruoyi.web.api.service.SeismicReassessmentService;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.web.api.service.SeismicTriggerService;
-import com.ruoyi.system.domain.dto.EqEventGetMapDTO;
-import com.ruoyi.system.domain.dto.EqEventGetReportDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -24,7 +32,6 @@ import javax.annotation.Resource;
  * @date: 2024-11-24 14:15
  * @description: 第三方接口API控制层
  */
-
 
 @Slf4j
 @RestController
@@ -35,6 +42,14 @@ public class ThirdPartyApiController {
     private SeismicTriggerService seismicTriggerService;
     @Resource
     private SeismicReassessmentService seismicReassessmentService;
+    @Resource
+    private AssessmentResultServiceImpl assessmentResultService;
+    @Resource
+    private AssessmentIntensityServiceImpl assessmentIntensityService;
+    @Resource
+    private AssessmentOutputServiceImpl assessmentOutputService;
+    @Resource
+    private EqListServiceImpl eqListService;
 
     /**
      * @param params 触发的地震数据
@@ -72,28 +87,114 @@ public class ThirdPartyApiController {
      * @return: 返回一场地震的所有批次数据
      */
     @GetMapping("/batch/version")
-    public AjaxResult eqEventBatchList(String event) {
+    public AjaxResult eqEventBatchList(@RequestBody String event) {
         // TODO write your code in here
         return AjaxResult.success();
     }
 
-
     /**
-     * 获取灾情报告和专题图
+     * @author: xiaodemos
+     * @date: 2024/12/10 23:05
+     * @description: 分页查询地震列表数据
+     * @return: 返回eqlist表的所有数据
      */
-    @GetMapping("/getReportandmap")
-    public String getReport(@RequestBody EqEventGetReportDTO eqEventGetReportDTO) {
-        //需要返回前端我灾情报告的本地储存地址
+    @GetMapping("/eq/list")
+    public AjaxResult eqEventGetList(@RequestBody QueryParams queryParams) {
 
-        return null;
+        log.info("请求参数：{}",queryParams);
+
+        List<EqList> lists = eqListService.eqEventGetList(queryParams);
+
+        return AjaxResult.success(lists);
     }
 
     /**
-     * 获取专题图
+     * @param dto 前端查询的参数
+     * @author: xiaodemos
+     * @date: 2024/12/12 17:42
+     * @description: 查询某一场地震的详细信息
+     * @return: 返回一场地震的信息
      */
-    @GetMapping("/getReport")
-    public String getReport(@RequestBody EqEventGetMapDTO eqEventGetMapDTO) {
-        return null;
+    @GetMapping("/eq/info")
+    public AjaxResult eqEventGetDetailsInfo(@RequestBody EqEventDTO dto) {
+
+        EqList eqList = eqListService.eqEventGetDetailsInfo(dto);
+
+        return AjaxResult.success(eqList);
+    }
+
+    /**
+     * @param dto 前端查询的参数
+     * @author: xiaodemos
+     * @date: 2024/12/12 20:38
+     * @description: 批量查询专题图数据
+     * @return: 返回专题数据（人员伤亡、经济损失、建筑破坏）的评估结果
+     */
+    @GetMapping("/eq/assessment")
+    public AjaxResult eqEventSpecialData(@RequestBody EqEventDTO dto) {
+
+        List<AssessmentResult> results = assessmentResultService.eqEventSpecialData(dto);
+
+        return AjaxResult.success(results);
+    }
+
+    /**
+     * @param dto 前端查询的参数
+     * @author: xiaodemos
+     * @date: 2024/12/12 20:47
+     * @description: 根据Id查询影响场的一条数据
+     * @return: 返回（单体查询）影响场（烈度圈）的数据
+     */
+    @GetMapping("/eq/intensity")
+    public AjaxResult eqEventIntensityData(@RequestBody EqEventDTO dto) {
+
+        AssessmentIntensity intensity = assessmentIntensityService.eqEventIntensityData(dto);
+
+        return AjaxResult.success(intensity);
+    }
+
+    /**
+     * @param dto 前端查询的参数
+     * @author: xiaodemos
+     * @date: 2024/12/12 20:56
+     * @description: 批量查询专题图和灾情报告
+     * @return: （批量查询）专题图与灾情报告
+     */
+    @GetMapping("/eq/output/map")
+    public AjaxResult eqEventOutputMapData(@RequestBody EqEventDTO dto) {
+
+        List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputMapData(dto);
+
+        return AjaxResult.success(outputs);
+    }
+
+    /**
+     * @param dto 前端查询的参数
+     * @author: xiaodemos
+     * @date: 2024/12/12 21:11
+     * @description: 批量查询专题图和灾情报告
+     * @return: （批量查询）专题图与灾情报告
+     */
+    @GetMapping("/eq/output/report")
+    public AjaxResult eqEventOutputReportData(@RequestBody EqEventDTO dto) {
+
+        List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputReportData(dto);
+
+        return AjaxResult.success(outputs);
+    }
+
+
+    /**
+     * @author: xiaodemos
+     * @date: 2024/12/12 17:15
+     * @description: 拼接成 日期 地震 震级 的字符串
+     * @return: 返回拼接的数据
+     */
+    public AjaxResult eqEventGetSelectData() {
+
+        // eqListService.eqEventGetSelectData();
+
+        return AjaxResult.success();
     }
 
 }

@@ -30,7 +30,7 @@ public class AssessmentBatch {
     private String type;
     // 评估状态（0未开始，1正在计算，2正常完成，3人工停止，4异常结束,5超时结束）
     @TableField(value = "state")
-    private String state;
+    private Integer state;
     // 逻辑删除状态（0正常，1删除）
     @TableField(value = "is_deleted")
     private Integer isDeleted;

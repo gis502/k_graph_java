@@ -42,7 +42,6 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class SeismicReassessmentService {
 
-
     @Resource
     private ThirdPartyCommonApi thirdPartyCommonApi;
     @Resource
@@ -283,7 +282,7 @@ public class SeismicReassessmentService {
         for (ResultEventGetReportVO res : eventGetReport) {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
                     // TODO 获取保存全路径
-                    .localSourceFile("").eqid(eqId).type("2").build();
+                    .localSourceFile("").eqId(eqId).type("2").build();
             BeanUtils.copyProperties(res, assessmentOutput);
 
             saveList.add(assessmentOutput);
@@ -313,7 +312,7 @@ public class SeismicReassessmentService {
         for (ResultEventGetMapVO res : eventGetMap) {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
                     // TODO 获取保存全路径
-                    .localSourceFile("").eqid(eqId).type("1").build();
+                    .localSourceFile("").eqId(eqId).type("1").build();
             BeanUtils.copyProperties(res, assessmentOutput);
 
             saveList.add(assessmentOutput);
@@ -340,7 +339,7 @@ public class SeismicReassessmentService {
         List<AssessmentResult> saveList = new ArrayList<>();
 
         for (ResultEventGetResultTownVO res : eventResult) {
-            AssessmentResult assessmentResult = AssessmentResult.builder().id(UUID.randomUUID().toString()).eqid(res.getEvent()).build();
+            AssessmentResult assessmentResult = AssessmentResult.builder().id(UUID.randomUUID().toString()).eqId(res.getEvent()).build();
             BeanUtils.copyProperties(res, assessmentResult);
 
             saveList.add(assessmentResult);
@@ -384,7 +383,7 @@ public class SeismicReassessmentService {
                 .eqqueueId(eqqueueId)
                 .eqId(params.getEvent())
                 .batch(batchVersion + 1)
-                .state("0")
+                .state(0)
                 .type("1")
                 .isDeleted(0)
                 .build();

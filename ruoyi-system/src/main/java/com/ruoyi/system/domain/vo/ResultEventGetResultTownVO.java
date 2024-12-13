@@ -33,7 +33,7 @@ public class ResultEventGetResultTownVO {
         @JsonProperty("pacName")
         private String pacName; // 乡镇名称
         @JsonProperty("buildingdamage")
-        private double buildingdamage; // 建筑破坏面积
+        private double buildingDamage; // 建筑破坏面积
         @JsonProperty("pop")
         private int pop; // 受灾人数
         @JsonProperty("death")
@@ -43,10 +43,10 @@ public class ResultEventGetResultTownVO {
         @JsonProperty("injury")
         private int injury; // 受伤人数
         @JsonProperty("buriedcount")
-        private int buriedcount; // 压埋人数
+        private int buriedCount; // 压埋人数
         @JsonProperty("resetNumber")
         private int resetNumber; // 需紧急安置人员
         @JsonProperty("economicloss")
-        private double economicloss; // 经济损失
+        private double economicLoss; // 经济损失
 
 }

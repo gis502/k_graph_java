@@ -21,7 +21,7 @@ public class AssessmentOutput {
     @TableField(value = "eqqueue_id")
     private String eqqueueId; // 地震评估批次编码
     @TableField(value = "eqid")
-    private String eqid; // 地震唯一标识符
+    private String eqId; // 地震唯一标识符
     @TableField(value = "code")
     private String code; // 产品编码
     @TableField(value = "pro_time")
@@ -44,6 +44,7 @@ public class AssessmentOutput {
     private String size; // 专题图尺寸（A3）
     @TableField(value = "type")
     private String type; // 产出类型（1:专题图，2：报告）
-
+    @TableField(value = "is_deleted")
+    private Integer isDeleted;
 
 }
