@@ -83,19 +83,22 @@ public class ThirdPartyCommonApi {
     }
 
     /**
-     * @param params 批次编码和事件编码
+     * @param event 批次编码和事件编码
      * @author: xiaodemos
      * @date: 2024/11/23 16:58
      * @description:
      * @return: 返回评估批次 List
      */
-    public String getSeismicEventGetBatchByGet(EqEventQuery params) {
+    public String getSeismicEventGetBatchByGet(String event) {
 
         String token = cacheTemplate.opsForValue().get("token");
 
-        JSONObject jsonBody = params.toJSONObject();
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("event",event);
 
         String res = httpClientService.doGet(token, "/eqevent/getBatch", jsonBody);
+
+        log.info("第三方返回的数据：" + res);
 
         return res;
     }

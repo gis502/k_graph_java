@@ -7,6 +7,7 @@ import com.ruoyi.system.domain.dto.EqEventReassessmentDTO;
 import com.ruoyi.system.domain.entity.AssessmentBatch;
 import com.ruoyi.system.mapper.AssessmentBatchMapper;
 import com.ruoyi.system.service.IAssessmentBatchService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,6 +19,7 @@ import java.util.Collection;
  * @description: 地震批次实现类
  */
 
+@Slf4j
 @Service
 public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMapper, AssessmentBatch> implements IAssessmentBatchService {
 
@@ -27,41 +29,43 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
 
     /**
      * @param eqId      事件编码
-     * @param eqqueueId 批次编码
      * @author: xiaodemos
      * @date: 2024/12/14 16:01
      * @description: 根据Id查询事件编码的评估批次进度
      * @return: 返回评估进度
      */
-    public AssessmentBatch selectBatchProgressByEqId(String eqId, String eqqueueId) {
+    public AssessmentBatch selectBatchProgressByEqId(String eqId) {
 
         LambdaQueryWrapper<AssessmentBatch> wrapper = Wrappers
                 .lambdaQuery(AssessmentBatch.class)
                 .eq(AssessmentBatch::getEqId, eqId)
-                .eq(AssessmentBatch::getEqqueueId, eqqueueId)
                 .eq(AssessmentBatch::getIsDeleted, 0);
 
-        return assessmentBatchMapper.selectOne(wrapper);
+        AssessmentBatch assessmentBatch = assessmentBatchMapper.selectOne(wrapper);
+
+        log.info("本地数据库查询到的进度信息：{}", assessmentBatch);
+
+        return  assessmentBatch;
     }
 
     /**
      * @param eqId      事件编码
-     * @param eqqueueId 批次编码
      * @param progress  评估进度
      * @author: xiaodemos
      * @date: 2024/12/14 15:54
      * @description: 更新批次表中的进度
      */
-    public void updateBatchProgress(String eqId, String eqqueueId, Double progress) {
+    public void updateBatchProgress(String eqId, Double progress) {
+
+        log.info("更新进度：{},{}", eqId, progress);
 
         AssessmentBatch batch = AssessmentBatch.builder()
                 .eqId(eqId)
-                .eqqueueId(eqqueueId)
                 .progress(progress)
                 .build();
 
         assessmentBatchMapper.update(batch,
-                new LambdaQueryWrapper<>(batch)
+                new LambdaQueryWrapper<AssessmentBatch>()
                         .eq(AssessmentBatch::getEqId, eqId)
         );
     }

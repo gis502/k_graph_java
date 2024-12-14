@@ -59,7 +59,7 @@ public class FileUtils {
         // TODO 去除 /profile前缀,目前演示是进行的代理，后期上线需要把这一句给删掉就ok
         fileName = fileName.substring(fileUrl.indexOf("/profile") + "/profile".length());
 
-        // 使用年月日的方式创建分层文件夹
+        // TODO 需要创建文件夹、以下载文件链接的名称来创建
         String saveDir = baseSavePath + fileName; // 确保baseSavePath以斜杠开头
         // 创建文件夹
         new File(saveDir).mkdirs();

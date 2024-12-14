@@ -15,7 +15,6 @@ import lombok.Data;
 public class EqEventQuery {
 
     private String event;
-    private String eqqueueId;
 
     public JSONObject toJSONObject() {
         // Create a JSONObject using FastJSON
@@ -23,7 +22,6 @@ public class EqEventQuery {
 
         // Put values into the JSON object
         jsonObject.put("event", event);
-        jsonObject.put("eqqueueId", eqqueueId);
 
         return jsonObject;
     }

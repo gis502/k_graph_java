@@ -7,6 +7,7 @@ import com.ruoyi.system.domain.vo.ResultEventGetBatchVO;
 import com.ruoyi.system.service.impl.AssessmentBatchServiceImpl;
 import com.ruoyi.web.api.ThirdPartyCommonApi;
 import com.ruoyi.web.core.utils.JsonParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 
 
-
+@Slf4j
 @Service
 public class SeismicAssessmentProcessesService {
 
@@ -28,27 +29,26 @@ public class SeismicAssessmentProcessesService {
     @Resource
     private AssessmentBatchServiceImpl assessmentBatchService;
 
-    public AssessmentBatch getSeismicAssessmentProcesses(EqEventQuery dto) {
+    public AssessmentBatch getSeismicAssessmentProcesses(String event) {
 
-        String jsonString = thirdPartyCommonApi.getSeismicEventGetBatchByGet(dto);
+        String jsonString = thirdPartyCommonApi.getSeismicEventGetBatchByGet(event);
 
         ResultEventGetBatchDTO resultEventGetBatchDTO = JsonParser.parseJson(jsonString, ResultEventGetBatchDTO.class);
         List<ResultEventGetBatchVO> eventGetBatchDTOData = resultEventGetBatchDTO.getData();
 
         for (ResultEventGetBatchVO resultEventGetBatchVO : eventGetBatchDTOData){
+
+            log.info("第三方返回的数据已被解析：" + resultEventGetBatchVO);
+
             // 存储到数据库
             assessmentBatchService.updateBatchProgress(
-                    dto.getEvent(),
-                    dto.getEqqueueId(),
+                    event,
                     resultEventGetBatchVO.getProgress());
 
         }
 
         // 直接返回查询批次的进度条
-        return assessmentBatchService.selectBatchProgressByEqId(
-                dto.getEvent(),
-                dto.getEqqueueId()
-        );
+        return assessmentBatchService.selectBatchProgressByEqId(event);
     }
 
 }

@@ -84,7 +84,7 @@ public class SeismicTriggerService {
 
             // 如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
             if (StringUtils.isEmpty(eqqueueId)) {
-                throw new ParamsIsEmptyException(MessageConstants.RETURN_IS_EMPTY);
+                throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
             }
 
             // 数据插入到第三方数据库成功后，插入到本地数据库
@@ -178,10 +178,15 @@ public class SeismicTriggerService {
     private String handleThirdPartySeismicTrigger(EqEventTriggerDTO params) {
 
         try {
+
             return thirdPartyCommonApi.getSeismicTriggerByPost(params);
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
             throw new ThirdPartyApiException(MessageConstants.THIRD_PARTY_API_ERROR);
+
         }
     }
 
@@ -206,15 +211,17 @@ public class SeismicTriggerService {
 
             String fileJsonstring = thirdPartyCommonApi.getSeismicEventGetYxcByGet(eventGetYxcDTO);
 
-            Double progress = getEventProgress(params.getEvent(), eqqueueId);
+            log.info("事件编码 -> {}",params.getEvent());
+
+            Double progress = getEventProgress(params.getEvent());
 
             while  (progress < 20.00) {
 
                 log.info("当前进度: {}%，等待达到20%再继续", progress);
 
-                Thread.sleep(3000);  // 3秒后重新请求
+                Thread.sleep(9000);  // 9秒后重新请求
 
-                progress = getEventProgress(params.getEvent(), eqqueueId);
+                progress = getEventProgress(params.getEvent());
 
             }
 
@@ -264,15 +271,15 @@ public class SeismicTriggerService {
 
             String seismicEventResultTown = thirdPartyCommonApi.getSeismicEventGetGetResultTownByGet(eqEventGetResultTownDTO);
 
-            Double progress = getEventProgress(params.getEvent(), eqqueueId);
+            Double progress = getEventProgress(params.getEvent());
 
             while  (progress < 40.00) {
 
                 log.info("当前进度: {}%，等待达到40%再继续", progress);
 
-                Thread.sleep(3000);  // 3秒后重新请求
+                Thread.sleep(9000);  // 9秒后重新请求
 
-                progress = getEventProgress(params.getEvent(), eqqueueId);
+                progress = getEventProgress(params.getEvent());
 
             }
 
@@ -322,15 +329,15 @@ public class SeismicTriggerService {
 
             String eventGetMap = thirdPartyCommonApi.getSeismicEventGetMapByGet(getMapDTO);
 
-            Double progress = getEventProgress(params.getEvent(), eqqueueId);
+            Double progress = getEventProgress(params.getEvent());
 
             while  (progress < 70.00) {
 
                 log.info("当前进度: {}%，等待达到70%再继续", progress);
 
-                Thread.sleep(3000);  // 3秒后重新请求
+                Thread.sleep(9000);  // 9秒后重新请求
 
-                progress = getEventProgress(params.getEvent(), eqqueueId);
+                progress = getEventProgress(params.getEvent());
 
             }
 
@@ -378,15 +385,15 @@ public class SeismicTriggerService {
 
             String eventGetReport = thirdPartyCommonApi.getSeismicEventGetReportByGET(getReportDTO);
 
-            Double progress = getEventProgress(params.getEvent(), eqqueueId);
+            Double progress = getEventProgress(params.getEvent());
 
             while  (progress < 80.00) {
 
                 log.info("当前进度: {}%，等待达到80%再继续", progress);
 
-                Thread.sleep(3000);  // 3秒后重新请求
+                Thread.sleep(9000);  // 9秒后重新请求
 
-                progress = getEventProgress(params.getEvent(), eqqueueId);
+                progress = getEventProgress(params.getEvent());
 
             }
 
@@ -585,8 +592,9 @@ public class SeismicTriggerService {
 
         // 写到earthquake_list表中，后期需要删除
         EarthquakeList earthquakeList = new EarthquakeList();
-        earthquakeList.setEqid(resultEventGetPageVO.getEvent());
+        earthquakeList.setEqid(UUID.fromString(resultEventGetPageVO.getEvent()).toString());
         earthquakeList.setEarthquakeName(resultEventGetPageVO.getEqName());
+        earthquakeList.setProvidingDepartment("");
         earthquakeList.setGeom(point);
         earthquakeList.setOccurrenceTime(LocalDateTime.parse(
                 params.getEqTime(),
@@ -594,6 +602,10 @@ public class SeismicTriggerService {
         ));
         earthquakeList.setMagnitude(resultEventGetPageVO.getEqMagnitude());
         earthquakeList.setDepth(resultEventGetPageVO.getEqDepth().toString());
+        earthquakeList.setIntensity("");
+        earthquakeList.setEpicenterName("");
+        earthquakeList.setCity("");
+        earthquakeList.setProvince("");
         earthquakeList.setEqqueueId(eqqueueId);
 
         earthquakeListServiceImpl.triggerEvent(earthquakeList);
@@ -626,19 +638,14 @@ public class SeismicTriggerService {
 
     /**
      * @param eqId      事件编码
-     * @param eqqueueId 批次编码
      * @author: xiaodemos
      * @date: 2024/12/14 16:09
      * @description: 根据Id查询这场评估结果的进度
      * @return: 返回批次进度
      */
-    public Double getEventProgress(String eqId, String eqqueueId) {
+    public Double getEventProgress(String eqId) {
 
-        AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(EqEventQuery.builder()
-                .event(eqId)
-                .eqqueueId(eqqueueId)
-                .build());
-
+        AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId);
         return processes.getProgress();
     }
 

@@ -175,6 +175,10 @@ public class Constants
     public static final String HEAD_URL = "http://10.16.7.69/zaisunimag";
     public static final String FILE_FULL_NAME = "D:/yaan_assessment_result/";
 
+    // 部署了换这个地址
+    public static final String PROMOTION_URL_HEAD = "http://172.26.86.82/zaisunimag";
+    public static final String PROMOTION_DOWNLOAD_PATH = "/data/image";
+
 
 
 }
