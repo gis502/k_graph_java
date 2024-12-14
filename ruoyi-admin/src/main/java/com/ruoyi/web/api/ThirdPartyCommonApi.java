@@ -2,6 +2,7 @@ package com.ruoyi.web.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.system.domain.dto.*;
+import com.ruoyi.system.domain.query.EqEventQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -82,18 +83,17 @@ public class ThirdPartyCommonApi {
     }
 
     /**
-     * @param event 批次编码
+     * @param params 批次编码和事件编码
      * @author: xiaodemos
      * @date: 2024/11/23 16:58
      * @description:
      * @return: 返回评估批次 List
      */
-    public String getSeismicEventGetBatchByGet(String event) {
+    public String getSeismicEventGetBatchByGet(EqEventQuery params) {
 
         String token = cacheTemplate.opsForValue().get("token");
 
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("event", event);
+        JSONObject jsonBody = params.toJSONObject();
 
         String res = httpClientService.doGet(token, "/eqevent/getBatch", jsonBody);
 
@@ -211,18 +211,17 @@ public class ThirdPartyCommonApi {
     }
 
     /**
-     * @param event 批次编码
+     * @param params 批次编码和事件编码
      * @author: jiangshaung
      * @date: 2024/11/24 15:35
      * @description: 删除地震事件
      * @return: 返回是否删除成功 (true 或 false )
      */
-    public String getSeismicEventGetDeleteByPost(String event) {
+    public String getSeismicEventGetDeleteByPost(EqEventQuery params) {
 
         String token = cacheTemplate.opsForValue().get("token");
 
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("event", event);
+        JSONObject jsonBody = params.toJSONObject();
 
         String res = httpClientService.doPost(token, "/eqevent/delete", jsonBody);
 

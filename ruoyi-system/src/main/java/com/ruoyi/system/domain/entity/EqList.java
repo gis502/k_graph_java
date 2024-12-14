@@ -56,7 +56,7 @@ public class EqList {
     private String depth;
     // 地震发生时间
     @TableField(value = "occurrence_time")
-    private String occurrenceTime;
+    private LocalDateTime occurrenceTime;
     // 地震类型（Z正式，Y演练，T测试）
     @TableField(value = "eq_type")
     private String eqType;

@@ -62,4 +62,10 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
         return earthquakeListMapper.getGeomById(id);
     }
 
+
+    // 删除掉这个方法
+    public void triggerEvent(EarthquakeList earthquake) {
+        earthquakeListMapper.insert(earthquake);
+    }
+
 }

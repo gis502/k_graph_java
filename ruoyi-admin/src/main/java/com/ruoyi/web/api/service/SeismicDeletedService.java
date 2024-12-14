@@ -3,7 +3,9 @@ package com.ruoyi.web.api.service;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.exception.DeleteDataException;
 import com.ruoyi.common.exception.ThirdPartyApiException;
+import com.ruoyi.system.domain.dto.EqEventDTO;
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
+import com.ruoyi.system.domain.query.EqEventQuery;
 import com.ruoyi.system.service.impl.*;
 import com.ruoyi.web.api.ThirdPartyCommonApi;
 import com.ruoyi.web.core.utils.JsonParser;
@@ -41,15 +43,15 @@ public class SeismicDeletedService {
             outputFlag = false, townResultFlag = false, eqListFlag = false;
 
     /**
-     * @param event 传入地震事件编码
+     * @param params 批次编码和事件编码
      * @author: xiaodemos
      * @date: 2024/12/10 9:21
      * @description: 同步删除第三方数据库和本地数据库的数据
      * @return: 返回是否删除成功
      */
-    public Boolean SeismicEventDelete(String event) {
+    public Boolean SeismicEventDelete(EqEventQuery params) {
 
-        String flag = thirdPartyCommonApi.getSeismicEventGetDeleteByPost(event);
+        String flag = thirdPartyCommonApi.getSeismicEventGetDeleteByPost(params);
         boolean isDeleted = JsonParser.parseJsonToBooleanField(flag);
 
         if (!isDeleted) {
@@ -58,11 +60,11 @@ public class SeismicDeletedService {
 
         try {
 
-            batchFlag = assessmentBatchService.deletedBatchData(event);
-            intensityFlag = assessmentIntensityService.deletedIntensityData(event);
-            outputFlag = assessmentOutputService.deletedOutputData(event);
-            townResultFlag = assessmentResultService.deletedTownResultData(event);
-            eqListFlag = eqListService.deletedEqListData(event);
+            batchFlag = assessmentBatchService.deletedBatchData(params.getEvent());
+            intensityFlag = assessmentIntensityService.deletedIntensityData(params.getEvent());
+            outputFlag = assessmentOutputService.deletedOutputData(params.getEvent());
+            townResultFlag = assessmentResultService.deletedTownResultData(params.getEvent());
+            eqListFlag = eqListService.deletedEqListData(params.getEvent());
 
             return batchFlag && intensityFlag && outputFlag && townResultFlag && eqListFlag;
 

@@ -89,7 +89,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
                     .eqAddrCode(record.getEqAddrCode())
                     .source(record.getSource())
                     .eqType(record.getEqType())
-                    .occurrenceTime(record.getOccurrenceTime())
+                    .occurrenceTime(record.getOccurrenceTime().toString())
                     .pac(record.getPac())
                     .earthquakeFullName(record.getEarthquakeFullName())
                     .earthquakeName(record.getEarthquakeName())

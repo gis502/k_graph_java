@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 /**
@@ -60,7 +61,9 @@ public class ThirdPartyApiController {
     @PostMapping("/trigger")
     public AjaxResult eqEventTrigger(@RequestBody EqEventTriggerDTO params) {
 
-        seismicTriggerService.seismicEventTrigger(params);
+        CompletableFuture<Void> future = seismicTriggerService.seismicEventTrigger(params);
+
+        log.info("异步执行成功 {}", future);
 
         return AjaxResult.success(MessageConstants.SEISMIC_TRIGGER_SUCCESS);
     }

@@ -56,6 +56,9 @@ public class FileUtils {
         // 从URL中提取文件名
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
+        // TODO 去除 /profile前缀,目前演示是进行的代理，后期上线需要把这一句给删掉就ok
+        fileName = fileName.substring(fileUrl.indexOf("/profile") + "/profile".length());
+
         // 使用年月日的方式创建分层文件夹
         String saveDir = baseSavePath + fileName; // 确保baseSavePath以斜杠开头
         // 创建文件夹
