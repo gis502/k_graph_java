@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alibaba.excel.EasyExcel;
 import com.ruoyi.system.domain.entity.AftershockInformation;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.vo.FormVO;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
 import org.apache.poi.ss.usermodel.*;
@@ -223,22 +224,33 @@ public class AftershockInformationServiceImpl extends
 
     @Override
     public IPage<AftershockInformation> searchData(RequestBTO requestBTO) {
-        Page<AftershockInformation> aftershockInformationPage = new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
-
-        String requestParams = requestBTO.getRequestParams();
+        Page<AftershockInformation> aftershockInformationPage =
+                new Page<>(requestBTO.getCurrentPage(),requestBTO.getPageSize());
         String eqId = requestBTO.getQueryEqId();
+
+        FormVO formVO = requestBTO.getFormVO();
+        String timeRange = formVO.getOccurrenceTime();
+        String[] timeRangeArray = timeRange.split("至");
+        String startTime = timeRangeArray[0];
+        String endTime = timeRangeArray[1];
+        String earthquakeAreaName = formVO.getEarthquakeAreaName();
+
+//        LambdaQueryWrapper<AftershockInformation> queryWrapper = Wrappers.lambdaQuery(AftershockInformation.class)
+//                .eq(AftershockInformation::getEarthquakeIdentifier, eqId)
+//                .like(AftershockInformation::getEarthquakeName, requestParams)
+//                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
+//                .like(AftershockInformation::getAffectedArea, requestParams)
+//                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
+//                .apply("cast(magnitude as text) LIKE {0}", "%" + requestParams + "%")
+//                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
+//                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
+//                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
+//                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
+
         LambdaQueryWrapper<AftershockInformation> queryWrapper = Wrappers.lambdaQuery(AftershockInformation.class)
                 .eq(AftershockInformation::getEarthquakeIdentifier, eqId)
-                .like(AftershockInformation::getEarthquakeName, requestParams)
-                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
-                .like(AftershockInformation::getAffectedArea, requestParams)
-                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
-                .apply("cast(magnitude as text) LIKE {0}", "%" + requestParams + "%")
-                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
-                .apply("to_char(earthquake_time,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%")
-                .or().like(AftershockInformation::getEarthquakeIdentifier, eqId)
-                .apply("to_char(submission_deadline,'YYYY-MM-DD HH24:MI:SS') LIKE {0}","%"+ requestParams + "%");
-
+                .between(AftershockInformation::getSubmissionDeadline, startTime, endTime)
+                .like(earthquakeAreaName != null, AftershockInformation::getAffectedArea, earthquakeAreaName);
 
         return baseMapper.selectPage(aftershockInformationPage, queryWrapper);
     }

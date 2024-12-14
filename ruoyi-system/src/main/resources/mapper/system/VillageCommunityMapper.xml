@@ -15,7 +15,10 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    uuid, district_code, district_name, town_street, residents_committee, geom, province, 
+    uuid, district_code, district_name, town_street, residents_committee, geom, province,
     city
   </sql>
+
+  <select id="findNearbyVillages" resultMap="BaseResultMap">
+    </select>
 </mapper>

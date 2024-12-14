@@ -85,7 +85,8 @@ public class AfterSeismicInformationServiceImpl extends
     @Override
     public IPage<AfterSeismicInformation> searchData(RequestBTO requestBTO) {
 
-        Page<AfterSeismicInformation> afterSeismicInformationPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
+        Page<AfterSeismicInformation> afterSeismicInformationPage =
+                new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
         LambdaQueryWrapper<AfterSeismicInformation> queryWrapper = Wrappers.lambdaQuery(AfterSeismicInformation.class);
         String requestParams = requestBTO.getRequestParams();
         String eqId = requestBTO.getQueryEqId();
@@ -106,13 +107,11 @@ public class AfterSeismicInformationServiceImpl extends
         }
 
         if (requestBTO.getCondition().equals(MessageConstants.CONDITION_FILTER)) {
-
             // 按名称模糊查询
             if (requestBTO.getFormVO().getEarthquakeAreaName() != null && !requestBTO.getFormVO().getEarthquakeAreaName().isEmpty()) {
                 queryWrapper.like(AfterSeismicInformation::getAffectedAreaName, requestBTO.getFormVO().getEarthquakeAreaName())
                         .eq(AfterSeismicInformation::getEarthquakeIdentifier, eqId);
             }
-
             // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
             if (requestBTO.getFormVO().getOccurrenceTime() != null && !requestBTO.getFormVO().getOccurrenceTime().isEmpty()) {
 
@@ -125,7 +124,6 @@ public class AfterSeismicInformationServiceImpl extends
                         .eq(AfterSeismicInformation::getEarthquakeIdentifier, eqId);
             }
         }
-
 
         return baseMapper.selectPage(afterSeismicInformationPage, queryWrapper);
     }
