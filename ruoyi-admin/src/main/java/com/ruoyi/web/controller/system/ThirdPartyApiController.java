@@ -171,7 +171,7 @@ public class ThirdPartyApiController {
         System.out.println("eqid");
         System.out.println(eqid);
         EqEventDTO dto = new EqEventDTO();
-        dto.setEqId(eqid);
+        dto.setEqid(eqid);
         dto.setEqqueueId(eqqueueId);
         List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputMapData(dto);
 
@@ -189,7 +189,7 @@ public class ThirdPartyApiController {
     public AjaxResult eqEventOutputReportData(@RequestParam("eqid") String eqid,
                                               @RequestParam("eqqueueId") String eqqueueId) {
         EqEventDTO dto = new EqEventDTO();
-        dto.setEqId(eqid);
+        dto.setEqid(eqid);
         dto.setEqqueueId(eqqueueId);
         List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputReportData(dto);
 

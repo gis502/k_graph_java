@@ -121,9 +121,6 @@ public class EarthquakeList {
     @TableField(value = "province")
     private String province;
 
-    @TableField(value = "eqqueue_id")
-    private String eqqueueId;
-
     // 设置 geom 时提取经纬度
     public void setGeom(Geometry geom) {
         this.geom = geom;
