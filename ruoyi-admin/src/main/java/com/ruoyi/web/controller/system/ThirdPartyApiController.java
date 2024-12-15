@@ -63,7 +63,7 @@ public class ThirdPartyApiController {
 
         CompletableFuture<Void> future = seismicTriggerService.seismicEventTrigger(params);
 
-        log.info("异步执行成功 {}", future);
+        log.info("触发地震异步执行成功 {}", future);
 
         return AjaxResult.success(MessageConstants.SEISMIC_TRIGGER_SUCCESS);
     }
@@ -77,7 +77,9 @@ public class ThirdPartyApiController {
     @PostMapping("/reassessment")
     public AjaxResult eqEventReassessment(@RequestBody EqEventReassessmentDTO params) {
 
-        seismicReassessmentService.seismicEventReassessment(params);
+        CompletableFuture<Void> future = seismicReassessmentService.seismicEventReassessment(params);
+
+        log.info("重新评估地震异步执行成功 {}", future);
 
         return AjaxResult.success(MessageConstants.SEISMIC_REASSESSMENT_SUCCESS);
     }

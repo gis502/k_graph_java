@@ -74,11 +74,12 @@ public class SeismicTriggerService {
      * 异步的将评估结果保存到数据库，并且下载灾情报告和专题图到本地，路径存储到数据库中。
      * 触发的地震数据将同步到双方的数据库中。
      */
-    @Async
+    @Async // 参数改为 EqEventReassessmentDTO params
     public CompletableFuture<Void> seismicEventTrigger(EqEventTriggerDTO params) {
         String eqqueueId = null;
         try {
             // 把前端上传的数据保存到第三方数据库中
+            // handleThirdPartySeismicReassessment(params);改为这个
             eqqueueId = handleThirdPartySeismicTrigger(params);
             eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
 
@@ -224,16 +225,16 @@ public class SeismicTriggerService {
                 progress = getEventProgress(params.getEvent());
 
             }
-
+            fileJsonstring = thirdPartyCommonApi.getSeismicEventGetYxcByGet(eventGetYxcDTO);
             String filePath = JsonParser.parseJsonToFileField(fileJsonstring);
 
             if (filePath != "" | StringUtils.isNotEmpty(filePath)) {
 
                 saveIntensity(params, filePath, eqqueueId, "geojson");  // 把数据插入到己方数据库
 
-                FileUtils.downloadFile(filePath, Constants.FILE_FULL_NAME);     // 下载文件并保存到本地
+                FileUtils.downloadFile(filePath, Constants.PROMOTION_DOWNLOAD_PATH);     // 下载文件并保存到本地
 
-                log.info("保存geojson文件成功");
+                log.info("下载并且保存geojson文件成功");
 
                 return CompletableFuture.completedFuture(null);
             }
@@ -282,6 +283,8 @@ public class SeismicTriggerService {
                 progress = getEventProgress(params.getEvent());
 
             }
+
+            seismicEventResultTown = thirdPartyCommonApi.getSeismicEventGetGetResultTownByGet(eqEventGetResultTownDTO);
 
             ResultEventGetResultTownDTO resultEventGetResultTownDTO = JsonParser.parseJson(
                     seismicEventResultTown,
@@ -341,6 +344,8 @@ public class SeismicTriggerService {
 
             }
 
+            eventGetMap = thirdPartyCommonApi.getSeismicEventGetMapByGet(getMapDTO);
+
             ResultEventGetMapDTO resultEventGetMapDTO = JsonParser.parseJson(eventGetMap, ResultEventGetMapDTO.class);
             List<ResultEventGetMapVO> eventGetMapDTOData = resultEventGetMapDTO.getData();
 
@@ -397,6 +402,8 @@ public class SeismicTriggerService {
 
             }
 
+            eventGetReport = thirdPartyCommonApi.getSeismicEventGetReportByGET(getReportDTO);
+
             ResultEventGetReportDTO resultEventGetReportDTO = JsonParser.parseJson(eventGetReport, ResultEventGetReportDTO.class);
             List<ResultEventGetReportVO> eventGetReportDTOData = resultEventGetReportDTO.getData();
 
@@ -444,7 +451,7 @@ public class SeismicTriggerService {
             saveList.add(assessmentOutput);
 
             try {
-                FileUtils.downloadFile(res.getSourceFile(), Constants.FILE_FULL_NAME);
+                FileUtils.downloadFile(res.getSourceFile(), Constants.PROMOTION_DOWNLOAD_PATH);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new FileDownloadException(MessageConstants.FILE_DOWNLOAD_ERROR);
@@ -477,7 +484,7 @@ public class SeismicTriggerService {
             saveList.add(assessmentOutput);
 
             try {
-                FileUtils.downloadFile(res.getSourceFile(), Constants.FILE_FULL_NAME);
+                FileUtils.downloadFile(res.getSourceFile(), Constants.PROMOTION_DOWNLOAD_PATH);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new FileDownloadException(MessageConstants.FILE_DOWNLOAD_ERROR);
@@ -570,6 +577,7 @@ public class SeismicTriggerService {
         // TODO 修改数据库字段与dto保持一致可以优化这段代码
         EqList eqList = EqList.builder()
                 .eqId(resultEventGetPageVO.getEvent())
+                .eqqueueId(eqqueueId)
                 .earthquakeName(resultEventGetPageVO.getEqName())
                 .earthquakeFullName(resultEventGetPageVO.getEqFullName())
                 .geom(point)

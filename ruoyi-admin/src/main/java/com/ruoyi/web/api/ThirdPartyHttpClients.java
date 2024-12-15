@@ -1,6 +1,7 @@
 package com.ruoyi.web.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.common.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -52,7 +53,7 @@ public class ThirdPartyHttpClients {
 
         try {
 
-            HttpPost httpPost = new HttpPost("http://10.16.7.69/zaisun/api/open" + url);
+            HttpPost httpPost = new HttpPost(Constants.PROMOTION_INVOKE_URL_HEAD + "/api/open" + url);
 
             log.info("设置http post请求参数...");
 

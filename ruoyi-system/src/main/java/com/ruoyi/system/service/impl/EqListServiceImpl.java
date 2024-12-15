@@ -1,8 +1,10 @@
 package com.ruoyi.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.utils.bean.BeanUtils;
@@ -74,7 +76,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
         List<ResultEqListDTO> dtos = new ArrayList<>(); //创建Dto对象
 
-        log.info("records 数据：{}",records);
+        log.info("records 数据：{}", records);
 
         for (EqList record : records) {
 
@@ -139,6 +141,21 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         BeanUtils.copyBeanProp(eq, listDTO);
 
         return listDTO;
+    }
+
+    /**
+     * @author: xiaodemos
+     * @date: 2024/12/15 17:47
+     * @description: 修改地震
+     * @param params 上传的参数
+     */
+    public void updateEqList(EqList params) {
+
+        QueryWrapper<EqList> wrapper = new QueryWrapper<>();
+        wrapper.eq("eq_id", params.getEqId());
+
+        eqListMapper.update(params,wrapper);
+        log.info("修改地震信息成功");
     }
 
 }

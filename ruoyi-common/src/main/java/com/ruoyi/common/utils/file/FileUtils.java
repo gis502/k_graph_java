@@ -48,7 +48,10 @@ public class FileUtils {
      */
     public static void downloadFile(String fileUrl, String baseSavePath) throws IOException {
         // 构建完整的下载路径
-        String fullDownloadPath = Constants.HEAD_URL + fileUrl;
+        // 去除 /profile前缀
+        fileUrl = fileUrl.substring(fileUrl.indexOf("/profile") + "/profile".length());
+
+        String fullDownloadPath = Constants.PROMOTION_URL_HEAD + fileUrl;
         URL url = new URL(fullDownloadPath);
         URLConnection connection = url.openConnection();
         connection.connect();
@@ -57,15 +60,24 @@ public class FileUtils {
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
         // TODO 去除 /profile前缀,目前演示是进行的代理，后期上线需要把这一句给删掉就ok
-        fileName = fileName.substring(fileUrl.indexOf("/profile") + "/profile".length());
+        // fileName = fileName.substring(fileUrl.indexOf("/profile") + "/profile".length());
 
-        // TODO 需要创建文件夹、以下载文件链接的名称来创建
-        String saveDir = baseSavePath + fileName; // 确保baseSavePath以斜杠开头
-        // 创建文件夹
-        new File(saveDir).mkdirs();
+        // 拼接 baseSavePath 和 fileUrl 来形成完整的文件保存路径
+        // 将 fileUrl 中的 '/' 替换为平台兼容的文件分隔符，并确保路径的正确性
+        String relativeFilePath = fileUrl.replace("/", File.separator);
+        String saveDir = baseSavePath + File.separator + relativeFilePath;
 
-        // 构建保存文件的完整路径，包括.geojson后缀
-        String saveFilePath = saveDir + "/" + fileName;
+        log.info("保存文件的完整路径：{}--------------------------------------------------" + saveDir);
+
+        // 获取文件夹路径，并创建多层级文件夹
+        Path saveDirPath = Paths.get(saveDir).getParent();
+        if (saveDirPath != null) {
+            Files.createDirectories(saveDirPath);  // 创建多级目录
+        }
+
+        // 构建保存文件的完整路径，包括文件名
+        String saveFilePath = saveDir;
+
         // 输出流
         try (FileOutputStream fileOutputStream = new FileOutputStream(saveFilePath);
              InputStream inputStream = new BufferedInputStream(url.openStream())) {
