@@ -21,7 +21,7 @@ public class AssessmentOutput {
     @TableField(value = "eqqueue_id")
     private String eqqueueId; // 地震评估批次编码
     @TableField(value = "eqid")
-    private String eqId; // 地震唯一标识符
+    private String eqid; // 地震唯一标识符
     @TableField(value = "code")
     private String code; // 产品编码
     @TableField(value = "pro_time")

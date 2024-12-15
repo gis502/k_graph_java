@@ -200,7 +200,7 @@ public class SeismicReassessmentService {
                 .eqqueueId(eqqueueId)
                 .batch("1")
                 .file(filePath)
-                .eqId(params.getEvent())
+                .eqid(params.getEvent())
                 .fileType(fileType)
                 // TODO 需要保存全路径
                 .localFile(filePath).build();
@@ -225,7 +225,7 @@ public class SeismicReassessmentService {
 
         AssessmentBatch batch = AssessmentBatch.builder()
                 .eqqueueId(eqqueueId)
-                .eqId(params.getEvent())
+                .eqid(params.getEvent())
                 .batch(batchVersion + 1)
                 .state(0)
                 .type("1")
@@ -258,7 +258,7 @@ public class SeismicReassessmentService {
 
         // TODO 修改数据库字段与dto保持一致可以优化这段代码
         EqList eqList = EqList.builder()
-                .eqId(resultEventGetPageVO.getEvent())
+                .eqid(resultEventGetPageVO.getEvent())
                 .eqqueueId(eqqueueId)
                 .earthquakeName(resultEventGetPageVO.getEqName())
                 .earthquakeFullName(resultEventGetPageVO.getEqFullName())
@@ -536,7 +536,7 @@ public class SeismicReassessmentService {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
                     // TODO 获取保存全路径
                     .localSourceFile("")
-                    .eqId(eqId)
+                    .eqid(eqId)
                     .type("2")
                     .build();
             BeanUtils.copyProperties(res, assessmentOutput);
@@ -569,7 +569,7 @@ public class SeismicReassessmentService {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
                     // TODO 获取保存全路径
                     .localSourceFile("")
-                    .eqId(eqId)
+                    .eqid(eqId)
                     .type("1")
                     .build();
             BeanUtils.copyProperties(res, assessmentOutput);
@@ -600,7 +600,7 @@ public class SeismicReassessmentService {
         for (ResultEventGetResultTownVO res : eventResult) {
             AssessmentResult assessmentResult = AssessmentResult.builder()
                     .id(UUID.randomUUID().toString())
-                    .eqId(res.getEvent())
+                    .eqid(res.getEvent())
                     .build();
             BeanUtils.copyProperties(res, assessmentResult);
 
@@ -623,7 +623,7 @@ public class SeismicReassessmentService {
                 .id(UUID.randomUUID().toString())
                 .eqqueueId(eqqueueId).batch("1")
                 .file(filePath)
-                .eqId(params.getEvent())
+                .eqid(params.getEvent())
                 .fileType(fileType)
                 // TODO 需要保存全路径
                 .localFile(filePath).build();

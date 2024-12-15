@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ResultEqListDTO {
 
-    private String eqId;
+    private String eqid;
     // 队列唯一标识符
     private String eqqueueId;
     // 地震名称

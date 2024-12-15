@@ -28,17 +28,17 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
 
 
     /**
-     * @param eqId      事件编码
+     * @param eqid      事件编码
      * @author: xiaodemos
      * @date: 2024/12/14 16:01
      * @description: 根据Id查询事件编码的评估批次进度
      * @return: 返回评估进度
      */
-    public AssessmentBatch selectBatchProgressByEqId(String eqId) {
+    public AssessmentBatch selectBatchProgressByEqId(String eqid) {
 
         LambdaQueryWrapper<AssessmentBatch> wrapper = Wrappers
                 .lambdaQuery(AssessmentBatch.class)
-                .eq(AssessmentBatch::getEqId, eqId)
+                .eq(AssessmentBatch::getEqid, eqid)
                 .eq(AssessmentBatch::getIsDeleted, 0);
 
         AssessmentBatch assessmentBatch = assessmentBatchMapper.selectOne(wrapper);
@@ -49,24 +49,24 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
     }
 
     /**
-     * @param eqId      事件编码
+     * @param eqid      事件编码
      * @param progress  评估进度
      * @author: xiaodemos
      * @date: 2024/12/14 15:54
      * @description: 更新批次表中的进度
      */
-    public void updateBatchProgress(String eqId, Double progress) {
+    public void updateBatchProgress(String eqid, Double progress) {
 
-        log.info("更新进度：{},{}", eqId, progress);
+        log.info("更新进度：{},{}", eqid, progress);
 
         AssessmentBatch batch = AssessmentBatch.builder()
-                .eqId(eqId)
+                .eqid(eqid)
                 .progress(progress)
                 .build();
 
         assessmentBatchMapper.update(batch,
                 new LambdaQueryWrapper<AssessmentBatch>()
-                        .eq(AssessmentBatch::getEqId, eqId)
+                        .eq(AssessmentBatch::getEqid, eqid)
         );
     }
 
@@ -77,17 +77,17 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
      * @description: 对地震批次状态进行更新
      * @return: 对数据变更是否成功
      */
-    public boolean updateBatchState(String eqId, String eqqueueId, int state) {
+    public boolean updateBatchState(String eqid, String eqqueueId, int state) {
 
         AssessmentBatch batch = AssessmentBatch.builder()
-                .eqId(eqId)
+                .eqid(eqid)
                 .eqqueueId(eqqueueId)
                 .state(state)
                 .build();
 
         int updated = assessmentBatchMapper.update(batch,
                 new LambdaQueryWrapper<>(batch)
-                        .eq(AssessmentBatch::getEqId, eqId)
+                        .eq(AssessmentBatch::getEqid, eqid)
         );
 
         return updated > 0 ? true : false;
@@ -103,7 +103,7 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
     public Integer gainBatchVersion(EqEventReassessmentDTO params) {
 
         LambdaQueryWrapper<AssessmentBatch> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(AssessmentBatch::getEqId, params.getEvent());
+        wrapper.eq(AssessmentBatch::getEqid, params.getEvent());
         AssessmentBatch assessmentBatch = assessmentBatchMapper.selectOne(wrapper);
 
         return assessmentBatch.getBatch();
@@ -119,7 +119,7 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
     public Boolean deletedBatchData(String event) {
 
         LambdaQueryWrapper<AssessmentBatch> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(AssessmentBatch::getEqId, event);
+        wrapper.eq(AssessmentBatch::getEqid, event);
 
         int flag = assessmentBatchMapper.update(AssessmentBatch
                 .builder()

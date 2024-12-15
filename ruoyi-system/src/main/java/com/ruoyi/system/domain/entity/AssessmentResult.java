@@ -20,7 +20,7 @@ public class AssessmentResult {
     @TableField("eqqueue_id")
     private String eqqueueId; // 地震评估批次编码
     @TableField("eqid")
-    private String eqId; // 地震唯一标识符
+    private String eqid; // 地震唯一标识符
     @TableField("batch")
     private String batch; // 计算批次
     @TableField("eq_name")

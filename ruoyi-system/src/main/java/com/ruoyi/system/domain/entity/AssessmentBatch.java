@@ -22,7 +22,7 @@ public class AssessmentBatch {
     private String eqqueueId;
     // 地震唯一标识符
     @TableField(value = "eqid")
-    private String eqId;
+    private String eqid;
     // 评估批次
     @TableField(value = "batch")
     private Integer batch;

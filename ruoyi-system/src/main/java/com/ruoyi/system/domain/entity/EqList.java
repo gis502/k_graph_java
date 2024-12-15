@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 public class EqList {
     // 地震唯一标识符
     @TableId(value = "eqid" )
-    private String eqId;
+    private String eqid;
     // 队列唯一标识符
     @TableField(value = "eqqueue_id")
     private String eqqueueId;

@@ -104,9 +104,9 @@ public class ThirdPartyApiController {
      * @return: 返回eqlist表的所有数据
      */
     @GetMapping("/eq/list")
-    public AjaxResult eqEventGetList(@RequestBody QueryParams queryParams) {
+    public AjaxResult eqEventGetList() {
 
-        List<ResultEqListDTO> lists = eqListService.eqEventGetList(queryParams);
+        List<ResultEqListDTO> lists = eqListService.eqEventGetList();
 
         return AjaxResult.success(lists);
     }
@@ -134,7 +134,7 @@ public class ThirdPartyApiController {
      * @return: 返回专题数据（人员伤亡、经济损失、建筑破坏）的评估结果
      */
     @GetMapping("/eq/assessment")
-    public AjaxResult eqEventSpecialData(@RequestBody EqEventDTO dto) {
+    public AjaxResult eqEventSpecialData(EqEventDTO dto) {
 
         List<AssessmentResult> results = assessmentResultService.eqEventSpecialData(dto);
 
@@ -149,7 +149,7 @@ public class ThirdPartyApiController {
      * @return: 返回（单体查询）影响场（烈度圈）的数据
      */
     @GetMapping("/eq/intensity")
-    public AjaxResult eqEventIntensityData(@RequestBody EqEventDTO dto) {
+    public AjaxResult eqEventIntensityData(EqEventDTO dto) {
 
         AssessmentIntensity intensity = assessmentIntensityService.eqEventIntensityData(dto);
 
@@ -164,7 +164,7 @@ public class ThirdPartyApiController {
      * @return: （批量查询）专题图与灾情报告
      */
     @GetMapping("/eq/output/map")
-    public AjaxResult eqEventOutputMapData(@RequestBody EqEventDTO dto) {
+    public AjaxResult eqEventOutputMapData(EqEventDTO dto) {
 
         List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputMapData(dto);
 
@@ -179,7 +179,7 @@ public class ThirdPartyApiController {
      * @return: （批量查询）专题图与灾情报告
      */
     @GetMapping("/eq/output/report")
-    public AjaxResult eqEventOutputReportData(@RequestBody EqEventDTO dto) {
+    public AjaxResult eqEventOutputReportData(EqEventDTO dto) {
 
         List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputReportData(dto);
 

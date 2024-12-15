@@ -29,6 +29,9 @@ import java.util.UUID;
 @Data
 @TableName(value = "earthquake_list")
 public class EarthquakeList {
+    @TableField(value = "eqqueue_id")
+    private String eqqueueId;
+
     /**
      * 唯一标识符
      */
@@ -117,9 +120,6 @@ public class EarthquakeList {
      */
     @TableField(value = "province")
     private String province;
-
-    @TableField(value = "eqqueue_id")
-    private String eqqueueId;
 
     // 设置 geom 时提取经纬度
     public void setGeom(Geometry geom) {

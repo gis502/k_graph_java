@@ -430,20 +430,20 @@ public class SeismicTriggerService {
     }
 
     /**
-     * @param eqId           地震id
+     * @param eqid           地震id
      * @param eventGetReport 灾情报告
      * @author: xiaodemos
      * @date: 2024/12/4 14:32
      * @description: 保存灾情报告结果
      */
-    public void saveReport(List<ResultEventGetReportVO> eventGetReport, String eqId) {
+    public void saveReport(List<ResultEventGetReportVO> eventGetReport, String eqid) {
 
         List<AssessmentOutput> saveList = new ArrayList<>();
         for (ResultEventGetReportVO res : eventGetReport) {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
                     // TODO 获取保存全路径
                     .localSourceFile("")
-                    .eqId(eqId)
+                    .eqid(eqid)
                     .type("2")
                     .build();
             BeanUtils.copyProperties(res, assessmentOutput);
@@ -464,19 +464,19 @@ public class SeismicTriggerService {
 
     /**
      * @param eventGetMap 专题图数据
-     * @param eqId        地震id
+     * @param eqid        地震id
      * @author: xiaodemos
      * @date: 2024/12/3 23:51
      * @description: 保存专题图数据到数据库并下载文件到本地
      */
-    public void saveMap(List<ResultEventGetMapVO> eventGetMap, String eqId) {
+    public void saveMap(List<ResultEventGetMapVO> eventGetMap, String eqid) {
 
         List<AssessmentOutput> saveList = new ArrayList<>();
         for (ResultEventGetMapVO res : eventGetMap) {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
                     // TODO 获取保存全路径
                     .localSourceFile("")
-                    .eqId(eqId)
+                    .eqid(eqid)
                     .type("1")
                     .build();
             BeanUtils.copyProperties(res, assessmentOutput);
@@ -505,7 +505,7 @@ public class SeismicTriggerService {
         List<AssessmentResult> saveList = new ArrayList<>();
 
         for (ResultEventGetResultTownVO res : eventResult) {
-            AssessmentResult assessmentResult = AssessmentResult.builder().id(UUID.randomUUID().toString()).eqId(res.getEvent()).build();
+            AssessmentResult assessmentResult = AssessmentResult.builder().id(UUID.randomUUID().toString()).eqid(res.getEvent()).build();
             BeanUtils.copyProperties(res, assessmentResult);
 
             saveList.add(assessmentResult);
@@ -527,7 +527,7 @@ public class SeismicTriggerService {
                 .id(UUID.randomUUID().toString())
                 .eqqueueId(eqqueueId).batch("1")
                 .file(filePath)
-                .eqId(params.getEvent())
+                .eqid(params.getEvent())
                 .fileType(fileType)
                 // TODO 需要保存全路径
                 .localFile(filePath).build();
@@ -545,7 +545,7 @@ public class SeismicTriggerService {
         // 这个eqqueueid可能存在多个批次，所以需要最新的那一个批次保存到本地，批次应该插入到多对多的那张表中
         AssessmentBatch batch = AssessmentBatch.builder()
                 .eqqueueId(eqqueueId)
-                .eqId(params.getEvent())
+                .eqid(params.getEvent())
                 .batch(1)
                 .state(0)
                 .type("1")
@@ -576,7 +576,7 @@ public class SeismicTriggerService {
 
         // TODO 修改数据库字段与dto保持一致可以优化这段代码
         EqList eqList = EqList.builder()
-                .eqId(resultEventGetPageVO.getEvent())
+                .eqid(resultEventGetPageVO.getEvent())
                 .eqqueueId(eqqueueId)
                 .earthquakeName(resultEventGetPageVO.getEqName())
                 .earthquakeFullName(resultEventGetPageVO.getEqFullName())

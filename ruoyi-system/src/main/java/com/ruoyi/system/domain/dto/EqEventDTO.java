@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class EqEventDTO {
 
-    private String eqId;
+    private String eqid;
     private String eqqueueId;
 
 }
