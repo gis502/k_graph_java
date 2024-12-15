@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ruoyi.system.domain.entity.EqList;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,22 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
     @Override
     public List<EarthquakeList> getGeomById(String id) {
         return earthquakeListMapper.getGeomById(id);
+    }
+
+
+    // 遣库成功，删除掉这个方法
+    public void triggerEvent(EarthquakeList earthquake) {
+        earthquakeListMapper.insert(earthquake);
+    }
+
+    // 遣库成功 删除这个方法
+    public void updateEvent(EarthquakeList params) {
+
+        QueryWrapper<EarthquakeList> wrapper = new QueryWrapper<>();
+        wrapper.eq("eqid", params.getEqid());
+
+        earthquakeListMapper.update(params,wrapper);
+
     }
 
 }

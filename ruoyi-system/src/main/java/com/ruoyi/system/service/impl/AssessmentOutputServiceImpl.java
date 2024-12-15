@@ -40,7 +40,7 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
     public Boolean deletedOutputData(String event) {
 
         LambdaQueryWrapper<AssessmentOutput> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(AssessmentOutput::getEqId, event);
+        wrapper.eq(AssessmentOutput::getEqid, event);
 
         int flag = assessmentOutputMapper.update(AssessmentOutput
                 .builder()
@@ -63,8 +63,7 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
                 .lambdaQuery(AssessmentOutput.class)
                 .eq(AssessmentOutput::getIsDeleted, 0)
                 .eq(AssessmentOutput::getType, 1)    //1 表示专题图
-                .like(AssessmentOutput::getEqId, dto.getEqId())
-                .or().like(AssessmentOutput::getEqqueueId, dto.getEqqueueId());
+                .like(AssessmentOutput::getEqid, dto.getEqid());
 
         List<AssessmentOutput> outputList = assessmentOutputMapper.selectList(wrapper);
 
@@ -84,8 +83,7 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
                 .lambdaQuery(AssessmentOutput.class)
                 .eq(AssessmentOutput::getIsDeleted, 0)
                 .eq(AssessmentOutput::getType, 2)    //1 表示灾情报告
-                .like(AssessmentOutput::getEqId, dto.getEqId())
-                .or().like(AssessmentOutput::getEqqueueId, dto.getEqqueueId());
+                .like(AssessmentOutput::getEqid, dto.getEqid());
 
         List<AssessmentOutput> outputList = assessmentOutputMapper.selectList(wrapper);
 

@@ -19,8 +19,15 @@ import com.ruoyi.web.api.service.SeismicTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 /**
@@ -56,7 +63,9 @@ public class ThirdPartyApiController {
     @PostMapping("/trigger")
     public AjaxResult eqEventTrigger(@RequestBody EqEventTriggerDTO params) {
 
-        seismicTriggerService.seismicEventTrigger(params);
+        CompletableFuture<Void> future = seismicTriggerService.seismicEventTrigger(params);
+
+        log.info("触发地震异步执行成功 {}", future);
 
         return AjaxResult.success(MessageConstants.SEISMIC_TRIGGER_SUCCESS);
     }
@@ -70,7 +79,9 @@ public class ThirdPartyApiController {
     @PostMapping("/reassessment")
     public AjaxResult eqEventReassessment(@RequestBody EqEventReassessmentDTO params) {
 
-        seismicReassessmentService.seismicEventReassessment(params);
+        CompletableFuture<Void> future = seismicReassessmentService.seismicEventReassessment(params);
+
+        log.info("重新评估地震异步执行成功 {}", future);
 
         return AjaxResult.success(MessageConstants.SEISMIC_REASSESSMENT_SUCCESS);
     }
@@ -95,9 +106,9 @@ public class ThirdPartyApiController {
      * @return: 返回eqlist表的所有数据
      */
     @GetMapping("/eq/list")
-    public AjaxResult eqEventGetList(@RequestBody QueryParams queryParams) {
+    public AjaxResult eqEventGetList() {
 
-        List<ResultEqListDTO> lists = eqListService.eqEventGetList(queryParams);
+        List<ResultEqListDTO> lists = eqListService.eqEventGetList();
 
         return AjaxResult.success(lists);
     }
@@ -125,7 +136,7 @@ public class ThirdPartyApiController {
      * @return: 返回专题数据（人员伤亡、经济损失、建筑破坏）的评估结果
      */
     @GetMapping("/eq/assessment")
-    public AjaxResult eqEventSpecialData(@RequestBody EqEventDTO dto) {
+    public AjaxResult eqEventSpecialData(EqEventDTO dto) {
 
         List<AssessmentResult> results = assessmentResultService.eqEventSpecialData(dto);
 
@@ -140,7 +151,7 @@ public class ThirdPartyApiController {
      * @return: 返回（单体查询）影响场（烈度圈）的数据
      */
     @GetMapping("/eq/intensity")
-    public AjaxResult eqEventIntensityData(@RequestBody EqEventDTO dto) {
+    public AjaxResult eqEventIntensityData(EqEventDTO dto) {
 
         AssessmentIntensity intensity = assessmentIntensityService.eqEventIntensityData(dto);
 

@@ -41,7 +41,7 @@ public class AssessmentResultServiceImpl extends ServiceImpl<AssessmentResultMap
     public Boolean deletedTownResultData(String event) {
 
         LambdaQueryWrapper<AssessmentResult> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(AssessmentResult::getEqId, event);
+        wrapper.eq(AssessmentResult::getEqid, event);
 
         int flag = assessmentResultMapper.update(AssessmentResult
                 .builder()
@@ -63,7 +63,7 @@ public class AssessmentResultServiceImpl extends ServiceImpl<AssessmentResultMap
         LambdaQueryWrapper<AssessmentResult> wrapper = Wrappers
                 .lambdaQuery(AssessmentResult.class)
                 .eq(AssessmentResult::getIsDeleted, 0)
-                .like(AssessmentResult::getEqId, dto.getEqId())
+                .like(AssessmentResult::getEqid, dto.getEqid())
                 .or().like(AssessmentResult::getEqqueueId, dto.getEqqueueId());
 
         List<AssessmentResult> assessmentResults = assessmentResultMapper.selectList(wrapper);

@@ -38,7 +38,7 @@ public class AssessmentIntensityServiceImpl extends ServiceImpl<AssessmentIntens
     public Boolean deletedIntensityData(String event) {
 
         LambdaQueryWrapper<AssessmentIntensity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(AssessmentIntensity::getEqId, event);
+        wrapper.eq(AssessmentIntensity::getEqid, event);
 
         int flag = assessmentIntensityMapper.update(AssessmentIntensity
                 .builder()
@@ -60,7 +60,7 @@ public class AssessmentIntensityServiceImpl extends ServiceImpl<AssessmentIntens
         LambdaQueryWrapper<AssessmentIntensity> wrapper = Wrappers
                 .lambdaQuery(AssessmentIntensity.class)
                 .eq(AssessmentIntensity::getIsDeleted, 0)
-                .like(AssessmentIntensity::getEqId, dto.getEqId())
+                .like(AssessmentIntensity::getEqid, dto.getEqid())
                 .or().like(AssessmentIntensity::getEqqueueId, dto.getEqqueueId());
 
         AssessmentIntensity assessmentIntensity = assessmentIntensityMapper.selectOne(wrapper);

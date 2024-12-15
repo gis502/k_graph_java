@@ -22,7 +22,7 @@ public class AssessmentIntensity {
     @TableField(value = "eqqueue_id")
     private String eqqueueId; // 地震评估批次编码
     @TableField(value = "eqid")
-    private String eqId; // 地震唯一标识符
+    private String eqid; // 地震唯一标识符
     @TableField(value = "batch")
     private String batch; // 计算批次
     @TableField(value = "file")
