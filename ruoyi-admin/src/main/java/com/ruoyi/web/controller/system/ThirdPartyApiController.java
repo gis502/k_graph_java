@@ -17,11 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.web.api.service.SeismicTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -159,8 +155,13 @@ public class ThirdPartyApiController {
      * @return: （批量查询）专题图与灾情报告
      */
     @GetMapping("/eq/output/map")
-    public AjaxResult eqEventOutputMapData(@RequestBody EqEventDTO dto) {
-
+    public AjaxResult eqEventOutputMapData( @RequestParam("eqid") String eqid,
+                                            @RequestParam("eqqueueId") String eqqueueId) {
+        System.out.println("eqid");
+        System.out.println(eqid);
+        EqEventDTO dto = new EqEventDTO();
+        dto.setEqId(eqid);
+        dto.setEqqueueId(eqqueueId);
         List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputMapData(dto);
 
         return AjaxResult.success(outputs);
@@ -174,8 +175,11 @@ public class ThirdPartyApiController {
      * @return: （批量查询）专题图与灾情报告
      */
     @GetMapping("/eq/output/report")
-    public AjaxResult eqEventOutputReportData(@RequestBody EqEventDTO dto) {
-
+    public AjaxResult eqEventOutputReportData(@RequestParam("eqid") String eqid,
+                                              @RequestParam("eqqueueId") String eqqueueId) {
+        EqEventDTO dto = new EqEventDTO();
+        dto.setEqId(eqid);
+        dto.setEqqueueId(eqqueueId);
         List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputReportData(dto);
 
         return AjaxResult.success(outputs);

@@ -18,6 +18,4 @@ public class SeismicIntensityCircleController {
     @Autowired
     private SeismicIntensityCircleServiceImpl seismicIntensityCircleServiceImpl;
 
- 
-
 }

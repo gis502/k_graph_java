@@ -48,6 +48,12 @@
               4527
                       )) AS area2_val) AS area2;
   </select>
+    <select id="getPlotBelongCounty" resultType="java.lang.String">
+            SELECT ST_Contains(
+            (SELECT geom FROM "yaan_json" where name = #{county}),
+            st_geometryfromtext( #{searchPointGeom},4326))
+            as judge;
+    </select>
 
 
 </mapper>

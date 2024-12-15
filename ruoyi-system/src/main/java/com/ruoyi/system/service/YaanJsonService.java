@@ -7,5 +7,5 @@ public interface YaanJsonService extends IService<YaanJson>{
     public String getintersectionArea(String Area,String Outcir);
     public Double computeIntersectionRatio(String intersectionArea,String Outcir);
 
-
+    public String getPlotBelongCounty(String lon,String lat);
 }

@@ -5,6 +5,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.dto.PlotRequest;
 import com.ruoyi.system.domain.entity.SituationPlot;
 import com.ruoyi.system.service.SituationPlotService;
+import com.ruoyi.system.service.YaanJsonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,8 @@ import java.util.UUID;
 public class SituationPlotController {
     @Autowired
     SituationPlotService situationPlotService;
-
+    @Autowired
+    YaanJsonService yaanJsonService;
     /**
      * @description: "插入标绘点和标绘点基本信息"
      * @author: SWB
@@ -160,5 +162,11 @@ public class SituationPlotController {
     public List<SituationPlot> getPlotsByEqId(@RequestParam String eqid) {
         List<SituationPlot> selectPlotWithTimeforEqid = situationPlotService.getSituationPlotsByEqId(eqid);
         return selectPlotWithTimeforEqid;
+    }
+
+    @PostMapping("/getPlotBelongCounty")
+    public String getPlotBelongCounty(@RequestParam String lon, @RequestParam String lat) {
+        String county = yaanJsonService.getPlotBelongCounty(lon,lat);
+        return county;
     }
 }
