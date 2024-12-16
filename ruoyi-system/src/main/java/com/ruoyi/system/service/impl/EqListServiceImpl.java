@@ -65,7 +65,6 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
      */
     public List<ResultEqListDTO> eqEventGetList() {
 
-
         LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(EqList::getIsDeleted, 0);
 

@@ -12,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,6 +38,8 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class FileUtils {
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
+    // 创建一个固定大小的线程池用于异步下载
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
 
     /**
@@ -52,6 +56,13 @@ public class FileUtils {
         fileUrl = fileUrl.substring(fileUrl.indexOf("/profile") + "/profile".length());
 
         String fullDownloadPath = Constants.PROMOTION_URL_HEAD + fileUrl;
+        try{
+            // 对字符进行编码
+            fullDownloadPath = encodeChineseInUrl(fullDownloadPath);
+        } catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+
         URL url = new URL(fullDownloadPath);
         URLConnection connection = url.openConnection();
         connection.connect();
@@ -78,16 +89,48 @@ public class FileUtils {
         // 构建保存文件的完整路径，包括文件名
         String saveFilePath = saveDir;
 
-        // 输出流
-        try (FileOutputStream fileOutputStream = new FileOutputStream(saveFilePath);
-             InputStream inputStream = new BufferedInputStream(url.openStream())) {
+        // 异步执行文件下载
+        executorService.submit(() -> {
+            try {
+                // 输出流
+                try (FileOutputStream fileOutputStream = new FileOutputStream(saveFilePath);
+                     InputStream inputStream = new BufferedInputStream(url.openStream())) {
 
-            byte[] data = new byte[1024];
-            int count;
-            while ((count = inputStream.read(data)) != -1) {
-                fileOutputStream.write(data, 0, count);
+                    byte[] data = new byte[4096];
+                    int count;
+                    while ((count = inputStream.read(data)) != -1) {
+                        fileOutputStream.write(data, 0, count);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();  // 处理下载错误
             }
+        });
+    }
+
+    public static String encodeChineseInUrl(String url) throws UnsupportedEncodingException {
+        // URL 拆分成多个部分
+        String[] urlParts = url.split("/");
+
+        // 对最后三个部分进行编码
+        for (int i = urlParts.length - 3; i < urlParts.length; i++) {
+            urlParts[i] = URLEncoder.encode(urlParts[i], "UTF-8");
         }
+
+        // 重新拼接 URL
+        StringBuilder encodedUrl = new StringBuilder();
+        for (String part : urlParts) {
+            encodedUrl.append(part).append("/");
+        }
+
+        // 去掉最后一个多余的 "/"
+        encodedUrl.setLength(encodedUrl.length() - 1);
+        return encodedUrl.toString();
+    }
+
+    // 关闭线程池
+    public static void shutdownExecutor() {
+        executorService.shutdown();
     }
 
     public static void writeToFile(String fileName, String content) {

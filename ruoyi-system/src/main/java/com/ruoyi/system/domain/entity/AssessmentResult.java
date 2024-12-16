@@ -26,7 +26,7 @@ public class AssessmentResult {
     @TableField("eq_name")
     private String eqName; // 地震名称
     @TableField("inty")
-    private String inty; // 烈度值
+    private Integer inty; // 烈度值
     @TableField("pac")
     private String pac; // 乡镇代码
     @TableField("pac_name")
@@ -34,17 +34,17 @@ public class AssessmentResult {
     @TableField("building_damage")
     private String buildingDamage; // 建筑破坏面积（万平方米）
     @TableField("pop")
-    private String pop; // 受灾人数(人)
+    private Integer pop; // 受灾人数(人)
     @TableField("death")
-    private String death; // 死亡人数（人）
+    private Integer death; // 死亡人数（人）
     @TableField("missing")
-    private String missing; // 失踪人数（人）
+    private Integer missing; // 失踪人数（人）
     @TableField("injury")
-    private String injury; // 受伤人数（人）
+    private Integer injury; // 受伤人数（人）
     @TableField("buried_count")
-    private String buriedCount; // 压埋人数（人）
+    private Integer buriedCount; // 压埋人数（人）
     @TableField("reset_number")
-    private String resetNumber; // 需紧急安置人员（人）
+    private Integer resetNumber; // 需紧急安置人员（人）
     @TableField("economic_loss")
     private String economicLoss; // 经济损失（万元）
     @TableField(value = "is_deleted")

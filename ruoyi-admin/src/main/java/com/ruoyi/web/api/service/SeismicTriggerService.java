@@ -334,9 +334,9 @@ public class SeismicTriggerService {
 
             Double progress = getEventProgress(params.getEvent());
 
-            while  (progress < 70.00) {
+            while  (progress < 100.00) {
 
-                log.info("当前进度: {}%，等待达到70%再继续", progress);
+                log.info("当前进度: {}%，等待达到100%再继续", progress);
 
                 Thread.sleep(9000);  // 9秒后重新请求
 
@@ -392,9 +392,9 @@ public class SeismicTriggerService {
 
             Double progress = getEventProgress(params.getEvent());
 
-            while  (progress < 80.00) {
+            while  (progress < 100.00) {
 
-                log.info("当前进度: {}%，等待达到80%再继续", progress);
+                log.info("当前进度: {}%，等待达到100%再继续", progress);
 
                 Thread.sleep(9000);  // 9秒后重新请求
 
@@ -441,20 +441,38 @@ public class SeismicTriggerService {
         List<AssessmentOutput> saveList = new ArrayList<>();
         for (ResultEventGetReportVO res : eventGetReport) {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
-                    // TODO 获取保存全路径
-                    .localSourceFile("")
+                    .id(res.getId())
+                    .eqqueueId(res.getEqqueueId())
                     .eqid(eqid)
+                    .code(res.getCode())
+                    .proTime(res.getProTime())
+                    .fileType(res.getFileType())
+                    .fileName(res.getFileName())
+                    .fileExtension(res.getFileExtension())
+                    .fileSize(res.getFileSize())
+                    .sourceFile(res.getSourceFile())
+                    .localSourceFile(Constants.PROMOTION_URL_HEAD + res.getSourceFile())
+                    .remark(res.getRemark())
                     .type("2")
+                    .size(res.getSize())
                     .build();
-            BeanUtils.copyProperties(res, assessmentOutput);
+
+            // BeanUtils.copyProperties(res, assessmentOutput);
 
             saveList.add(assessmentOutput);
 
             try {
+
+                log.info("--------------灾情报告准备开始下载--------------{}", res.getSourceFile());
+
                 FileUtils.downloadFile(res.getSourceFile(), Constants.PROMOTION_DOWNLOAD_PATH);
+
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new FileDownloadException(MessageConstants.FILE_DOWNLOAD_ERROR);
+
+                // 如果非必须就不要抛出异常，能下载多少就下载多少。
+
+                // throw new FileDownloadException(MessageConstants.FILE_DOWNLOAD_ERROR);
             }
         }
 
@@ -474,20 +492,38 @@ public class SeismicTriggerService {
         List<AssessmentOutput> saveList = new ArrayList<>();
         for (ResultEventGetMapVO res : eventGetMap) {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
-                    // TODO 获取保存全路径
-                    .localSourceFile("")
+                    .id(res.getId())
+                    .eqqueueId(res.getEqqueueId())
                     .eqid(eqid)
+                    .code(res.getCode())
+                    .proTime(res.getProTime())
+                    .fileType(res.getFileType())
+                    .fileName(res.getFileName())
+                    .fileExtension(res.getFileExtension())
+                    .fileSize(res.getFileSize())
+                    .sourceFile(res.getSourceFile())
+                    .localSourceFile(Constants.PROMOTION_URL_HEAD + res.getSourceFile())
+                    .remark(res.getRemark())
+                    .size(res.getSize())
                     .type("1")
+                    .size(res.getSize())
                     .build();
-            BeanUtils.copyProperties(res, assessmentOutput);
+
+            // BeanUtils.copyProperties(res, assessmentOutput);
 
             saveList.add(assessmentOutput);
 
             try {
+                log.info("--------------专题图准备开始下载--------------{}", res.getSourceFile());
+
                 FileUtils.downloadFile(res.getSourceFile(), Constants.PROMOTION_DOWNLOAD_PATH);
+
             } catch (IOException e) {
+
                 e.printStackTrace();
-                throw new FileDownloadException(MessageConstants.FILE_DOWNLOAD_ERROR);
+
+                // throw new FileDownloadException(MessageConstants.FILE_DOWNLOAD_ERROR);
+
             }
         }
 
@@ -505,8 +541,26 @@ public class SeismicTriggerService {
         List<AssessmentResult> saveList = new ArrayList<>();
 
         for (ResultEventGetResultTownVO res : eventResult) {
-            AssessmentResult assessmentResult = AssessmentResult.builder().id(UUID.randomUUID().toString()).eqid(res.getEvent()).build();
-            BeanUtils.copyProperties(res, assessmentResult);
+            AssessmentResult assessmentResult = AssessmentResult.builder()
+                    .id(UUID.randomUUID().toString())
+                    .eqqueueId(res.getEqqueueId())
+                    .eqid(res.getEvent())
+                    .batch(res.getBatch())
+                    .eqName(res.getEqName())
+                    .inty(res.getInty())
+                    .pac(res.getPac())
+                    .pacName(res.getPacName())
+                    .buildingDamage(String.valueOf(res.getBuildingDamage()))
+                    .pop(res.getPop())
+                    .death(res.getDeath())
+                    .missing(res.getMissing())
+                    .injury(res.getInjury())
+                    .buriedCount(res.getBuriedCount())
+                    .resetNumber(res.getResetNumber())
+                    .economicLoss(String.valueOf(res.getEconomicLoss()))
+                    .build();
+
+            //BeanUtils.copyProperties(res, assessmentResult);
 
             saveList.add(assessmentResult);
         }
@@ -525,12 +579,13 @@ public class SeismicTriggerService {
 
         AssessmentIntensity assessmentIntensity = AssessmentIntensity.builder()
                 .id(UUID.randomUUID().toString())
-                .eqqueueId(eqqueueId).batch("1")
+                .eqqueueId(eqqueueId)
+                .batch("1")
                 .file(filePath)
                 .eqid(params.getEvent())
                 .fileType(fileType)
-                // TODO 需要保存全路径
-                .localFile(filePath).build();
+                .localFile(filePath)
+                .build();
 
         asyncIntensity = assessmentIntensityService.save(assessmentIntensity);
     }

@@ -32,5 +32,7 @@ public class ResultEventGetReportVO {
     private String sourceFile;
     @JsonProperty("remark")
     private String remark;
+    @JsonProperty("size")
+    private String size;
 
 }
