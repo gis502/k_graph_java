@@ -178,7 +178,7 @@ public class Constants
 
     // 部署了换这个地址
     public static final String PROMOTION_URL_HEAD = "http://172.26.86.82/image"; // 浏览图片的地址
-    public static final String PROMOTION_DOWNLOAD_PATH = "http://172.26.86.82/data/image"; // 下载图片的地址
+    public static final String PROMOTION_DOWNLOAD_PATH = "/data/image"; // 下载图片的地址
     public static final String PROMOTION_INVOKE_URL_HEAD = "http://172.26.86.31:18100"; //第三方接口
 
 
