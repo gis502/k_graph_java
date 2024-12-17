@@ -53,7 +53,7 @@ public class FileUtils {
     public static void downloadFile(String fileUrl, String baseSavePath) throws IOException {
         // 构建完整的下载路径
         // 去除 /profile前缀
-        fileUrl = fileUrl.substring(fileUrl.indexOf("/profile") + "/profile".length());
+//        fileUrl = fileUrl.substring(fileUrl.indexOf("/profile") + "/profile".length());
 
         String fullDownloadPath = Constants.PROMOTION_URL_HEAD + fileUrl;
         try{
@@ -74,10 +74,12 @@ public class FileUtils {
         // fileName = fileName.substring(fileUrl.indexOf("/profile") + "/profile".length());
 
         // 拼接 baseSavePath 和 fileUrl 来形成完整的文件保存路径
-        // 将 fileUrl 中的 '/' 替换为平台兼容的文件分隔符，并确保路径的正确性
-        String relativeFilePath = fileUrl.replace("/", File.separator);
-        String saveDir = baseSavePath + File.separator + relativeFilePath;
 
+
+        String saveDir = baseSavePath + fileUrl;
+        // 将 fileUrl 中的 '/' 替换为平台兼容的文件分隔符，并确保路径的正确性
+        saveDir = saveDir.replace("/", File.separator);
+        saveDir = saveDir.replace("\\", File.separator);
         log.info("保存文件的完整路径：{}--------------------------------------------------" + saveDir);
 
         // 获取文件夹路径，并创建多层级文件夹
