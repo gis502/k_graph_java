@@ -21,6 +21,8 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.ruoyi.common.constant.Constants.PROMOTION_INVOKE_URL_HEAD;
+
 /**
  * @author: xiaodemos
  * @date: 2024-11-22 11:31
@@ -53,7 +55,7 @@ public class ThirdPartyHttpClients {
 
         try {
 
-            HttpPost httpPost = new HttpPost(Constants.PROMOTION_INVOKE_URL_HEAD + "/api/open" + url);
+            HttpPost httpPost = new HttpPost(PROMOTION_INVOKE_URL_HEAD + "/api/open" + url);
 
             log.info("设置http post请求参数...");
 
@@ -70,7 +72,7 @@ public class ThirdPartyHttpClients {
 
             httpPost.setConfig(requestConfig);
 
-            log.info("开始发送http post请求...");
+            log.info("开始发送http post请求...{}",entity);
             response = httpClient.execute(httpPost);
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -135,9 +137,9 @@ public class ThirdPartyHttpClients {
 
             if (jsonBody != null) {
                 // 拼接URL，将参数添加到URL的查询部分
-                fullUrl = "http://10.16.7.69/zaisun/api/open" + url + "?" + queryParams;
+                fullUrl = PROMOTION_INVOKE_URL_HEAD+"/api/open" + url + "?" + queryParams;
             } else {
-                fullUrl = "http://10.16.7.69/zaisun/api/open" + url;
+                fullUrl = PROMOTION_INVOKE_URL_HEAD+"/api/open" + url;
             }
 
             HttpGet httpGet = new HttpGet(fullUrl);
