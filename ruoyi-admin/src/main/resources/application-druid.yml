@@ -15,7 +15,7 @@ spring:
         druid:
 #             主库数据源
             master:
-                 url: jdbc:postgresql://172.26.86.64:54329/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+                 url: jdbc:postgresql://172.26.86.64:54329/yaan1?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
                  username: postgres
                  password: yaangis@2024
 #            master:
