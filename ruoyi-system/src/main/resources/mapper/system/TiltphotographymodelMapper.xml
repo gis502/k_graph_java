@@ -22,7 +22,7 @@
 
     <select id="selectAllModel" resultType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
         SELECT *
-        FROM tiltphotographymodel
+        FROM tiltphotographymodel ORDER BY name DESC
     </select>
 
     <insert id="addModel" parameterType="com.ruoyi.system.domain.entity.Tiltphotographymodel">

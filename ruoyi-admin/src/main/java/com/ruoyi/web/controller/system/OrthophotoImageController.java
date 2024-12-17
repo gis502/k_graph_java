@@ -46,7 +46,9 @@ public class OrthophotoImageController {
     @PostMapping("/list")
     public AjaxResult list() {
         System.out.println(orthophotoImageService.list());
-        return AjaxResult.success(orthophotoImageService.list());
+        LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByAsc(OrthophotoImage::getName);
+        return AjaxResult.success(orthophotoImageService.list(wrapper));
     }
 
     //搜索

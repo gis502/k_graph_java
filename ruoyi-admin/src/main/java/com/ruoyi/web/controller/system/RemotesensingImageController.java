@@ -76,8 +76,11 @@ public class RemotesensingImageController {
     //遥感影像---查
     @PostMapping("/searchRI")
     public AjaxResult searchRI(){
-        System.out.println(remotesensingImageService.list());
-        return AjaxResult.success(remotesensingImageService.list());
+
+        LambdaQueryWrapper<RemotesensingImage> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByAsc(RemotesensingImage::getName);
+        return AjaxResult.success(remotesensingImageService.list(wrapper));
+        
     }
 
     // 遥感影像---筛选
