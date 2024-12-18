@@ -79,4 +79,13 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
 
     }
 
+    public void deleteEvent(String eqid) {
+
+        QueryWrapper<EarthquakeList> wrapper = new QueryWrapper<>();
+        wrapper.eq("eqid", eqid);
+
+        earthquakeListMapper.delete(wrapper);
+
+    }
+
 }
