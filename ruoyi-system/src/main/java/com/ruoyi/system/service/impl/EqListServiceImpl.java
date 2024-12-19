@@ -68,6 +68,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
         LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(EqList::getIsDeleted, 0);
+        wrapper.orderByDesc(EqList::getOccurrenceTime);
 
         List<EqList> eqLists = eqListMapper.selectList(wrapper);
 
