@@ -204,8 +204,7 @@ public class AftershockInformationServiceImpl extends
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
             data.setEarthquakeName(earthquakeIdByTimeAndPosition.get(0).getEarthquakeName());
             data.setMagnitude(earthquakeIdByTimeAndPosition.get(0).getMagnitude());
-//            data.setSubmissionDeadline(data.getSubmissionDeadline());
-            data.setSubmissionDeadline(LocalDateTime.parse(data.getSubmissionDeadline().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+            data.setSubmissionDeadline(data.getSubmissionDeadline());
             data.setSystemInsertTime(LocalDateTime.now());
         }
         //集合拷贝
