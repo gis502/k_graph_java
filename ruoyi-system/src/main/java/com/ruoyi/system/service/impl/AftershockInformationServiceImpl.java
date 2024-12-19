@@ -197,13 +197,15 @@ public class AftershockInformationServiceImpl extends
         for (AftershockInformation data : list) {
             // 根据地震时间与地震名称查询 earthquakeId
             List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
+            System.out.println(data);
             System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
             // 设置 earthquakeId
             data.setEarthquakeIdentifier(earthquakeIdByTimeAndPosition.get(0).getEqid().toString());
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
             data.setEarthquakeName(earthquakeIdByTimeAndPosition.get(0).getEarthquakeName());
             data.setMagnitude(earthquakeIdByTimeAndPosition.get(0).getMagnitude());
-            data.setSubmissionDeadline(data.getSubmissionDeadline());
+//            data.setSubmissionDeadline(data.getSubmissionDeadline());
+            data.setSubmissionDeadline(LocalDateTime.parse(data.getSubmissionDeadline().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
             data.setSystemInsertTime(LocalDateTime.now());
         }
         //集合拷贝

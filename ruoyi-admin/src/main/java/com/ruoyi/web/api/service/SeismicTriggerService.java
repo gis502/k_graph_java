@@ -216,7 +216,7 @@ public class SeismicTriggerService {
 
             Double progress = getEventProgress(params.getEvent());
 
-            while  (progress < 20.00) {
+            while  (progress < 10.00) {
 
                 log.info("当前进度: {}%，等待达到20%再继续", progress);
 
@@ -274,7 +274,7 @@ public class SeismicTriggerService {
 
             Double progress = getEventProgress(params.getEvent());
 
-            while  (progress < 40.00) {
+            while  (progress < 25.00) {
 
                 log.info("当前进度: {}%，等待达到40%再继续", progress);
 
