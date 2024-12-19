@@ -53,7 +53,7 @@ public class FileUtils {
     public static void downloadFile(String fileUrl, String baseSavePath) throws IOException {
         // 构建完整的下载路径
         // 去除 /profile前缀
-//        fileUrl = fileUrl.substring(fileUrl.indexOf("/profile") + "/profile".length());
+        fileUrl = fileUrl.substring(fileUrl.indexOf("/profile") + "/profile".length());
 
         String fullDownloadPath = Constants.PROMOTION_URL_HEAD + fileUrl;
         try{
