@@ -1,16 +1,18 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.QueryParams;
 import com.ruoyi.system.domain.dto.*;
-import com.ruoyi.system.domain.entity.AssessmentIntensity;
-import com.ruoyi.system.domain.entity.AssessmentOutput;
-import com.ruoyi.system.domain.entity.AssessmentResult;
-import com.ruoyi.system.domain.entity.EqList;
+import com.ruoyi.system.domain.entity.*;
+import com.ruoyi.system.domain.query.EqEventQuery;
 import com.ruoyi.system.service.impl.AssessmentIntensityServiceImpl;
 import com.ruoyi.system.service.impl.AssessmentOutputServiceImpl;
 import com.ruoyi.system.service.impl.AssessmentResultServiceImpl;
 import com.ruoyi.system.service.impl.EqListServiceImpl;
+import com.ruoyi.web.api.ThirdPartyCommonApi;
+import com.ruoyi.web.api.service.SeismicAssessmentProcessesService;
+import com.ruoyi.web.api.service.SeismicDeletedService;
 import com.ruoyi.web.api.service.SeismicReassessmentService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +55,10 @@ public class ThirdPartyApiController {
     private AssessmentOutputServiceImpl assessmentOutputService;
     @Resource
     private EqListServiceImpl eqListService;
+    @Resource
+    private SeismicAssessmentProcessesService assessmentProcessesService;
+    @Resource
+    private SeismicDeletedService seismicDeletedService;
 
     /**
      * @param params 触发的地震数据
@@ -166,8 +172,8 @@ public class ThirdPartyApiController {
      * @return: （批量查询）专题图与灾情报告
      */
     @GetMapping("/eq/output/map")
-    public AjaxResult eqEventOutputMapData( @RequestParam("eqid") String eqid,
-                                            @RequestParam("eqqueueId") String eqqueueId) {
+    public AjaxResult eqEventOutputMapData(@RequestParam("eqid") String eqid,
+                                           @RequestParam("eqqueueId") String eqqueueId) {
         System.out.println("eqid");
         System.out.println(eqid);
         EqEventDTO dto = new EqEventDTO();
@@ -196,6 +202,40 @@ public class ThirdPartyApiController {
         return AjaxResult.success(outputs);
     }
 
+    /**
+     * @param event 地震事件编码
+     * @author: xiaodemos
+     * @date: 2024/12/19 17:57
+     * @description: 获取评估中的进度条
+     * @return: 返回评估结果的进度条
+     */
+
+    @GetMapping("/eq/processes")
+    public AjaxResult eqEventGetProcessesData(@RequestParam("eqid") String event) {
+
+        AssessmentBatch batch = assessmentProcessesService.getSeismicAssessmentProcesses(event);
+
+        return AjaxResult.success(batch.getProgress());
+
+    }
+
+    /**
+     * @param eqid 事件编码
+     * @author: xiaodemos
+     * @date: 2024/12/19 17:55
+     * @description: 对eqlist和earthquakelist表进行删除
+     */
+    @PostMapping("/eq/delete")
+    public AjaxResult eqEventDeleted(@RequestParam(value = "eqid") String eqid) {
+
+        EqEventQuery query = EqEventQuery.builder()
+                .event(eqid)
+                .build();
+
+        seismicDeletedService.SeismicEventDelete(query);
+
+        return AjaxResult.success(MessageConstants.SEISMIC_DELETED_SUCCESS);
+    }
 
     /**
      * @author: xiaodemos

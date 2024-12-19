@@ -33,7 +33,6 @@ import java.util.Map;
 @Slf4j
 public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> implements IEqListService {
 
-
     @Resource
     private EqListMapper eqListMapper;
 
@@ -49,10 +48,12 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(EqList::getEqid, event);
 
-        int flag = eqListMapper.update(EqList
-                .builder()
+        EqList built = EqList.builder()
+                .eqid(event)
                 .isDeleted(1)
-                .build(), wrapper);
+                .build();
+
+        int flag = eqListMapper.update(built, wrapper);
 
         return flag > 0 ? true : false;
     }

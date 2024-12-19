@@ -220,7 +220,7 @@ public class SeismicTriggerService {
 
                 log.info("当前进度: {}%，等待达到20%再继续", progress);
 
-                Thread.sleep(9000);  // 9秒后重新请求
+                Thread.sleep(4000);  // 9秒后重新请求
 
                 progress = getEventProgress(params.getEvent());
 
@@ -278,7 +278,7 @@ public class SeismicTriggerService {
 
                 log.info("当前进度: {}%，等待达到40%再继续", progress);
 
-                Thread.sleep(9000);  // 9秒后重新请求
+                Thread.sleep(4000);  // 9秒后重新请求
 
                 progress = getEventProgress(params.getEvent());
 
@@ -338,7 +338,7 @@ public class SeismicTriggerService {
 
                 log.info("当前进度: {}%，等待达到100%再继续", progress);
 
-                Thread.sleep(9000);  // 9秒后重新请求
+                Thread.sleep(4000);  // 9秒后重新请求
 
                 progress = getEventProgress(params.getEvent());
 
@@ -396,7 +396,7 @@ public class SeismicTriggerService {
 
                 log.info("当前进度: {}%，等待达到100%再继续", progress);
 
-                Thread.sleep(9000);  // 9秒后重新请求
+                Thread.sleep(4000);  // 9秒后重新请求
 
                 progress = getEventProgress(params.getEvent());
 
@@ -451,7 +451,7 @@ public class SeismicTriggerService {
                     .fileExtension(res.getFileExtension())
                     .fileSize(res.getFileSize())
                     .sourceFile(res.getSourceFile())
-                    .localSourceFile(Constants.PROMOTION_URL_HEAD + res.getSourceFile())
+                    .localSourceFile(Constants.PROMOTION_INVOKE_URL_HEAD + res.getSourceFile())
                     .remark(res.getRemark())
                     .type("2")
                     .size(res.getSize())
@@ -502,7 +502,7 @@ public class SeismicTriggerService {
                     .fileExtension(res.getFileExtension())
                     .fileSize(res.getFileSize())
                     .sourceFile(res.getSourceFile())
-                    .localSourceFile(Constants.PROMOTION_URL_HEAD + res.getSourceFile())
+                    .localSourceFile(Constants.PROMOTION_INVOKE_URL_HEAD + res.getSourceFile())
                     .remark(res.getRemark())
                     .size(res.getSize())
                     .type("1")

@@ -55,7 +55,7 @@ public class FileUtils {
         // 去除 /profile前缀
 //        fileUrl = fileUrl.substring(fileUrl.indexOf("/profile") + "/profile".length());
 
-        String fullDownloadPath = Constants.PROMOTION_URL_HEAD + fileUrl;
+        String fullDownloadPath = Constants.PROMOTION_INVOKE_URL_HEAD + fileUrl;
         try{
             // 对字符进行编码
             fullDownloadPath = encodeChineseInUrl(fullDownloadPath);
