@@ -181,6 +181,4 @@ public class Constants
     public static final String PROMOTION_DOWNLOAD_PATH = "/data/image"; // 下载图片的地址
     public static final String PROMOTION_INVOKE_URL_HEAD = "http://172.26.86.31:18101"; //第三方接口
 
-
-
 }

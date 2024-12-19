@@ -202,8 +202,8 @@ public class SeismicReassessmentService {
                 .file(filePath)
                 .eqid(params.getEvent())
                 .fileType(fileType)
-                // TODO 需要保存全路径
-                .localFile(filePath).build();
+                .localFile(Constants.PROMOTION_INVOKE_URL_HEAD + filePath)
+                .build();
 
         asyncIntensity = assessmentIntensityService.save(assessmentIntensity);
     }
@@ -535,7 +535,7 @@ public class SeismicReassessmentService {
         for (ResultEventGetReportVO res : eventGetReport) {
             AssessmentOutput assessmentOutput = AssessmentOutput.builder()
                     // TODO 获取保存全路径
-                    .localSourceFile("")
+                    .localSourceFile(Constants.PROMOTION_INVOKE_URL_HEAD + res.getSourceFile())
                     .eqid(eqId)
                     .type("2")
                     .build();
