@@ -6,7 +6,9 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.EqFormDto;
 import com.ruoyi.system.domain.dto.GeometryDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.service.EarthquakeListService;
+import com.ruoyi.system.service.IEqListService;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -30,6 +32,10 @@ import com.ruoyi.common.enums.BusinessType;
 public class EarthquakeListController {
     @Resource
     private EarthquakeListService earthquakeListService;
+
+
+    @Resource
+    private IEqListService eqListService;
 
     @GetMapping("/getExcelUploadEarthquake")
     public List<String> selectEarthquakeList() {
@@ -85,8 +91,17 @@ public class EarthquakeListController {
                 .or().apply("to_char(occurrence_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%")
                 .orderByDesc(EarthquakeList::getOccurrenceTime);
         return earthquakeListService.list(QueryWrapper);
-
-
+    }
+    @GetMapping("/queryEqList")
+    public List<EqList> queryEqList(@RequestParam(value = "queryValue", required = false) String queryValue) {
+        LambdaQueryWrapper<EqList> QueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper.like(EqList::getEarthquakeName, queryValue)
+                .or().like(EqList::getMagnitude, queryValue)
+                .or().like(EqList::getDepth, queryValue)
+                .or().apply("ST_AsText(geom) LIKE {0}", "%" + queryValue + "%") // 使用 ST_AsText 转换 geom
+                .or().apply("to_char(occurrence_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%")
+                .orderByDesc(EqList::getOccurrenceTime);
+        return eqListService.list(QueryWrapper);
     }
 
     public static OffsetDateTime convertToOffsetDateTime(String timeStr) {

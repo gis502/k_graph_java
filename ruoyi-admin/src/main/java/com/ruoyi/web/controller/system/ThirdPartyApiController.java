@@ -119,6 +119,12 @@ public class ThirdPartyApiController {
         return AjaxResult.success(lists);
     }
 
+    @GetMapping("/getExcelUploadEqList")
+        public List<String> getExcelUploadEqList() {
+            List<String> data = eqListService.getExcelUploadEqList();
+            return data;
+        }
+
     /**
      * @param dto 前端查询的参数
      * @author: xiaodemos
