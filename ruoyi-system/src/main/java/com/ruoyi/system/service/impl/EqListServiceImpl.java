@@ -11,6 +11,7 @@ import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.system.domain.bto.QueryParams;
 import com.ruoyi.system.domain.dto.EqEventDTO;
 import com.ruoyi.system.domain.dto.ResultEqListDTO;
+import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.IEqListService;
@@ -19,6 +20,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -153,4 +155,28 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         log.info("修改地震信息成功");
     }
 
+    //获取excel上传地震事件列表
+    @Override
+    public List<String> getExcelUploadEqList() {
+        // 查询所有的 EqList 数据getData
+        // 自定义日期时间格式化器，确保显示秒
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // 创建 QueryWrapper 用于排序
+        QueryWrapper<EqList> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("occurrence_time"); // 按 OccurrenceTime 字段升序排序
+
+            List<EqList> eqLists = eqListMapper.selectList(queryWrapper);
+
+        // 拼接 position、time、magnitude 字段
+        List<String> result = new ArrayList<>();
+
+        for (EqList eq : eqLists) {
+            String eqid = eq.getEqid().toString();
+            String combined = eq.getOccurrenceTime().format(formatter).toString().replace("T", " ") + " " + eq.getEarthquakeName() + "  " + "震级：" + eq.getMagnitude();
+            String resultString = eqid + " - " + combined; // 使用 "-" 或其他分隔符连接
+            result.add(resultString);
+        }
+        return result;
+    }
 }
