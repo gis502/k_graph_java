@@ -94,6 +94,7 @@ public class EarthquakeListController {
     }
     @GetMapping("/queryEqList")
     public List<EqList> queryEqList(@RequestParam(value = "queryValue", required = false) String queryValue) {
+        System.out.println(queryValue);
         LambdaQueryWrapper<EqList> QueryWrapper = new LambdaQueryWrapper<>();
         QueryWrapper.like(EqList::getEarthquakeName, queryValue)
                 .or().like(EqList::getMagnitude, queryValue)
