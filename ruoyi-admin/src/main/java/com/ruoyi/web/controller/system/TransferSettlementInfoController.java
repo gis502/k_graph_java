@@ -21,12 +21,14 @@ public class TransferSettlementInfoController {
      */
     @GetMapping("/getTotal")
     public ResponseEntity<List<TransferSettlementInfo>> getTotal(@RequestParam("eqid") String eqid) {
+        System.out.println(eqid);
         List<TransferSettlementInfo> transferSettlementInfoList = transferSettlementInfoService.getTotal(eqid);
         return ResponseEntity.ok(transferSettlementInfoList);
     }
 
     @GetMapping("/getTransferInfo")
     public ResponseEntity<List<TransferSettlementInfo>> getTransferInfo(@RequestParam("eqid") String eqid) {
+        System.out.println(eqid);
         List<TransferSettlementInfo> transferInfo = transferSettlementInfoService.getTransferInfo(eqid);
         return ResponseEntity.ok(transferInfo);
     }
