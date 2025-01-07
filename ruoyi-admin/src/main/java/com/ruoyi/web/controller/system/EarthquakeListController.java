@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.EqFormDto;
 import com.ruoyi.system.domain.dto.GeometryDTO;
+import com.ruoyi.system.domain.dto.ResultEqListDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.EqList;
+import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.EarthquakeListService;
 import com.ruoyi.system.service.IEqListService;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +39,8 @@ public class EarthquakeListController {
 
     @Resource
     private IEqListService eqListService;
+    @Resource
+    private EqListMapper eqListMapper;
 
     @GetMapping("/getExcelUploadEarthquake")
     public List<String> selectEarthquakeList() {
@@ -80,6 +85,54 @@ public class EarthquakeListController {
     public EarthquakeList queryEqById(@RequestParam(value = "id") String id) {
         return earthquakeListService.getById(id);
     }
+//    @PostMapping("getEqListById")
+//    public EqList queryEqListById(@RequestParam(value = "id") String id) {
+//        return eqListService.getById(id);
+//    }
+
+    @PostMapping("getEqListById")
+    public ResultEqListDTO getEqListById(@RequestParam(value = "id") String id) {
+        // Create a wrapper for querying the EqList by id (assuming eqid is the unique identifier)
+        LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(EqList::getEqid, id); // Filter by eqid
+
+        // Fetch the EqList record based on the wrapper conditions
+        EqList record = eqListMapper.selectOne(wrapper);
+
+        // Initialize the DTO object
+        ResultEqListDTO resultEqListDTO = ResultEqListDTO.builder().build();
+
+        // If record is not null, map the data to the DTO
+        if (record != null) {
+            Geometry geom = record.getGeom();
+            double longitude = geom.getCoordinate().x;
+            double latitude = geom.getCoordinate().y;
+
+            resultEqListDTO = ResultEqListDTO.builder()
+                    .longitude(longitude)
+                    .latitude(latitude)
+                    .depth(record.getDepth())
+                    .eqAddrCode(record.getEqAddrCode())
+                    .source(record.getSource())
+                    .eqType(record.getEqType())
+                    .occurrenceTime(String.valueOf(record.getOccurrenceTime()))
+                    .pac(record.getPac())
+                    .earthquakeFullName(record.getEarthquakeFullName())
+                    .earthquakeName(record.getEarthquakeName())
+                    .eqAddr(record.getEqAddr())
+                    .eqid(record.getEqid())
+                    .eqqueueId(record.getEqqueueId())
+                    .intensity(record.getIntensity())
+                    .magnitude(record.getMagnitude())
+                    .townCode(record.getTownCode())
+                    .type(record.getType())
+                    .build();
+        }
+
+        // Return the DTO object
+        return resultEqListDTO;
+    }
+
 
     @GetMapping("/queryEq")
     public List<EarthquakeList> queryEq(@RequestParam(value = "queryValue", required = false) String queryValue) {

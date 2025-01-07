@@ -58,4 +58,6 @@ public class ResultEqListDTO {
 
     private Double latitude;
 
+    private Geometry geom;
+
 }
