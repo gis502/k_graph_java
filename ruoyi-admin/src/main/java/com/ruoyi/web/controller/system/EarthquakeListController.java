@@ -155,7 +155,6 @@ public class EarthquakeListController {
             queryWrapper.apply("CAST(magnitude AS NUMERIC) >= {0}", startMagnitude);
             queryWrapper.apply("CAST(magnitude AS NUMERIC) <= {0}", endMagnitude);
         }
-
         // 验证并添加深度筛选条件
         if (isValidNumeric(queryDTO.getStartDepth()) && isValidNumeric(queryDTO.getEndDepth())) {
             double startDepth = Double.parseDouble(queryDTO.getStartDepth());
@@ -166,13 +165,62 @@ public class EarthquakeListController {
             queryWrapper.apply("CAST(depth AS NUMERIC) >= {0}", startDepth);
             queryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", endDepth);
         }
-
-
-
         // 按时间倒序排列
         queryWrapper.orderByDesc(EarthquakeList::getOccurrenceTime);
 
         return earthquakeListService.list(queryWrapper);
+    }
+    @PostMapping("/fromEqList")
+    public List<EqList> fromEqList(@RequestBody EqFormDto queryDTO) {
+        LambdaQueryWrapper<EqList> queryWrapper = new LambdaQueryWrapper<>();
+
+        System.out.println("55555555555555"+ queryDTO);
+        // 按名称模糊查询
+        if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
+            queryWrapper.like(EqList::getEarthquakeName, queryDTO.getEarthquakeName());
+        }
+
+        // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+        if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//
+//            // 直接将前端传递的时间字符串解析为 OffsetDateTime（保留时区信息，处理 UTC）
+//            OffsetDateTime startTime = convertToOffsetDateTime(queryDTO.getStartTime());
+//            OffsetDateTime endTime = convertToOffsetDateTime(queryDTO.getEndTime());
+
+
+
+            //做了时区转换，向前一天   eg:31---->30
+//            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
+//            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
+
+            queryWrapper.between(EqList::getOccurrenceTime,queryDTO.getStartTime() ,queryDTO.getEndTime() );
+        }
+
+        // 验证并添加震级筛选条件
+        if (isValidNumeric(queryDTO.getStartMagnitude()) && isValidNumeric(queryDTO.getEndMagnitude())) {
+            double startMagnitude = Double.parseDouble(queryDTO.getStartMagnitude());
+            double endMagnitude = Double.parseDouble(queryDTO.getEndMagnitude());
+            if (startMagnitude > endMagnitude) {
+                throw new IllegalArgumentException("起始震级必须小于等于结束震级");
+            }
+            queryWrapper.apply("CAST(magnitude AS NUMERIC) >= {0}", startMagnitude);
+            queryWrapper.apply("CAST(magnitude AS NUMERIC) <= {0}", endMagnitude);
+        }
+        // 验证并添加深度筛选条件
+        if (isValidNumeric(queryDTO.getStartDepth()) && isValidNumeric(queryDTO.getEndDepth())) {
+            double startDepth = Double.parseDouble(queryDTO.getStartDepth());
+            double endDepth = Double.parseDouble(queryDTO.getEndDepth());
+            if (startDepth > endDepth) {
+                throw new IllegalArgumentException("起始深度必须小于等于结束深度");
+            }
+            queryWrapper.apply("CAST(depth AS NUMERIC) >= {0}", startDepth);
+            queryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", endDepth);
+        }
+        // 按时间倒序排列
+        queryWrapper.orderByDesc(EqList::getOccurrenceTime);
+
+        return eqListService.list(queryWrapper);
     }
     // 辅助方法，用于检查是否为有效数值
     private boolean isValidNumeric(String value) {
