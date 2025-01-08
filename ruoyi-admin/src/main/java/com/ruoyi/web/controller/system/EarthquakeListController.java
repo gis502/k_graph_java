@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.system;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.EqFormDto;
 import com.ruoyi.system.domain.dto.GeometryDTO;
@@ -406,6 +407,12 @@ public class EarthquakeListController {
     @GetMapping("getGeomById")
     public List<EarthquakeList> getGeomById(@RequestParam(value = "id") String id) {
         return earthquakeListService.getGeomById(id);
+    }
+    @GetMapping("getGeomByEqListId")
+    public List<EqList> getGeomByEqListId(@RequestParam(value = "id") String id) {
+        QueryWrapper<EqList> eqListQueryWrapper = new QueryWrapper<>();
+        eqListQueryWrapper.eq("eqid", id);
+        return eqListService.list(eqListQueryWrapper);
     }
 
     //关于态势标会5.0级以上的模糊查询

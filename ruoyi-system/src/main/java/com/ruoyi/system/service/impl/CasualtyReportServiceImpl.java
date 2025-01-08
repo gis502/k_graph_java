@@ -250,12 +250,9 @@ public class CasualtyReportServiceImpl
         // 遍历解析后的数据，根据地震时间与地震名称查找eqList表中的earthquakeId
         for (CasualtyReport data : list) {
             // 根据地震时间与地震名称查询 earthquakeId
-            System.out.println("eqId: " + eqId);
-//            List<EqList> earthquakeIdByTimeAndPosition = eqListMapper.selectById(eqId);
             QueryWrapper<EqList> eqListQueryWrapper = new QueryWrapper<>();
-            eqListQueryWrapper.eq("eqid", eqId);
             List<EqList> earthquakeIdByTimeAndPosition = eqListMapper.selectList(eqListQueryWrapper);
-            System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
+            System.out.println("earthquakeIdByTimeAndPosition1: " + earthquakeIdByTimeAndPosition);
 //             设置 earthquakeId
             data.setEarthquakeIdentifier(earthquakeIdByTimeAndPosition.get(0).getEqid());
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
