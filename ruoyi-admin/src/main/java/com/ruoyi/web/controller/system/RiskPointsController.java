@@ -3,10 +3,15 @@ package com.ruoyi.web.controller.system;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.domain.entity.RiskPoints;
+import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.EarthquakeListService;
+import com.ruoyi.system.service.IEqListService;
 import com.ruoyi.system.service.RiskPointsService;
 import com.ruoyi.system.service.impl.PublicOpinionServiceImpl;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,21 +26,31 @@ public class RiskPointsController {
 
     @Resource
     private EarthquakeListService earthquakeListService;
+
+
+    @Resource
+    private IEqListService eqListService;
     @Resource
     private RiskPointsService riskPointsService;
 
     @GetMapping("/list/{eqid}")
     public AjaxResult list(@PathVariable String eqid) {
         // 根据前端传来的 eqid 查询对应地震的名字和震级
-        EarthquakeList earthquakeList = earthquakeListService.getById(eqid);
+//        EarthquakeList earthquakeList = earthquakeListService.getById(eqid);
+        EqList earthquakeList = eqListService.getById(eqid);
         if (earthquakeList == null) {
             return AjaxResult.error("未找到对应的地震信息");
         }
         // 获取地震名称和震级和经纬度
         String earthquakeName = earthquakeList.getEarthquakeName();
         String magnitudeStr = earthquakeList.getMagnitude();
-        Double epicentre_longitude = earthquakeList.getLongitude();
-        Double epicentre_latitude = earthquakeList.getLatitude();
+        Geometry geom = earthquakeList.getGeom();
+        Point point = (Point) geom;
+        // 获取经度 (X) 和 纬度 (Y)
+        Double epicentre_longitude  = point.getX();
+        Double epicentre_latitude = point.getY();
+//        Double epicentre_longitude = earthquakeList.getLongitude();
+//        Double epicentre_latitude = earthquakeList.getLatitude();
         // 为了进行大小比较,将震级转换为 Double
         Double magnitude = null;
         if (magnitudeStr != null) {
