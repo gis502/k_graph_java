@@ -25,7 +25,6 @@ import javax.annotation.Resource;
 @Slf4j
 @Service
 public class SeismicDeletedService {
-
     @Resource
     private ThirdPartyCommonApi thirdPartyCommonApi;
     @Resource
@@ -38,8 +37,6 @@ public class SeismicDeletedService {
     private AssessmentResultServiceImpl assessmentResultService;
     @Resource
     private EqListServiceImpl eqListService;
-    @Resource
-    private EarthquakeListServiceImpl earthquakeListService;
 
     private Boolean batchFlag = false, intensityFlag = false,
             outputFlag = false, townResultFlag = false, eqListFlag = false;
@@ -67,9 +64,6 @@ public class SeismicDeletedService {
             outputFlag = assessmentOutputService.deletedOutputData(params.getEvent());
             townResultFlag = assessmentResultService.deletedTownResultData(params.getEvent());
             eqListFlag = eqListService.deletedEqListData(params.getEvent());
-
-            //删除earthquake_list表中的数据
-            earthquakeListService.deleteEvent(params.getEvent());
 
             return batchFlag && intensityFlag && outputFlag && townResultFlag && eqListFlag;
 

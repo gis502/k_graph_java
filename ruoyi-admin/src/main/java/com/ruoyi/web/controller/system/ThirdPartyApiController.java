@@ -171,7 +171,8 @@ public class ThirdPartyApiController {
     }
 
     /**
-     * @param dto 前端查询的参数
+     * @param eqid 前端查询的参数
+     * @param eqqueueId 前端查询的参数
      * @author: xiaodemos
      * @date: 2024/12/12 20:56
      * @description: 批量查询专题图和灾情报告
@@ -180,8 +181,7 @@ public class ThirdPartyApiController {
     @GetMapping("/eq/output/map")
     public AjaxResult eqEventOutputMapData(@RequestParam("eqid") String eqid,
                                            @RequestParam("eqqueueId") String eqqueueId) {
-        System.out.println("eqid");
-        System.out.println(eqid);
+
         EqEventDTO dto = new EqEventDTO();
         dto.setEqid(eqid);
         dto.setEqqueueId(eqqueueId);
@@ -191,7 +191,8 @@ public class ThirdPartyApiController {
     }
 
     /**
-     * @param dto 前端查询的参数
+     * @param eqid 前端查询的参数
+     * @param eqqueueId 前端查询的参数
      * @author: xiaodemos
      * @date: 2024/12/12 21:11
      * @description: 批量查询专题图和灾情报告

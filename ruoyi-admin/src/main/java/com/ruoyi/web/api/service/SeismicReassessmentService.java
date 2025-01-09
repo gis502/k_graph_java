@@ -55,15 +55,9 @@ public class SeismicReassessmentService {
     private AssessmentIntensityServiceImpl assessmentIntensityService;
     @Resource
     private AssessmentOutputServiceImpl assessmentOutputService;
-
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
-
     @Resource
     private SeismicAssessmentProcessesService assessmentProcessesService;
-
-    // 写到earthquakeList表中
-    @Resource
-    private EarthquakeListServiceImpl earthquakeListServiceImpl;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -272,16 +266,6 @@ public class SeismicReassessmentService {
 
         log.info("修改地震信息成功");
 
-        // 写到earthquake_list表中，后期需要删除
-        EarthquakeList earthquakeList = new EarthquakeList();
-        earthquakeList.setEqid(UUID.fromString(resultEventGetPageVO.getEvent()).toString());
-        earthquakeList.setEarthquakeName(resultEventGetPageVO.getEqName());
-        earthquakeList.setGeom(point);
-        earthquakeList.setMagnitude(resultEventGetPageVO.getEqMagnitude());
-        earthquakeList.setDepth(resultEventGetPageVO.getEqDepth().toString());
-        earthquakeList.setEqqueueId(eqqueueId);
-
-        earthquakeListServiceImpl.updateEvent(earthquakeList);
     }
 
     /**
