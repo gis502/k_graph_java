@@ -420,6 +420,10 @@ public class ExcelController {
     public R getAfterShockStatistics(@RequestParam("file") MultipartFile
                                              file, @PathVariable(value = "userName") String userName, @PathVariable(value = "filename") String
                                              filename, @PathVariable(value = "eqId") String eqId) throws IOException {
+        System.out.println(file);
+        System.out.println(userName);
+        System.out.println(eqId);
+        System.out.println(filename);
         try {
             if (filename.equals("震情伤亡-震情灾情统计表")) {
                 List<AftershockInformation> yaanAftershockStatistics = aftershockInformationServiceImpl.importExcelAftershockInformation(file, userName, eqId);
