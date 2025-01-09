@@ -2,14 +2,18 @@ package com.ruoyi.web.controller.system;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.dto.EqFormDto;
 import com.ruoyi.system.domain.dto.GeometryDTO;
+import com.ruoyi.system.domain.dto.ResultEqListDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.EqList;
+import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.EarthquakeListService;
 import com.ruoyi.system.service.IEqListService;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +40,8 @@ public class EarthquakeListController {
 
     @Resource
     private IEqListService eqListService;
+    @Resource
+    private EqListMapper eqListMapper;
 
     @GetMapping("/getExcelUploadEarthquake")
     public List<String> selectEarthquakeList() {
@@ -80,6 +86,54 @@ public class EarthquakeListController {
     public EarthquakeList queryEqById(@RequestParam(value = "id") String id) {
         return earthquakeListService.getById(id);
     }
+//    @PostMapping("getEqListById")
+//    public EqList queryEqListById(@RequestParam(value = "id") String id) {
+//        return eqListService.getById(id);
+//    }
+
+    @PostMapping("getEqListById")
+    public ResultEqListDTO getEqListById(@RequestParam(value = "id") String id) {
+        // Create a wrapper for querying the EqList by id (assuming eqid is the unique identifier)
+        LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(EqList::getEqid, id); // Filter by eqid
+
+        // Fetch the EqList record based on the wrapper conditions
+        EqList record = eqListMapper.selectOne(wrapper);
+
+        // Initialize the DTO object
+        ResultEqListDTO resultEqListDTO = ResultEqListDTO.builder().build();
+
+        // If record is not null, map the data to the DTO
+        if (record != null) {
+            Geometry geom = record.getGeom();
+            double longitude = geom.getCoordinate().x;
+            double latitude = geom.getCoordinate().y;
+
+            resultEqListDTO = ResultEqListDTO.builder()
+                    .longitude(longitude)
+                    .latitude(latitude)
+                    .depth(record.getDepth())
+                    .eqAddrCode(record.getEqAddrCode())
+                    .source(record.getSource())
+                    .eqType(record.getEqType())
+                    .occurrenceTime(String.valueOf(record.getOccurrenceTime()))
+                    .pac(record.getPac())
+                    .earthquakeFullName(record.getEarthquakeFullName())
+                    .earthquakeName(record.getEarthquakeName())
+                    .eqAddr(record.getEqAddr())
+                    .eqid(record.getEqid())
+                    .eqqueueId(record.getEqqueueId())
+                    .intensity(record.getIntensity())
+                    .magnitude(record.getMagnitude())
+                    .townCode(record.getTownCode())
+                    .type(record.getType())
+                    .build();
+        }
+
+        // Return the DTO object
+        return resultEqListDTO;
+    }
+
 
     @GetMapping("/queryEq")
     public List<EarthquakeList> queryEq(@RequestParam(value = "queryValue", required = false) String queryValue) {
@@ -155,7 +209,6 @@ public class EarthquakeListController {
             queryWrapper.apply("CAST(magnitude AS NUMERIC) >= {0}", startMagnitude);
             queryWrapper.apply("CAST(magnitude AS NUMERIC) <= {0}", endMagnitude);
         }
-
         // 验证并添加深度筛选条件
         if (isValidNumeric(queryDTO.getStartDepth()) && isValidNumeric(queryDTO.getEndDepth())) {
             double startDepth = Double.parseDouble(queryDTO.getStartDepth());
@@ -166,13 +219,62 @@ public class EarthquakeListController {
             queryWrapper.apply("CAST(depth AS NUMERIC) >= {0}", startDepth);
             queryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", endDepth);
         }
-
-
-
         // 按时间倒序排列
         queryWrapper.orderByDesc(EarthquakeList::getOccurrenceTime);
 
         return earthquakeListService.list(queryWrapper);
+    }
+    @PostMapping("/fromEqList")
+    public List<EqList> fromEqList(@RequestBody EqFormDto queryDTO) {
+        LambdaQueryWrapper<EqList> queryWrapper = new LambdaQueryWrapper<>();
+
+        System.out.println("55555555555555"+ queryDTO);
+        // 按名称模糊查询
+        if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
+            queryWrapper.like(EqList::getEarthquakeName, queryDTO.getEarthquakeName());
+        }
+
+        // 筛选 occurrence_time，前端传递了 startTime 和 endTime 时使用
+        if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//
+//            // 直接将前端传递的时间字符串解析为 OffsetDateTime（保留时区信息，处理 UTC）
+//            OffsetDateTime startTime = convertToOffsetDateTime(queryDTO.getStartTime());
+//            OffsetDateTime endTime = convertToOffsetDateTime(queryDTO.getEndTime());
+
+
+
+            //做了时区转换，向前一天   eg:31---->30
+//            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
+//            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
+
+            queryWrapper.between(EqList::getOccurrenceTime,queryDTO.getStartTime() ,queryDTO.getEndTime() );
+        }
+
+        // 验证并添加震级筛选条件
+        if (isValidNumeric(queryDTO.getStartMagnitude()) && isValidNumeric(queryDTO.getEndMagnitude())) {
+            double startMagnitude = Double.parseDouble(queryDTO.getStartMagnitude());
+            double endMagnitude = Double.parseDouble(queryDTO.getEndMagnitude());
+            if (startMagnitude > endMagnitude) {
+                throw new IllegalArgumentException("起始震级必须小于等于结束震级");
+            }
+            queryWrapper.apply("CAST(magnitude AS NUMERIC) >= {0}", startMagnitude);
+            queryWrapper.apply("CAST(magnitude AS NUMERIC) <= {0}", endMagnitude);
+        }
+        // 验证并添加深度筛选条件
+        if (isValidNumeric(queryDTO.getStartDepth()) && isValidNumeric(queryDTO.getEndDepth())) {
+            double startDepth = Double.parseDouble(queryDTO.getStartDepth());
+            double endDepth = Double.parseDouble(queryDTO.getEndDepth());
+            if (startDepth > endDepth) {
+                throw new IllegalArgumentException("起始深度必须小于等于结束深度");
+            }
+            queryWrapper.apply("CAST(depth AS NUMERIC) >= {0}", startDepth);
+            queryWrapper.apply("CAST(depth AS NUMERIC) <= {0}", endDepth);
+        }
+        // 按时间倒序排列
+        queryWrapper.orderByDesc(EqList::getOccurrenceTime);
+
+        return eqListService.list(queryWrapper);
     }
     // 辅助方法，用于检查是否为有效数值
     private boolean isValidNumeric(String value) {
@@ -305,6 +407,12 @@ public class EarthquakeListController {
     @GetMapping("getGeomById")
     public List<EarthquakeList> getGeomById(@RequestParam(value = "id") String id) {
         return earthquakeListService.getGeomById(id);
+    }
+    @GetMapping("getGeomByEqListId")
+    public List<EqList> getGeomByEqListId(@RequestParam(value = "id") String id) {
+        QueryWrapper<EqList> eqListQueryWrapper = new QueryWrapper<>();
+        eqListQueryWrapper.eq("eqid", id);
+        return eqListService.list(eqListQueryWrapper);
     }
 
     //关于态势标会5.0级以上的模糊查询

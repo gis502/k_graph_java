@@ -2,6 +2,7 @@ package com.ruoyi.system.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,6 +12,7 @@ import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.AftershockInformationListener;
 import com.ruoyi.system.listener.MeetingsListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
+import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.*;
@@ -35,6 +37,9 @@ public class MeetingsServiceImpl
 
     @Resource
     private EarthquakeListMapper earthquakesListMapper;
+
+    @Resource
+    private EqListMapper eqListMapper;
     @Override
     public IPage<Meetings> getPage(RequestBTO requestBTO) {
         Page<Meetings> meetingsPage = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
@@ -177,8 +182,10 @@ public class MeetingsServiceImpl
         // 遍历解析后的数据，根据地震时间与地震名称查找eqList表中的earthquakeId
         for (Meetings data : list) {
             // 根据地震时间与地震名称查询 earthquakeId
-            List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
-            System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
+            QueryWrapper<EqList> eqListQueryWrapper = new QueryWrapper<>();
+            List<EqList> earthquakeIdByTimeAndPosition = eqListMapper.selectList(eqListQueryWrapper);
+//            List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
+            System.out.println("earthquakeIdByTimeAndPosition1: " + earthquakeIdByTimeAndPosition);
             // 设置 earthquakeId
             data.setEarthquakeId(earthquakeIdByTimeAndPosition.get(0).getEqid().toString());
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
