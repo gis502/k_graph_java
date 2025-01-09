@@ -172,13 +172,13 @@ public class Constants
             "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config", "com.ruoyi.generator" };
 
     public static final String USER_AGENT = "Mozilla/5.0";
-    public static final String PROMOTION_URL_HEAD = "http://10.16.7.69/zaisunimage";
-    public static final String PROMOTION_DOWNLOAD_PATH = "D:\\third-party-download";
-    public static final String PROMOTION_INVOKE_URL_HEAD = "http://10.16.7.69/zaisun";
+//    public static final String PROMOTION_URL_HEAD = "http://10.16.7.69/zaisunimage";
+//    public static final String PROMOTION_DOWNLOAD_PATH = "D:\\third-party-download";
+//    public static final String PROMOTION_INVOKE_URL_HEAD = "http://10.16.7.69/zaisun";
 
     // 部署了换这个地址
-//    public static final String PROMOTION_URL_HEAD = "http://59.213.183.7/jcpt"; // 浏览图片的地址
-//    public static final String PROMOTION_DOWNLOAD_PATH = "/data/image"; // 下载图片的地址
-//    public static final String PROMOTION_INVOKE_URL_HEAD = "http://172.26.86.31:18101"; //第三方接口
+    public static final String PROMOTION_URL_HEAD = "http://59.213.183.7/jcpt"; // 浏览图片的地址
+    public static final String PROMOTION_DOWNLOAD_PATH = "/data/image"; // 下载图片的地址
+    public static final String PROMOTION_INVOKE_URL_HEAD = "http://172.26.86.31:18101"; //第三方接口
 
 }

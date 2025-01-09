@@ -169,7 +169,6 @@ public class ThirdPartyApiController {
 
         return AjaxResult.success(intensity);
     }
-
     /**
      * @param dto 前端查询的参数
      * @author: xiaodemos
