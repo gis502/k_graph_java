@@ -211,7 +211,7 @@ public class CommunicationFacilityDamageRepairStatusServiceImpl
             QueryWrapper<EqList> eqListQueryWrapper = new QueryWrapper<>();
             List<EqList> earthquakeIdByTimeAndPosition = eqListMapper.selectList(eqListQueryWrapper);
 //            List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
-            System.out.println("earthquakeIdByTimeAndPosition1: " + earthquakeIdByTimeAndPosition);
+            System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
             // 设置 earthquakeId
             data.setEarthquakeId(earthquakeIdByTimeAndPosition.get(0).getEqid());
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
