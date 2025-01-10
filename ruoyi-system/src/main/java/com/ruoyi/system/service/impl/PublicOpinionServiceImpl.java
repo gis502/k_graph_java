@@ -2,20 +2,18 @@ package com.ruoyi.system.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.RequestBTO;
-import com.ruoyi.system.domain.entity.BarrierLakeSituation;
-import com.ruoyi.system.domain.entity.EarthquakeList;
-import com.ruoyi.system.domain.entity.PublicOpinion;
-import com.ruoyi.system.domain.entity.SupplySituation;
-import com.ruoyi.system.domain.entity.SocialOrder;
+import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.listener.BarrierLakeSituationListener;
 import com.ruoyi.system.listener.PublicOpinionListener;
 import com.ruoyi.system.mapper.EarthquakeListMapper;
+import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.mapper.PublicOpinionMapper;
 import com.ruoyi.system.service.PublicOpinionService;
 import com.ruoyi.system.service.strategy.DataExportStrategy;
@@ -42,6 +40,9 @@ public class PublicOpinionServiceImpl
 
     @Resource
     private PublicOpinionMapper publicOpinionMapper;
+
+    @Resource
+    private EqListMapper eqListMapper;
 
     @Override
     public List<PublicOpinion> importExcelPublicOpinion(MultipartFile file, String userName, String eqId) throws IOException {
@@ -74,10 +75,13 @@ public class PublicOpinionServiceImpl
         // 遍历解析后的数据，根据地震时间与地震名称查找eqList表中的earthquakeId
         for (PublicOpinion data : list) {
             // 根据地震时间与地震名称查询 earthquakeId
-            List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
+            QueryWrapper<EqList> eqListQueryWrapper = new QueryWrapper<>();
+            eqListQueryWrapper.eq("eqid", eqId);
+            List<EqList> earthquakeIdByTimeAndPosition = eqListMapper.selectList(eqListQueryWrapper);
+//            List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
             System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
             // 设置 earthquakeId
-            data.setEarthquakeId(earthquakeIdByTimeAndPosition.get(0).getEqid().toString());
+            data.setEarthquakeId(earthquakeIdByTimeAndPosition.get(0).getEqid());
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());
             data.setEarthquakeName(earthquakeIdByTimeAndPosition.get(0).getEarthquakeName());
 //            data.setMagnitude(earthquakeIdByTimeAndPosition.get(0).getMagnitude());
