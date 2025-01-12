@@ -59,10 +59,6 @@ public class SeismicTriggerService {
     @Resource
     private SeismicAssessmentProcessesService assessmentProcessesService;
 
-    // 写到earthquakeList表中
-    @Resource
-    private EarthquakeListServiceImpl earthquakeListServiceImpl;
-
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
 
     /**
@@ -660,28 +656,6 @@ public class SeismicTriggerService {
         eqListService.save(eqList);
 
         log.info("触发的数据已经同步到 eqlist 表中 -> : ok");
-
-        // 写到earthquake_list表中，后期需要删除
-        EarthquakeList earthquakeList = new EarthquakeList();
-        earthquakeList.setEqid(UUID.fromString(resultEventGetPageVO.getEvent()).toString());
-        earthquakeList.setEarthquakeName(resultEventGetPageVO.getEqName());
-        earthquakeList.setProvidingDepartment("");
-        earthquakeList.setGeom(point);
-        earthquakeList.setOccurrenceTime(LocalDateTime.parse(
-                params.getEqTime(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        ));
-        earthquakeList.setMagnitude(resultEventGetPageVO.getEqMagnitude());
-        earthquakeList.setDepth(resultEventGetPageVO.getEqDepth().toString());
-        earthquakeList.setIntensity("");
-        earthquakeList.setEpicenterName("");
-        earthquakeList.setCity("");
-        earthquakeList.setProvince("");
-        earthquakeList.setEqqueueId(eqqueueId);
-
-        earthquakeListServiceImpl.triggerEvent(earthquakeList);
-
-        log.info("触发的数据已经同步到 EarthquakeList 表中 -> : ok");
 
     }
 

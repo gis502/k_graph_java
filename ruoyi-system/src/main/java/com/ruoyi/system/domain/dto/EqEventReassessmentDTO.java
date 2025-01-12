@@ -1,8 +1,10 @@
 package com.ruoyi.system.domain.dto;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.format.DateTimeFormatter;
 
@@ -13,7 +15,8 @@ import java.time.format.DateTimeFormatter;
  */
 
 @Data
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EqEventReassessmentDTO {
 
     private String event;

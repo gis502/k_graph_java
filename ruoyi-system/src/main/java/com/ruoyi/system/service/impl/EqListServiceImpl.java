@@ -149,9 +149,11 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
     public void updateEqList(EqList params) {
 
         QueryWrapper<EqList> wrapper = new QueryWrapper<>();
+
         wrapper.eq("eq_id", params.getEqid());
 
         eqListMapper.update(params,wrapper);
+
         log.info("修改地震信息成功");
     }
 

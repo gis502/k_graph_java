@@ -12,6 +12,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.n52.jackson.datatype.jts.GeometryDeserializer;
 import org.n52.jackson.datatype.jts.GeometrySerializer;
 
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -77,6 +79,7 @@ public class EqList {
     private String type;
     @TableField(value = "is_deleted")
     private Integer isDeleted;
+
 
 
 
