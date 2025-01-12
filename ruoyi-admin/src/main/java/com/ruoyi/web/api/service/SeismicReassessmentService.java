@@ -59,23 +59,20 @@ public class SeismicReassessmentService {
     @Resource
     private SeismicAssessmentProcessesService assessmentProcessesService;
 
-
-    @Transactional(rollbackFor = Exception.class)
+    @Async // 参数改为 EqEventReassessmentDTO params
     public CompletableFuture<Void> seismicEventReassessment(EqEventReassessmentDTO params) {
-
         String eqqueueId = null;
         try {
-            // 重新对地震进行评估
-             eqqueueId = handleThirdPartySeismicReassessment(params);
-             eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
-            // eqqueueId = "T2024110313362251182600";
+            // 把前端上传的数据保存到第三方数据库中
+            eqqueueId = handleThirdPartySeismicReassessment(params);
+            eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
 
             // 如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
             if (StringUtils.isEmpty(eqqueueId)) {
-                throw new ParamsIsEmptyException(MessageConstants.RETURN_IS_EMPTY);
+                throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
             }
 
-            // 数据更新到第三方数据库成功后，再更新到本地数据库
+            // 数据插入到第三方数据库成功后，插入到本地数据库
             getWithSave(params, eqqueueId);
 
             // 异步进行地震影响场灾损评估
@@ -104,7 +101,6 @@ public class SeismicReassessmentService {
             }
             throw ex;   // 抛出异常进行回滚
         }
-
     }
 
     /**
@@ -167,10 +163,11 @@ public class SeismicReassessmentService {
      */
     private String handleThirdPartySeismicReassessment(EqEventReassessmentDTO params) {
 
-        try{
+        try {
+
             return thirdPartyCommonApi.getSeismicEventReassessmentByPost(params);
 
-        } catch (Exception e){
+        } catch (Exception e) {
 
             e.printStackTrace();
 
@@ -289,11 +286,11 @@ public class SeismicReassessmentService {
 
             String fileJsonstring = thirdPartyCommonApi.getSeismicEventGetYxcByGet(eventGetYxcDTO);
 
-            log.info("事件编码 -> {}",params.getEvent());
+            log.info("事件编码 -> {}", params.getEvent());
 
             Double progress = getEventProgress(params.getEvent());
 
-            while  (progress < 20.00) {
+            while (progress < 20.00) {
 
                 log.info("当前进度: {}%，等待达到20%再继续", progress);
 
@@ -346,12 +343,11 @@ public class SeismicReassessmentService {
                     .build();
 
 
-
             String seismicEventResultTown = thirdPartyCommonApi.getSeismicEventGetGetResultTownByGet(eqEventGetResultTownDTO);
 
             Double progress = getEventProgress(params.getEvent());
 
-            while  (progress < 40.00) {
+            while (progress < 40.00) {
 
                 log.info("当前进度: {}%，等待达到40%再继续", progress);
 
@@ -411,7 +407,7 @@ public class SeismicReassessmentService {
 
             Double progress = getEventProgress(params.getEvent());
 
-            while  (progress < 70.00) {
+            while (progress < 70.00) {
 
                 log.info("当前进度: {}%，等待达到70%再继续", progress);
 
@@ -469,7 +465,7 @@ public class SeismicReassessmentService {
 
             Double progress = getEventProgress(params.getEvent());
 
-            while  (progress < 80.00) {
+            while (progress < 80.00) {
 
                 log.info("当前进度: {}%，等待达到80%再继续", progress);
 
@@ -638,7 +634,7 @@ public class SeismicReassessmentService {
     }
 
     /**
-     * @param eqId      事件编码
+     * @param eqId 事件编码
      * @author: xiaodemos
      * @date: 2024/12/14 16:09
      * @description: 根据Id查询这场评估结果的进度

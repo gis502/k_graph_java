@@ -15,9 +15,9 @@ public class MessageConstants {
     public static final String XZ_ASYNC_EXECUTE_ERROR = "乡镇级 在进行灾损评估的异步执行任务时出错";
     public static final String ZTT_ASYNC_EXECUTE_ERROR = "专题图 在进行灾损评估的异步执行任务时出错";
     public static final String BG_ASYNC_EXECUTE_ERROR = "灾情报告 在进行灾损评估的异步执行任务时出错";
-    public static final String THIRD_PARTY_API_ERROR = "调用第三方接口时失败，请重试";
+    public static final String THIRD_PARTY_API_ERROR = "调用第三方接口时失败";
     public static final String SEISMIC_DELETED_ERROR = "删除地震数据失败";
-    public static final String SEISMIC_TRIGGER_ERROR = "触发地震失败,请重试";
+    public static final String SEISMIC_TRIGGER_ERROR = "地震模拟失败";
     public static final String SEISMIC_DELETED_SUCCESS = "地震删除成功";
 
     // 功能条件：1，搜索  2，筛选

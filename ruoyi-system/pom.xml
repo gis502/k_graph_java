@@ -128,6 +128,11 @@
             <scope>compile</scope>
         </dependency>
 
+        <!--引入kafka依赖-->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
 
     </dependencies>
 

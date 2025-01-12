@@ -59,10 +59,6 @@ public class SeismicTriggerService {
     @Resource
     private SeismicAssessmentProcessesService assessmentProcessesService;
 
-    // 写到earthquakeList表中
-    @Resource
-    private EarthquakeListServiceImpl earthquakeListServiceImpl;
-
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
 
     /**
