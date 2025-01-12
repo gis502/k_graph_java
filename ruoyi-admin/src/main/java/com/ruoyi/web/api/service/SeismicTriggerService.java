@@ -103,6 +103,9 @@ public class SeismicTriggerService {
             // 异步获取灾情报告评估结果
             handleDisasterReportAssessment(params, eqqueueId);
 
+            //异步获取辅助决策报告结果
+//            handleAssessmentReportAssessment(params, eqqueueId);
+
             // 检查四个评估结果的数据是否成功
             retrySaving(params, eqqueueId);
 
@@ -117,6 +120,11 @@ public class SeismicTriggerService {
             }
             throw ex;   // 抛出异常进行回滚
         }
+    }
+
+    //接入杜科的辅助决策报告
+    private void handleAssessmentReportAssessment(EqEventTriggerDTO params, String eqqueueId) {
+
     }
 
     /**
