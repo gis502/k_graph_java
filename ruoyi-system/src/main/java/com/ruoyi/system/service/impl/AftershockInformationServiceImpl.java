@@ -47,6 +47,7 @@ public class AftershockInformationServiceImpl extends
 
     @Resource
     private EqListMapper eqListMapper;
+
     @Override
     public IPage<AftershockInformation> getPage(RequestBTO requestBTO) {
         Page<AftershockInformation> aftershockInformation = new Page<>(requestBTO.getCurrentPage(), requestBTO.getPageSize());
@@ -203,9 +204,10 @@ public class AftershockInformationServiceImpl extends
         for (AftershockInformation data : list) {
             // 根据地震时间与地震名称查询 earthquakeId
             QueryWrapper<EqList> eqListQueryWrapper = new QueryWrapper<>();
+            eqListQueryWrapper.eq("eqid", eqId);
             List<EqList> earthquakeIdByTimeAndPosition = eqListMapper.selectList(eqListQueryWrapper);
 //            List<EarthquakeList> earthquakeIdByTimeAndPosition = earthquakesListMapper.findEarthquakeIdByTimeAndPosition(eqId);
-            System.out.println("earthquakeIdByTimeAndPosition1: " + earthquakeIdByTimeAndPosition);
+            System.out.println("earthquakeIdByTimeAndPosition: " + earthquakeIdByTimeAndPosition);
             // 设置 earthquakeId
             data.setEarthquakeIdentifier(earthquakeIdByTimeAndPosition.get(0).getEqid());
             data.setEarthquakeTime(earthquakeIdByTimeAndPosition.get(0).getOccurrenceTime());

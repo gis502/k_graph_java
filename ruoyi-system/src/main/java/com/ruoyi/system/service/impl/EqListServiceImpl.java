@@ -166,7 +166,8 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
         // 创建 QueryWrapper 用于排序
         QueryWrapper<EqList> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByDesc("occurrence_time"); // 按 OccurrenceTime 字段升序排序
+        queryWrapper.eq("is_deleted", 0)
+                .orderByDesc("occurrence_time"); // 按 OccurrenceTime 字段升序排序
 
             List<EqList> eqLists = eqListMapper.selectList(queryWrapper);
 
