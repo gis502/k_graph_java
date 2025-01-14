@@ -68,6 +68,7 @@ public class ThirdPartyApiController {
      */
     @PostMapping("/trigger")
     public AjaxResult eqEventTrigger(@RequestBody EqEventTriggerDTO params) {
+        System.out.println(params);
 
         CompletableFuture<Void> future = seismicTriggerService.seismicEventTrigger(params);
 

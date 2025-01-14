@@ -55,7 +55,7 @@ public class ThirdPartyHttpClients {
 
         try {
 
-//            HttpPost httpPost = new HttpPost(PROMOTION_INVOKE_URL_HEAD + "/api/open" + url);
+//            HttpPost httpPost = new HttpPost(http://10.16.7.69/zaisun+ "/api/open" + url);
             HttpPost httpPost = new HttpPost(PROMOTION_INVOKE_URL_HEAD + "/api/open" + url);
 
             log.info("设置http post请求参数...");
