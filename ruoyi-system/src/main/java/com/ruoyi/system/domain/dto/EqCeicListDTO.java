@@ -18,26 +18,25 @@ import java.time.format.DateTimeFormatter;
 @Builder
 public class EqCeicListDTO {
 
-    private LocalDateTime eqtime;
+    private String createTime;
     private Integer count;
     private String pac;
     private String type;
-
      public JSONObject toJSONObject() {
         // Create a JSONObject using FastJSON
         JSONObject jsonObject = new JSONObject();
 
         // Manually convert LocalDateTime fields to String, as FastJSON doesn't support LocalDateTime by default
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedEqTime = eqtime != null ? eqtime.format(formatter) : null;
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        String formattedEqTime = eqtime != null ? eqtime.format(formatter) : null;
 
         // Put values into the JSON object
-        jsonObject.put("eqtime", formattedEqTime);
-        jsonObject.put("count", count);
-        jsonObject.put("pac", pac);
-        jsonObject.put("type", type);
-
-        return jsonObject;
+        // jsonObject.put("eqtime", formattedEqTime);
+         jsonObject.put("count", count);
+         jsonObject.put("pac", pac);
+         jsonObject.put("type", type);
+         jsonObject.put("createTime", createTime);
+         return jsonObject;
     }
 
 

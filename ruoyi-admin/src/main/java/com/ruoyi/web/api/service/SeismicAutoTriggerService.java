@@ -42,21 +42,32 @@ public class SeismicAutoTriggerService {
      * @date: 2025/1/11 16:43
      * @description: 自动触发地震，每十分钟进行正式地震数据的同步
      */
-    @Scheduled(fixedRate = 600000)  // 10分钟同步一次数据
+    @Scheduled(fixedRate = 180000)  // 3分钟同步一次数据
     public void autoGainSeismicData() {
 
         log.info("开始进行同步正式地震数据...");
 
+        // 从 eqlist 中查询最近的一场正式地震时间
+        String lastNomalEventTime = eqListService.findLastNomalEventTime();
+
         EqCeicListDTO ceicListDto = EqCeicListDTO.builder()
+                .createTime(lastNomalEventTime)
                 .count(50)
                 .pac("51")
                 .build();
+
         String seismicListQuickReport = thirdPartyCommonApi.getSeismicListByGet(ceicListDto);
 
         ResultAutoTriggerDTO resultAutoTriggerDTO = JsonParser.parseJson(seismicListQuickReport, ResultAutoTriggerDTO.class);
 
         // 获取正式地震数据
         List<ResultAutoTriggerVO> dtoData = resultAutoTriggerDTO.getData();
+
+        // 空数据不操作
+        if(dtoData.size() == 0) {
+
+            return ;
+        }
 
         // 获取eqlist数据
         List<ResultEqListDTO> eqLists = eqListService.eqEventGetList();
@@ -114,38 +125,53 @@ public class SeismicAutoTriggerService {
      * @return: 返回不重复的正式地震数据集合
      */
     private Set<ResultAutoTriggerVO> compareAndMerge(List<ResultAutoTriggerVO> dtolists, List<ResultEqListDTO> eqlists) {
+        // 1.对正式地震的结果集进行对比处理 挑选出可以插入的数据
+
+        // 类型优先级映射
+        Map<String, Integer> typePriority = new HashMap<>();
+        typePriority.put("CC", 1);
+        typePriority.put("SC", 2);
+        typePriority.put("CD", 3);
+        typePriority.put("CA", 4);
+        typePriority.put("AU", 5);
+        typePriority.put("YN", 6);
+        typePriority.put("CQ", 7);
+
+        // 使用一个 Map 来存储每个 (eqid + name) 的数据
+        Map<String, ResultAutoTriggerVO> resultMap = new HashMap<>();
+
+        for (ResultAutoTriggerVO data : dtolists) {
+            // 生成唯一的 key: eqid + name 作为组合键
+            String key =  data.getName();
+
+            // 如果 resultMap 中没有该 key，或者当前数据的优先级更高，则更新
+            if (!resultMap.containsKey(key) || typePriority.get(data.getType()) < typePriority.get(resultMap.get(key).getType())) {
+                resultMap.put(key, data);
+            }
+        }
+
+        HashSet<ResultAutoTriggerVO> normalSeismic = new HashSet<>(resultMap.values());
+
+        // 2.对比正式库中有无这条数据
+
+        // 存储需要插入的记录
+        Set<ResultAutoTriggerVO> recordsToInsert = new HashSet<>();
+
         // 保存 eqlists 中所有 eqid 的集合，用于快速查找
         Set<String> eqlistIds = new HashSet<>();
         for (ResultEqListDTO eqlist : eqlists) {
             eqlistIds.add(eqlist.getEqid());  // 保存 eqid
         }
 
-        // 用于存储结果集合
-        Map<String, ResultAutoTriggerVO> resMap = new HashMap<>();
-
-        // 遍历 dtolists，检查每个元素的 eqid 是否在 eqlistIds 中
-        for (ResultAutoTriggerVO data : dtolists) {
-            // 如果 eqid 不在 eqlists 中，则直接加入结果集
+        for (ResultAutoTriggerVO data : normalSeismic) {
             if (!eqlistIds.contains(data.getEqid())) {
-                resMap.put(data.getEqid(), data);
-            } else {
-                // 如果 eqid 已经存在，在已有数据基础上进行处理
-                ResultAutoTriggerVO existingData = resMap.get(data.getEqid());
-
-                // 如果不存在，直接插入当前数据
-                if (existingData == null) {
-                    resMap.put(data.getEqid(), data);
-                } else {
-                    // 如果存在且 type 是 'CC'，优先保存 'CC' 类型的记录
-                    if ("CC".equals(data.getType())) {
-                        resMap.put(data.getEqid(), data);
-                    }
-                }
+                // 如果不存在于 eqlistIds 中，则将这条记录保存到 recordsToInsert
+                recordsToInsert.add(data);
             }
         }
 
-        // 将最终的结果转换为 Set 并返回
-        return new HashSet<>(resMap.values());
+        return recordsToInsert;
+
     }
 
 }

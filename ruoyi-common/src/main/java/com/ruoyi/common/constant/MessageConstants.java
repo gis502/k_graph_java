@@ -19,6 +19,7 @@ public class MessageConstants {
     public static final String SEISMIC_DELETED_ERROR = "删除地震数据失败";
     public static final String SEISMIC_TRIGGER_ERROR = "地震模拟失败";
     public static final String SEISMIC_DELETED_SUCCESS = "地震删除成功";
+    public static final String SEISMIC_ASSESSMENT_TIMEOUT = "评估超时结束";
 
     // 功能条件：1，搜索  2，筛选
     public static final Integer CONDITION_SEARCH = 1;
