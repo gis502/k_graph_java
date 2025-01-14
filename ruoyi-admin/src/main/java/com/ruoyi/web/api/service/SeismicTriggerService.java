@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -93,14 +94,15 @@ public class SeismicTriggerService {
             // 异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
 
+            //异步获取辅助决策报告结果
+            handleAssessmentReportAssessment(params, eqqueueId);
+
             // 异步获取专题图评估结果
             handleSpecializedAssessment(params, eqqueueId);
 
             // 异步获取灾情报告评估结果
             handleDisasterReportAssessment(params, eqqueueId);
 
-            //异步获取辅助决策报告结果
-//            handleAssessmentReportAssessment(params, eqqueueId);
 
             // 检查四个评估结果的数据是否成功
             retrySaving(params, eqqueueId);
@@ -120,6 +122,28 @@ public class SeismicTriggerService {
 
     //接入杜科的辅助决策报告
     private void handleAssessmentReportAssessment(EqEventTriggerDTO params, String eqqueueId) {
+        System.out.println("前端构建文本传的参数"+params);
+        String eqTime = params.getEqTime();
+        String eqAddr = params.getEqAddr();
+        Double latitude = params.getLatitude();
+        Double longitude = params.getLongitude();
+        Double eqMagnitude = params.getEqMagnitude();
+        Double eqDepth = params.getEqDepth();
+        // 使用 SimpleDateFormat 来解析和格式化时间
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy年MM月dd日HH时mm分ss秒");
+        // 格式化为所需格式的字符串
+        String formattedTime = outputFormat.format(eqTime);
+        String result = String.format(
+                "中国地震台网正式(CC)测定：%s在%s（北纬%.2f度，东经%.2f度）发生%.1f级地震，震源深度%.1f公里。",
+                formattedTime, eqAddr, latitude, longitude, eqMagnitude, eqDepth
+        );
+        System.out.println(result);
+        //震中计算
+
+
+
+
+
 
     }
 
