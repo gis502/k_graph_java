@@ -448,7 +448,7 @@ public class SeismicTriggerService {
 
         } catch (Exception e) {
 
-            updateEventState(params.getEvent(), eqqueueId, 4);    // 修改状态评估异常停止...
+            updateEventState(params.getEvent(), eqqueueId, 4);    // 修改状态评估 异常停止...
 
             e.printStackTrace();
 

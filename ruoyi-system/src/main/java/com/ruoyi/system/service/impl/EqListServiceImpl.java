@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -141,10 +142,10 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
     }
 
     /**
+     * @param params 上传的参数
      * @author: xiaodemos
      * @date: 2024/12/15 17:47
      * @description: 修改地震
-     * @param params 上传的参数
      */
     public void updateEqList(EqList params) {
 
@@ -152,7 +153,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
         wrapper.eq("eq_id", params.getEqid());
 
-        eqListMapper.update(params,wrapper);
+        eqListMapper.update(params, wrapper);
 
         log.info("修改地震信息成功");
     }
@@ -169,7 +170,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         queryWrapper.eq("is_deleted", 0)
                 .orderByDesc("occurrence_time"); // 按 OccurrenceTime 字段升序排序
 
-            List<EqList> eqLists = eqListMapper.selectList(queryWrapper);
+        List<EqList> eqLists = eqListMapper.selectList(queryWrapper);
 
         // 拼接 position、time、magnitude 字段
         List<String> result = new ArrayList<>();
@@ -181,5 +182,27 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
             result.add(resultString);
         }
         return result;
+    }
+
+    /**
+     * @author: xiaodemos
+     * @date: 2025/1/14 7:18
+     * @description: 查询eqlist表中最新一条的正式地震最新时间作为同步正式地震数据的参数
+     * @return: 返回正式地震的最新时间
+     */
+    @Override
+    public String findLastNomalEventTime() {
+        LambdaQueryWrapper<EqList> wrapper = Wrappers.lambdaQuery(EqList.class);
+        wrapper.eq(EqList::getEqType, "Z")
+                .eq(EqList::getIsDeleted, 0)
+                .orderByDesc(EqList::getOccurrenceTime)
+                .last("LIMIT 1");  // 限制只查询一条数据;
+
+        EqList eqList = eqListMapper.selectOne(wrapper);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String lasttime = eqList.getOccurrenceTime().format(formatter);
+
+        return lasttime;
     }
 }
