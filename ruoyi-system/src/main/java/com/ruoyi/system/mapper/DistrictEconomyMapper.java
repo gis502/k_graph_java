@@ -10,8 +10,8 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 @Mapper
-@PlotInfoMapper
 public interface DistrictEconomyMapper extends BaseMapper<DistrictEconomy> {
-    @Select("SELECT * FROM district_economy WHERE year = #{time}")
-    List<DistrictEconomy> getDistrictEconomy(@Param("time") Integer time);
+
+    @Select("SELECT * FROM district_economy WHERE (county_district, year) IN (SELECT county_district, MAX(year) FROM district_economy GROUP BY county_district)ORDER BY year DESC")
+    List<DistrictEconomy> getDistrictEconomy();
 }

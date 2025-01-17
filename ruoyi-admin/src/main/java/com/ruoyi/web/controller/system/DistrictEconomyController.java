@@ -20,7 +20,7 @@ public class DistrictEconomyController {
 
 
     @GetMapping("/getDistrictEconomy")
-    public List<DistrictEconomy> getDistrictEconomy(@RequestParam Integer time) {
-        return districtEconomyService.getDistrictEconomy(time);
+    public List<DistrictEconomy> getDistrictEconomy() {
+        return districtEconomyService.getDistrictEconomy();
     }
 }
