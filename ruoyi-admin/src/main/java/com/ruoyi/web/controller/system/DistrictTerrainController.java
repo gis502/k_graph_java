@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.system;
 import com.ruoyi.system.domain.entity.DistrictEconomy;
+import com.ruoyi.system.domain.entity.DistrictTerrain;
 import com.ruoyi.system.service.DistrictEconomyService;
+import com.ruoyi.system.service.DistrictTerrainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,13 +16,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system")
-public class DistrictEconomyController {
+public class DistrictTerrainController {
     @Autowired
-    private DistrictEconomyService districtEconomyService;
+    private DistrictTerrainService districtTerrainService;
 
 
-    @GetMapping("/getDistrictEconomy")
-    public List<DistrictEconomy> getDistrictEconomy() {
-        return districtEconomyService.getDistrictEconomy();
+    @GetMapping("/getDistrictTerrain")
+    public DistrictTerrain getDistrictTerrain(@RequestParam String address) {
+        return districtTerrainService.getDistrictTerrain(address);
     }
 }

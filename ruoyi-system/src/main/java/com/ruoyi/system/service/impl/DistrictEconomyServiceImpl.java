@@ -12,8 +12,7 @@ public class DistrictEconomyServiceImpl extends ServiceImpl<DistrictEconomyMappe
     @Autowired
     private DistrictEconomyMapper districtEconomyMapper;
     @Override
-    public List<DistrictEconomy> getDistrictEconomy(Integer time) {
-
-        return districtEconomyMapper.getDistrictEconomy(time);
+    public List<DistrictEconomy> getDistrictEconomy() {
+        return districtEconomyMapper.getDistrictEconomy();
     }
 }

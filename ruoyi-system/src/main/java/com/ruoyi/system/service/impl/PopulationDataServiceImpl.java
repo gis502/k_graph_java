@@ -23,7 +23,7 @@ public class PopulationDataServiceImpl extends
     @Override
     public List<PopulationData> listall() {
         // 获取所有PopulationData数据
-        List<PopulationData> populationDataList = populationDataMapper.selectList(null);
+        List<PopulationData> populationDataList = populationDataMapper.listGetByMaxYear();
 
         // 创建一个Map用于聚合区域数据
         Map<String, PopulationData> aggregatedData = new HashMap<>();
