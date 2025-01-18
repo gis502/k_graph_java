@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YaanVillagesMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.YaanVillages">
+    <!--@mbg.generated-->
+    <!--@Table yaan_villages-->
+    <id column="villages_id" jdbcType="OTHER" property="villagesId" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+    <result column="villages_name" jdbcType="VARCHAR" property="villagesName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    villages_id, geom, villages_name
+  </sql>
+</mapper>

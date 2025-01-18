@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YaanCountyTownMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.YaanCountyTown">
+    <!--@mbg.generated-->
+    <!--@Table yaan_county_town-->
+    <id column="county_town_id" jdbcType="OTHER" property="countyTownId" />
+    <result column="county_town_name" jdbcType="VARCHAR" property="countyTownName" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    county_town_id, county_town_name, geom
+  </sql>
+</mapper>
