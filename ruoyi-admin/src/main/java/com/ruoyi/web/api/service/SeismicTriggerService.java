@@ -38,10 +38,6 @@ import java.util.*;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-//import org.apache.poi.xwpf.usermodel.XWPFParagraphAlignment;
-import org.apache.xmlbeans.XmlCursor;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * @author: xiaodemos
@@ -120,7 +116,7 @@ public class SeismicTriggerService {
             handleTownLevelAssessment(params, eqqueueId);
 
             //异步获取辅助决策报告结果
-            handleAssessmentReportAssessment(params, eqqueueId);
+//            handleAssessmentReportAssessment(params, eqqueueId);
 
 //            // 异步获取专题图评估结果
             handleSpecializedAssessment(params, eqqueueId);
