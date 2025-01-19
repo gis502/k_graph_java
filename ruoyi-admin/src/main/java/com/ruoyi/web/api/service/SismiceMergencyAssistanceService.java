@@ -2,8 +2,8 @@ package com.ruoyi.web.api.service;
 
 
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
+import lombok.SneakyThrows;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,6 +14,7 @@ import java.util.Date;
  * @description: 地震触发业务逻辑
  */
 public class SismiceMergencyAssistanceService {
+    @SneakyThrows
     public void file(EqEventTriggerDTO params, String eqqueueId){
         System.out.println("前端构建文本传的参数" + params);
         String eqName = params.getEqName();  //
@@ -49,7 +50,7 @@ public class SismiceMergencyAssistanceService {
         String formattedTime = outputFormat.format(parsedDate);
         String result = String.format(
                 "地震所在位置位于%s年“%s”%s%.1f级地震余震活动区范围，震区大部分属于川西高山高原区。震中泸定县人口密度约39人/平方公里。",
-                formattedTime,monthDate,eqAddr,eqMagnitude,  ,
+                formattedTime,monthDate,eqAddr,eqMagnitude
 //                "中国地震台网正式(CC)测定：%s在%s（北纬%.2f度，东经%.2f度）发生%.1f级地震，震源深度%.1f公里。",
 //                formattedTime, eqAddr, latitude, longitude, eqMagnitude, eqDepth
         );
@@ -89,9 +90,13 @@ public class SismiceMergencyAssistanceService {
         int roundedIntensity1 = (int) Math.round(intensity1);
 
 
-        String jianyi = " 应急响应建议：建议我市不启动地震应急响应（主要依据：1、邻近市州地震；2、震级:%.1f；3、我市最大烈度：%d度。" ,eqMagnitude, roundedIntensity1;
+        String jianyi = String.format(
+                "应急响应建议：建议我市不启动地震应急响应（主要依据：1、邻近市州地震；2、震级:%.1f；3、我市最大烈度：%d度。",
+                eqMagnitude, roundedIntensity1
+        );
 
-        String cuoshi = " 处置措施建议：以震中政府为主开展应急处置。";
+        // 处置措施建议字符串
+        String cuoshi = "处置措施建议：以震中政府为主开展应急处置。";
 
 
 
