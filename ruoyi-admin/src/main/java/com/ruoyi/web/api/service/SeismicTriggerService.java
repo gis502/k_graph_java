@@ -120,7 +120,7 @@ public class SeismicTriggerService {
             handleTownLevelAssessment(params, eqqueueId);
 
             //异步获取辅助决策报告结果
-//            handleAssessmentReportAssessment(params, eqqueueId);
+            handleAssessmentReportAssessment(params, eqqueueId);
 
 //            // 异步获取专题图评估结果
             handleSpecializedAssessment(params, eqqueueId);
@@ -373,7 +373,7 @@ public class SeismicTriggerService {
 
 
                 // 初始化标志，判断是否所有乡镇和村庄的烈度都与 roundedIntensity 相等
-// 初始化匹配计数
+                // 初始化匹配计数
                 int countyTownsMatchCount = 0;
                 int villagesMatchCount = 0;
 
@@ -382,7 +382,7 @@ public class SeismicTriggerService {
                 double distanceToCountyTown;
                 double distanceToVillage;
 
-// 遍历所有政府相关的乡镇，计算与上传经纬度的距离
+                // 遍历所有政府相关的乡镇，计算与上传经纬度的距离
                 for (YaanCountyTown countyTown : countyTownList) {
                     // 跳过 "雅安市政府" 和 "四川省政府" 乡镇
                     if ("雅安市政府".equals(countyTown.getCountyTownName()) || "四川省政府".equals(countyTown.getCountyTownName())) {
@@ -421,7 +421,7 @@ public class SeismicTriggerService {
                     }
                 }
 
-// 遍历所有村庄，计算与上传经纬度的距离
+                // 遍历所有村庄，计算与上传经纬度的距离
                 for (YaanVillages village : villageList) {
                     Geometry geom = village.getGeom();
                     if (geom != null && geom instanceof Point) {

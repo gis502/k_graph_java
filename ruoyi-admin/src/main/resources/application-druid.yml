@@ -1,12 +1,12 @@
 # 备份文件配置
-#backup:
-#    path: /data/backup/
-#    db_port: 7654
-#    db_host: 47.92.216.173
-#    db_name: yaan
-#    db_user: postgres
-#    db_password: zhangsan
-#    pg_dump_path: D:/PostgreSql/bin/pg_dump.exe
+backup:
+    path: /data/backup/
+    db_port: 7654
+    db_host: 47.92.216.173
+    db_name: yaan
+    db_user: postgres
+    db_password: zhangsan
+    pg_dump_path: D:/PostgreSql/bin/pg_dump.exe
 # 数据源配置
 spring:
     datasource:
