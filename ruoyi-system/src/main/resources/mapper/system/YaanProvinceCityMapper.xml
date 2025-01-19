@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YaanProvinceCityMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.YaanProvinceCity">
+    <!--@mbg.generated-->
+    <!--@Table yaan_province_city-->
+    <result column="province_city_id" jdbcType="OTHER" property="provinceCityId" />
+    <result column="province_city_name" jdbcType="VARCHAR" property="provinceCityName" />
+    <result column="full_province_city_name" jdbcType="VARCHAR" property="fullProvinceCityName" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    province_city_id, province_city_name, full_province_city_name, geom
+  </sql>
+</mapper>

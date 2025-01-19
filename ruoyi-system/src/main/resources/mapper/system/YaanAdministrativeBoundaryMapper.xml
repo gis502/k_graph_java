@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YaanAdministrativeBoundaryMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.YaanAdministrativeBoundary">
+    <!--@mbg.generated-->
+    <!--@Table yaan_administrative_boundary-->
+    <id column="yaan_boundary_id" jdbcType="OTHER" property="yaanBoundaryId" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    yaan_boundary_id, geom
+  </sql>
+</mapper>

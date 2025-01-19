@@ -170,7 +170,6 @@ public class ThirdPartyApiController {
 
         return AjaxResult.success(intensity);
     }
-
     /**
      * @param eqid 前端查询的参数
      * @param eqqueueId 前端查询的参数
