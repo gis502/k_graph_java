@@ -10,27 +10,28 @@ import com.ruoyi.system.domain.dto.EqEventGetYxcDTO;
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.domain.dto.*;
-import com.ruoyi.system.domain.query.EqEventQuery;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+import org.apache.xmlbeans.XmlCursor;
+
 import com.ruoyi.system.domain.vo.*;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.impl.*;
 import com.ruoyi.web.api.ThirdPartyCommonApi;
-import com.ruoyi.web.controller.system.YaanProvinceCityController;
 import com.ruoyi.web.core.utils.JsonParser;
-import io.lettuce.core.ScriptOutputType;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
-import org.apache.tomcat.jni.Time;
-import org.apache.xmlbeans.XmlCursor;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.WKTReader;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,6 +39,10 @@ import java.util.*;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
+
+import java.io.FileOutputStream;
+import java.math.BigInteger;
 
 /**
  * @author: xiaodemos
@@ -109,10 +114,10 @@ public class SeismicTriggerService {
             // 数据插入到第三方数据库成功后，插入到本地数据库
             getWithSave(params, eqqueueId);
 
-            // 异步进行地震影响场灾损评估
+//             异步进行地震影响场灾损评估
             handleSeismicYxcEventAssessment(params, eqqueueId);
 
-            // 异步进行乡镇级评估
+//             异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
 
             //异步获取辅助决策报告结果
@@ -120,8 +125,8 @@ public class SeismicTriggerService {
 
 //            // 异步获取专题图评估结果
             handleSpecializedAssessment(params, eqqueueId);
-//
-//            // 异步获取灾情报告评估结果
+
+            // 异步获取灾情报告评估结果
             handleDisasterReportAssessment(params, eqqueueId);
 
 
@@ -484,7 +489,7 @@ public class SeismicTriggerService {
                 // 注：StringBuilder
                 StringBuilder zhuResult = new StringBuilder();
 
-// 根据烈度生成描述
+                // 根据烈度生成描述
                 for (int i = 1; i <= roundedIntensity; i++) {
                     zhuResult.append("地震烈度").append(i).append("度主要现象为：");
 
@@ -550,14 +555,9 @@ public class SeismicTriggerService {
                 System.out.println(zhuResult1);
 
 
-                WordExporter(combinedResult, formattedTime);
+                WordExporter(combinedResult, formattedTime,eqMagnitude,eqAddr);
 
             }
-
-
-
-
-
 
             //不在雅安市地震
             if (!eqAddr.contains("雅安市")){
@@ -717,7 +717,7 @@ public class SeismicTriggerService {
                 // 合并所有字符串
                 String combinedResult1 = result + fuJinTownResult + fuJinCityResult1 + fuJinBoundaryResult1 + fuJinVillageResult1 + fuJinCountyTownResult1;
                 System.out.println(combinedResult1);
-                WordExporter(combinedResult1,formattedTime);
+                WordExporter(combinedResult1,formattedTime,eqMagnitude,eqAddr);
 
             }
 
@@ -753,57 +753,223 @@ public class SeismicTriggerService {
 
     }
 
-    private void WordExporter(String combinedResult1,String formattedTime) {
+    private void WordExporter(String combinedResult1,String formattedTime,Double eqMagnitude,String eqAddr) throws IOException {
 
         // 创建一个 XWPFDocument 对象
         XWPFDocument document = new XWPFDocument();
-
-        // 设置页面边距
 //        setPageMargins(document);
 
-        // 第一行：对内掌握，黑体三号，右对齐
-        XWPFParagraph firstParagraph = document.createParagraph();
-        firstParagraph.setAlignment(ParagraphAlignment.RIGHT); // 右对齐
-        XWPFRun firstRun = firstParagraph.createRun();
-        firstRun.setText("对内掌握");
-        firstRun.setFontFamily("黑体");  // 黑体
-        firstRun.setFontSize(16);  // 三号字体
-
         // 空3行
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             document.createParagraph();
         }
 
-        // 第二行：地震应急辅助决策信息，居中，方正小标宋简体，44号，红色
+        // 第一行：地震应急辅助决策信息，居中，方正小标宋简体，44号，红色
+        XWPFParagraph firstParagraph = document.createParagraph();
+        firstParagraph.setAlignment(ParagraphAlignment.CENTER); // 居中
+        XWPFRun firstRun = firstParagraph.createRun();
+        firstRun.setText("雅安应急值班信息");
+        firstRun.setFontFamily("方正小标宋简体");  // 方正小标宋简体
+        firstRun.setFontSize(55);  // 44号字体
+        firstRun.setColor("FF0000");  // 红色
+
+        // 第二行：〔2025〕第XX期
         XWPFParagraph secondParagraph = document.createParagraph();
         secondParagraph.setAlignment(ParagraphAlignment.CENTER); // 居中
         XWPFRun secondRun = secondParagraph.createRun();
-        secondRun.setText("地震应急辅助决策信息");
-        secondRun.setFontFamily("方正小标宋简体");  // 方正小标宋简体
-        secondRun.setFontSize(40);  // 44号字体
-        secondRun.setColor("FF0000");  // 红色
+        secondRun.setText("〔2025〕第XX期");
+        secondRun.setFontFamily("仿宋_GB2312");  // 仿宋_GB2312
+        secondRun.setFontSize(16);  // 三号字体
 
         // 空1行
         document.createParagraph();
 
-        // 第三行：雅安市应急管理局 + 10个空格 + formattedTime
+        // 第三行：雅安市应急管理局 签发人：叶 飞
         XWPFParagraph thirdParagraph = document.createParagraph();
-        thirdParagraph.setAlignment(ParagraphAlignment.LEFT); // 左对齐
+        thirdParagraph.setAlignment(ParagraphAlignment.CENTER); // 居中
         XWPFRun thirdRun = thirdParagraph.createRun();
-        thirdRun.setText("雅安市应急管理局" + "          " + formattedTime);  // 10个空格 + formattedTime
+        // 设置两部分文本，并在中间加入20个空格
+        thirdRun.setText("雅安市应急管理局" + "                    " + "签发人：叶  飞"); // 20个空格
+        thirdRun.setFontFamily("仿宋_GB2312"); // 仿宋_GB2312
+        thirdRun.setFontSize(16); // 三号字体
 
-        // 剩下的内容：combinedResult1
+        // 在第三行下方添加一条红色的下划线（0.5磅宽）
+        XWPFParagraph lineParagraph = document.createParagraph(); // 新的一段
+        XWPFRun lineRun = lineParagraph.createRun(); // 创建新的run来设置下划线
+        lineRun.setText(""); // 空文本（只插入下划线）
+        lineRun.setUnderline(UnderlinePatterns.SINGLE); // 设置下划线
+        lineRun.setColor("FF0000"); // 设置颜色为红色
+        lineRun.setFontSize(1); // 设置字体大小为1（较小值，仅用于显示线条）
+
+
+        // 创建第四行：eqAddr发生eqMagnitude级地震
+        XWPFParagraph fourthParagraph = document.createParagraph();
+        fourthParagraph.setAlignment(ParagraphAlignment.CENTER); // 设置居中对齐
+
+        // 创建运行并插入文本
+        XWPFRun fourthRun = fourthParagraph.createRun();
+
+        // 构建地震信息文本
+        String earthquakeInfo = eqAddr + "发生" + eqMagnitude + "级地震";
+
+        // 设置文本内容
+        fourthRun.setText(earthquakeInfo);
+        fourthRun.setFontFamily("方正小标宋简体"); // 设置字体为仿宋_GB2312
+        fourthRun.setFontSize(22); // 设置字体大小为二号（22号字体）
+
+
+        document.createParagraph();
+
+        // 创建第五行：一、震情情况
+        XWPFParagraph fifthParagraph = document.createParagraph();
+        fifthParagraph.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
+        // 设置首行缩进2个字符
+        fifthParagraph.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
+        // 创建运行并插入文本
+        XWPFRun fifthRun = fifthParagraph.createRun();
+        // 设置文本内容
+        fifthRun.setText("一、震情情况");
+        fifthRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
+        fifthRun.setFontSize(16); // 设置字体大小为16号（即三号字体）
+
+
+        // 第一部分剩下的内容：combinedResult1
         XWPFParagraph contentParagraph = document.createParagraph();
+        contentParagraph.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
+        // 设置首行缩进2个字符
+        contentParagraph.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
         XWPFRun contentRun = contentParagraph.createRun();
         contentRun.setText(combinedResult1);
-
-        // 设置字体为宋体、字号为四号
-        contentRun.setFontFamily("宋体");
+        contentRun.setFontFamily("仿宋_GB2312");
         contentRun.setFontSize(16);  // 四号字体
 
+        // 创建第六行： 二、灾情评估
+        XWPFParagraph sixParagraph = document.createParagraph();
+        sixParagraph.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
+        // 设置首行缩进2个字符
+        sixParagraph.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
+        // 创建运行并插入文本
+        XWPFRun sixRun = sixParagraph.createRun();
+        // 设置文本内容
+        sixRun.setText("二、灾情评估");
+        sixRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
+        sixRun.setFontSize(16); // 设置字体大小为16号（即三号字体）
+
+        // 第二部分剩下的内容：combinedResult1
+        XWPFParagraph contentParagraph1 = document.createParagraph();
+        contentParagraph1.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
+        // 设置首行缩进2个字符
+        contentParagraph1.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
+        XWPFRun contentRun1 = contentParagraph1.createRun();  // 这里应该使用 contentParagraph1
+        contentRun1.setText(combinedResult1);
+        contentRun1.setFontFamily("仿宋_GB2312");
+        contentRun1.setFontSize(16);  // 四号字体
+
+
+        // 创建第七行：  详情续报。
+        XWPFParagraph sevenParagraph = document.createParagraph();
+        sevenParagraph.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
+        // 设置首行缩进2个字符
+        sevenParagraph.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
+        // 创建运行并插入文本
+        XWPFRun sevenRun = sevenParagraph.createRun();
+        // 设置文本内容
+        sevenRun.setText("详情续报。");
+        sevenRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
+        sevenRun.setFontSize(16); // 设置字体大小为16号（即三号字体）
+
+        document.createParagraph();
+
+        // 创建第八行：雅安市应急管理 2025年01月07日
+        XWPFParagraph eightParagraph = document.createParagraph();
+        eightParagraph.setAlignment(ParagraphAlignment.CENTER); // 设置居中对齐
+        // 创建运行并插入文本
+        XWPFRun eightRun = eightParagraph.createRun();
+        // 设置第一部分文本
+        eightRun.setText("雅安市应急管理");
+        // 手动换行
+        eightRun.addBreak(); // 添加换行
+        // 设置第二部分文本
+        eightRun.setText(formattedTime);
+        eightRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
+        eightRun.setFontSize(16); // 设置字体大小为16号（即三号字体）
+
+        document.createParagraph();
+        document.createParagraph();
+
+        // 创建表格
+        XWPFTable table = document.createTable(1, 1); // 创建一个1行1列的表格
+
+        // 获取表格的第一行和第一列的单元格
+        XWPFTableRow tableRow = table.getRow(0);
+        XWPFTableCell cell = tableRow.getCell(0);
+        cell.setWidth("8888");  // 5676 Twips = 15cm
+
+        // 获取单元格的段落并设置水平垂直居中
+        XWPFParagraph paragraph = cell.getParagraphs().get(0);
+        paragraph.setAlignment(ParagraphAlignment.CENTER); // 水平居中
+        paragraph.setVerticalAlignment(TextAlignment.CENTER); // 垂直居中
+
+        // 设置段落格式：单倍行距，段前段后为0
+        paragraph.setSpacingBetween(1.0);  // 设置单倍行距
+        paragraph.setSpacingBefore(0);     // 设置段前间距为0
+        paragraph.setSpacingAfter(0);      // 设置段后间距为0
+
+        // 强制设置单元格字体，以避免默认样式的影响
+        XWPFRun runInsideTable = paragraph.createRun();
+        runInsideTable.setFontFamily("仿宋_GB2312"); // 强制设置字体为仿宋_GB2312
+        runInsideTable.setFontSize(14); // 强制设置字体大小为14
+        runInsideTable.setText("报：市委总值班室、市政府总值班室");
+
+
+        // 获取表格的边框对象，检查是否已经设置边框，如果未设置，则添加边框
+        CTTblBorders borders = table.getCTTbl().getTblPr().addNewTblBorders();
+
+        // 设置表格单元格边框为黑色
+        CTBorder topBorder = borders.addNewTop();
+        topBorder.setVal(STBorder.SINGLE);  // 单线
+        topBorder.setSz(BigInteger.valueOf(12)); // 边框线宽度为12磅
+        topBorder.setColor("000000");  // 黑色边框
+
+        CTBorder bottomBorder = borders.addNewBottom();
+        bottomBorder.setVal(STBorder.SINGLE);  // 单线
+        bottomBorder.setSz(BigInteger.valueOf(12)); // 边框线宽度为12磅
+        bottomBorder.setColor("000000");  // 黑色边框
+
+
+        // 设置左右边框为空，即没有边框
+        CTBorder leftBorder = borders.addNewLeft();
+        leftBorder.setVal(STBorder.NIL);  // 左边框为空
+        CTBorder rightBorder = borders.addNewRight();
+        rightBorder.setVal(STBorder.NIL);  // 右边框为空
+
+
+
+
+
+        // 创建第十行：值班员：XXX   电话：0835-2220001  时间：01月07日16时11分
+        XWPFParagraph tenthParagraph = document.createParagraph();
+        tenthParagraph.setAlignment(ParagraphAlignment.CENTER); // 设置左对齐
+        // 创建运行并插入文本
+        XWPFRun tenthRun = tenthParagraph.createRun();
+        // 设置文本内容
+        tenthRun.setText("值班员：XXX   电话：0835-2220001  时间:"+formattedTime);
+        tenthRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
+        tenthRun.setFontSize(14); // 设置字体大小为16号（即三号字体）
+
+        // 获取所有段落并设置格式
+        for (XWPFParagraph paragraph1 : document.getParagraphs()) {
+            paragraph1.setSpacingBetween(1.0);  // 设置单倍行距
+            paragraph1.setSpacingBefore(0);  // 设置段前间距为0
+            paragraph1.setSpacingAfter(0);   // 设置段后间距为0
+        }
+
         // 构造文件路径
-        String fileName = formattedTime + "级地震（辅助决策信息一）.docx";
+        String fileName = formattedTime + "级地震（值班信息）.docx";
         String filePath = "C:/Users/Smile/Desktop/" + fileName;
+        // 设置页面边距
+        setPageMargins(document,filePath);
+
 
         // 写入文件
         try (FileOutputStream out = new FileOutputStream(filePath)) {
@@ -812,34 +978,21 @@ public class SeismicTriggerService {
             e.printStackTrace();
         }
     }
-    // 设置页面边距
-//    private static void setPageMargins(XWPFDocument document) {
-//        // 获取页面设置对象
-//        XWPFStyles styles = document.getStyles();
-//        if (styles != null) {
-//            XWPFStyle style = styles.getStyle("Normal");
-//            if (style == null) {
-//                style = styles.createStyle("Normal");
-//            }
-//            XWPFParagraph paragraph = style.getParagraph();
-//            if (paragraph == null) {
-//                paragraph = style.createParagraph();
-//            }
-//
-//            // 设置页面边距：上3.8，下3.6，左2.8，右2.6
-//            XmlCursor cursor = document.getDocument().newCursor();
-//            cursor.selectPath("./*");
-//            cursor.toNextToken();
-//
-//            cursor.beginElement("w:sectPr");
-//            cursor.insertElement("w:pgMar", "w:sectPr");
-//
-//            cursor.setAttributeText("w:top", "380"); // 设置上边距为3.8cm
-//            cursor.setAttributeText("w:bottom", "360"); // 设置下边距为3.6cm
-//            cursor.setAttributeText("w:left", "280"); // 设置左边距为2.8cm
-//            cursor.setAttributeText("w:right", "260"); // 设置右边距为2.6cm
-//        }
-//    }
+//     设置页面边距
+    public void setPageMargins(XWPFDocument document,String filePath) throws IOException {
+        // 获取页面设置对象
+        org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+        CTPageMar pageMargins = sectPr.addNewPgMar();
+//        获取页面边距设置对象
+
+////         设置上下左右边距（单位：Twips，1 cm = 567.6 Twips）
+        pageMargins.setTop(3.7 * 567.6);  // 上边距 3.7厘米转换为Twips
+        pageMargins.setBottom(3.5 * 567.6);  // 下边距 3.5厘米转换为Twips
+        pageMargins.setLeft(2.8 * 567.6);  // 左边距 2.8厘米转换为Twips
+        pageMargins.setRight(2.6 * 567.6);  // 右边距 2.6厘米转换为Twips
+//         保存修改
+        document.getDocument().save(new File(filePath));
+    }
 
     /**
      * @param eqqueueId 触发地震接口返回的eqqueueId
