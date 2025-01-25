@@ -7,6 +7,7 @@ import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.system.domain.dto.EqEventDTO;
 import com.ruoyi.system.domain.entity.AssessmentIntensity;
 import com.ruoyi.system.domain.entity.AssessmentOutput;
+import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.mapper.AssessmentOutputMapper;
 import com.ruoyi.system.service.IAssessmentBatchService;
 import com.ruoyi.system.service.IAssessmentOutputService;
@@ -29,6 +30,24 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
     @Resource
     private AssessmentOutputMapper assessmentOutputMapper;
 
+
+    /**
+     * @param event 事件编码
+     * @author: xiaodemos
+     * @date: 2025/1/21 16:37
+     * @description: 查询数据库中是否存在数据
+     * @return: 如果存在返回true，不存在返回false
+     */
+    public boolean isEventSaved(String event) {
+
+        LambdaQueryWrapper<AssessmentOutput> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AssessmentOutput::getId, event);
+        wrapper.eq(AssessmentOutput::getIsDeleted, 0);
+
+        boolean exists = assessmentOutputMapper.exists(wrapper);
+
+        return exists;
+    }
 
     /**
      * @param event 地震事件编码
