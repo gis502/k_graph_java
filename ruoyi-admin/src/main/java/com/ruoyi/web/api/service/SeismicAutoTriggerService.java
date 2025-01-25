@@ -1,5 +1,6 @@
 package com.ruoyi.web.api.service;
 
+import ch.qos.logback.core.util.TimeUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.EqList;
@@ -11,12 +12,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.retry.backoff.Sleeper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +46,7 @@ public class SeismicAutoTriggerService {
      * @date: 2025/1/11 16:43
      * @description: 自动触发地震，每十分钟进行正式地震数据的同步
      */
-    @Scheduled(fixedRate = 10000)  // 1分钟同步一次数据
+    @Scheduled(fixedRate = 300000)  // 1分钟同步一次数据
     public void autoGainSeismicData() {
 
         log.info("开始进行同步正式地震数据...");
@@ -89,7 +95,7 @@ public class SeismicAutoTriggerService {
         }
 
         // 自动评估正式地震数据
-        autoAssessmentNormal();
+        // autoAssessmentNormal();
     }
 
     /**
@@ -180,7 +186,7 @@ public class SeismicAutoTriggerService {
             params.setEqDepth(Double.valueOf(resultEqListDTO.getDepth()));
             params.setEqType(resultEqListDTO.getType());
 
-            imputation(params);
+            // imputation(params);
 
         }
 
@@ -192,18 +198,22 @@ public class SeismicAutoTriggerService {
      * @date: 2025/1/25 15:34
      * @description: 将接入的正式地震数据的 eqqueueId值 进行补缺
      */
-    public void imputation(EqEventTriggerDTO data) {
+    @Async
+    public CompletableFuture<Void> imputation(EqEventTriggerDTO data) {
 
         // 1. 先把数据保存到第三方库
         String eqqueueId = thirdPartyCommonApi.getSeismicTriggerByPost(data);
         eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
         // 2. 把得到的 eqqueueid 值与为空的数据进行填补
 
+        log.info("eqqueueId为---------------------> :{}", eqqueueId);
+
         eqListService.updateById(EqList.builder()
                 .eqid(data.getEvent())
                 .eqqueueId(eqqueueId)
                 .build());
 
+        return CompletableFuture.completedFuture(null);
     }
 
 }
