@@ -114,6 +114,7 @@ public class SeismicAutoTriggerService {
         // 只保留 CC 和 SC，优先级：CC > SC
         typePriority.put("CC", 1);
         typePriority.put("SC", 2);
+        typePriority.put("CD", 3);
 
         // 使用一个 Map 来存储每个 (eqid + name) 的数据
         Map<String, ResultAutoTriggerVO> resultMap = new HashMap<>();
