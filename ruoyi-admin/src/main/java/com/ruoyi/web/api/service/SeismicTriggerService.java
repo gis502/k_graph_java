@@ -83,9 +83,11 @@ public class SeismicTriggerService {
     @Resource
     private YaanProvinceCityMapper yaanProvinceCityMapper;
 
-
     @Resource
     private SismiceMergencyAssistanceService sismiceMergencyAssistanceService;
+
+    @Resource
+    private SeismicTableTriggerService seismicTableTriggerService;
 
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
 
@@ -112,33 +114,34 @@ public class SeismicTriggerService {
                 throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
             }
 
-            // 数据插入到第三方数据库成功后，插入到本地数据库
-            getWithSave(params, eqqueueId);
-
-            //异步获取辅助决策报告结果
-            handleAssessmentReportAssessment(params, eqqueueId);
-            // 调用 file 方法--异步获取辅助决策（二）报告结果
-            sismiceMergencyAssistanceService.file(params, eqqueueId);
-
-            // 异步进行地震影响场灾损评估
-            handleSeismicYxcEventAssessment(params, eqqueueId);
-
-            // 异步进行乡镇级评估
-            handleTownLevelAssessment(params, eqqueueId);
-
-
-//            // 异步获取专题图评估结果
-            handleSpecializedAssessment(params, eqqueueId);
+//            // 数据插入到第三方数据库成功后，插入到本地数据库
+//            getWithSave(params, eqqueueId);
 //
-//            // 异步获取灾情报告评估结果
-            handleDisasterReportAssessment(params, eqqueueId);
+//            //异步获取辅助决策报告结果
+//            handleAssessmentReportAssessment(params, eqqueueId);
+//
+//            // 调用 file 方法--异步获取辅助决策（二）报告结果
+//            sismiceMergencyAssistanceService.file(params, eqqueueId);
 
+            // 调用 tableFile 方法--异步获取辅助决策报告
+            seismicTableTriggerService.tableFile(params, eqqueueId);
 
-
-
-
-            // 检查四个评估结果的数据是否成功
-            retrySaving(params, eqqueueId);
+//            // 异步进行地震影响场灾损评估
+//            handleSeismicYxcEventAssessment(params, eqqueueId);
+//
+//            // 异步进行乡镇级评估
+//            handleTownLevelAssessment(params, eqqueueId);
+//
+//
+////            // 异步获取专题图评估结果
+//            handleSpecializedAssessment(params, eqqueueId);
+////
+////            // 异步获取灾情报告评估结果
+//            handleDisasterReportAssessment(params, eqqueueId);
+//
+//
+//            // 检查四个评估结果的数据是否成功
+//            retrySaving(params, eqqueueId);
 
             // 返回每个阶段的保存数据状态
             return CompletableFuture.completedFuture(null);

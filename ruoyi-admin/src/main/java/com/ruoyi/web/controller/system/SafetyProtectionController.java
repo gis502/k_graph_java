@@ -21,6 +21,7 @@ import java.util.List;
 public class SafetyProtectionController {
 
     private static final Logger log = LoggerFactory.getLogger(SafetyProtectionController.class);
+
     @Autowired
     private SafetyProtectionService safetyProtectionService;
 
@@ -164,8 +165,6 @@ public class SafetyProtectionController {
 
         return safetyProtectionService.count(queryWrapper) > 0; // Returns true if a matching entry exists
     }
-
-
 }
 
 

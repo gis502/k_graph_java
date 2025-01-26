@@ -1029,7 +1029,6 @@ public class SismiceMergencyAssistanceService {
         System.out.println("-----------------------------将要开始进行书写word文档阶段-----------------------");
         WordExporter(title,result,fuJinTownResult,panduan,jianyi,cuoshi,formattedTime);
     }
-
     //计算震中距离
     // 计算地理距离的方法（单位：公里）
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -1057,7 +1056,6 @@ public class SismiceMergencyAssistanceService {
 
 
     }
-
 
     private void WordExporter( String title,String result,String fuJinTownResult,String panduan,String jianyi,String cuoshi,String formattedTime) {
 
@@ -1538,8 +1536,6 @@ public class SismiceMergencyAssistanceService {
         }
     }
 
-
-
     public void setPageMargins(XWPFDocument document) {
         // 获取页面属性
         CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
@@ -1564,7 +1560,6 @@ public class SismiceMergencyAssistanceService {
         pageSize.setH(BigInteger.valueOf((long) (29.7 * 567))); // 高度 29.7厘米
 
     }
-
 
 }
 
