@@ -79,7 +79,8 @@ public class SeismicTriggerService {
     private YaanProvinceCityMapper yaanProvinceCityMapper;
 
 
-
+    @Resource
+    private SismiceMergencyAssistanceService sismiceMergencyAssistanceService;
 
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
 
@@ -107,22 +108,26 @@ public class SeismicTriggerService {
             }
 
             // 数据插入到第三方数据库成功后，插入到本地数据库
-            getWithSave(params, eqqueueId);
+//            getWithSave(params, eqqueueId);
 
             // 异步进行地震影响场灾损评估
-            handleSeismicYxcEventAssessment(params, eqqueueId);
+//            handleSeismicYxcEventAssessment(params, eqqueueId);
 
             // 异步进行乡镇级评估
-            handleTownLevelAssessment(params, eqqueueId);
+//            handleTownLevelAssessment(params, eqqueueId);
 
             //异步获取辅助决策报告结果
-//            handleAssessmentReportAssessment(params, eqqueueId);
+            handleAssessmentReportAssessment(params, eqqueueId);
 
 //            // 异步获取专题图评估结果
-            handleSpecializedAssessment(params, eqqueueId);
+//            handleSpecializedAssessment(params, eqqueueId);
 //
 //            // 异步获取灾情报告评估结果
-            handleDisasterReportAssessment(params, eqqueueId);
+//            handleDisasterReportAssessment(params, eqqueueId);
+
+
+            // 调用 file 方法--异步获取辅助决策（二）报告结果
+            sismiceMergencyAssistanceService.file(params, eqqueueId);
 
 
             // 检查四个评估结果的数据是否成功
@@ -718,6 +723,8 @@ public class SeismicTriggerService {
                 String combinedResult1 = result + fuJinTownResult + fuJinCityResult1 + fuJinBoundaryResult1 + fuJinVillageResult1 + fuJinCountyTownResult1;
                 System.out.println(combinedResult1);
                 WordExporter(combinedResult1,formattedTime);
+
+
 
             }
 
