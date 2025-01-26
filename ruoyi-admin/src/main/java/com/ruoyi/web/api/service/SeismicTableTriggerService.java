@@ -1,20 +1,25 @@
 package com.ruoyi.web.api.service;
 
+import com.ruoyi.system.domain.SysPost;
+import org.apache.poi.xwpf.usermodel.*;
+
+
+
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
-import com.ruoyi.common.exception.*;
+import com.ruoyi.common.exception.AsyncExecuteException;
+import com.ruoyi.common.exception.DataSaveException;
+import com.ruoyi.common.exception.ParamsIsEmptyException;
+import com.ruoyi.common.exception.ThirdPartyApiException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.file.FileUtils;
-import com.ruoyi.system.domain.dto.EqEventGetYxcDTO;
-import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
-import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.domain.dto.*;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
-import org.apache.xmlbeans.XmlCursor;
-
-import com.ruoyi.system.domain.vo.*;
+import com.ruoyi.system.domain.entity.*;
+import com.ruoyi.system.domain.vo.ResultEventGetMapVO;
+import com.ruoyi.system.domain.vo.ResultEventGetPageVO;
+import com.ruoyi.system.domain.vo.ResultEventGetReportVO;
+import com.ruoyi.system.domain.vo.ResultEventGetResultTownVO;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.impl.*;
 import com.ruoyi.web.api.ThirdPartyCommonApi;
@@ -22,27 +27,29 @@ import com.ruoyi.web.core.utils.JsonParser;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblBorders;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import javax.annotation.Resource;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
-
-import java.io.FileOutputStream;
-import java.math.BigInteger;
 
 /**
  * @author: xiaodemos
@@ -52,7 +59,7 @@ import java.math.BigInteger;
 
 @Slf4j
 @Service
-public class SeismicTriggerService {
+public class SeismicTableTriggerService {
     @Resource
     private ThirdPartyCommonApi thirdPartyCommonApi;
     @Resource
@@ -83,10 +90,6 @@ public class SeismicTriggerService {
     @Resource
     private YaanProvinceCityMapper yaanProvinceCityMapper;
 
-
-    @Resource
-    private SismiceMergencyAssistanceService sismiceMergencyAssistanceService;
-
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
 
     /**
@@ -112,33 +115,27 @@ public class SeismicTriggerService {
                 throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
             }
 
-            // 数据插入到第三方数据库成功后，插入到本地数据库
-            getWithSave(params, eqqueueId);
-
+//            // 数据插入到第三方数据库成功后，插入到本地数据库
+//            getWithSave(params, eqqueueId);
+//
+//            // 异步进行地震影响场灾损评估
+//            handleSeismicYxcEventAssessment(params, eqqueueId);
+//
+//            // 异步进行乡镇级评估
+//            handleTownLevelAssessment(params, eqqueueId);
+//
             //异步获取辅助决策报告结果
             handleAssessmentReportAssessment(params, eqqueueId);
-            // 调用 file 方法--异步获取辅助决策（二）报告结果
-            sismiceMergencyAssistanceService.file(params, eqqueueId);
-
-            // 异步进行地震影响场灾损评估
-            handleSeismicYxcEventAssessment(params, eqqueueId);
-
-            // 异步进行乡镇级评估
-            handleTownLevelAssessment(params, eqqueueId);
-
-
-//            // 异步获取专题图评估结果
-            handleSpecializedAssessment(params, eqqueueId);
 //
-//            // 异步获取灾情报告评估结果
-            handleDisasterReportAssessment(params, eqqueueId);
-
-
-
+////            // 异步获取专题图评估结果
+//            handleSpecializedAssessment(params, eqqueueId);
+////
+////            // 异步获取灾情报告评估结果
+//            handleDisasterReportAssessment(params, eqqueueId);
 
 
             // 检查四个评估结果的数据是否成功
-            retrySaving(params, eqqueueId);
+//            retrySaving(params, eqqueueId);
 
             // 返回每个阶段的保存数据状态
             return CompletableFuture.completedFuture(null);
@@ -146,7 +143,6 @@ public class SeismicTriggerService {
         } catch (Exception ex) {
             // 如果事务回滚，执行补偿机制，重新保存到第三方接口
             if (eqqueueId != null) {
-
                 retryThirdPartySave(eqqueueId, params); // 调用补偿机制
             }
             throw ex;   // 抛出异常进行回滚
@@ -168,7 +164,6 @@ public class SeismicTriggerService {
         // 存储所有其他政府乡镇的距离和震中裂度
         List<YaanCountyTown> otherCountyTownDistances = new ArrayList<>();
 
-
         // 创建 SimpleDateFormat 对象，用于解析原始时间字符串
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -185,7 +180,245 @@ public class SeismicTriggerService {
                 formattedTime, eqAddr, latitude, longitude, eqMagnitude, eqDepth
         );
         System.out.println(result);
-        //震中附近乡镇计算
+
+
+        // 表格一：
+        List<List<String>> table1 = new ArrayList<>();
+        // 表头：
+        List<String> headerRow = new ArrayList<>();
+        headerRow.add("序号");
+        headerRow.add("政府名称");
+        headerRow.add("震中距");
+        headerRow.add("预估烈度");
+        headerRow.add("一般建筑设防烈度");
+        table1.add(headerRow);
+
+        // 政府名称：
+        List<YaanCountyTown> countyTownTableList1 = yaanCountyTownMapper.selectList(null);
+        // 创建一个列表用于存储政府名称
+        List<String> countyTownNames = new ArrayList<>();
+        // 遍历所有县镇记录，提取政府名称
+        for (YaanCountyTown countyTown : countyTownTableList1) {
+            // 获取县镇名称
+            String countyTownName = countyTown.getCountyTownName();
+            // 将政府名称添加到列表中
+            countyTownNames.add(countyTownName);
+        }
+        // 获取政府数量
+        int rowCount = countyTownTableList1.size(); // 获取政府名称这一列的数量
+
+        // 震中距：
+        List<String> distanceColumn1 = new ArrayList<>();
+        // 创建上传经纬度的点
+        String wkt1 = "POINT(" + longitude + " " + latitude + ")";
+        WKTReader reader1 = new WKTReader();
+        Point uploadPoint1 = null;
+        try {
+            uploadPoint1 = (Point) reader1.read(wkt1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        double uploadLat1 = uploadPoint1.getY(); // 上传点的纬度
+        double uploadLon1 = uploadPoint1.getX(); // 上传点的经度
+        // 特殊的政府乡镇距离变量
+        double yaanCityGovDistance2 = Double.MAX_VALUE;
+        double sichuanProvGovDistance2 = Double.MAX_VALUE;
+
+        // 特殊政府名称
+        String yaanCityGovName = "雅安市政府";
+        String sichuanProvGovName = "四川省政府";
+
+        // 遍历所有政府相关的乡镇，计算震中距
+        for (YaanCountyTown countyTown : countyTownTableList1) {
+            Geometry geom = countyTown.getGeom();
+            if (geom != null && geom instanceof Point) {
+                // 获取政府乡镇的经纬度
+                Point countyTownPoint = (Point) geom;
+                double countyTownLat = countyTownPoint.getY(); // 纬度
+                double countyTownLon = countyTownPoint.getX(); // 经度
+
+                // 计算震中距（单位：米）
+                double distanceToCountyTown1 = calculateDistance(uploadLat1, uploadLon1, countyTownLat, countyTownLon);
+
+                // 特殊处理雅安市政府和四川省政府
+                if (yaanCityGovName.equals(countyTown.getCountyTownName())) {
+                    yaanCityGovDistance2 = distanceToCountyTown1;
+                } else if (sichuanProvGovName.equals(countyTown.getCountyTownName())) {
+                    sichuanProvGovDistance2 = distanceToCountyTown1;
+                }
+
+                // 四舍五入取整（单位：公里）
+                int roundedDistance = (int) Math.round(distanceToCountyTown1 / 1000);
+
+                // 将四舍五入后的整数结果转换为字符串，并加上单位“公里”
+                distanceColumn1.add(roundedDistance + "公里");
+            } else {
+                // 如果 geom 为空，则填入默认值
+                distanceColumn1.add("N/A");
+            }
+        }
+
+        // 预估烈度：
+        // 存储预估烈度
+        List<String> estimatedIntensities = new ArrayList<>(); // 修改为 List<String> 以存储带单位的字符串
+        // 预估烈度计算公式的常数
+        for (YaanCountyTown countyTown : countyTownTableList1) {
+            Geometry geom = countyTown.getGeom();
+            if (geom != null && geom instanceof Point) {
+                Point countyTownPoint = (Point) geom;
+                double countyTownLat = countyTownPoint.getY();
+                double countyTownLon = countyTownPoint.getX();
+                double distanceToCountyTown = calculateDistance(uploadLat1, uploadLon1, countyTownLat, countyTownLon);
+                // 进行烈度计算
+                double CountyTownIntensity;
+                if (eqMagnitude > 5.5) {
+                    // 震级大于5.5时使用这个公式
+                    CountyTownIntensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distanceToCountyTown + 24)) - 0.4;
+                } else {
+                    // 震级小于或等于5.5时使用这个公式
+                    CountyTownIntensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distanceToCountyTown + 24)) - 0.6;
+                }
+                int CountyTownRoundedIntensity = (int) Math.round(CountyTownIntensity);
+
+                // 将预估烈度转换为带单位的字符串
+                estimatedIntensities.add(CountyTownRoundedIntensity + "度"); // 添加单位“度”
+            }
+        }
+
+        // 一般建筑设防烈度：
+        // 创建一个列表用于存储建筑设防烈度
+        List<String> SeismicFortificationIntensity = new ArrayList<>();
+
+        // 遍历所有县镇记录，提取建筑设防烈度
+        for (YaanCountyTown countyTown : countyTownTableList1) {
+            // 获取建筑设防烈度
+            String countyTownSeismicFortificationIntensity = String.valueOf(countyTown.getSeismicFortificationIntensity());
+            // 将建筑设防烈度添加到列表中
+            SeismicFortificationIntensity.add(countyTownSeismicFortificationIntensity + "度");
+        }
+
+        // 序号：
+        for (int i = 0; i < rowCount; i++) {
+            List<String> row = new ArrayList<>();
+            row.add(String.valueOf(i + 1)); // 序号从1开始
+            row.add(countyTownTableList1.get(i).getCountyTownName()); // 政府名称
+            row.add(distanceColumn1.get(i)); //震中距
+            row.add(String.valueOf(estimatedIntensities.get(i))); // 预估烈度
+            row.add(SeismicFortificationIntensity.get(i)); // 一般建筑设防烈度
+            table1.add(row);
+        }
+
+        // 表格二：
+        List<List<String>> table2 = new ArrayList<>();
+        // 表头：
+        List<String> headerRow2 = new ArrayList<>();
+        headerRow2.add("序号");
+        headerRow2.add("乡镇名称");
+        headerRow2.add("震中距");
+        headerRow2.add("预估烈度");
+        headerRow2.add("一般建筑设防烈度");
+        table2.add(headerRow2);
+
+        // 乡镇名称：
+        List<YaanVillages> villageTableList = yaanVillagesMapper.selectList(null);
+        // 创建一个列表用于存储乡镇名称
+        List<String> villageNames = new ArrayList<>();
+        // 遍历所有乡镇记录，提取政府名称
+        for (YaanVillages village : villageTableList) {
+            // 获取乡镇名称
+            String villageName = village.getVillagesName();
+            // 将政府名称添加到列表中
+            villageNames.add(villageName);
+        }
+
+        // 获取政府数量
+        int rowCount2 = villageTableList.size(); // 获取政府名称这一列的数量
+
+        // 震中距：
+        List<String> distanceColumn2 = new ArrayList<>(); // 修改为 List<String> 以存储带单位的字符串
+        // 创建上传经纬度的点
+        String wkt2 = "POINT(" + longitude + " " + latitude + ")";
+        WKTReader reader2 = new WKTReader();
+        Point uploadPoint2 = null;
+        try {
+            uploadPoint2 = (Point) reader2.read(wkt2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        double uploadLat2 = uploadPoint2.getY(); // 上传点的纬度
+        double uploadLon2 = uploadPoint2.getX(); // 上传点的经度
+        // 遍历所有的乡镇，计算震中距
+        for (YaanVillages village : villageTableList) {
+            Geometry geom = village.getGeom();
+            if (geom != null && geom instanceof Point) {
+                // 获取乡镇的经纬度
+                Point villagePoint = (Point) geom;
+                double villageLat = villagePoint.getY(); // 纬度
+                double villageLon = villagePoint.getX(); // 经度
+
+                // 计算震中到乡镇点的距离（单位：米）
+                double distanceToVillageMeters = calculateDistance(uploadLat2, uploadLon2, villageLat, villageLon);
+
+                // 将距离转换为公里，并四舍五入取整
+                int distanceToVillageKm = (int) Math.round(distanceToVillageMeters / 1000.0);
+
+                // 将四舍五入后的整数结果转换为字符串，并加上单位“公里”
+                distanceColumn2.add(distanceToVillageKm + "公里");
+            }
+        }
+
+
+        // 预估烈度：
+        // 存储预估烈度
+        List<String> estimatedIntensities2 = new ArrayList<>(); // 修改为 List<String> 以存储带单位的字符串
+        // 预估烈度计算公式的常数
+        for (YaanVillages village : villageTableList) {
+            Geometry geom = village.getGeom();
+            if (geom != null && geom instanceof Point) {
+                Point villagePoint = (Point) geom;
+                double villageLat = villagePoint.getY(); // 纬度
+                double villageLon = villagePoint.getX(); // 经度
+                double distanceToVillage = calculateDistance(uploadLat2, uploadLon2, villageLat, villageLon);
+                // 进行烈度计算
+                double villageIntensity;
+                if (eqMagnitude > 5.5) {
+                    // 震级大于5.5时使用这个公式
+                    villageIntensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distanceToVillage + 24)) - 0.4;
+                } else {
+                    // 震级小于或等于5.5时使用这个公式
+                    villageIntensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distanceToVillage + 24)) - 0.6;
+                }
+                int villageRoundedIntensity = (int) Math.round(villageIntensity);
+
+                // 将预估烈度转换为带单位的字符串
+                estimatedIntensities2.add(villageRoundedIntensity + "度"); // 添加单位“度”
+            }
+        }
+
+        // 一般建筑设防烈度：
+        // 创建一个列表用于存储建筑设防烈度
+        List<String> SeismicFortificationIntensity2 = new ArrayList<>();
+
+        // 遍历所有县镇记录，提取建筑设防烈度
+        for (YaanVillages village : villageTableList) {
+            // 获取建筑设防烈度
+            String villageSeismicFortificationIntensity = String.valueOf(village.getSeismicFortificationIntensity());
+            // 将建筑设防烈度添加到列表中
+            SeismicFortificationIntensity2.add(villageSeismicFortificationIntensity + "度");
+        }
+
+        // 序号：
+        for (int i = 0; i < rowCount2; i++) {
+            List<String> row = new ArrayList<>();
+            row.add(String.valueOf(i + 1)); // 序号从1开始
+            row.add(villageNames.get(i)); // 政府名称
+            row.add(String.valueOf(distanceColumn2.get(i))); //震中距
+            row.add(String.valueOf(estimatedIntensities2.get(i))); // 预估烈度
+            row.add(SeismicFortificationIntensity2.get(i)); // 一般建筑设防烈度
+            table2.add(row);
+        }
+
+        // 震中附近乡镇计算
         if (eqName.contains("四川")) {
             //调用数据库yaan_prvince_town表里的各个全省乡镇经纬度geom类型和latitude，longitude 循环计算所有的距离，取靠近上传经纬度最小距离值
             // 查询所有乡镇的经纬度（geom字段）
@@ -219,7 +452,7 @@ public class SeismicTriggerService {
 
                     // 计算震中到乡镇点的距离（单位：米）
                     double distanceToCountyTown = calculateDistance(uploadLat, uploadLon, townLat, townLon);
-//                    otherCountyTownDistances.add(new YaanCountyTown(countyTown.getCountyTownName(), distanceToCountyTown, intensity));
+//                  otherCountyTownDistances.add(new YaanCountyTown(countyTown.getCountyTownName(), distanceToCountyTown, intensity));
 
                     // 计算两点之间的距离（单位：米）
                     if (distanceToCountyTown < minDistance) {
@@ -355,7 +588,7 @@ public class SeismicTriggerService {
 
                 //*****************************************************
 
-                //初步评估
+                // 初步评估
                 // 公式部分
 
                 double intensity;  //震中点最大烈度（烈度衰减长轴计算结果）
@@ -462,11 +695,10 @@ public class SeismicTriggerService {
                         }
                     }
                 }
-
-// 合并乡镇和村庄的结果
+                // 合并乡镇和村庄的结果
                 StringBuilder finalResult = new StringBuilder();
 
-// 如果所有乡镇和村庄的烈度都与 roundedIntensity 相等，则输出 "全境"
+                // 如果所有乡镇和村庄的烈度都与 roundedIntensity 相等，则输出 "全境"
                 if (countyTownsMatchCount == countyTownList.size() && villagesMatchCount == villageList.size()) {
                     finalResult.append("(主要涉及全境)");
                 } else {
@@ -496,10 +728,9 @@ public class SeismicTriggerService {
                 // 注：StringBuilder
                 StringBuilder zhuResult = new StringBuilder();
 
-// 根据烈度生成描述
+                // 根据烈度生成描述
                 for (int i = 1; i <= roundedIntensity; i++) {
                     zhuResult.append("地震烈度").append(i).append("度主要现象为：");
-
                     if (i == 0 || i == 1) {
                         zhuResult.append("仅仪器能记录到，人一般无感。");
                     } else if (i == 2) {
@@ -561,9 +792,8 @@ public class SeismicTriggerService {
                 String zhuResult1 = String.format("注：%s。", zhuResult.toString());
                 System.out.println(zhuResult1);
 
-
-                WordExporter(combinedResult, formattedTime,eqMagnitude,eqAddr);
-
+                System.out.println("33333333333333333333333333333333333333333333333333");
+                WordExporter(combinedResult, formattedTime,table1,table2);
             }
 
             //不在雅安市地震
@@ -724,16 +954,35 @@ public class SeismicTriggerService {
                 // 合并所有字符串
                 String combinedResult1 = result + fuJinTownResult + fuJinCityResult1 + fuJinBoundaryResult1 + fuJinVillageResult1 + fuJinCountyTownResult1;
                 System.out.println(combinedResult1);
-                WordExporter(combinedResult1,formattedTime,eqMagnitude,eqAddr);
 
+                System.out.println("101010101010");
+
+                WordExporter(combinedResult1,formattedTime,table1,table2);
             }
-
         }
 
 
     }
-    //计算震中距离
-    // 计算地理距离的方法（单位：公里）
+    // 设置表格边框
+    private void setTableBorders(XWPFTable table) {
+        // 设置表格外边框
+        CTTblBorders borders = table.getCTTbl().getTblPr().getTblBorders();
+        borders.getTop().setVal(STBorder.SINGLE);
+        borders.getBottom().setVal(STBorder.SINGLE);
+        borders.getLeft().setVal(STBorder.SINGLE);
+        borders.getRight().setVal(STBorder.SINGLE);
+        borders.getInsideH().setVal(STBorder.SINGLE);  // 内部水平边框
+        borders.getInsideV().setVal(STBorder.SINGLE);  // 内部垂直边框
+
+        // 如果想更改颜色或者宽度
+        borders.getTop().setSpace(BigInteger.valueOf(5));
+        borders.getBottom().setSpace(BigInteger.valueOf(5));
+        borders.getLeft().setSpace(BigInteger.valueOf(5));
+        borders.getRight().setSpace(BigInteger.valueOf(5));
+        borders.getInsideH().setSpace(BigInteger.valueOf(5));
+        borders.getInsideV().setSpace(BigInteger.valueOf(5));
+    }
+
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final double R = 6371; // 地球半径，单位：公里
 
@@ -760,223 +1009,236 @@ public class SeismicTriggerService {
 
     }
 
-    private void WordExporter(String combinedResult1,String formattedTime,Double eqMagnitude,String eqAddr) throws IOException {
+
+    private void WordExporter(String combinedResult1,String formattedTime,List<List<String>> tableData1,List<List<String>> tableData2) {
+
+        System.out.println("44444444444444444444");
+
+        System.out.println("combinedResult1 的数据: " + combinedResult1);
+        System.out.println("formattedTime 的数据: " + formattedTime);
+        // 打印 tableData1 的数据
+        System.out.println("TableData1:");
+        for (List<String> row : tableData1) {
+            for (String cell : row) {
+                System.out.print(cell + "\t"); // 使用制表符分隔单元格内容
+            }
+            System.out.println(); // 换行，表示一行结束
+        }
+
+        // 打印 tableData2 的数据
+        System.out.println("TableData2:");
+        for (List<String> row : tableData2) {
+            for (String cell : row) {
+                System.out.print(cell + "\t"); // 使用制表符分隔单元格内容
+            }
+            System.out.println(); // 换行，表示一行结束
+        }
+
 
         // 创建一个 XWPFDocument 对象
         XWPFDocument document = new XWPFDocument();
+
+        // 设置页面边距
 //        setPageMargins(document);
 
+        // 第一行：对内掌握，黑体三号，右对齐
+        XWPFParagraph firstParagraph = document.createParagraph();
+        firstParagraph.setAlignment(ParagraphAlignment.RIGHT); // 右对齐
+        XWPFRun firstRun = firstParagraph.createRun();
+        firstRun.setText("对内掌握");
+        firstRun.setFontFamily("黑体");  // 黑体
+        firstRun.setFontSize(16);  // 三号字体
+
         // 空3行
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             document.createParagraph();
         }
 
-        // 第一行：地震应急辅助决策信息，居中，方正小标宋简体，44号，红色
-        XWPFParagraph firstParagraph = document.createParagraph();
-        firstParagraph.setAlignment(ParagraphAlignment.CENTER); // 居中
-        XWPFRun firstRun = firstParagraph.createRun();
-        firstRun.setText("雅安应急值班信息");
-        firstRun.setFontFamily("方正小标宋简体");  // 方正小标宋简体
-        firstRun.setFontSize(55);  // 44号字体
-        firstRun.setColor("FF0000");  // 红色
-
-        // 第二行：〔2025〕第XX期
+        // 第二行：地震应急辅助决策信息，居中，方正小标宋简体，44号，红色
         XWPFParagraph secondParagraph = document.createParagraph();
         secondParagraph.setAlignment(ParagraphAlignment.CENTER); // 居中
         XWPFRun secondRun = secondParagraph.createRun();
-        secondRun.setText("〔2025〕第XX期");
-        secondRun.setFontFamily("仿宋_GB2312");  // 仿宋_GB2312
-        secondRun.setFontSize(16);  // 三号字体
+        secondRun.setText("地震应急辅助决策信息");
+        secondRun.setFontFamily("方正小标宋简体");  // 方正小标宋简体
+        secondRun.setFontSize(40);  // 44号字体
+        secondRun.setColor("FF0000");  // 红色
 
         // 空1行
         document.createParagraph();
 
-        // 第三行：雅安市应急管理局 签发人：叶 飞
+        // 第三行：雅安市应急管理局 + 10个空格 + formattedTime
         XWPFParagraph thirdParagraph = document.createParagraph();
-        thirdParagraph.setAlignment(ParagraphAlignment.CENTER); // 居中
+        thirdParagraph.setAlignment(ParagraphAlignment.LEFT); // 左对齐
         XWPFRun thirdRun = thirdParagraph.createRun();
-        // 设置两部分文本，并在中间加入20个空格
-        thirdRun.setText("雅安市应急管理局" + "                    " + "签发人：叶  飞"); // 20个空格
-        thirdRun.setFontFamily("仿宋_GB2312"); // 仿宋_GB2312
-        thirdRun.setFontSize(16); // 三号字体
+        thirdRun.setText("雅安市应急管理局" + "          " + formattedTime);  // 10个空格 + formattedTime
 
-        // 在第三行下方添加一条红色的下划线（0.5磅宽）
-        XWPFParagraph lineParagraph = document.createParagraph(); // 新的一段
-        XWPFRun lineRun = lineParagraph.createRun(); // 创建新的run来设置下划线
-        lineRun.setText(""); // 空文本（只插入下划线）
-        lineRun.setUnderline(UnderlinePatterns.SINGLE); // 设置下划线
-        lineRun.setColor("FF0000"); // 设置颜色为红色
-        lineRun.setFontSize(1); // 设置字体大小为1（较小值，仅用于显示线条）
-
-
-        // 创建第四行：eqAddr发生eqMagnitude级地震
-        XWPFParagraph fourthParagraph = document.createParagraph();
-        fourthParagraph.setAlignment(ParagraphAlignment.CENTER); // 设置居中对齐
-
-        // 创建运行并插入文本
-        XWPFRun fourthRun = fourthParagraph.createRun();
-
-        // 构建地震信息文本
-        String earthquakeInfo = eqAddr + "发生" + eqMagnitude + "级地震";
-
-        // 设置文本内容
-        fourthRun.setText(earthquakeInfo);
-        fourthRun.setFontFamily("方正小标宋简体"); // 设置字体为仿宋_GB2312
-        fourthRun.setFontSize(22); // 设置字体大小为二号（22号字体）
-
-
-        document.createParagraph();
-
-        // 创建第五行：一、震情情况
-        XWPFParagraph fifthParagraph = document.createParagraph();
-        fifthParagraph.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
-        // 设置首行缩进2个字符
-        fifthParagraph.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
-        // 创建运行并插入文本
-        XWPFRun fifthRun = fifthParagraph.createRun();
-        // 设置文本内容
-        fifthRun.setText("一、震情情况");
-        fifthRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
-        fifthRun.setFontSize(16); // 设置字体大小为16号（即三号字体）
-
-
-        // 第一部分剩下的内容：combinedResult1
+        // 剩下的内容：combinedResult1
         XWPFParagraph contentParagraph = document.createParagraph();
-        contentParagraph.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
-        // 设置首行缩进2个字符
-        contentParagraph.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
         XWPFRun contentRun = contentParagraph.createRun();
         contentRun.setText(combinedResult1);
-        contentRun.setFontFamily("仿宋_GB2312");
+
+        // 设置字体为宋体、字号为四号
+        contentRun.setFontFamily("宋体");
         contentRun.setFontSize(16);  // 四号字体
 
-        // 创建第六行： 二、灾情评估
-        XWPFParagraph sixParagraph = document.createParagraph();
-        sixParagraph.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
-        // 设置首行缩进2个字符
-        sixParagraph.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
-        // 创建运行并插入文本
-        XWPFRun sixRun = sixParagraph.createRun();
-        // 设置文本内容
-        sixRun.setText("二、灾情评估");
-        sixRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
-        sixRun.setFontSize(16); // 设置字体大小为16号（即三号字体）
-
-        // 第二部分剩下的内容：combinedResult1
-        XWPFParagraph contentParagraph1 = document.createParagraph();
-        contentParagraph1.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
-        // 设置首行缩进2个字符
-        contentParagraph1.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
-        XWPFRun contentRun1 = contentParagraph1.createRun();  // 这里应该使用 contentParagraph1
-        contentRun1.setText(combinedResult1);
-        contentRun1.setFontFamily("仿宋_GB2312");
-        contentRun1.setFontSize(16);  // 四号字体
-
-
-        // 创建第七行：  详情续报。
-        XWPFParagraph sevenParagraph = document.createParagraph();
-        sevenParagraph.setAlignment(ParagraphAlignment.LEFT); // 设置左对齐
-        // 设置首行缩进2个字符
-        sevenParagraph.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
-        // 创建运行并插入文本
-        XWPFRun sevenRun = sevenParagraph.createRun();
-        // 设置文本内容
-        sevenRun.setText("详情续报。");
-        sevenRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
-        sevenRun.setFontSize(16); // 设置字体大小为16号（即三号字体）
-
-        document.createParagraph();
-
-        // 创建第八行：雅安市应急管理 2025年01月07日
-        XWPFParagraph eightParagraph = document.createParagraph();
-        eightParagraph.setAlignment(ParagraphAlignment.CENTER); // 设置居中对齐
-        // 创建运行并插入文本
-        XWPFRun eightRun = eightParagraph.createRun();
-        // 设置第一部分文本
-        eightRun.setText("雅安市应急管理");
-        // 手动换行
-        eightRun.addBreak(); // 添加换行
-        // 设置第二部分文本
-        eightRun.setText(formattedTime);
-        eightRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
-        eightRun.setFontSize(16); // 设置字体大小为16号（即三号字体）
-
-        document.createParagraph();
-        document.createParagraph();
-
-        // 创建表格
-        XWPFTable table = document.createTable(1, 1); // 创建一个1行1列的表格
-
-        // 获取表格的第一行和第一列的单元格
-        XWPFTableRow tableRow = table.getRow(0);
-        XWPFTableCell cell = tableRow.getCell(0);
-        cell.setWidth("8888");  // 5676 Twips = 15cm
-
-        // 获取单元格的段落并设置水平垂直居中
-        XWPFParagraph paragraph = cell.getParagraphs().get(0);
-        paragraph.setAlignment(ParagraphAlignment.CENTER); // 水平居中
-        paragraph.setVerticalAlignment(TextAlignment.CENTER); // 垂直居中
-
-        // 设置段落格式：单倍行距，段前段后为0
-        paragraph.setSpacingBetween(1.0);  // 设置单倍行距
-        paragraph.setSpacingBefore(0);     // 设置段前间距为0
-        paragraph.setSpacingAfter(0);      // 设置段后间距为0
-
-        // 强制设置单元格字体，以避免默认样式的影响
-        XWPFRun runInsideTable = paragraph.createRun();
-        runInsideTable.setFontFamily("仿宋_GB2312"); // 强制设置字体为仿宋_GB2312
-        runInsideTable.setFontSize(14); // 强制设置字体大小为14
-        runInsideTable.setText("报：市委总值班室、市政府总值班室");
-
-
-        // 获取表格的边框对象，检查是否已经设置边框，如果未设置，则添加边框
-        CTTblBorders borders = table.getCTTbl().getTblPr().addNewTblBorders();
-
-        // 设置表格单元格边框为黑色
-        CTBorder topBorder = borders.addNewTop();
-        topBorder.setVal(STBorder.SINGLE);  // 单线
-        topBorder.setSz(BigInteger.valueOf(12)); // 边框线宽度为12磅
-        topBorder.setColor("000000");  // 黑色边框
-
-        CTBorder bottomBorder = borders.addNewBottom();
-        bottomBorder.setVal(STBorder.SINGLE);  // 单线
-        bottomBorder.setSz(BigInteger.valueOf(12)); // 边框线宽度为12磅
-        bottomBorder.setColor("000000");  // 黑色边框
-
-
-        // 设置左右边框为空，即没有边框
-        CTBorder leftBorder = borders.addNewLeft();
-        leftBorder.setVal(STBorder.NIL);  // 左边框为空
-        CTBorder rightBorder = borders.addNewRight();
-        rightBorder.setVal(STBorder.NIL);  // 右边框为空
+        // 表格下说明内容
+        String tableDescription = "说明：表中“震中距”为震中到市政府驻地、县（区）政府驻地直线距离；“预估烈度”为烈度衰减数学模型计算结果，以上烈度值为市政府驻地、县（区）政府驻地预估地震烈度，仅供参考；“一般建筑设防烈度”为一般建设工程基本抗震设防烈度，数据摘自GB18306-2015。";
 
 
 
+        // 在文档中添加表格一
+        if (tableData1 != null && !tableData1.isEmpty()) {
+
+            // 创建段落来包含表格
+            XWPFParagraph tableParagraph = document.createParagraph();
+            tableParagraph.setAlignment(ParagraphAlignment.CENTER);  // 设置段落对齐方式为居中
+
+            // 创建表格
+            XWPFTable table = document.createTable();
+
+            // 设置表格居中
+            table.setTableAlignment(TableRowAlign.CENTER);
+
+            // 填充表头
+            // 填充表头
+            List<String> headerRow = tableData1.get(0);
+            XWPFTableRow header = table.getRow(0);  // 获取表头
+            for (int i = 0; i < headerRow.size(); i++) {
+                if (header.getCell(i) == null) {
+                    header.addNewTableCell();
+                }
+                XWPFTableCell cell = header.getCell(i);
+                cell.setText(headerRow.get(i));  // 填充表头数据
+
+                // 获取表头单元格的段落
+                XWPFParagraph paragraph = cell.getParagraphArray(0);  // 获取第一个段落
+                if (paragraph == null) {
+                    paragraph = cell.addParagraph();  // 如果没有段落则添加一个新的段落
+                }
 
 
-        // 创建第十行：值班员：XXX   电话：0835-2220001  时间：01月07日16时11分
-        XWPFParagraph tenthParagraph = document.createParagraph();
-        tenthParagraph.setAlignment(ParagraphAlignment.CENTER); // 设置左对齐
-        // 创建运行并插入文本
-        XWPFRun tenthRun = tenthParagraph.createRun();
-        // 设置文本内容
-        tenthRun.setText("值班员：XXX   电话：0835-2220001  时间:"+formattedTime);
-        tenthRun.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
-        tenthRun.setFontSize(14); // 设置字体大小为16号（即三号字体）
+                XWPFRun run = paragraph.createRun();
+                run.setFontFamily("仿宋_GB2312");  // 设置字体
+                run.setFontSize(13);  // 设置字体大小
+                run.setBold(true);  // 设置粗体
 
-        // 获取所有段落并设置格式
-        for (XWPFParagraph paragraph1 : document.getParagraphs()) {
-            paragraph1.setSpacingBetween(1.0);  // 设置单倍行距
-            paragraph1.setSpacingBefore(0);  // 设置段前间距为0
-            paragraph1.setSpacingAfter(0);   // 设置段后间距为0
+                // 设置段落对齐方式
+                paragraph.setAlignment(ParagraphAlignment.CENTER);  // 水平居中
+                cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);  // 垂直居中
+            }
+
+// 填充表格数据
+            for (int i = 1; i < tableData1.size(); i++) {
+                XWPFTableRow row = table.createRow();
+                List<String> rowData = tableData1.get(i);
+                for (int j = 0; j < headerRow.size(); j++) {
+                    if (row.getCell(j) == null) {
+                        row.addNewTableCell();
+                    }
+                    XWPFTableCell cell = row.getCell(j);
+                    cell.setText(rowData.get(j));  // 填充单元格数据
+
+                    // 获取单元格的段落
+                    XWPFParagraph paragraph = cell.getParagraphArray(0);  // 获取第一个段落
+                    if (paragraph == null) {
+                        paragraph = cell.addParagraph();  // 如果没有段落则添加一个新的段落
+                    }
+
+                    XWPFRun run = paragraph.createRun();
+                    run.setFontFamily("仿宋_GB2312");  // 设置字体
+                    run.setFontSize(13);  // 设置字体大小
+
+                    // 设置段落对齐方式
+                    paragraph.setAlignment(ParagraphAlignment.CENTER);  // 水平居中
+                    cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);  // 垂直居中
+                }
+            }
+
         }
 
-        // 构造文件路径
-        String fileName = formattedTime + "级地震（值班信息）.docx";
-        String filePath = "C:/Users/Smile/Desktop/" + fileName;
-        // 设置页面边距
-        setPageMargins(document,filePath);
 
+
+
+//         插入表格下方的说明内容
+        XWPFParagraph descriptionParagraph = document.createParagraph();
+        XWPFRun run1 = descriptionParagraph.createRun();
+        run1.setText(tableDescription);
+        run1.setFontSize(12);
+        run1.setFontFamily("宋体");
+
+        // 在文档中添加表格二
+        if (tableData2 != null && !tableData2.isEmpty()) {
+
+            // 创建段落来包含表格
+            XWPFParagraph tableParagraph = document.createParagraph();
+            tableParagraph.setAlignment(ParagraphAlignment.CENTER);  // 设置段落对齐方式为居中
+
+            // 创建表格
+            XWPFTable table = document.createTable();
+
+            // 设置表格居中
+            table.setTableAlignment(TableRowAlign.CENTER);
+
+            // 填充表头
+            List<String> headerRow = tableData2.get(0);
+            XWPFTableRow header = table.getRow(0);  // 获取表头
+            for (int i = 0; i < headerRow.size(); i++) {
+                if (header.getCell(i) == null) {
+                    header.addNewTableCell();
+                }
+                XWPFTableCell cell = header.getCell(i);
+                cell.setText(headerRow.get(i));  // 填充表头数据
+
+                // 设置表头字体样式
+                XWPFParagraph paragraph = cell.getParagraphArray(0);  // 获取第一个段落
+                XWPFRun run = paragraph.createRun();
+                run.setFontFamily("仿宋_GB2312");
+                run.setFontSize(13);
+                run.setBold(true);  // 粗体
+                cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);  // 垂直居中
+
+                // 设置水平居中（通过段落）
+                paragraph.setAlignment(ParagraphAlignment.CENTER);  // 水平居中
+            }
+
+            // 填充表格数据
+            for (int i = 1; i < tableData2.size(); i++) {
+                XWPFTableRow row = table.createRow();
+                List<String> rowData = tableData2.get(i);
+                for (int j = 0; j < headerRow.size(); j++) {
+                    if (row.getCell(j) == null) {
+                        row.addNewTableCell();
+                    }
+                    XWPFTableCell cell = row.getCell(j);
+                    cell.setText(rowData.get(j));  // 填充单元格数据
+
+                    // 设置单元格字体样式
+                    XWPFParagraph paragraph = cell.getParagraphArray(0);  // 获取第一个段落
+                    XWPFRun run = paragraph.createRun();
+                    run.setFontFamily("仿宋_GB2312");
+                    run.setFontSize(13);  // 设置字体大小
+
+                    // 设置单元格内容居中
+                    cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);  // 垂直居中
+
+                    // 设置水平居中（通过段落）
+                    paragraph.setAlignment(ParagraphAlignment.CENTER);  // 水平居中
+                }
+            }
+        }
+
+
+//         插入表格下方的说明内容
+        XWPFParagraph descriptionParagraph1 = document.createParagraph();
+        XWPFRun run2 = descriptionParagraph1.createRun();
+        run2.setText(tableDescription);
+        run2.setFontSize(12);
+        run2.setFontFamily("宋体");
+
+
+        // 构造文件路径
+        String fileName = formattedTime + "级地震（辅助决策信息一）.docx";
+        String filePath = "C:/Users/Lenovo/Desktop/" + fileName;
 
         // 写入文件
         try (FileOutputStream out = new FileOutputStream(filePath)) {
@@ -985,22 +1247,34 @@ public class SeismicTriggerService {
             e.printStackTrace();
         }
     }
-    //     设置页面边距
-    public void setPageMargins(XWPFDocument document,String filePath) throws IOException {
-        // 获取页面设置对象
-        org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
-        CTPageMar pageMargins = sectPr.addNewPgMar();
-//        获取页面边距设置对象
-
-////         设置上下左右边距（单位：Twips，1 cm = 567.6 Twips）
-        pageMargins.setTop(3.7 * 567.6);  // 上边距 3.7厘米转换为Twips
-        pageMargins.setBottom(3.5 * 567.6);  // 下边距 3.5厘米转换为Twips
-        pageMargins.setLeft(2.8 * 567.6);  // 左边距 2.8厘米转换为Twips
-        pageMargins.setRight(2.6 * 567.6);  // 右边距 2.6厘米转换为Twips
-//         保存修改
-        document.getDocument().save(new File(filePath));
-    }
-
+    // 设置页面边距
+//    private static void setPageMargins(XWPFDocument document) {
+//        // 获取页面设置对象
+//        XWPFStyles styles = document.getStyles();
+//        if (styles != null) {
+//            XWPFStyle style = styles.getStyle("Normal");
+//            if (style == null) {
+//                style = styles.createStyle("Normal");
+//            }
+//            XWPFParagraph paragraph = style.getParagraph();
+//            if (paragraph == null) {
+//                paragraph = style.createParagraph();
+//            }
+//
+//            // 设置页面边距：上3.8，下3.6，左2.8，右2.6
+//            XmlCursor cursor = document.getDocument().newCursor();
+//            cursor.selectPath("./*");
+//            cursor.toNextToken();
+//
+//            cursor.beginElement("w:sectPr");
+//            cursor.insertElement("w:pgMar", "w:sectPr");
+//
+//            cursor.setAttributeText("w:top", "380"); // 设置上边距为3.8cm
+//            cursor.setAttributeText("w:bottom", "360"); // 设置下边距为3.6cm
+//            cursor.setAttributeText("w:left", "280"); // 设置左边距为2.8cm
+//            cursor.setAttributeText("w:right", "260"); // 设置右边距为2.6cm
+//        }
+//    }
 
     /**
      * @param eqqueueId 触发地震接口返回的eqqueueId
@@ -1571,5 +1845,7 @@ public class SeismicTriggerService {
         AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId);
         return processes.getProgress();
     }
+
+
 
 }

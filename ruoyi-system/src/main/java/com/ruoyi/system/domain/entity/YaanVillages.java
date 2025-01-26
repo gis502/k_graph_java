@@ -18,4 +18,7 @@ public class YaanVillages {
 
     @TableField(value = "villages_name")
     private String villagesName;
+
+    @TableField(value = "seismic_fortification_intensity")
+    private int seismicFortificationIntensity;
 }

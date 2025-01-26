@@ -1526,7 +1526,7 @@ public class SismiceMergencyAssistanceService {
         // 构造文件路径
         String fileName = formattedTime + "级地震（辅助决策信息二）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
-        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
+        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 
         System.out.println("word文档已在桌面");
 
