@@ -18,8 +18,8 @@ public class YaanResidentPopulationDensity {
     /**
      * 原区划代码排序序号
      */
-//    @TableField(value = "original_zcs_number")
-//    private String originalZcsNumber;
+    @TableField(value = "original_number")
+    private String originalNumber;
     /**
      * 区划代码
      */

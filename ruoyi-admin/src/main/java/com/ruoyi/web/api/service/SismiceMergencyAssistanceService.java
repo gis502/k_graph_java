@@ -115,6 +115,8 @@ public class SismiceMergencyAssistanceService {
     }
 
 
+
+    //据条件判断输出语句
     @SneakyThrows
     public void file(EqEventTriggerDTO params, String eqqueueId){
         System.out.println("前端构建文本传的参数" + params);
@@ -307,22 +309,7 @@ public class SismiceMergencyAssistanceService {
         // 将输入的时间字符串解析为 Date 对象
         Date parsedDate = inputFormat.parse(eqTime);
 
-        // 1.获取月份和日期
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy"); // 设置年份格式
-
-        SimpleDateFormat monthFormat = new SimpleDateFormat("M"); // 月份，不补零
-        SimpleDateFormat dayFormat = new SimpleDateFormat("d");   // 日期，不补零
-
-        String year = yearFormat.format(parsedDate); // 格式化为年份字符串
-
-        String month = monthFormat.format(parsedDate); // 获取月份
-        String day = dayFormat.format(parsedDate);     // 获取日期
-
-        // 拼接成所需格式
-        String monthDate = month + "·" + day;
-
-
-        // 2.创建 SimpleDateFormat 对象，用于格式化为目标格式
+        // 1.创建 SimpleDateFormat 对象，用于格式化为目标格式
         SimpleDateFormat outputFormat = new SimpleDateFormat("MM月dd日HH时mm分");
 
         // 格式化 Date 对象为目标格式的字符串
@@ -1058,7 +1045,7 @@ public class SismiceMergencyAssistanceService {
 
     }
 
-
+    //设置样式，生成文档
     private void WordExporter( String title,String result,String fuJinTownResult,String panduan,String jianyi,String cuoshi,String formattedTime) {
 
         System.out.println("开始写word文档");
@@ -1072,6 +1059,7 @@ public class SismiceMergencyAssistanceService {
         // 第一行：对内掌握，黑体三号，右对齐
         XWPFParagraph firstParagraph = document.createParagraph();
         firstParagraph.setAlignment(ParagraphAlignment.RIGHT); // 右对齐
+        firstParagraph.setSpacingBefore((int) (16 * 20 * 0.5));//设置段前间距为0
         firstParagraph.setSpacingAfter(0); // 段后0行距
         XWPFRun firstRun = firstParagraph.createRun();
         firstRun.setText("对内掌握");
@@ -1082,7 +1070,8 @@ public class SismiceMergencyAssistanceService {
         for (int i = 0; i < 3; i++) {
             XWPFParagraph emptyParagraph = document.createParagraph();
             emptyParagraph.setAlignment(ParagraphAlignment.RIGHT); // 段落居右
-            emptyParagraph.setSpacingBefore((int) (16 * 20 * 0.75)); // 段前1.5倍行距
+            emptyParagraph.setSpacingBetween(1.85);// 设置1.85倍行距
+            emptyParagraph.setSpacingBefore(0); // 段前0倍行距
             emptyParagraph.setSpacingAfter(0); // 段后0行距
 
             // 设置字体样式
@@ -1106,6 +1095,8 @@ public class SismiceMergencyAssistanceService {
         // 空1行，仿宋_GB2312的16号字体，段落居中
         XWPFParagraph emptyParagraphSong  = document.createParagraph();
         emptyParagraphSong .setAlignment(ParagraphAlignment.CENTER); // 段落居中
+        emptyParagraphSong.setSpacingBetween(2);// 设置2倍行距
+        emptyParagraphSong.setSpacingBefore(0); // 段前0倍行距
         emptyParagraphSong.setSpacingAfter(0); // 段后0行距
         // 设置字体样式
         XWPFRun newRunSong = emptyParagraphSong .createRun();
@@ -1134,8 +1125,13 @@ public class SismiceMergencyAssistanceService {
 
         // 添加空格（这里使用String.format确保空格数量，但注意视觉宽度可能不同）
         // 如果需要精确控制空格宽度，可以考虑使用制表符或其他方法
-        String spaces = "               "; // 这里实际上是15个空格，但视觉宽度可能因字体而异
-        thirdParagraph.createRun().setText(spaces); // 创建一个新的run来添加空格，但不设置字体（继承段落默认字体）
+        // 添加空格（使用仿宋_GB2312字体，三号字体）
+        String spaces = "               "; // 15个空格
+        XWPFRun run = thirdParagraph.createRun(); // 创建一个新的Run
+        run.setText(spaces); // 设置空格内容
+        run.setFontFamily("仿宋_GB2312"); // 设置字体为仿宋_GB2312
+        run.setFontSize(16); // 设置字号为三号字体（对应Word中的三号字体大小为16）
+
 
         XWPFRun thirdRun2 = thirdParagraph.createRun();
         thirdRun2.setText(formattedTime);
@@ -1147,6 +1143,7 @@ public class SismiceMergencyAssistanceService {
         XWPFParagraph redLineParagraph = document.createParagraph();
         // 设置段落居中对齐
         redLineParagraph.setAlignment(ParagraphAlignment.CENTER); // 这行代码在您的原始代码中已经存在，但为了完整性再次提及
+        redLineParagraph.setSpacingBetween(1.2);// 设置2倍行距
         redLineParagraph.setSpacingAfter(0); // 段后0行距
         XWPFRun redLineRun = redLineParagraph.createRun();
         redLineRun.setText("________________________________________"); // 下划线，长度根据需要调整
@@ -1160,8 +1157,9 @@ public class SismiceMergencyAssistanceService {
 
         // 空1行，华文行楷22号字体，段落居中
         XWPFParagraph emptyParagraphHua = document.createParagraph();
+        emptyParagraphHua.setSpacingBetween(1);// 设置1倍行距
         emptyParagraphHua.setAlignment(ParagraphAlignment.CENTER); // 段落居中
-        emptyParagraphHua.setSpacingBefore((int) (16 * 20 *1.25 )); // 段前1.25倍行距
+        emptyParagraphHua.setSpacingBefore((int) (16 * 20 *1.1 )); // 段前1.1倍行距
         emptyParagraphHua.setSpacingAfter(0); // 段后0行距
         // 设置字体样式
         XWPFRun newRunHua = emptyParagraphHua.createRun();
@@ -1185,7 +1183,7 @@ public class SismiceMergencyAssistanceService {
         // 创建一个新的段落
         XWPFParagraph decisionInfoParagraph = document.createParagraph();
         decisionInfoParagraph.setAlignment(ParagraphAlignment.CENTER);        // 设置段落居中对齐
-        emptyParagraphHua.setSpacingBefore((int) (16 * 20 * 0.75)); // 段前0.75倍行距
+        emptyParagraphHua.setSpacingBefore((int) (16 * 20 )); // 段前0.75倍行距
         decisionInfoParagraph.setSpacingAfter(0); // 段后0行距
         XWPFRun decisionInfoRun = decisionInfoParagraph.createRun();        // 创建一个运行来添加文本
         decisionInfoRun.setText("（辅助决策信息二）");
@@ -1195,9 +1193,7 @@ public class SismiceMergencyAssistanceService {
         // 空1行
         XWPFParagraph emptyParagraph = document.createParagraph();
         emptyParagraph.setAlignment(ParagraphAlignment.RIGHT); // 段落居右
-        // 模拟单倍行距（一般情况下1倍行距是240 TWIPS，适当设置行距）
-        emptyParagraph.setSpacingBefore(240); // 设置段前行距为240 TWIPS（1倍行距）
-        emptyParagraph.setSpacingAfter(240);  // 设置段后行距为240 TWIPS（1倍行距）
+        emptyParagraph.setSpacingBetween(1.45);// 设置1.45倍行距
         // 设置字体样式
         XWPFRun newRunHei = emptyParagraph.createRun();
         newRunHei.setText(" ");
@@ -1211,7 +1207,10 @@ public class SismiceMergencyAssistanceService {
         // 创建一个新的段落--------第一个标题
         XWPFParagraph earthquakeInfoParagraph = document.createParagraph();
         earthquakeInfoParagraph.setAlignment(ParagraphAlignment.BOTH);  // 设置段落为两端对齐
-        earthquakeInfoParagraph.setSpacingAfter(0);    // 设置段后间距为0行（即0磅）
+        //设置段落格式：单倍行距，段前段后为0
+        earthquakeInfoParagraph.setSpacingBetween(1.5);// 设置1.5倍行距
+        earthquakeInfoParagraph.setSpacingBefore(0);//设置段前间距为0
+        earthquakeInfoParagraph.setSpacingAfter(0);//设置段后间距为0
         XWPFRun earthquakeInfoRun = earthquakeInfoParagraph.createRun();
         earthquakeInfoRun.setText("    "+ "一、震区基本情况");  //前面有4个空格
         earthquakeInfoRun.setFontFamily("黑体");
@@ -1228,9 +1227,9 @@ public class SismiceMergencyAssistanceService {
 //        int indentSize = 16 * 2 * 20; // 每字符宽按字号16磅计算，2字符宽
 //        oneText.setIndentationFirstLine(indentSize); // 设置首行缩进
 
-        // 设置段前间距为1.5倍行距，段后间距为0
+        // 设置段前间距为0倍行距，段后间距为0
+        oneText.setSpacingBetween(1.5);// 设置1.2倍行距
         oneText.setSpacingBefore(0); // 段前0倍行距
-//        oneText.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距
         oneText.setSpacingAfter(0); // 段后0行距
 
         // 设置字体样式
@@ -1239,24 +1238,14 @@ public class SismiceMergencyAssistanceService {
         newRun.setFontFamily("仿宋_GB2312"); // 字体
         newRun.setFontSize(16); // 三号字体（16磅）
 
-//        // 设置正文内容
-//        char[] chars = result.toCharArray();
-//        for (char c : chars) {
-//            XWPFRun run = oneText.createRun();
-//            if (Character.isDigit(c)) {
-//                run.setFontFamily("Times New Roman"); // 数字字体
-//            } else {
-//                run.setFontFamily("仿宋_GB2312"); // 其他文本字体
-//            }
-//            run.setFontSize(16); // 三号字体
-//            run.setText(String.valueOf(c)); // 写入字符
-//        }
-
 
         // 创建一个新的段落--------第二个标题
         XWPFParagraph disasterInfoParagraph = document.createParagraph(); // 假设document是您的XWPFDocument对象
         disasterInfoParagraph.setAlignment(ParagraphAlignment.BOTH);         // 设置段落为两端对齐
-        disasterInfoParagraph.setSpacingAfter(0);    // 设置段后间距为0行（即0磅）
+        //设置段落格式：单倍行距，段前段后为0
+        disasterInfoParagraph.setSpacingBetween(1.45);// 设置1.5倍行距
+        disasterInfoParagraph.setSpacingBefore(0);//设置段前间距为0
+        disasterInfoParagraph.setSpacingAfter(0);//设置段后间距为0
         XWPFRun disasterInfoRun = disasterInfoParagraph.createRun();
         disasterInfoRun.setText("    "+ "二、雅安震情灾情");
         disasterInfoRun.setFontFamily("黑体");
@@ -1272,6 +1261,7 @@ public class SismiceMergencyAssistanceService {
 //        oneText2.setIndentationFirstLine(indentSize2); // 设置首行缩进
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText2.setSpacingBetween(1.5);// 设置1.2倍行距
         oneText2.setSpacingBefore(0); // 段前0倍行距
 //        oneText2.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距
         oneText2.setSpacingAfter(0); // 段后0行距
@@ -1287,7 +1277,10 @@ public class SismiceMergencyAssistanceService {
         // 创建一个新的段落--------第三个标题
         XWPFParagraph emergencyResponseParagraph = document.createParagraph();
         emergencyResponseParagraph.setAlignment(ParagraphAlignment.BOTH);       // 设置段落为两端对齐
-        emergencyResponseParagraph.setSpacingAfter(0);    // 设置段后间距为0行（即0磅）
+        //设置段落格式：单倍行距，段前段后为0
+        emergencyResponseParagraph.setSpacingBetween(1.75);// 设置1.75倍行距
+        emergencyResponseParagraph.setSpacingBefore(0);//设置段前间距为0
+        emergencyResponseParagraph.setSpacingAfter(0);//设置段后间距为0
         XWPFRun emergencyResponseRun = emergencyResponseParagraph.createRun();
         emergencyResponseRun.setText("    "+ "三、应急处置建议");
         emergencyResponseRun.setFontFamily("黑体");
@@ -1302,6 +1295,7 @@ public class SismiceMergencyAssistanceService {
 //        oneText3.setIndentationFirstLine(indentSize3); // 设置首行缩进
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText3.setSpacingBetween(1.5);// 设置1.5倍行距
         oneText3.setSpacingBefore(0); // 段前0倍行距
         // oneText3.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
         oneText3.setSpacingAfter(0); // 段后0行距
@@ -1322,6 +1316,7 @@ public class SismiceMergencyAssistanceService {
 //        oneText4.setIndentationFirstLine(indentSize4); // 设置首行缩进
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText4.setSpacingBetween(1.5);// 设置1.5倍行距
         oneText4.setSpacingBefore(0); // 段前0倍行距
         // oneText4.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
         oneText4.setSpacingAfter(0); // 段后0行距
@@ -1343,6 +1338,7 @@ public class SismiceMergencyAssistanceService {
 //        oneText5.setIndentationFirstLine(indentSize5); // 设置首行缩进
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText5.setSpacingBetween(1.2);// 设置1.2倍行距
         oneText5.setSpacingBefore(0); // 段前0倍行距
         // oneText5.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
         oneText5.setSpacingAfter(0); // 段后0行距
@@ -1354,11 +1350,12 @@ public class SismiceMergencyAssistanceService {
         newRun5.setFontSize(16); // 三号字体（16磅）
 
 
-        //*****************************************开始填入自动生成内容结束****************************************************************
+        //*****************************************填入自动生成内容结束****************************************************************
 
         // 空1行，仿宋_GB2312的16号字体，段落居中
         XWPFParagraph emptyParagraphSong1  = document.createParagraph();
         emptyParagraphSong1 .setAlignment(ParagraphAlignment.LEFT); // 段落居中
+        emptyParagraphSong1.setSpacingBetween(2.5);// 设置2.5倍行距
         emptyParagraphSong1.setSpacingAfter(0); // 段后0行距
         // 设置字体样式
         XWPFRun newRunSong1 = emptyParagraphSong1 .createRun();
@@ -1376,6 +1373,7 @@ public class SismiceMergencyAssistanceService {
 //        oneText6.setIndentationFirstLine(indentSize6); // 设置首行缩进
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText6.setSpacingBetween(1.2);// 设置1.2倍行距
         oneText6.setSpacingBefore(0);// 段前0倍行距
         // oneText6.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
         oneText6.setSpacingAfter(0); // 段后0行距
@@ -1389,6 +1387,7 @@ public class SismiceMergencyAssistanceService {
         // 空1行，仿宋_GB2312的16号字体，段落居中
         XWPFParagraph emptyParagraphSong2  = document.createParagraph();
         emptyParagraphSong2 .setAlignment(ParagraphAlignment.LEFT); // 段落居中
+        emptyParagraphSong2.setSpacingBetween(2.75);// 设置2.75倍行距
         emptyParagraphSong2.setSpacingAfter(0); // 段后0行距
         // 设置字体样式
         XWPFRun newRunSong2 = emptyParagraphSong2 .createRun();
@@ -1405,6 +1404,7 @@ public class SismiceMergencyAssistanceService {
 //        oneText7.setIndentationFirstLine(indentSize7); // 设置首行缩进
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText7.setSpacingBetween(1.25);// 设置1.25倍行距
         oneText7.setSpacingBefore(0); // 段前0倍行距
 // oneText7.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
         oneText7.setSpacingAfter(0); // 段后0行距
@@ -1419,8 +1419,7 @@ public class SismiceMergencyAssistanceService {
         XWPFParagraph emptyParagraphSong3  = document.createParagraph();
         emptyParagraphSong3 .setAlignment(ParagraphAlignment.LEFT); // 段落居中
         // 模拟单倍行距（一般情况下1倍行距是240 TWIPS，适当设置行距）
-        emptyParagraphSong3.setSpacingBefore(240); // 设置段前行距为240 TWIPS（1倍行距）
-        emptyParagraphSong3.setSpacingAfter(240);  // 设置段后行距为240 TWIPS（1倍行距）
+        emptyParagraphSong3.setSpacingBetween(2.1);// 设置2.1倍行距
         // 设置字体样式
         XWPFRun newRunSong3 = emptyParagraphSong3 .createRun();
         newRunSong3.setText(" ");
@@ -1437,6 +1436,7 @@ public class SismiceMergencyAssistanceService {
 //        oneText8.setIndentationFirstLine(indentSize8); // 设置首行缩进
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText8.setSpacingBetween(1);// 设置1.2倍行距
         oneText8.setSpacingBefore(0); // 段前0倍行距
 // oneText8.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
         oneText8.setSpacingAfter(0); // 段后0行距
@@ -1479,6 +1479,7 @@ public class SismiceMergencyAssistanceService {
 //        oneText9.setIndentationFirstLine(indentSize9); // 设置首行缩进
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText9.setSpacingBetween(1.2);// 设置1.2倍行距
         oneText9.setSpacingBefore(0); // 段前0倍行距
 // oneText9.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
         oneText9.setSpacingAfter(0); // 段后0行距
@@ -1495,6 +1496,7 @@ public class SismiceMergencyAssistanceService {
         oneText10.setAlignment(ParagraphAlignment.CENTER); // 居中对齐
 
         // 设置段前间距为1.5倍行距，段后间距为0
+        oneText10.setSpacingBetween(1.2);// 设置1.2倍行距
         oneText10.setSpacingBefore(0); // 段前1.5倍行距
 // oneText10.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
         oneText10.setSpacingAfter(0); // 段后0行距
@@ -1539,7 +1541,7 @@ public class SismiceMergencyAssistanceService {
     }
 
 
-
+    //设置文件页边距，纸张大小
     public void setPageMargins(XWPFDocument document) {
         // 获取页面属性
         CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
