@@ -1,6 +1,5 @@
 package com.ruoyi.web.api.service;
 
-import ch.qos.logback.core.util.TimeUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.EqList;
@@ -12,17 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.springframework.retry.backoff.Sleeper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -44,9 +38,9 @@ public class SeismicAutoTriggerService {
     /**
      * @author: xiaodemos
      * @date: 2025/1/11 16:43
-     * @description: 自动触发地震，每十分钟进行正式地震数据的同步
+     * @description: 自动触发地震，每2分钟进行正式地震数据的同步
      */
-    @Scheduled(fixedRate = 300000)  // 1分钟同步一次数据
+    @Scheduled(fixedRate = 120000)  // 2分钟同步一次数据
     public void autoGainSeismicData() {
 
         log.info("开始进行同步正式地震数据...");
@@ -95,7 +89,7 @@ public class SeismicAutoTriggerService {
         }
 
         // 自动评估正式地震数据
-        // autoAssessmentNormal();
+        autoAssessmentNormal();
     }
 
     /**
@@ -111,7 +105,7 @@ public class SeismicAutoTriggerService {
 
         // 类型优先级映射
         Map<String, Integer> typePriority = new HashMap<>();
-        // 只保留 CC 和 SC，优先级：CC > SC
+        // 只保留 CC 和 SC，优先级：CC > SC > CD
         typePriority.put("CC", 1);
         typePriority.put("SC", 2);
         typePriority.put("CD", 3);
@@ -120,9 +114,9 @@ public class SeismicAutoTriggerService {
         Map<String, ResultAutoTriggerVO> resultMap = new HashMap<>();
 
         for (ResultAutoTriggerVO data : dtolists) {
-            // 过滤掉非 SC 和 CC 类型的记录
+            // 过滤掉非 SC 、 CC 和 CD 类型的记录
             if (!typePriority.containsKey(data.getType())) {
-                continue;  // 跳过非 SC 和 CC 类型的数据
+                continue;  // 跳过非 SC 、 CC 和 CD 类型的数据
             }
 
             // 生成唯一的 key: name 作为组合键
@@ -187,7 +181,7 @@ public class SeismicAutoTriggerService {
             params.setEqDepth(Double.valueOf(resultEqListDTO.getDepth()));
             params.setEqType(resultEqListDTO.getType());
 
-            // imputation(params);
+            imputation(params);
 
         }
 
@@ -195,26 +189,34 @@ public class SeismicAutoTriggerService {
 
     /**
      * @param data 正式地震数据
+     * @return
      * @author: xiaodemos
      * @date: 2025/1/25 15:34
      * @description: 将接入的正式地震数据的 eqqueueId值 进行补缺
      */
-    @Async
-    public CompletableFuture<Void> imputation(EqEventTriggerDTO data) {
+    public void imputation(EqEventTriggerDTO data){
+    // public CompletableFuture<Void> imputation(EqEventTriggerDTO data) {
 
-        // 1. 先把数据保存到第三方库
-        String eqqueueId = thirdPartyCommonApi.getSeismicTriggerByPost(data);
-        eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
-        // 2. 把得到的 eqqueueid 值与为空的数据进行填补
+        String eqqueueId = UUID.randomUUID().toString();
 
-        log.info("eqqueueId为---------------------> :{}", eqqueueId);
-
-        eqListService.updateById(EqList.builder()
+         eqListService.updateById(EqList.builder()
                 .eqid(data.getEvent())
                 .eqqueueId(eqqueueId)
-                .build());
+               .build());
 
-        return CompletableFuture.completedFuture(null);
+        // 1. 先把数据保存到第三方库
+        // String eqqueueId = thirdPartyCommonApi.getSeismicTriggerByPost(data);
+        // eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
+        // 2. 把得到的 eqqueueid 值与为空的数据进行填补
+
+        // log.info("eqqueueId为---------------------> :{}", eqqueueId);
+
+        // eqListService.updateById(EqList.builder()
+        //        .eqid(data.getEvent())
+        //        .eqqueueId(eqqueueId)
+        //       .build());
+
+        // return CompletableFuture.completedFuture(null);
     }
 
 }
