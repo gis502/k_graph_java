@@ -959,73 +959,64 @@ public class SeismicTableTriggerService {
         // 表格下说明内容
         String tableDescription = "说明：表中“震中距”为震中到市政府驻地、县（区）政府驻地直线距离；“预估烈度”为烈度衰减数学模型计算结果，以上烈度值为市政府驻地、县（区）政府驻地预估地震烈度，仅供参考；“一般建筑设防烈度”为一般建设工程基本抗震设防烈度，数据摘自GB18306-2015。";
 
-
-
-        // 在文档中添加表格一
+        //  在文档中添加表格一
         if (tableData1 != null && !tableData1.isEmpty()) {
 
-            // 创建段落来包含表格
+            // 创建一个段落来包含表格，设置段落对齐方式为居中
             XWPFParagraph tableParagraph = document.createParagraph();
-            tableParagraph.setAlignment(ParagraphAlignment.CENTER);  // 设置段落对齐方式为居中
+            tableParagraph.setAlignment(ParagraphAlignment.CENTER);
 
-            // 创建表格
-            XWPFTable table = document.createTable();
+            // 根据 tableData1 的行数和列数创建表格
+            XWPFTable table = document.createTable(tableData1.size(), tableData1.get(0).size());
 
-            // 设置表格居中
             table.setTableAlignment(TableRowAlign.CENTER);
 
-            // 填充表头
-            List<String> headerRow = tableData1.get(0);
-            XWPFTableRow header = table.getRow(0);  // 获取表头
-            for (int i = 0; i < headerRow.size(); i++) {
-                if (header.getCell(i) == null) {
-                    header.addNewTableCell();
-                }
-                XWPFTableCell cell = header.getCell(i);
-                cell.setText(headerRow.get(i));  // 填充表头数据
+            table.setCellMargins(0, 108, 0, 108);  // 上边距0, 左右边距约0.19cm, 下边距0
 
-                // 设置表头字体样式
-                XWPFParagraph paragraph = cell.getParagraphArray(0);  // 获取第一个段落
-                if (paragraph == null) {
-                    paragraph = cell.addParagraph();  // 如果没有段落则添加一个新的段落
-                }
-                XWPFRun run = paragraph.createRun();
-                run.setFontFamily("仿宋_GB2312");
-                run.setFontSize(13);
-                run.setBold(true);  // 粗体
-                paragraph.setAlignment(ParagraphAlignment.CENTER);  // 水平居中
-                cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);  // 垂直居中
-            }
 
-            // 填充表格数据
-            for (int i = 1; i < tableData1.size(); i++) {
-                XWPFTableRow row = table.createRow();
-                List<String> rowData = tableData1.get(i);
-                for (int j = 0; j < headerRow.size(); j++) {
-                    if (row.getCell(j) == null) {
-                        row.addNewTableCell();
-                    }
-                    XWPFTableCell cell = row.getCell(j);
-                    cell.setText(rowData.get(j));  // 填充单元格数据
+            // 遍历表格的每一行（从表头开始）
+            for (int i = 0; i < tableData1.size(); i++) {
+                XWPFTableRow row = table.getRow(i);  // 获取当前行
+                List<String> rowData = tableData1.get(i);  // 获取当前行的数据
 
-                    // 设置单元格字体样式
-                    XWPFParagraph paragraph = cell.getParagraphArray(0);  // 获取第一个段落
+                // 遍历当前行的每一个单元格
+                for (int j = 0; j < rowData.size(); j++) {
+                    XWPFTableCell cell = row.getCell(j);  // 获取当前单元格
+
+                    // 获取单元格的第一个段落，如果没有则创建一个新的段落
+                    XWPFParagraph paragraph = cell.getParagraphArray(0);
                     if (paragraph == null) {
-                        paragraph = cell.addParagraph();  // 如果没有段落则添加一个新的段落
+                        paragraph = cell.addParagraph();  // 如果没有段落，则添加一个新段落
                     }
-                    XWPFRun run = paragraph.createRun();
-                    run.setFontFamily("仿宋_GB2312");
-                    run.setFontSize(13);  // 设置字体大小
+
+                    // 设置段落的对齐方式
                     paragraph.setAlignment(ParagraphAlignment.CENTER);  // 水平居中
-                    cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);  // 垂直居中
+                    paragraph.setVerticalAlignment(TextAlignment.CENTER); // 垂直居中
+
+                    // 设置段落的行间距、段前段后间距
+                    paragraph.setSpacingBetween(1.0);  // 单倍行距
+                    paragraph.setSpacingBefore(0);     // 段前间距为0
+                    paragraph.setSpacingAfter(0);      // 段后间距为0
+
+                    // 强制设置单元格的字体样式
+                    XWPFRun runInsideTable = paragraph.createRun();
+                    runInsideTable.setFontFamily("仿宋_GB2312"); // 设置字体
+                    runInsideTable.setFontSize(13);              // 设置字体大小为13
+                    if (i == 0) {
+                        runInsideTable.setBold(true);  // 如果是第一行，设置为粗体（表头）
+                    } else {
+                        runInsideTable.setBold(false);  // 非表头行，取消粗体
+                    }
+
+                    // 填充单元格的文本内容
+                    runInsideTable.setText(rowData.get(j));
                 }
             }
         }
 
 
 
-
-//         插入表格下方的说明内容
+        // 插入表格下方的说明内容
         XWPFParagraph descriptionParagraph = document.createParagraph();
         XWPFRun run1 = descriptionParagraph.createRun();
         run1.setText(tableDescription);
@@ -1035,79 +1026,71 @@ public class SeismicTableTriggerService {
         // 在文档中添加表格二
         if (tableData2 != null && !tableData2.isEmpty()) {
 
-            // 创建段落来包含表格
+            // 创建一个段落来包含表格，设置段落对齐方式为居中
             XWPFParagraph tableParagraph = document.createParagraph();
-            tableParagraph.setAlignment(ParagraphAlignment.CENTER);  // 设置段落对齐方式为居中
+            tableParagraph.setAlignment(ParagraphAlignment.CENTER);
 
-            // 创建表格
-            XWPFTable table = document.createTable();
+            // 根据 tableData1 的行数和列数创建表格
+            XWPFTable table = document.createTable(tableData2.size(), tableData2.get(0).size());
 
-            // 设置表格居中
             table.setTableAlignment(TableRowAlign.CENTER);
 
-            // 填充表头
-            List<String> headerRow = tableData2.get(0);
-            XWPFTableRow header = table.getRow(0);  // 获取表头
-            for (int i = 0; i < headerRow.size(); i++) {
-                if (header.getCell(i) == null) {
-                    header.addNewTableCell();
-                }
-                XWPFTableCell cell = header.getCell(i);
-                cell.setText(headerRow.get(i));  // 填充表头数据
+            table.setCellMargins(0, 108, 0, 108);  // 上边距0, 左右边距约0.19cm, 下边距0
 
-                // 设置表头字体样式
-                XWPFParagraph paragraph = cell.getParagraphArray(0);  // 获取第一个段落
-                XWPFRun run = paragraph.createRun();
-                run.setFontFamily("仿宋_GB2312");
-                run.setFontSize(13);
-                run.setBold(true);  // 粗体
-                cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);  // 垂直居中
 
-                // 设置水平居中（通过段落）
-                paragraph.setAlignment(ParagraphAlignment.CENTER);  // 水平居中
-            }
+            // 遍历表格的每一行（从表头开始）
+            for (int i = 0; i < tableData2.size(); i++) {
+                XWPFTableRow row = table.getRow(i);  // 获取当前行
+                List<String> rowData = tableData2.get(i);  // 获取当前行的数据
 
-            // 填充表格数据
-            for (int i = 1; i < tableData2.size(); i++) {
-                XWPFTableRow row = table.createRow();
-                List<String> rowData = tableData2.get(i);
-                for (int j = 0; j < headerRow.size(); j++) {
-                    if (row.getCell(j) == null) {
-                        row.addNewTableCell();
+                // 遍历当前行的每一个单元格
+                for (int j = 0; j < rowData.size(); j++) {
+                    XWPFTableCell cell = row.getCell(j);  // 获取当前单元格
+
+                    // 获取单元格的第一个段落，如果没有则创建一个新的段落
+                    XWPFParagraph paragraph = cell.getParagraphArray(0);
+                    if (paragraph == null) {
+                        paragraph = cell.addParagraph();  // 如果没有段落，则添加一个新段落
                     }
-                    XWPFTableCell cell = row.getCell(j);
-                    cell.setText(rowData.get(j));  // 填充单元格数据
 
-                    // 设置单元格字体样式
-                    XWPFParagraph paragraph = cell.getParagraphArray(0);  // 获取第一个段落
-                    XWPFRun run = paragraph.createRun();
-                    run.setFontFamily("仿宋_GB2312");
-                    run.setFontSize(13);  // 设置字体大小
-
-                    // 设置单元格内容居中
-                    cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);  // 垂直居中
-
-                    // 设置水平居中（通过段落）
+                    // 设置段落的对齐方式
                     paragraph.setAlignment(ParagraphAlignment.CENTER);  // 水平居中
+                    paragraph.setVerticalAlignment(TextAlignment.CENTER); // 垂直居中
+
+                    // 设置段落的行间距、段前段后间距
+                    paragraph.setSpacingBetween(1.0);  // 单倍行距
+                    paragraph.setSpacingBefore(0);     // 段前间距为0
+                    paragraph.setSpacingAfter(0);      // 段后间距为0
+
+                    // 强制设置单元格的字体样式
+                    XWPFRun runInsideTable = paragraph.createRun();
+                    runInsideTable.setFontFamily("仿宋_GB2312"); // 设置字体
+                    runInsideTable.setFontSize(13);              // 设置字体大小为13
+                    if (i == 0) {
+                        runInsideTable.setBold(true);  // 如果是第一行，设置为粗体（表头）
+                    } else {
+                        runInsideTable.setBold(false);  // 非表头行，取消粗体
+                    }
+
+                    // 填充单元格的文本内容
+                    runInsideTable.setText(rowData.get(j));
                 }
             }
         }
 
-
-//         插入表格下方的说明内容
+        // 插入表格下方的说明内容
         XWPFParagraph descriptionParagraph1 = document.createParagraph();
         XWPFRun run2 = descriptionParagraph1.createRun();
         run2.setText(tableDescription);
         run2.setFontSize(12);
         run2.setFontFamily("宋体");
 
-
         // 构造文件路径
         String fileName = formattedTime + "级地震（辅助决策信息一）.docx";
         String filePath = "C:/Users/Lenovo/Desktop/" + fileName;
 
         // 写入文件
-        try (FileOutputStream out = new FileOutputStream(filePath)) {
+        try (FileOutputStream out = new FileOutputStream(filePath))     {
             document.write(out);
         } catch (IOException e) {
             e.printStackTrace();
