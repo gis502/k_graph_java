@@ -84,7 +84,8 @@ public class SeismicTriggerService {
     private YaanProvinceCityMapper yaanProvinceCityMapper;
 
 
-
+    @Resource
+    private SismiceMergencyAssistanceService sismiceMergencyAssistanceService;
 
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
 
@@ -114,10 +115,10 @@ public class SeismicTriggerService {
             // 数据插入到第三方数据库成功后，插入到本地数据库
             getWithSave(params, eqqueueId);
 
-//             异步进行地震影响场灾损评估
+            // 异步进行地震影响场灾损评估
             handleSeismicYxcEventAssessment(params, eqqueueId);
 
-//             异步进行乡镇级评估
+            // 异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
 
             //异步获取辅助决策报告结果
@@ -125,9 +126,13 @@ public class SeismicTriggerService {
 
 //            // 异步获取专题图评估结果
             handleSpecializedAssessment(params, eqqueueId);
-
-            // 异步获取灾情报告评估结果
+//
+//            // 异步获取灾情报告评估结果
             handleDisasterReportAssessment(params, eqqueueId);
+
+
+            // 调用 file 方法--异步获取辅助决策（二）报告结果
+//            sismiceMergencyAssistanceService.file(params, eqqueueId);
 
 
             // 检查四个评估结果的数据是否成功
@@ -489,7 +494,7 @@ public class SeismicTriggerService {
                 // 注：StringBuilder
                 StringBuilder zhuResult = new StringBuilder();
 
-                // 根据烈度生成描述
+// 根据烈度生成描述
                 for (int i = 1; i <= roundedIntensity; i++) {
                     zhuResult.append("地震烈度").append(i).append("度主要现象为：");
 
@@ -978,7 +983,7 @@ public class SeismicTriggerService {
             e.printStackTrace();
         }
     }
-//     设置页面边距
+    //     设置页面边距
     public void setPageMargins(XWPFDocument document,String filePath) throws IOException {
         // 获取页面设置对象
         org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
@@ -993,6 +998,7 @@ public class SeismicTriggerService {
 //         保存修改
         document.getDocument().save(new File(filePath));
     }
+
 
     /**
      * @param eqqueueId 触发地震接口返回的eqqueueId
