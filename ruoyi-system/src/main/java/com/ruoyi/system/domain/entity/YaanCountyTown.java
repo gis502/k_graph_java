@@ -27,4 +27,10 @@ public class YaanCountyTown {
      */
     @TableField(value = "geom")
     private Geometry geom;
+
+    /**
+     * 抗震设防烈度
+     */
+    @TableField(value = "seismic_fortification_intensity")
+    private int seismicFortificationIntensity;
 }
