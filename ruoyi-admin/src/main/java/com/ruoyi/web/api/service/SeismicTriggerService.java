@@ -115,33 +115,33 @@ public class SeismicTriggerService {
             }
 
 //            // 数据插入到第三方数据库成功后，插入到本地数据库
-//            getWithSave(params, eqqueueId);
+            getWithSave(params, eqqueueId);
 //
 //            //异步获取辅助决策报告结果
-//            handleAssessmentReportAssessment(params, eqqueueId);
+            handleAssessmentReportAssessment(params, eqqueueId);
 //
 //            // 调用 file 方法--异步获取辅助决策（二）报告结果
-//            sismiceMergencyAssistanceService.file(params, eqqueueId);
+            sismiceMergencyAssistanceService.file(params, eqqueueId);
 
             // 调用 tableFile 方法--异步获取辅助决策报告
             seismicTableTriggerService.tableFile(params, eqqueueId);
 
 //            // 异步进行地震影响场灾损评估
-//            handleSeismicYxcEventAssessment(params, eqqueueId);
+            handleSeismicYxcEventAssessment(params, eqqueueId);
 //
 //            // 异步进行乡镇级评估
-//            handleTownLevelAssessment(params, eqqueueId);
+            handleTownLevelAssessment(params, eqqueueId);
 //
 //
 ////            // 异步获取专题图评估结果
-//            handleSpecializedAssessment(params, eqqueueId);
-////
-////            // 异步获取灾情报告评估结果
-//            handleDisasterReportAssessment(params, eqqueueId);
+            handleSpecializedAssessment(params, eqqueueId);
 //
+////            // 异步获取灾情报告评估结果
+            handleDisasterReportAssessment(params, eqqueueId);
+
 //
 //            // 检查四个评估结果的数据是否成功
-//            retrySaving(params, eqqueueId);
+            retrySaving(params, eqqueueId);
 
             // 返回每个阶段的保存数据状态
             return CompletableFuture.completedFuture(null);

@@ -1104,7 +1104,7 @@ public class SeismicTableTriggerService {
 
         // 构造文件路径
         String fileName = formattedTime + "级地震（辅助决策信息一）.docx";
-        String filePath = "C:/Users/Lenovo/Desktop/" + fileName;
+        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 
         // 写入文件
         try (FileOutputStream out = new FileOutputStream(filePath)) {
