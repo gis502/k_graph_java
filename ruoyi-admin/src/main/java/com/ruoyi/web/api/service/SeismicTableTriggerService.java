@@ -859,6 +859,7 @@ public class SeismicTableTriggerService {
 
     }
 
+//    WordExporter(combinedResult1,formattedTime,table1,table2);
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final double R = 6371; // 地球半径，单位：公里
 
@@ -1013,8 +1014,6 @@ public class SeismicTableTriggerService {
                 }
             }
         }
-
-
 
         // 插入表格下方的说明内容
         XWPFParagraph descriptionParagraph = document.createParagraph();
