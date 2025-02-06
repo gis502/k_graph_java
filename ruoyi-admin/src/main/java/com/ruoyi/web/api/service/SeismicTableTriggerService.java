@@ -143,10 +143,11 @@ public class SeismicTableTriggerService {
                 }
 
                 // 四舍五入取整（单位：公里）
-                int roundedDistance = (int) Math.round(distanceToCountyTown1 / 1000);
+                int roundedDistance = (int) distanceToCountyTown1;
 
                 // 将四舍五入后的整数结果转换为字符串，并加上单位“公里”
                 distanceColumn1.add(roundedDistance + "公里");
+
             } else {
                 // 如果 geom 为空，则填入默认值
                 distanceColumn1.add("N/A");
@@ -251,11 +252,11 @@ public class SeismicTableTriggerService {
                 double villageLat = villagePoint.getY(); // 纬度
                 double villageLon = villagePoint.getX(); // 经度
 
-                // 计算震中到乡镇点的距离（单位：米）
+                // 计算震中到乡镇点的距离
                 double distanceToVillageMeters = calculateDistance(uploadLat2, uploadLon2, villageLat, villageLon);
 
                 // 将距离转换为公里，并四舍五入取整
-                int distanceToVillageKm = (int) Math.round(distanceToVillageMeters / 1000.0);
+                int distanceToVillageKm = (int) distanceToVillageMeters;
 
                 // 将四舍五入后的整数结果转换为字符串，并加上单位“公里”
                 distanceColumn2.add(distanceToVillageKm + "公里");
