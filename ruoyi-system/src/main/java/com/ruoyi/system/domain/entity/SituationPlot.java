@@ -96,6 +96,17 @@ public class SituationPlot {
     @TableField(value = "is_deleted")
     private Boolean isDeleted;
 
+    @TableField(value = "belong_province")
+    private String belongProvince;
+
+    @TableField(value = "belong_city")
+    private String belongCity;
+
+    @TableField(value = "belong_county")
+    private String belongCounty;
+    @TableField(value = "belong_town")
+    private String belongTown;
+
     /**
      * 位置
      */
