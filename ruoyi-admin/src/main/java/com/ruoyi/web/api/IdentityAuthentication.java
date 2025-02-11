@@ -47,11 +47,11 @@ public class IdentityAuthentication {
         // 以json格式传入参数
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("username", "test");
-        jsonObject.put("password", "testtest");
+        jsonObject.put("password", "Open#Api2025!");
 
         try {
-            String res = httpClientService.doPost("", "/auth", jsonObject);
-
+            String res = httpClientService.doPost("", "/api/open/auth", jsonObject);
+            System.out.println(res);
             // 解析 JSON 字符串为 JSONObject
             JSONObject data = JSONObject.parseObject(res).getJSONObject("data");
 
