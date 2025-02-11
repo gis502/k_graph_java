@@ -30,6 +30,9 @@ public class OrthophotoImage {
     @TableField(value = "path")
     private String path;
 
+    @TableField(value = "label")
+    private String label;
+
     /**
      * 添加时间
      */
