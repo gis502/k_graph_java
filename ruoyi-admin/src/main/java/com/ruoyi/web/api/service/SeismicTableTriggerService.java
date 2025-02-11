@@ -860,6 +860,7 @@ public class SeismicTableTriggerService {
 
     }
 
+//    WordExporter(combinedResult1,formattedTime,table1,table2);
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final double R = 6371; // 地球半径，单位：公里
 
@@ -1015,8 +1016,6 @@ public class SeismicTableTriggerService {
             }
         }
 
-
-
         // 插入表格下方的说明内容
         XWPFParagraph descriptionParagraph = document.createParagraph();
         XWPFRun run1 = descriptionParagraph.createRun();
@@ -1088,7 +1087,7 @@ public class SeismicTableTriggerService {
 
         // 构造文件路径
         String fileName = formattedTime + "级地震（辅助决策信息一）.docx";
-        String filePath = "C:/Users/Lenovo/Desktop/" + fileName;
+        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 
         // 写入文件
         try (FileOutputStream out = new FileOutputStream(filePath))     {
