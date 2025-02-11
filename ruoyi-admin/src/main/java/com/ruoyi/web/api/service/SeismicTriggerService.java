@@ -126,16 +126,16 @@ public class SeismicTriggerService {
 //
 //            // 调用 file 方法--异步获取辅助决策（二）报告结果
             sismiceMergencyAssistanceService.file(params, eqqueueId);
-
-//            // 异步进行地震影响场灾损评估
+//
+////            // 异步进行地震影响场灾损评估
 //            handleSeismicYxcEventAssessment(params, eqqueueId);
-//            // 异步进行乡镇级评估
+////            // 异步进行乡镇级评估
 //            handleTownLevelAssessment(params, eqqueueId);
-//
-////            // 异步获取专题图评估结果
+////
+//////            // 异步获取专题图评估结果
 //            handleSpecializedAssessment(params, eqqueueId);
-//
-////            // 异步获取灾情报告评估结果
+////
+//////            // 异步获取灾情报告评估结果
 //            handleDisasterReportAssessment(params, eqqueueId);
 
 //
@@ -1181,8 +1181,7 @@ public class SeismicTriggerService {
 
         // 构造文件路径
         String fileName = timePart + eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
-//        String filePath = "C:/Users/Smile/Desktop/" + fileName;
-        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
+        String filePath = "C:/Users/Smile/Desktop/" + fileName;
         // 设置页面边距
         setPageMargins(document, filePath);
 
@@ -1685,9 +1684,7 @@ public class SeismicTriggerService {
      * @return: 返回批次进度
      */
     public Double getEventProgress(String eqId) {
-        System.out.println("****eqid的值****："+eqId);
         AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId);
-        System.out.println("****processes.getProgress()的值****："+processes.getProgress());
         return processes.getProgress();
     }
 
