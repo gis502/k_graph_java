@@ -111,32 +111,32 @@ public class SeismicTriggerService {
             eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
 
             // 如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
-            if (StringUtils.isEmpty(eqqueueId)) {
-                throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
-            }
+//            if (StringUtils.isEmpty(eqqueueId)) {
+//                throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
+//            }
 
 //            // 数据插入到第三方数据库成功后，插入到本地数据库
-            getWithSave(params, eqqueueId);
+//            getWithSave(params, eqqueueId);
 //
 //            //异步获取辅助决策报告值班表
-            handleAssessmentReportAssessment(params, eqqueueId);
+//            handleAssessmentReportAssessment(params, eqqueueId);
 
             // 调用 tableFile 方法--异步获取辅助决策报告(一)
-            seismicTableTriggerService.tableFile(params, eqqueueId);
+//            seismicTableTriggerService.tableFile(params, eqqueueId);
 //
 //            // 调用 file 方法--异步获取辅助决策（二）报告结果
             sismiceMergencyAssistanceService.file(params, eqqueueId);
 
 //            // 异步进行地震影响场灾损评估
-            handleSeismicYxcEventAssessment(params, eqqueueId);
+//            handleSeismicYxcEventAssessment(params, eqqueueId);
 //            // 异步进行乡镇级评估
-            handleTownLevelAssessment(params, eqqueueId);
+//            handleTownLevelAssessment(params, eqqueueId);
 //
 ////            // 异步获取专题图评估结果
-            handleSpecializedAssessment(params, eqqueueId);
+//            handleSpecializedAssessment(params, eqqueueId);
 //
 ////            // 异步获取灾情报告评估结果
-            handleDisasterReportAssessment(params, eqqueueId);
+//            handleDisasterReportAssessment(params, eqqueueId);
 
 //
 //            // 检查四个评估结果的数据是否成功
@@ -1181,7 +1181,8 @@ public class SeismicTriggerService {
 
         // 构造文件路径
         String fileName = timePart + eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
-        String filePath = "C:/Users/Smile/Desktop/" + fileName;
+//        String filePath = "C:/Users/Smile/Desktop/" + fileName;
+        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
         // 设置页面边距
         setPageMargins(document, filePath);
 
@@ -1684,8 +1685,9 @@ public class SeismicTriggerService {
      * @return: 返回批次进度
      */
     public Double getEventProgress(String eqId) {
-
+        System.out.println("****eqid的值****："+eqId);
         AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId);
+        System.out.println("****processes.getProgress()的值****："+processes.getProgress());
         return processes.getProgress();
     }
 

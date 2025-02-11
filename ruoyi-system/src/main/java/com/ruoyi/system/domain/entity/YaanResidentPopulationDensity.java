@@ -7,6 +7,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+/**
+ * 全省常住人口密度
+ */
+
 @Data
 @TableName(value = "yaan_resident_population_density")
 public class YaanResidentPopulationDensity {
