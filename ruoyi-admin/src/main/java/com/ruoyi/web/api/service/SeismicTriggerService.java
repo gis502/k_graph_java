@@ -119,13 +119,13 @@ public class SeismicTriggerService {
             getWithSave(params, eqqueueId);
 //
 //            //异步获取辅助决策报告值班表
-//            handleAssessmentReportAssessment(params, eqqueueId);
+            handleAssessmentReportAssessment(params, eqqueueId);
 
             // 调用 tableFile 方法--异步获取辅助决策报告(一)
-//            seismicTableTriggerService.tableFile(params, eqqueueId);
+            seismicTableTriggerService.tableFile(params, eqqueueId);
 //
 //            // 调用 file 方法--异步获取辅助决策（二）报告结果
-//            sismiceMergencyAssistanceService.file(params, eqqueueId);
+            sismiceMergencyAssistanceService.file(params, eqqueueId);
 //
 ////            // 异步进行地震影响场灾损评估
             handleSeismicYxcEventAssessment(params, eqqueueId);

@@ -174,5 +174,5 @@ xss:
 # 第三方接口配置
 third-party:
   username: test
-  passowrd: Open#Api2025!
+  password: Open#Api2025!
 

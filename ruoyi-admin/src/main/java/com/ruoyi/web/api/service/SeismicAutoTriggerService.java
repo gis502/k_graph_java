@@ -58,7 +58,7 @@ public class SeismicAutoTriggerService {
         List<ResultAutoTriggerVO> dtoData = resultAutoTriggerDTO.getData();
 
         // 空数据不操作
-        if (dtoData.size() == 0) {
+        if (dtoData.size()==0) {
 
             return;
         }
