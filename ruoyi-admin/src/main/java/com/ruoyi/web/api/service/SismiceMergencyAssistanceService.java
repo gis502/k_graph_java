@@ -59,6 +59,11 @@ public class SismiceMergencyAssistanceService {
     @Resource
     private YaanVillageAndCommunityMapper yaanVillageAndCommunityMapper;
 
+    @Resource
+    private AssessmentResultMapper assessmentResultMapper;
+
+    @Resource
+    private EarthquakeListMapper earthquakeListMapper;
 
     // 函数计算公式
     // 计算 QX 的函数
@@ -123,6 +128,7 @@ public class SismiceMergencyAssistanceService {
     @SneakyThrows
     public void file(EqEventTriggerDTO params, String eqqueueId){
         System.out.println("前端构建文本传的参数" + params);
+        String event = params.getEvent();  //深度   N3
         String eqName = params.getEqName();  //名字
         String eqTime = params.getEqTime();  //时间
         String eqAddr = params.getEqAddr();  //地址
@@ -566,6 +572,15 @@ public class SismiceMergencyAssistanceService {
         }
 
 
+        System.out.println("打印所有村（社区）的户数（风普）和常住人口（风普）前7个数据的烈度:");
+        List<String> keys = new ArrayList<>(all.keySet()); // 将 Map 的键转换为列表
+        int sevens = Math.min(11, keys.size()); // 确保不会超出索引范围
+        for (int i = 0; i < sevens; i++) {
+            String key = keys.get(i); // 获取第 i 个键
+            Double intensity = all.get(key); // 通过键获取烈度
+            System.out.println("第" + (i + 1) + "个：" + key + " 的烈度为 " + intensity);
+        }
+
         // 计算 6 度以上（包含 6 度）的总户数
         double totalHouseholdsAbove6 = data.stream()
                 .filter(map -> {
@@ -579,12 +594,13 @@ public class SismiceMergencyAssistanceService {
                     return intensity != null && intensity >= 6;
                 })
                 .mapToDouble(map -> {
-                    // 获取对应的户数
-                    return (Double) map.get("numberOfHouseholdsOrFenfp");
+                    Object value = map.get("numberOfHouseholdsOrFengpu");
+                    if (value == null) return 0.0;
+                    return (value instanceof Number) ? ((Number) value).doubleValue() : 0.0;
                 })
                 .sum();
 
-        //使用 mapToDouble() 取出户数 numberOfHouseholdsOrFenfp。
+        //使用 mapToDouble() 取出户数 numberOfHouseholdsOrFengpu。
         //使用 sum() 计算总户数。
 
         System.out.println("6 度以上的总户数：" + totalHouseholdsAbove6);  //L19
@@ -615,8 +631,9 @@ public class SismiceMergencyAssistanceService {
                     return intensity != null && intensity >= 6;
                 })
                 .mapToDouble(map -> {
-                    // 获取对应的常住人口
-                    return (Double) map.get("residentPopulationFengpu");
+                    Object value = map.get("residentPopulationFengpu");
+                    if (value == null) return 0.0;
+                    return (value instanceof Number) ? ((Number) value).doubleValue() : 0.0;
                 })
                 .sum();
 
@@ -732,11 +749,54 @@ public class SismiceMergencyAssistanceService {
 
         //***********************************************************************************************
 
+        //获取得到的event  是对应  eqid
 
         //生成文档后，相关人员自己填写的
 
-        String fuJinTownResult = "预估全市死亡X～X（按±30%浮动）人，重伤X～X（按±30%浮动）人，房屋损毁X～X（按±30%浮动）间，直接经济损失X～X亿元（按±30%浮动）。";
+
+        // --------遍历查询地震造成的损伤、损失----------------
+        List<AssessmentResult> loss = assessmentResultMapper.selectList(null);
+
+        // 初始化累加变量
+        int totalDeath = 0; // 总死亡人数
+        double totalEconomicLoss = 0; // 总经济损失（万元）
+        double totalBuildingDamage = 0; // 总建筑破坏面积（万平方米）
+
+        System.out.println("event的值为：" + event);
+
+        // 遍历匹配 `eqid` 的所有记录，并进行累加
+        for (AssessmentResult material : loss) {
+            if (event != null && event.equals(material.getEqid())) { // 确保 eqid 匹配
+                if (material.getDeath() != null) {
+                    totalDeath += material.getDeath(); // 累加死亡人数
+                }
+                if (material.getEconomicLoss() != null && !material.getEconomicLoss().trim().isEmpty()) {
+                    try {
+                        totalEconomicLoss += Double.parseDouble(material.getEconomicLoss().trim());
+                    } catch (NumberFormatException e) {
+                        System.err.println("警告: 无法解析 economicLoss = " + material.getEconomicLoss());
+                    }
+                }
+
+                if (material.getBuildingDamage() != null && !material.getBuildingDamage().trim().isEmpty()) {
+                    try {
+                        totalBuildingDamage += Double.parseDouble(material.getBuildingDamage().trim());
+                    } catch (NumberFormatException e) {
+                        System.err.println("警告: 无法解析 buildingDamage = " + material.getBuildingDamage());
+                    }
+                }
+            }
+        }
+
+        // 输出结果（可选）
+        System.out.println("****总死亡人数：" + totalDeath + " 人****");
+        System.out.println("****总经济损失：" + totalEconomicLoss + " 万元****");
+        System.out.println("****总建筑破坏面积：" + totalBuildingDamage + " 万平方米****");
+
+        // 动态生成结果字符串
+        String fuJinTownResult = generateResultString(totalDeath, totalEconomicLoss, totalBuildingDamage);
         System.out.println(fuJinTownResult);
+
 
 
         //***********************************************************************************************
@@ -759,11 +819,12 @@ public class SismiceMergencyAssistanceService {
         //------------判断------------------
 
         int maxIntensity = 0;   //  最大烈度 初始为0       B20 无"度"字
+        int outside = 0;//   辖区外地震雅安最大烈度     F19
 
         //如果是不是雅安市内的
-        double   big = 0; //外地地震雅安最大烈度8度及以上时，筛选7度及以上县个数
-        double   middle = 0; //外地地震雅安最大烈度7度及以上时，筛选6度、7度县个数
-        double   small = 0;  //外地地震雅安最大烈度6度及以上时，筛选5度、6度县个数
+        double   big = 0; //外地地震雅安最大烈度8度及以上时，筛选7度及以上县个数   J26
+        double   middle = 0; //外地地震雅安最大烈度7度及以上时，筛选6度、7度县个数  K26
+        double   small = 0;  //外地地震雅安最大烈度6度及以上时，筛选5度、6度县个数   L26
 
 
 
@@ -811,7 +872,7 @@ public class SismiceMergencyAssistanceService {
                 // 查询雅安市所有乡镇（yaan_villages表）
                 List<YaanVillages> villageList = yaanVillagesMapper.selectList(null);
 
-                // 初始化最小距离
+                // 初始化最小距离（公里）
                 double minVillageDistance = Double.MAX_VALUE;
 //                String nearestVillage = "";
 
@@ -891,6 +952,10 @@ public class SismiceMergencyAssistanceService {
 
                 System.out.println("------------------eqAddr内没有雅安市，进入外地的烈度计算---------------------:" + eqAddr);
 
+
+                // ------------计算震中距离雅安市边界的最小距离----------------
+
+
                 // 查询雅安市行政边界的所有点或多边形（geom字段）
                 List<YaanAdministrativeBoundary> boundaryList1 = yaanAdministrativeBoundaryMapper.selectList(null);
 
@@ -918,6 +983,11 @@ public class SismiceMergencyAssistanceService {
                         }
                     }
                 }
+                // 计算后的最小距离（单位：公里）
+                double minDistanceInKm1 = minBoundaryDistance1;  // 转换为公里
+
+                System.out.println("距离雅安市边界的最小距离 minDistanceInKm1: " + minDistanceInKm1);
+
 
                 //*******************----------------------尝试烈度-------------------
                 /////////////////////-----------
@@ -1036,7 +1106,7 @@ public class SismiceMergencyAssistanceService {
 
 
                 System.out.println("取整后震中到城市点的最小距离minCityDistance1: " + minCityDistance1);  //震中区最大地震烈度达%d度
-                System.out.println("取整后雅安市行政边界最小距离minBoundaryDistance1: " + minBoundaryDistance1);
+                System.out.println("取整后雅安市行政边界最小距离minDistanceInKm1: " + minDistanceInKm1);
                 System.out.println("取整后最近的政府乡镇距离minCountyTownDistance1: " + minCountyTownDistance1);
                 System.out.println("取整后雅安市所有乡镇距离minCountyTownDistance1: " + minVillageDistance);
                 //*************-----------------------------------------------------
@@ -1052,22 +1122,22 @@ public class SismiceMergencyAssistanceService {
                 if (eqMagnitude > 5.5) {
                     // 震级大于5.5时使用这个公式
                     intensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minCityDistance1 + 24)) - 0.4;  //计算震中到城市点的最小距离（单位：米） minCityDistance1
-                    intensity1 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minBoundaryDistance1 + 24)) - 0.4; //计算雅安市行政边界最小距离（单位：米）minBoundaryDistance1
+                    intensity1 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minDistanceInKm1 + 24)) - 0.4; //计算雅安市行政边界最小距离（单位：米）minBoundaryDistance1
                     intensity2 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minCountyTownDistance1 + 24)) - 0.4;  //正常更新最近的政府乡镇距离  minCountyTownDistance1
                     intensity3 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minVillageDistance + 24)) - 0.4;  //雅安市所有乡镇距离乡镇最小距离  minCountyTownDistance1
 
                 } else {
                     // 震级小于或等于5.5时使用这个公式
                     intensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minCityDistance1 + 24)) - 0.6;  //计算震中到城市点的最小距离（单位：米） minCityDistance1
-                    intensity1 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minBoundaryDistance1 + 24)) - 0.6; //计算雅安市行政边界最小距离（单位：米）minBoundaryDistance1
+                    intensity1 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minDistanceInKm1 + 24)) - 0.6; //计算雅安市行政边界最小距离（单位：米）minBoundaryDistance1
                     intensity2 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minCountyTownDistance1 + 24)) - 0.6; //正常更新最近的政府乡镇距离  minCountyTownDistan
                     intensity3 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minVillageDistance + 24)) - 0.6;  //雅安市所有乡镇距离乡镇最小距离  minCountyTownDistance1
 
                 }
                 System.out.println("震中到城市点的最小距离的烈度: " + intensity);  //震中区最大地震烈度达%d度
-                System.out.println("雅安市行政边界最小距离烈度: " + intensity1);
+                System.out.println("雅安市行政边界最小距离烈度(辖区外地震雅安最大烈度):  " + intensity1);
                 System.out.println("最近的政府乡镇的烈度: " + intensity2);
-                System.out.println("雅安市所有乡镇距离乡镇最小距离: " + intensity3);
+                System.out.println("雅安市震中到乡镇点的最小距离: " + intensity3);
 
                 // 四舍五入取整
                 int roundedIntensity = (int) Math.round(intensity);
@@ -1077,14 +1147,19 @@ public class SismiceMergencyAssistanceService {
 
                 // 打印变量的值
                 System.out.println("取整后震中到城市点的最小距离的烈度: " + roundedIntensity);  //震中区最大地震烈度达%d度
-                System.out.println("取整后雅安市行政边界最小距离烈度: " + roundedIntensity1);
+                System.out.println("取整后雅安市行政边界最小距离烈度(取整后辖区外地震雅安最大烈度:): " + roundedIntensity1);
                 System.out.println("取整后最近的政府乡镇的烈度: " + roundedIntensity2);
-                System.out.println("取整后雅安市所有乡镇距离乡镇最小距离: " + roundedIntensity3);
+                System.out.println("取整后雅雅安市震中到乡镇点的最小距离: " + roundedIntensity3);
 
 
                 //得到我市最大烈度
                 maxIntensity = roundedIntensity3;
                 System.out.println("maxIntensity烈度选取：roundedIntensity3取整后雅安市所有乡镇距离乡镇最小距离: " + roundedIntensity3);
+
+                //得到我市最大烈度
+                outside = roundedIntensity1;
+                System.out.println("outside烈度选取：roundedIntensity3取整后雅安市所有乡镇距离乡镇最小距离: " + roundedIntensity1);
+
 
 
                 // 如果最大烈度大于等于 6 度，计算所有乡镇的震中距以及烈度
@@ -1151,7 +1226,7 @@ public class SismiceMergencyAssistanceService {
         System.out.println("外地地震雅安最大烈度6度及以上时，筛选5度、6度县个数: double small = " + small);
 
         //---------最终影响-------
-        String influence = ""; // 初始化影响的字符串
+        String influence = ""; // 初始化影响的字符串  E31
 
         // 判断震中点最大烈度并输出影响描述
         if (maxIntensity == 0 || maxIntensity == 1 || maxIntensity == 2) {
@@ -1167,7 +1242,7 @@ public class SismiceMergencyAssistanceService {
         } else if (maxIntensity == 10 || maxIntensity == 11 || maxIntensity == 12) {
             influence = "影响巨大，部分区域是毁灭性的";
         } else {
-            influence = "无效的烈度值"; // 如果输入的值不在有效范围内
+            influence = "无影响"; // 如果输入的值不在有效范围内
         }
 
         // 输出影响结果
@@ -1175,7 +1250,7 @@ public class SismiceMergencyAssistanceService {
 
         //-------灾害等级-------
 
-        String disasterLevel = "";
+        String disasterLevel = "";  //C31
 
         if("没有该地人口密度信息".equals(populationDensity) ){
             disasterLevel = "";
@@ -1185,29 +1260,29 @@ public class SismiceMergencyAssistanceService {
             // 检查人口密度和震级，根据条件返回灾害等级
             if (populationDensityInt >= 200  ) {
                 if (eqMagnitude >= 3.5 && eqMagnitude < 4.0) {
-                    disasterLevel = "属有感地震,";
+                    disasterLevel = "属有感地震。";
                 } else if (eqMagnitude >= 4.0 && eqMagnitude < 5.0) {
-                    disasterLevel = "按照地震灾害事件分级，属一般地震灾害,";
+                    disasterLevel = "按照地震灾害事件分级，属一般地震灾害。";
                 } else if (eqMagnitude >= 5.0 && eqMagnitude < 6.0) {
-                    disasterLevel = "按照地震灾害事件分级，属较大地震灾害,";
+                    disasterLevel = "按照地震灾害事件分级，属较大地震灾害。";
                 } else if (eqMagnitude >= 6.0 && eqMagnitude < 7.0) {
-                    disasterLevel = "按照地震灾害事件分级，属重大地震灾害,";
+                    disasterLevel = "按照地震灾害事件分级，属重大地震灾害。";
                 } else if (eqMagnitude >= 7.0) {
-                    disasterLevel = "按照地震灾害事件分级，属特别重大地震灾害,";
+                    disasterLevel = "按照地震灾害事件分级，属特别重大地震灾害。";
                 }else{
                     disasterLevel = "";
                 }
             }else{
                 if (eqMagnitude >= 3.5 && eqMagnitude < 4.5) {
-                    disasterLevel = "属有感地震,";
+                    disasterLevel = "属有感地震。";
                 } else if (eqMagnitude >= 4.5 && eqMagnitude < 5.5) {
-                    disasterLevel = "按照地震灾害事件分级，属一般地震灾害,";
+                    disasterLevel = "按照地震灾害事件分级，属一般地震灾害。";
                 } else if (eqMagnitude >= 5.5 && eqMagnitude < 6.5) {
-                    disasterLevel = "按照地震灾害事件分级，属较大地震灾害,";
+                    disasterLevel = "按照地震灾害事件分级，属较大地震灾害。";
                 } else if (eqMagnitude >= 6.5 && eqMagnitude < 7.5) {
-                    disasterLevel = "按照地震灾害事件分级，属重大地震灾害,";
+                    disasterLevel = "按照地震灾害事件分级，属重大地震灾害。";
                 } else if (eqMagnitude >= 7.5) {
-                    disasterLevel = "按照地震灾害事件分级，属特别重大地震灾害,";
+                    disasterLevel = "按照地震灾害事件分级，属特别重大地震灾害。";
                 }else{
                     disasterLevel = "";
                 }
@@ -1256,13 +1331,13 @@ public class SismiceMergencyAssistanceService {
 
         } else {
             // 判断 eqName 不包含 "雅安市"
-            if (maxIntensity < 5) {
+            if (outside < 5) {
                 if (eqMagnitude < 5.0) {
                     suggestion = "不启动地震应急响应";
                 } else {
                     suggestion = "启动外地地震应急响应";
                 }
-            }else if ((maxIntensity == 6.0 && big == 0.0) || maxIntensity == 5.0 || big == 1.0) {
+            }else if ((outside == 6.0 && big == 0.0) || outside == 5.0 || big == 1.0) {
                 suggestion = "启动强有感地震应急响应";
             }else if (big >= 2) {
                 suggestion = "启动市级地震灾害一级应急响应";
@@ -1281,24 +1356,44 @@ public class SismiceMergencyAssistanceService {
         // 输出建议
         System.out.println("应急响应建议: " + suggestion);
 
-        String response  = " ";
+        String response ;
 
         if ("不启动地震应急响应".equals(suggestion)) {
             response  =  " ";
         } else {
-            response  =  "建议按照《雅安市地震应急预案》" + suggestion + "处置措施开展应急处置。";
+            // 去掉suggestion中的“启动”
+            String suggestionWithoutStart = suggestion.replace("启动", "");
+            response  =  "建议按照《雅安市地震应急预案》" + suggestionWithoutStart + "处置措施开展应急处置。";
         }
         System.out.println("响应:"+response);  // Output: 按照《雅安市地震应急预案》市级地震灾害一级应急响应处置措施开展应急处置
 
 
+        // 计算应急响应的详细内容
+        String plan = generateResponse(cityOrState, suggestion, outside, big, middle, small, eqMagnitude,countyOrDistrict,populationDensity);
 
-        String jianyi = String.format(
-                "应急响应建议：建议我市%s（主要依据：1、%s；2、震级:%.1f；3、我市最大烈度：%d度。%s",
-                suggestion,category,eqMagnitude,maxIntensity,response
-        );
+        // 检查 maxIntensity 是否小于 0，如果是，设置为 0
+        if (maxIntensity < 0) {
+            maxIntensity = 0;
+        }
 
+        System.out.println("最终的最大烈度是：" + maxIntensity);
 
-        System.out.println("终应急响应建议---建议jianyi ： " + jianyi);
+        // 生成应急响应建议
+        String jianyi;
+        if ("不启动地震应急响应".equals(suggestion)) {
+            jianyi = String.format(
+                    "应急响应建议：建议我市不启动地震应急响应（主要依据：1、%s；2、震级:%.1f级；3、我市最大烈度：%d度。）",
+                    category, eqMagnitude, maxIntensity
+            );
+        } else {
+            jianyi = String.format(
+                    "应急响应建议：建议我市%s，主要依据：1、%s；%s%s",
+                    suggestion, category, plan, response
+            );
+        }
+
+        // 输出结果
+        System.out.println("最终应急响应建议: " + jianyi);
 
 
         //***********************************************************************************************
@@ -1658,17 +1753,17 @@ public class SismiceMergencyAssistanceService {
         String dayStr = String.format("%02d", day);  // 格式化为两位数   //D3  String
 
         // 获取日期对应的事件  eg:国庆节   P29
-        String event = getEventForDate(yearStr, monthStr, dayStr);
+        String events = getEventForDate(yearStr, monthStr, dayStr);
 
         //（2）开始特殊时段处置建议
         //int maxIntensity  为  B20
         //String maxIntensityWithUnit 加上 "度"的   B20
         // String cityOrState   为  C26
-        //String event 为  P29
+        //String events 为  P29
         // String suggestion 为  B31
         //Double eqMagnitude 为 I3
 
-        String advice = generateAdvice(cityOrState, event, suggestion, maxIntensityWithUnit, eqMagnitude);  //P31
+        String advice = generateAdvice(cityOrState, events, suggestion, maxIntensityWithUnit, eqMagnitude);  //P31
         System.out.println("9.特殊时段处置建议：" + advice);
 
         System.out.println("*****************************************");
@@ -1693,7 +1788,7 @@ public class SismiceMergencyAssistanceService {
 
         // 处置措施建议字符串
         String cuoshi = String.format(
-                "处置措施建议：%s。",
+                "处置措施建议：%s",
                 connect
         );
 
@@ -1708,7 +1803,7 @@ public class SismiceMergencyAssistanceService {
         String combinedResult1 = result + fuJinTownResult + panduan + jianyi + cuoshi ;
         System.out.println("合并字段完成：" + combinedResult1);
         System.out.println("-----------------------------将要开始进行书写word文档阶段-----------------------");
-        WordExporter(title,result,fuJinTownResult,panduan,jianyi,cuoshi,formattedTime);
+//        WordExporter(title,result,fuJinTownResult,panduan,jianyi,cuoshi,formattedTime,eqName,eqMagnitude);
     }
 
 
@@ -1741,6 +1836,94 @@ public class SismiceMergencyAssistanceService {
 
     }
 
+
+    /**
+     * 根据总死亡人数、总经济损失和总建筑破坏面积生成结果字符串
+     */
+    private static String generateResultString(int totalDeath, double totalEconomicLoss, double totalBuildingDamage) {
+        // 处理死亡人数
+        String deathResult = "死亡X～X（按±30%浮动）人";
+        if (totalDeath > 0) {
+//            int lowerDeath = (int) Math.round(totalDeath * 0.7); // 下限：-30%
+//            int upperDeath = (int) Math.round(totalDeath * 1.3); // 上限：+30%
+            deathResult = "死亡" +totalDeath+ "（按±30%浮动）人";
+        }
+
+        // 处理建筑破坏面积
+        String buildingDamageResult = "总建筑破坏面积X～X（按±30%浮动）万平方米";
+        if (totalBuildingDamage > 0) {
+//            double lowerBuildingDamage = Math.round(totalBuildingDamage * 0.7 * 100) / 100.0; // 下限：-30%，保留两位小数
+//            double upperBuildingDamage = Math.round(totalBuildingDamage * 1.3 * 100) / 100.0; // 上限：+30%，保留两位小数/
+            buildingDamageResult = "总建筑破坏面积" + totalBuildingDamage+ "（按±30%浮动）万平方米";
+        }
+
+        // 处理经济损失
+        String economicLossResult = "直接经济损失X～X亿元（按±30%浮动）";
+        if (totalEconomicLoss > 0) {
+//            double lowerEconomicLoss = Math.round(totalEconomicLoss * 0.7 * 100) / 100.0; // 下限：-30%，保留两位小数
+//            double upperEconomicLoss = Math.round(totalEconomicLoss * 1.3 * 100) / 100.0; // 上限：+30%，保留两位小数
+            economicLossResult = "直接经济损失" + totalEconomicLoss + "亿元（按±30%浮动）";
+        }
+
+        // 拼接最终结果
+        return "预估全市" + deathResult + "，" + buildingDamageResult + "，" + economicLossResult + "。";
+    }
+
+
+
+    /**
+     * 生成应急响应描述
+     */
+    private static String generateResponse(String cityOrState, String suggestion, int outside, double big, double middle, double small, double eqMagnitude,String countyOrDistrict,String populationDensity ) {
+
+        // 初始化响应描述
+        StringBuilder response = new StringBuilder();
+
+        // 非雅安市的情况
+        if (!"雅安市".equals(cityOrState)) {
+            if ("启动市级地震灾害一级应急响应".equals(suggestion)) {
+                response.append(String.format(" 2、我市最大地震烈度：%d度；", outside));
+                if (big >= 1) {
+                    response.append(String.format("3、7度及以上涉及雅安 %d 个县（区）。", (int) big));
+                }
+            } else if ("启动市级地震灾害二级应急响应".equals(suggestion)) {
+                response.append(String.format(" 2、我市最大地震烈度：%d度；", outside));
+                if (middle >= 1) {
+                    response.append(String.format("3、6度及以上涉及雅安 %d 个县（区）；", (int) middle));
+                }
+                if (big >= 1) {
+                    response.append(String.format("4、7度及以上涉及雅安 %d 个县（区）。", (int) big));
+                }
+            } else if ("启动市级地震灾害三级应急响应".equals(suggestion)) {
+                response.append(String.format(" 2、我市最大地震烈度：%d度；", outside));
+                if (small >= 1) {
+                    response.append(String.format("3、5度及以上涉及雅安 %d 个县（区）；", (int) small));
+                }
+                if (middle >= 1) {
+                    response.append(String.format("4、6度及以上涉及雅安 %d 个县（区）。", (int) middle));
+                }
+            } else if ("启动强有感地震应急响应".equals(suggestion)) {
+                response.append(String.format(" 2、我市最大地震烈度：%d度；", outside));
+                if (small >= 1) {
+                    response.append(String.format("3、5度及以上涉及雅安 %d 个县（区）。", (int) small));
+                }
+            } else if ("启动外地地震应急响应".equals(suggestion)) {
+                response.append(String.format(" 2、震级：%.1f级；3、我市最大地震烈度：%d度。", eqMagnitude, outside));
+            }
+        }else{
+            response.append(String.format(" 2、震级：%.1f级；3、震中%s人口密度约%s人/平方公里。", eqMagnitude, countyOrDistrict, populationDensity));
+        }
+
+        return response.toString();
+    }
+
+
+
+
+
+
+
+
     //判断 1.指挥部建议  H31 /headquarters
     public static String earthquakeResponse(String cityOrState, String suggestion, String countyOrDistrict, String earthquakeName) {
         // 1. 不启动应急响应
@@ -1749,7 +1932,7 @@ public class SismiceMergencyAssistanceService {
         }
 
         // 2. 强有感地震应急响应
-        if (suggestion.equals("强有感地震应急响应")) {
+        if (suggestion.equals("启动强有感地震应急响应")) {
             if (cityOrState.equals("雅安市")) {
                 return "根据工作需要，请市政府指派一位市领导带领相关部门前往" + countyOrDistrict + "指导抗震救灾工作";
             } else {
@@ -1758,7 +1941,7 @@ public class SismiceMergencyAssistanceService {
         }
 
         // 3. 市级地震灾害三级应急响应
-        if (suggestion.equals("市级地震灾害三级应急响应")) {
+        if (suggestion.equals("启动市级地震灾害三级应急响应")) {
             if (cityOrState.equals("雅安市")) {
                 return "市政府负责防震减灾工作副市长组织召开抗震救灾紧急会议；根据工作需要，请市政府指派一位市领导带领市应急管理局、市委宣传部、市卫生健康委、市自然资源和规划局、市水利局、市防震减灾服务中心等部门前往" + countyOrDistrict +
                         "，会同省应急厅、省地震局专家指导、协调、督促抗震救灾工作；立即向省委、省政府和省抗震救灾指挥机构报告震情、灾情和应急处置情况，并持续报告工作进展";
@@ -1768,24 +1951,24 @@ public class SismiceMergencyAssistanceService {
         }
 
         // 4. 市级地震灾害二级应急响应
-        if (suggestion.equals("市级地震灾害二级应急响应")) {
+        if (suggestion.equals("启动市级地震灾害二级应急响应")) {
             return "市政府常务副市长和市政府负责防震减灾工作副市长组织召开抗震救灾紧急会议；成立雅安市" + earthquakeName +
                     "抗震救灾指挥部，建立市政府市长任总指挥，市政府常务副市长和市政府负责防震减灾工作副市长任指挥长的指挥体系；立即向省委、省政府和省抗震救灾指挥机构报告震情、灾情和应急处置情况，并持续报告工作进展；组建市应对地震灾害指挥部后方协调中心";
         }
 
         // 5. 市级地震灾害一级应急响应
-        if (suggestion.equals("市级地震灾害一级应急响应")) {
+        if (suggestion.equals("启动市级地震灾害一级应急响应")) {
             return "市委、市政府主要领导组织召开抗震救灾紧急会议；成立雅安市" + earthquakeName +
                     "抗震救灾指挥部，建立市委书记和市政府市长任指挥长，市委、市人大、市政府、市政协和雅安军分区等有关领导任副指挥长并兼任有关工作组组长的指挥体系；立即向省委、省政府和省抗震救灾指挥机构报告震情、灾情和应急处置情况，并持续报告工作进展；组建市应对地震灾害指挥部后方协调中心";
         }
 
         // 6. 外地地震应急响应
-        if (suggestion.equals("外地地震应急响应")) {
+        if (suggestion.equals("启动外地地震应急响应")) {
             return "无";
         }
 
         // 兜底返回值
-        return "未知响应级别";
+        return "无";
     }
 
 
@@ -1811,19 +1994,19 @@ public class SismiceMergencyAssistanceService {
         }
 
         // 兜底返回值
-        return "未知烈度";
+        return "无";
     }
 
 
     //判断  3.应急支援建议  J31 /support
     public static String supportFunction(String cityOrState, Double eqMagnitude, String neighboringCityOrState, String suggestion) {
         // 市级地震灾害 一级 / 二级 应急响应
-        if (suggestion.equals("市级地震灾害一级应急响应") || suggestion.equals("市级地震灾害二级应急响应")) {
+        if (suggestion.equals("启动市级地震灾害一级应急响应") || suggestion.equals("启动市级地震灾害二级应急响应")) {
             return "迅速组织抢险救援队伍、医疗救护队伍、相应技术人员赶赴灾区开展救援抢险";
         }
 
         // 市级地震灾害 三级 应急响应
-        if (suggestion.equals("市级地震灾害三级应急响应")) {
+        if (suggestion.equals("启动市级地震灾害三级应急响应")) {
             if (cityOrState.equals("雅安市")) {
                 return "视情况组织抢险救援队伍、医疗救护队伍、相应技术人员赶赴灾区开展救援抢险";
             } else if (eqMagnitude < 6.0) {
@@ -1836,14 +2019,14 @@ public class SismiceMergencyAssistanceService {
         }
 
         // 强有感地震应急响应
-        if (suggestion.equals("强有感地震应急响应")) {
+        if (suggestion.equals("启动强有感地震应急响应")) {
             return eqMagnitude < 6.0 ? "无" :
                     "迅速联系" + neighboringCityOrState + "和省抗震救灾指挥部，根据需要和我市震情灾情组织必要的抢险救援队伍、"
                             + "医疗救护队伍、相应技术人员和物资对灾区进行支援（我市灾情未完全调查清楚前，至少保留2/3以上队伍和物资）";
         }
 
         // 外地地震应急响应
-        if (suggestion.equals("外地地震应急响应")) {
+        if (suggestion.equals("启动外地地震应急响应")) {
             return eqMagnitude < 6.0 ? "无" :
                     "迅速联系" + neighboringCityOrState + "和省抗震救灾指挥部，根据需要和我市震情灾情组织必要的抢险救援队伍、"
                             + "医疗救护队伍、相应技术人员和物资对灾区进行支援（我市灾情未完全调查清楚前，至少保留2/3以上队伍和物资）";
@@ -1941,15 +2124,15 @@ public class SismiceMergencyAssistanceService {
         // 处理 "雅安市" 情况
         if (cityOrState.equals("雅安市")) {
             switch (suggestion) {
-                case "市级地震灾害三级应急响应":
+                case "启动市级地震灾害三级应急响应":
                     return "保障通往震中区域的国省干道畅通，确保救援车辆和物资顺利到达震中";
-                case "市级地震灾害二级应急响应":
+                case "启动市级地震灾害二级应急响应":
                     return "迅速对通往" + countyOrDistrict + "的国省干道进行必要的交通管制，保障救援车辆、机械和人员优先通行，"
                             + "其他救灾车辆和人员调节通行，根据需要启用直升机起降场地";
-                case "市级地震灾害一级应急响应":
+                case "启动市级地震灾害一级应急响应":
                     return "迅速对通往" + countyOrDistrict + "的国省干道进行交通管制，保障救援车辆、机械和人员优先通行，"
                             + "其他救灾车辆和人员调节通行，限制无关车辆和人员进入灾区，立即启用直升机起降场地";
-                case "强有感地震应急响应":
+                case "启动强有感地震应急响应":
                 case "不启动地震应急响应":
                     return "无";
             }
@@ -1958,17 +2141,17 @@ public class SismiceMergencyAssistanceService {
         // 处理 非"雅安市" 情况
         else {
             switch (suggestion) {
-                case "市级地震灾害三级应急响应":
+                case "启动市级地震灾害三级应急响应":
                     return "保障通往受灾较重区域的国省干道畅通，确保救援车辆和物资顺利到达震中";
-                case "市级地震灾害二级应急响应":
+                case "启动市级地震灾害二级应急响应":
                     return "迅速对通往" + maximumIntensityPoint + "的国省干道进行必要的交通管制，保障救援车辆、机械和人员优先通行，"
                             + "其他救灾车辆和人员调节通行，根据需要启用直升机起降场地";
-                case "市级地震灾害一级应急响应":
+                case "启动市级地震灾害一级应急响应":
                     return "迅速对通往" + destroy + "的国省干道进行交通管制，保障救援车辆、机械和人员优先通行，"
                             + "其他救灾车辆和人员调节通行，限制无关车辆和人员进入灾区，立即启用直升机起降场地";
-                case "强有感地震应急响应":
+                case "启动强有感地震应急响应":
                 case "不启动地震应急响应":
-                case "外地地震应急响应":
+                case "启动外地地震应急响应":
                     if (category.equals("邻近市州地震")) {
                         return (eqMagnitude >= 6.0)
                                 ? "保障我市通往" + neighboringCityOrState + "的国省干道畅通，确保救援车辆和物资顺利过境"
@@ -2117,13 +2300,14 @@ public class SismiceMergencyAssistanceService {
             advice.append("正值春节假日，应特别关注震中附近景区及人员密集场所情况。");
         }
 
-        if (!"雅安市".equals(cityOrState) && "春节".equals(event) && (
-                "强有感地震应急响应".equals(suggestion) || "市级地震灾害三级应急响应".equals(suggestion) ||
-                        "市级地震灾害二级应急响应".equals(suggestion) || "市级地震灾害一级应急响应".equals(suggestion))) {
+        boolean b = "启动强有感地震应急响应".equals(suggestion) || "启动市级地震灾害三级应急响应".equals(suggestion) ||
+                "启动市级地震灾害二级应急响应".equals(suggestion) || "启动市级地震灾害一级应急响应".equals(suggestion);
+
+        if (!"雅安市".equals(cityOrState) && "春节".equals(event) && b) {
             advice.append("正值春节假日，应特别关注我市强有感以上区域景区及人员密集场所情况。");
         }
 
-        // 正值冠状病毒疫情高发期的判断
+        // 正值冠状病毒疫情高发期的判断   （时间时间，没有判断出来）
         if ("雅安市".equals(cityOrState) && "冠状病毒疫情高发期".equals(event) && eqMagnitude > 3.9) {
             advice.append("正值新冠肺炎防控期，应特别关注我市市区、震中城区和震中附近乡镇人员动向情况，提醒应急处置人员和户外避险群众做好个人防护。");
         }
@@ -2140,9 +2324,7 @@ public class SismiceMergencyAssistanceService {
             advice.append("正值清明节假日，应特别关注震中附近景区及人员密集场所情况。");
         }
 
-        if (!"雅安市".equals(cityOrState) && "清明节".equals(event) && (
-                "强有感地震应急响应".equals(suggestion) || "市级地震灾害三级应急响应".equals(suggestion) ||
-                        "市级地震灾害二级应急响应".equals(suggestion) || "市级地震灾害一级应急响应".equals(suggestion))) {
+        if (!"雅安市".equals(cityOrState) && "清明节".equals(event) && b) {
             advice.append("正值清明节假日，应特别关注我市强有感以上区域景区及人员密集场所情况。");
         }
 
@@ -2151,9 +2333,7 @@ public class SismiceMergencyAssistanceService {
             advice.append("正值劳动节假日，应特别关注震中附近景区及人员密集场所情况。");
         }
 
-        if (!"雅安市".equals(cityOrState) && "劳动节".equals(event) && (
-                "强有感地震应急响应".equals(suggestion) || "市级地震灾害三级应急响应".equals(suggestion) ||
-                        "市级地震灾害二级应急响应".equals(suggestion) || "市级地震灾害一级应急响应".equals(suggestion))) {
+        if (!"雅安市".equals(cityOrState) && "劳动节".equals(event) && b) {
             advice.append("正值劳动节假日，应特别关注我市强有感以上区域景区及人员密集场所情况。");
         }
 
@@ -2167,16 +2347,19 @@ public class SismiceMergencyAssistanceService {
     //处置措施建议
     public static String generateSuggestion(String P31, String... values) {
         //--------------------开始连接--------------------------------
-        StringBuilder suggestion = new StringBuilder("");
+        StringBuilder suggestion = new StringBuilder();
         boolean hasValidMeasure = false; // 记录是否有有效措施
+        int validCount = 0; // 记录有效数据的数量
 
         // 处理 G31-N31 的内容
-        for (int i = 0; i < values.length - 1; i++) {
+        for (int i = 0; i < values.length; i++) {
             if (!"无".equals(values[i])) {
+                if (validCount > 0) {
+                    suggestion.append("；"); // 多个有效数据之间用分号分隔
+                }
                 suggestion.append(values[i]);
                 hasValidMeasure = true; // 发现有效措施
-                // 判断是句号还是分号
-                suggestion.append(i == values.length - 2 ? "。" : "；");
+                validCount++; // 有效数据数量加1
             }
         }
 
@@ -2185,12 +2368,13 @@ public class SismiceMergencyAssistanceService {
             return P31;
         }
 
-        // 若有有效措施，添加 P31
+        // 若有有效措施，添加句号并拼接 P31
+        suggestion.append("。"); // 最后一个有效数据后添加句号
         return suggestion.append(P31).toString();
     }
 
     //设置样式，生成文档
-    private void WordExporter( String title,String result,String fuJinTownResult,String panduan,String jianyi,String cuoshi,String formattedTime) {
+    private void WordExporter( String title,String result,String fuJinTownResult,String panduan,String jianyi,String cuoshi,String formattedTime, String eqName, Double eqMagnitude) {
 
         System.out.println("开始写word文档");
 
@@ -2670,7 +2854,7 @@ public class SismiceMergencyAssistanceService {
         System.out.println("写word文档结束");
 
         // 构造文件路径
-        String fileName = formattedTime + "级地震（辅助决策信息二）.docx";
+        String fileName = formattedTime + eqName +"发生" + eqMagnitude +  "级地震（辅助决策信息二）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
         String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 
