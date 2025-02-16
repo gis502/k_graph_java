@@ -1,7 +1,10 @@
 package com.ruoyi.web.api.service;
 
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.dto.*;
+import com.ruoyi.system.domain.dto.EqCeicListDTO;
+import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
+import com.ruoyi.system.domain.dto.ResultAutoTriggerDTO;
+import com.ruoyi.system.domain.dto.ResultEqListDTO;
 import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.domain.vo.ResultAutoTriggerVO;
 import com.ruoyi.system.service.impl.EqListServiceImpl;
@@ -13,6 +16,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -58,8 +62,7 @@ public class SeismicAutoTriggerService {
         List<ResultAutoTriggerVO> dtoData = resultAutoTriggerDTO.getData();
 
         // 空数据不操作
-        if (dtoData.size()==0) {
-
+        if (dtoData == null || dtoData.isEmpty()) {
             return;
         }
 
@@ -68,10 +71,6 @@ public class SeismicAutoTriggerService {
 
         // 比较两者数据且合并数据
         Set<ResultAutoTriggerVO> vos = compareAndMerge(dtoData, eqLists);
-
-        vos.forEach(data -> {
-            log.info("同步正式地震数据：" + "eqid：" + data.getEqid() + "震中地点：" + data.getPlace());
-        });
 
         for (ResultAutoTriggerVO datum : vos) {
 

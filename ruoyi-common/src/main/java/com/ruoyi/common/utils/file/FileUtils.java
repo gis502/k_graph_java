@@ -80,7 +80,6 @@ public class FileUtils {
         // 将 fileUrl 中的 '/' 替换为平台兼容的文件分隔符，并确保路径的正确性
         saveDir = saveDir.replace("/", File.separator);
         saveDir = saveDir.replace("\\", File.separator);
-        log.info("保存文件的完整路径：{}--------------------------------------------------" + saveDir);
 
         // 获取文件夹路径，并创建多层级文件夹
         Path saveDirPath = Paths.get(saveDir).getParent();

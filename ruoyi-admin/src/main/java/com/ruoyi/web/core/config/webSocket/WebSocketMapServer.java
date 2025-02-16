@@ -1,28 +1,40 @@
-package com.ruoyi.system.webSocket;
+package com.ruoyi.web.core.config.webSocket;
+
+import com.ruoyi.system.service.impl.AssessmentBatchServiceImpl;
+import com.ruoyi.system.service.impl.EqListServiceImpl;
+import com.ruoyi.web.api.service.SeismicMapDownloadService;
+import com.ruoyi.web.api.task.MapServerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-// @ServerEndpoint 声明并创建了webSocket端点, 并且指明了请求路径
-// id 为客户端请求时携带的参数, 用于服务端区分客户端使用
-@ServerEndpoint("/ws/{sid}")
+/**
+ * @author: xiaodemos
+ * @date: 2025-02-13 16:57
+ * @description: websocket专题图服务
+ */
+
+@ServerEndpoint("/ws/map/{sid}")
 @Component
-public class WebSocketServer {
+public class WebSocketMapServer {
 
     // 日志对象
-    private static final Logger log = LoggerFactory.getLogger(WebSocketServer.class);
+    private static final Logger log = LoggerFactory.getLogger(WebSocketMapServer.class);
 
     // 静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
 
     // concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
-    private static CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<>();
+    private static CopyOnWriteArraySet<WebSocketMapServer> webSocketSet = new CopyOnWriteArraySet<>();
     // private static ConcurrentHashMap<String,WebSocketServer> websocketList = new ConcurrentHashMap<>();
 
     // 与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -30,16 +42,12 @@ public class WebSocketServer {
 
     // 接收sid
     private String sid = "";
-
-
-    public static WebSocketServer SituationPlotMapperUtil;
+    public static WebSocketMapServer webSocketMapServer;
 
     @PostConstruct
     public void init(){
-        SituationPlotMapperUtil = this;
+        webSocketMapServer = this;
     }
-
-
 
     /*
      * 客户端创建连接时触发
@@ -53,8 +61,22 @@ public class WebSocketServer {
         this.sid = sid;
         try {
             sendMessage("{msg:'连接成功'}");
+
+            // 创建依赖对象
+//            SeismicMapDownloadService mapDownloadService = new SeismicMapDownloadService();
+//            EqListServiceImpl eqListService = new EqListServiceImpl();
+//            AssessmentBatchServiceImpl assessmentBatchService = new AssessmentBatchServiceImpl();
+
+            // 创建 MapServerTask 实例并注入依赖
+            // MapServerTask mapServerTask = new MapServerTask(mapDownloadService, eqListService, assessmentBatchService);
+
+            // 调用方法
+            // mapServerTask.afterConnectionEstablished();
+
         } catch (IOException e) {
             log.error("websocket IO异常");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -76,7 +98,7 @@ public class WebSocketServer {
 
         log.info("收到来自窗口" + sid + "的信息:" + message);
         // 群发消息
-        for (WebSocketServer item : webSocketSet) {
+        for (WebSocketMapServer item : webSocketSet) {
             try {
                 item.sendMessage(message);
             } catch (IOException e) {
@@ -90,7 +112,7 @@ public class WebSocketServer {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("发生错误");
+        log.error("发生错误：{}",error);
         error.printStackTrace();
     }
 
@@ -109,7 +131,7 @@ public class WebSocketServer {
      * */
     public static void sendInfo(String message, @PathParam("sid") String sid) throws IOException {
         log.info("推送消息到窗口" + sid + "，推送内容:" + message);
-        for (WebSocketServer item : webSocketSet) {
+        for (WebSocketMapServer item : webSocketSet) {
             try {
                 // 这里可以设定只推送给这个sid的，为null则全部推送
                 if (sid == null) {
@@ -128,15 +150,16 @@ public class WebSocketServer {
     }
 
     public static synchronized void addOnlineCount() {
-        WebSocketServer.onlineCount++;
+        WebSocketMapServer.onlineCount++;
     }
 
     public static synchronized void subOnlineCount() {
-        WebSocketServer.onlineCount--;
+        WebSocketMapServer.onlineCount--;
     }
 
-    public static CopyOnWriteArraySet<WebSocketServer> getWebSocketSet() {
+    public static CopyOnWriteArraySet<WebSocketMapServer> getWebSocketSet() {
         return webSocketSet;
     }
+
 
 }

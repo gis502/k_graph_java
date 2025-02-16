@@ -50,8 +50,8 @@ public class IdentityAuthentication {
         jsonObject.put("password", "Open#Api2025!");
 
         try {
-            String res = httpClientService.doPost("", "/api/open/auth", jsonObject);
-            System.out.println(res);
+            String res = httpClientService.doPost("", "/auth", jsonObject);
+
             // 解析 JSON 字符串为 JSONObject
             JSONObject data = JSONObject.parseObject(res).getJSONObject("data");
 

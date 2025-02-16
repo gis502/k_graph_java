@@ -64,8 +64,7 @@ public class SeismicTriggerService {
     private AssessmentBatchServiceImpl assessmentBatchService;
     @Resource
     private AssessmentIntensityServiceImpl assessmentIntensityService;
-    @Resource
-    private AssessmentOutputServiceImpl assessmentOutputService;
+
     @Resource
     private SeismicAssessmentProcessesService assessmentProcessesService;
 
@@ -90,7 +89,7 @@ public class SeismicTriggerService {
     @Resource
     private SeismicTableTriggerService seismicTableTriggerService;
 
-    private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
+    private boolean asyncIntensity = false, asyncTown = false;
 
     /**
      * @param params 手动触发的地震事件参数
@@ -126,20 +125,17 @@ public class SeismicTriggerService {
 //
 //            // 调用 file 方法--异步获取辅助决策（二）报告结果
             sismiceMergencyAssistanceService.file(params, eqqueueId);
+
+//            // 异步进行地震影响场灾损评估
+            sismiceMergencyAssistanceService.file(params, eqqueueId);
 //
 ////            // 异步进行地震影响场灾损评估
             handleSeismicYxcEventAssessment(params, eqqueueId);
-////            // 异步进行乡镇级评估
+//            // 异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
-////
-//////            // 异步获取专题图评估结果
-            handleSpecializedAssessment(params, eqqueueId);
-////
-//////            // 异步获取灾情报告评估结果
-            handleDisasterReportAssessment(params, eqqueueId);
 
-//
-//            // 检查四个评估结果的数据是否成功
+
+            // 检查评估结果的数据是否成功
             retrySaving(params, eqqueueId);
 
             // 返回每个阶段的保存数据状态
@@ -1228,16 +1224,6 @@ public class SeismicTriggerService {
             handleTownLevelAssessment(params, eqqueueId);       // 对乡镇级的灾损评估数据进行保存重试
         }
 
-        if (!asyncOutputMap) {
-            log.info("正在重试保存专题图文件...");
-            handleSpecializedAssessment(params, eqqueueId);     // 对专题图的灾损评估数据进行保存重试
-        }
-
-        if (!asyncOutputReport) {
-            log.info("正在重试保存灾情报告文件...");
-            handleDisasterReportAssessment(params, eqqueueId);  // 对灾情报告的数据进行保存重试
-        }
-
         updateEventState(params.getEvent(), eqqueueId, 2);    // 修改批次表中的地震状态
 
     }
@@ -1538,7 +1524,6 @@ public class SeismicTriggerService {
             }
         }
 
-        asyncOutputReport = assessmentOutputService.saveBatch(saveList);
 
     }
 
@@ -1572,8 +1557,6 @@ public class SeismicTriggerService {
 
             }
         }
-
-        asyncOutputMap = assessmentOutputService.saveBatch(saveList);
     }
 
     /**
@@ -1654,15 +1637,6 @@ public class SeismicTriggerService {
 
     }
 
-    /**
-     * @author: xiaodemos
-     * @date: 2024/12/6 13:19
-     * @description: 用于判断地震触发后获取到的灾损评估数据是否保存到己方数据库成功
-     * @return: 返回True 或者 False
-     */
-    public boolean isSaved() {
-        return asyncIntensity && asyncTown && asyncOutputMap && asyncOutputReport;
-    }
 
     /**
      * @param eqId      事件编码
@@ -1684,6 +1658,7 @@ public class SeismicTriggerService {
      * @return: 返回批次进度
      */
     public Double getEventProgress(String eqId) {
+
         AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId);
         return processes.getProgress();
     }

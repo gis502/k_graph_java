@@ -62,7 +62,7 @@ public class EqList {
     // 地震类型（Z正式，Y演练，T测试）
     @TableField(value = "eq_type")
     private String eqType;
-    // 来源（0:12322、1:手动触发）
+    // 来源（0:12322、1:手动触发）修改后  -> 2：手动触发
     @TableField(value = "source")
     private String source;
     // 震中所在县编码

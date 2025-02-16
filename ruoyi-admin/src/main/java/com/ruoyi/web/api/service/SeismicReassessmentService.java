@@ -1,6 +1,5 @@
 package com.ruoyi.web.api.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.exception.*;
@@ -8,10 +7,11 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.system.domain.dto.*;
-import com.ruoyi.system.domain.entity.*;
-import com.ruoyi.system.domain.vo.ResultEventGetMapVO;
+import com.ruoyi.system.domain.entity.AssessmentBatch;
+import com.ruoyi.system.domain.entity.AssessmentIntensity;
+import com.ruoyi.system.domain.entity.AssessmentResult;
+import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.domain.vo.ResultEventGetPageVO;
-import com.ruoyi.system.domain.vo.ResultEventGetReportVO;
 import com.ruoyi.system.domain.vo.ResultEventGetResultTownVO;
 import com.ruoyi.system.service.impl.*;
 import com.ruoyi.web.api.ThirdPartyCommonApi;
@@ -22,17 +22,12 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author: xiaodemos
@@ -61,8 +56,15 @@ public class SeismicReassessmentService {
 
     @Async // 参数改为 EqEventReassessmentDTO params
     public CompletableFuture<Void> seismicEventReassessment(EqEventReassessmentDTO params) {
+
+        log.info("正在保存地震重新评估数据...");
+
         String eqqueueId = null;
+
         try {
+
+            // 正式地震没有在第三方数据库中，需要重新触发到对方的数据库中
+
             // 把前端上传的数据保存到第三方数据库中
             eqqueueId = handleThirdPartySeismicReassessment(params);
             eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
@@ -81,13 +83,7 @@ public class SeismicReassessmentService {
             // 异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
 
-            // 异步获取专题图评估结果
-            handleSpecializedAssessment(params, eqqueueId);
-
-            // 异步获取灾情报告评估结果
-            handleDisasterReportAssessment(params, eqqueueId);
-
-            // 检查四个评估结果的数据是否成功
+            // 检查评估结果的数据是否成功
             retrySaving(params, eqqueueId);
 
             // 返回每个阶段的保存数据状态
@@ -121,15 +117,6 @@ public class SeismicReassessmentService {
             handleTownLevelAssessment(params, eqqueueId);       // 对乡镇级的灾损评估数据进行保存重试
         }
 
-        if (!asyncOutputMap) {
-            log.info("正在重试保存专题图文件...");
-            handleSpecializedAssessment(params, eqqueueId);     // 对专题图的灾损评估数据进行保存重试
-        }
-
-        if (!asyncOutputReport) {
-            log.info("正在重试保存灾情报告文件...");
-            handleDisasterReportAssessment(params, eqqueueId);  // 对灾情报告的数据进行保存重试
-        }
 
         updateEventState(params.getEvent(), eqqueueId, 2);    // 修改批次表中的地震状态
 
@@ -294,7 +281,7 @@ public class SeismicReassessmentService {
 
                 log.info("当前进度: {}%，等待达到20%再继续", progress);
 
-                Thread.sleep(9000);  // 9秒后重新请求
+                Thread.sleep(4000);  // 9秒后重新请求
 
                 progress = getEventProgress(params.getEvent());
 
@@ -387,187 +374,6 @@ public class SeismicReassessmentService {
     }
 
     /**
-     * @param params    触发地震时上传的数据
-     * @param eqqueueId 触发地震时返回的eqqueueid
-     * @author: xiaodemos
-     * @date: 2024/12/4 18:10
-     * @description: 获取地震评估的专题图
-     */
-    @Async
-    public CompletableFuture<Void> handleSpecializedAssessment(EqEventReassessmentDTO params, String eqqueueId) {
-
-        try {
-
-            EqEventGetMapDTO getMapDTO = EqEventGetMapDTO.builder()
-                    .event(params.getEvent())
-                    .eqqueueId(eqqueueId)
-                    .build();
-
-            String eventGetMap = thirdPartyCommonApi.getSeismicEventGetMapByGet(getMapDTO);
-
-            Double progress = getEventProgress(params.getEvent());
-
-            while (progress < 70.00) {
-
-                log.info("当前进度: {}%，等待达到70%再继续", progress);
-
-                Thread.sleep(9000);  // 9秒后重新请求
-
-                progress = getEventProgress(params.getEvent());
-
-            }
-
-            eventGetMap = thirdPartyCommonApi.getSeismicEventGetMapByGet(getMapDTO);
-
-            ResultEventGetMapDTO resultEventGetMapDTO = JsonParser.parseJson(eventGetMap, ResultEventGetMapDTO.class);
-            List<ResultEventGetMapVO> eventGetMapDTOData = resultEventGetMapDTO.getData();
-
-            if (eventGetMapDTOData.size() != MessageConstants.RESULT_ZERO) {
-
-                saveMap(eventGetMapDTOData, params.getEvent());  // 保存到己方数据库
-
-                log.info("保存专题图成功");
-
-                return CompletableFuture.completedFuture(null);
-            }
-
-            return CompletableFuture.failedFuture(new AsyncExecuteException(MessageConstants.ZTT_ASYNC_EXECUTE_ERROR));
-
-        } catch (Exception e) {
-
-            updateEventState(params.getEvent(), eqqueueId, 4);    // 修改状态评估异常停止...
-
-            e.printStackTrace();
-
-            return CompletableFuture.failedFuture(e);
-        }
-
-    }
-
-    /**
-     * @param params    触发地震时上传的数据
-     * @param eqqueueId 触发地震时返回的eqqueueid
-     * @author: xiaodemos
-     * @date: 2024/12/4 18:10
-     * @description: 获取地震评估的灾情报告
-     */
-    @Async
-    public CompletableFuture<Void> handleDisasterReportAssessment(EqEventReassessmentDTO params, String eqqueueId) {
-
-        try {
-
-            EqEventGetReportDTO getReportDTO = EqEventGetReportDTO.builder()
-                    .event(params.getEvent())
-                    .eqqueueId(eqqueueId)
-                    .build();
-
-            String eventGetReport = thirdPartyCommonApi.getSeismicEventGetReportByGET(getReportDTO);
-
-            Double progress = getEventProgress(params.getEvent());
-
-            while (progress < 80.00) {
-
-                log.info("当前进度: {}%，等待达到80%再继续", progress);
-
-                Thread.sleep(9000);  // 9秒后重新请求
-
-                progress = getEventProgress(params.getEvent());
-
-            }
-
-            eventGetReport = thirdPartyCommonApi.getSeismicEventGetReportByGET(getReportDTO);
-
-            ResultEventGetReportDTO resultEventGetReportDTO = JsonParser.parseJson(eventGetReport, ResultEventGetReportDTO.class);
-            List<ResultEventGetReportVO> eventGetReportDTOData = resultEventGetReportDTO.getData();
-
-            if (eventGetReportDTOData.size() != MessageConstants.RESULT_ZERO) {
-
-                saveReport(eventGetReportDTOData, params.getEvent());  // 保存到己方数据库
-
-                log.info("保存灾情报告结果成功");
-
-                return CompletableFuture.completedFuture(null);
-            }
-
-            return CompletableFuture.failedFuture(new AsyncExecuteException(MessageConstants.BG_ASYNC_EXECUTE_ERROR));
-
-        } catch (Exception e) {
-
-            updateEventState(params.getEvent(), eqqueueId, 4);    // 修改状态评估异常停止...
-
-            e.printStackTrace();
-
-            return CompletableFuture.failedFuture(e);
-        }
-
-    }
-
-    /**
-     * @param eqId           地震id
-     * @param eventGetReport 灾情报告
-     * @author: xiaodemos
-     * @date: 2024/12/4 14:32
-     * @description: 保存灾情报告结果
-     */
-    public void saveReport(List<ResultEventGetReportVO> eventGetReport, String eqId) {
-
-        List<AssessmentOutput> saveList = new ArrayList<>();
-        for (ResultEventGetReportVO res : eventGetReport) {
-            AssessmentOutput assessmentOutput = AssessmentOutput.builder()
-                    // TODO 获取保存全路径
-                    .localSourceFile(Constants.PROMOTION_INVOKE_URL_HEAD + res.getSourceFile())
-                    .eqid(eqId)
-                    .type("2")
-                    .build();
-            BeanUtils.copyProperties(res, assessmentOutput);
-
-            saveList.add(assessmentOutput);
-
-            try {
-                FileUtils.downloadFile(res.getSourceFile(), Constants.PROMOTION_DOWNLOAD_PATH);
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new FileDownloadException(MessageConstants.FILE_DOWNLOAD_ERROR);
-            }
-        }
-
-        asyncOutputReport = assessmentOutputService.saveBatch(saveList);
-
-    }
-
-    /**
-     * @param eventGetMap 专题图数据
-     * @param eqId        地震id
-     * @author: xiaodemos
-     * @date: 2024/12/3 23:51
-     * @description: 保存专题图数据到数据库并下载文件到本地
-     */
-    public void saveMap(List<ResultEventGetMapVO> eventGetMap, String eqId) {
-
-        List<AssessmentOutput> saveList = new ArrayList<>();
-        for (ResultEventGetMapVO res : eventGetMap) {
-            AssessmentOutput assessmentOutput = AssessmentOutput.builder()
-                    // TODO 获取保存全路径
-                    .localSourceFile("")
-                    .eqid(eqId)
-                    .type("1")
-                    .build();
-            BeanUtils.copyProperties(res, assessmentOutput);
-
-            saveList.add(assessmentOutput);
-
-            try {
-                FileUtils.downloadFile(res.getSourceFile(), Constants.PROMOTION_DOWNLOAD_PATH);
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new FileDownloadException(MessageConstants.FILE_DOWNLOAD_ERROR);
-            }
-        }
-
-        asyncOutputMap = assessmentOutputService.saveBatch(saveList);
-    }
-
-    /**
      * @param eventResult 评估结果
      * @author: xiaodemos
      * @date: 2024/12/2 19:41
@@ -587,38 +393,6 @@ public class SeismicReassessmentService {
             saveList.add(assessmentResult);
         }
         asyncTown = assessmentResultService.saveBatch(saveList);
-    }
-
-    /**
-     * @param params    上传的参数
-     * @param filePath  返回的影响场文件路径
-     * @param eqqueueId 评估批次编码
-     * @author: xiaodemos
-     * @date: 2024/12/2 23:17
-     * @description: 保存地震影响场的灾损评估结果到数据库
-     */
-    public void saveIntensity(EqEventTriggerDTO params, String filePath, String eqqueueId, String fileType) {
-
-        AssessmentIntensity assessmentIntensity = AssessmentIntensity.builder()
-                .id(UUID.randomUUID().toString())
-                .eqqueueId(eqqueueId).batch("1")
-                .file(filePath)
-                .eqid(params.getEvent())
-                .fileType(fileType)
-                // TODO 需要保存全路径
-                .localFile(filePath).build();
-
-        asyncIntensity = assessmentIntensityService.save(assessmentIntensity);
-    }
-
-    /**
-     * @author: xiaodemos
-     * @date: 2024/12/6 13:19
-     * @description: 用于判断地震触发后获取到的灾损评估数据是否保存到己方数据库成功
-     * @return: 返回True 或者 False
-     */
-    public boolean isSaved() {
-        return asyncIntensity && asyncTown && asyncOutputMap && asyncOutputReport;
     }
 
     /**
