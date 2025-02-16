@@ -111,12 +111,12 @@ public class SeismicTriggerService {
             eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
 
             // 如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
-//            if (StringUtils.isEmpty(eqqueueId)) {
-//                throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
-//            }
+            if (StringUtils.isEmpty(eqqueueId)) {
+                throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
+            }
 
 //            // 数据插入到第三方数据库成功后，插入到本地数据库
-//            getWithSave(params, eqqueueId);
+            getWithSave(params, eqqueueId);
 //
 //            //异步获取辅助决策报告值班表
 //            handleAssessmentReportAssessment(params, eqqueueId);
@@ -125,18 +125,18 @@ public class SeismicTriggerService {
 //            seismicTableTriggerService.tableFile(params, eqqueueId);
 //
 //            // 调用 file 方法--异步获取辅助决策（二）报告结果
-            sismiceMergencyAssistanceService.file(params, eqqueueId);
+//            sismiceMergencyAssistanceService.file(params, eqqueueId);
 //
 ////            // 异步进行地震影响场灾损评估
-//            handleSeismicYxcEventAssessment(params, eqqueueId);
+            handleSeismicYxcEventAssessment(params, eqqueueId);
 ////            // 异步进行乡镇级评估
-//            handleTownLevelAssessment(params, eqqueueId);
+            handleTownLevelAssessment(params, eqqueueId);
 ////
 //////            // 异步获取专题图评估结果
-//            handleSpecializedAssessment(params, eqqueueId);
+            handleSpecializedAssessment(params, eqqueueId);
 ////
 //////            // 异步获取灾情报告评估结果
-//            handleDisasterReportAssessment(params, eqqueueId);
+            handleDisasterReportAssessment(params, eqqueueId);
 
 //
 //            // 检查四个评估结果的数据是否成功
