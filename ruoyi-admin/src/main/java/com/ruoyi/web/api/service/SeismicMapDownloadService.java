@@ -69,11 +69,11 @@ public class SeismicMapDownloadService {
             if (eventGetMapDTOData.size() != MessageConstants.RESULT_ZERO) {
 
                 // 创建一个队列，存储已保存的数据的标识
-                Set<ResultEventGetMapVO> savedEvent = getSavedEventMap(eventGetMapDTOData);
+                Set<String> savedEventIds = getSavedEventMap(eventGetMapDTOData);
 
                 // 筛选出未保存的专题图
                 List<ResultEventGetMapVO> unsavedData = eventGetMapDTOData.stream()
-                        .filter(data -> !savedEvent.contains(data.getId())) // 根据 Id 判断是否已保存
+                        .filter(data -> !savedEventIds.contains(data.getId())) // 根据 id 判断是否已保存
                         .collect(Collectors.toList());
 
                 // 如果有未保存的数据，则调用 saveMap 保存
@@ -128,13 +128,12 @@ public class SeismicMapDownloadService {
             if (eventGetReportDTOData.size() != MessageConstants.RESULT_ZERO) {
 
                 // 创建一个队列，存储已保存的数据的标识
-                Set<ResultEventGetReportVO> savedEvent = getSavedEventReport(eventGetReportDTOData);
+                Set<String> savedEventIds = getSavedEventReport(eventGetReportDTOData);
 
                 // 筛选出未保存的专题图
                 List<ResultEventGetReportVO> unsavedData = eventGetReportDTOData.stream()
-                        .filter(data -> !savedEvent.contains(data.getId())) // 根据 Id 判断是否已保存
+                        .filter(data -> !savedEventIds.contains(data.getId())) // 根据 Id 判断是否已保存
                         .collect(Collectors.toList());
-
                 // 如果有未保存的数据，则调用 saveMap 保存
                 if (!unsavedData.isEmpty()) {
 
@@ -277,40 +276,36 @@ public class SeismicMapDownloadService {
      * @description: 筛选出未保存下载的专题图数据
      * @return: 返回一个为下载的 Set 数据集合
      */
-    private Set<ResultEventGetMapVO> getSavedEventMap(List<ResultEventGetMapVO> eventGetMapDTOData) {
-        // 假设通过 eventGetMapDTOData 获取数据库中的已保存数据
-        Set<ResultEventGetMapVO> savedEvents = new HashSet<>();
+    private Set<String> getSavedEventMap(List<ResultEventGetMapVO> eventGetMapDTOData) {
+        Set<String> savedEventIds = new HashSet<>();
 
         // 根据 eventGetMapDTOData 的内容查找已经保存的专题图
         for (ResultEventGetMapVO data : eventGetMapDTOData) {
-
-            String dataId = data.getId();  // 获取专题图的名称或唯一标识
+            String dataId = data.getId();  // 获取专题图的唯一标识
 
             if (isEventAlreadySaved(dataId)) {
-
-                savedEvents.add(data);  // 将已保存的标识加入队列
+                savedEventIds.add(dataId);  // 将已保存的标识加入集合
             }
         }
 
-        return savedEvents;
+        return savedEventIds;
     }
 
-    private Set<ResultEventGetReportVO> getSavedEventReport(List<ResultEventGetReportVO> eventGetReportDTOData) {
+    private Set<String> getSavedEventReport(List<ResultEventGetReportVO> eventGetReportDTOData) {
         // 假设通过 eventGetMapDTOData 获取数据库中的已保存数据
-        Set<ResultEventGetReportVO> savedEvents = new HashSet<>();
+        Set<String> savedEventIds = new HashSet<>();
 
         // 根据 eventGetMapDTOData 的内容查找已经保存的灾情报告
         for (ResultEventGetReportVO data : eventGetReportDTOData) {
-
             String dataId = data.getId();  // 获取灾情报告的名称或唯一标识
 
             if (isEventAlreadySaved(dataId)) {
 
-                savedEvents.add(data);  // 将已保存的标识加入队列
+                savedEventIds.add(dataId);  // 将已保存的标识加入队列
             }
         }
 
-        return savedEvents;
+        return savedEventIds;
     }
 
     /**

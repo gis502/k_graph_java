@@ -17,6 +17,7 @@ import com.ruoyi.web.api.service.SeismicAssessmentProcessesService;
 import com.ruoyi.web.api.service.SeismicDeletedService;
 import com.ruoyi.web.api.service.SeismicReassessmentService;
 import com.ruoyi.web.api.task.MapServerTask;
+import com.ruoyi.web.api.task.ReportServerTask;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -65,6 +66,8 @@ public class ThirdPartyApiController {
 
     @Resource
     private MapServerTask mapServerTask;
+    @Resource
+    private ReportServerTask reportServerTask;
 
 
     /**
@@ -254,8 +257,7 @@ public class ThirdPartyApiController {
     /**
      * @author: xiaodemos
      * @date: 2024/12/12 17:15
-     * @description: 拼接成 日期 地震 震级 的字符串
-     * @return: 返回拼接的数据
+     * @description: 修改单场地震信息并重新评估
      */
     public AjaxResult eqEventGetSelectData() {
 
@@ -264,16 +266,22 @@ public class ThirdPartyApiController {
         return AjaxResult.success();
     }
 
-    @GetMapping("/eq/start-polling")
-    public AjaxResult eqEventPollingGetMapAndReportData(@RequestParam("eqId") String eqId, @RequestParam("eqqueueId") String eqqueueId) {
-
+    @GetMapping("/eq/map/start")
+    public AjaxResult eqEventPollingGetMaptData(@RequestParam("eqId") String eqId, @RequestParam("eqqueueId") String eqqueueId) {
 
         mapServerTask.startTask(eqId, eqqueueId);
 
-        return AjaxResult.success("Polling started");
+        return AjaxResult.success("专题图正在评估产出中...");
 
     }
 
+    @GetMapping("/eq/report/start")
+    public AjaxResult eqEventPollingGetReportData(@RequestParam("eqId") String eqId, @RequestParam("eqqueueId") String eqqueueId) {
 
+        reportServerTask.startTask(eqId, eqqueueId);
+
+        return AjaxResult.success("灾情报告正在评估产出中...");
+
+    }
 
 }

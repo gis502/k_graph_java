@@ -39,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
 public class FileUtils {
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
     // 创建一个固定大小的线程池用于异步下载
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(4);
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(30);
 
 
     /**
