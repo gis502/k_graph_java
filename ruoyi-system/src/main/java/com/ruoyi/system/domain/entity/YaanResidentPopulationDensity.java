@@ -7,6 +7,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+/**
+ * 全省常住人口密度
+ */
+
 @Data
 @TableName(value = "yaan_resident_population_density")
 public class YaanResidentPopulationDensity {
@@ -18,8 +22,8 @@ public class YaanResidentPopulationDensity {
     /**
      * 原区划代码排序序号
      */
-//    @TableField(value = "original_zcs_number")
-//    private String originalZcsNumber;
+    @TableField(value = "original_number")
+    private String originalNumber;
     /**
      * 区划代码
      */
