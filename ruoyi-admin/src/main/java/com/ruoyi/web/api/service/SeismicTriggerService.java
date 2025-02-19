@@ -2,32 +2,39 @@ package com.ruoyi.web.api.service;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
-import com.ruoyi.common.exception.*;
+import com.ruoyi.common.exception.AsyncExecuteException;
+import com.ruoyi.common.exception.DataSaveException;
+import com.ruoyi.common.exception.ParamsIsEmptyException;
+import com.ruoyi.common.exception.ThirdPartyApiException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.file.FileUtils;
-import com.ruoyi.system.domain.dto.EqEventGetYxcDTO;
-import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
-import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.domain.dto.*;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
-import org.apache.xmlbeans.XmlCursor;
-
-import com.ruoyi.system.domain.vo.*;
+import com.ruoyi.system.domain.entity.*;
+import com.ruoyi.system.domain.vo.ResultEventGetPageVO;
+import com.ruoyi.system.domain.vo.ResultEventGetResultTownVO;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.impl.*;
+import com.ruoyi.web.api.AdministrativeDivisionalTools;
 import com.ruoyi.web.api.ThirdPartyCommonApi;
 import com.ruoyi.web.core.utils.JsonParser;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblBorders;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,15 +42,11 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
-
-import java.io.FileOutputStream;
-import java.math.BigInteger;
 
 /**
  * @author: xiaodemos
@@ -89,6 +92,13 @@ public class SeismicTriggerService {
     @Resource
     private SeismicTableTriggerService seismicTableTriggerService;
 
+    @Autowired
+    private AdministrativeDivisionalTools administrativeDivisionalTools;
+
+    // 写到earthquakeList表中
+    @Resource
+    private EarthquakeListServiceImpl earthquakeListServiceImpl;
+
     private boolean asyncIntensity = false, asyncTown = false;
 
     /**
@@ -109,7 +119,12 @@ public class SeismicTriggerService {
             eqqueueId = handleThirdPartySeismicTrigger(params);
             eqqueueId = JsonParser.parseJsonToEqQueueId(eqqueueId);
 
-            // 如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
+            System.out.println("检查eqqueueId：" + eqqueueId);
+
+            System.out.println("解析后的 eqqueueId：" + eqqueueId + "，长度：" + eqqueueId.length());
+
+
+//             如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
             if (StringUtils.isEmpty(eqqueueId)) {
                 throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
             }
@@ -121,8 +136,11 @@ public class SeismicTriggerService {
 
             // 调用 tableFile 方法--异步获取辅助决策报告(一)
             seismicTableTriggerService.tableFile(params, eqqueueId);
-//            // 调用 file 方法--异步获取辅助决策（二）报告结果
+
+            // 调用 file 方法--异步获取辅助决策（二）报告结果
             sismiceMergencyAssistanceService.file(params, eqqueueId);
+
+
 
 //            // 异步进行地震影响场灾损评估
             sismiceMergencyAssistanceService.file(params, eqqueueId);
@@ -130,6 +148,7 @@ public class SeismicTriggerService {
             handleSeismicYxcEventAssessment(params, eqqueueId);
             // 异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
+
 
             // 检查评估结果的数据是否成功
             retrySaving(params, eqqueueId);
@@ -1173,7 +1192,8 @@ public class SeismicTriggerService {
 
         // 构造文件路径
         String fileName = timePart + eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
-        String filePath = "C:/Users/Smile/Desktop/" + fileName;
+//        String filePath = "C:/Users/Smile/Desktop/" + fileName;
+        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
         // 设置页面边距
         setPageMargins(document, filePath);
 
@@ -1441,18 +1461,52 @@ public class SeismicTriggerService {
         ResultEventGetPageDTO parsed = JsonParser.parseJson(seismicEvent, ResultEventGetPageDTO.class);
         ResultEventGetPageVO resultEventGetPageVO = parsed.getData().getRows().get(0);
 
+
+        // 打印解析出的 eqAddr
+        String eqAddr = resultEventGetPageVO.getEqAddr();
+        log.info("解析出的 eqAddr: {}", eqAddr);
+
         GeometryFactory geometryFactory = new GeometryFactory();
         Point point = geometryFactory.createPoint(new Coordinate(params.getLongitude(), params.getLatitude()));
 
-        // TODO 修改数据库字段与dto保持一致可以优化这段代码
-        EqList eqList = EqList.builder().eqid(resultEventGetPageVO.getEvent()).eqqueueId(eqqueueId).earthquakeName(resultEventGetPageVO.getEqName()).earthquakeFullName(resultEventGetPageVO.getEqFullName()).geom(point).depth(resultEventGetPageVO.getEqDepth().toString()).magnitude(resultEventGetPageVO.getEqMagnitude()).occurrenceTime(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
-                .pac("").type("").isDeleted(0).build();
+        try {
+            // 使用工具类解析省市区信息
+            String[] provinceCity = administrativeDivisionalTools.getProvinceCityDistrict(eqAddr);
 
-        BeanUtils.copyProperties(resultEventGetPageVO, eqList);
+            // 记录解析结果
+            log.info("地址解析结果 -> 省: {}, 市: {}, 区/县: {},剩余地址", provinceCity[0], provinceCity[1], provinceCity[2],provinceCity[3]);
 
-        eqListService.save(eqList);
+            // TODO 修改数据库字段与dto保持一致可以优化这段代码
+            EqList eqList = EqList.builder().eqid(resultEventGetPageVO.getEvent()).eqqueueId(eqqueueId).earthquakeName(resultEventGetPageVO.getEqName()).
+                    earthquakeFullName(resultEventGetPageVO.getEqFullName()).geom(point).depth(resultEventGetPageVO.getEqDepth().toString()).
+                    magnitude(resultEventGetPageVO.getEqMagnitude()).
+                    occurrenceTime(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
+                    .pac("").type("").province(provinceCity[0]).city(provinceCity[1]).district(provinceCity[2]).isDeleted(0).build();
 
-        log.info("触发的数据已经同步到 eqlist 表中 -> : ok");
+            BeanUtils.copyProperties(resultEventGetPageVO, eqList);
+
+            // 存入数据库
+            eqListService.save(eqList);
+            log.info("三级行政区划分级数据已同步到 EqList 表 -> : ok");
+
+        } catch (Exception e) {
+            log.error("地址拆分失败，地震名称: {}, 错误信息: {}", eqAddr, e.getMessage());
+
+            // TODO 修改数据库字段与dto保持一致可以优化这段代码
+            EqList eqList = EqList.builder().eqid(resultEventGetPageVO.getEvent()).eqqueueId(eqqueueId).earthquakeName(resultEventGetPageVO.getEqName()).
+                    earthquakeFullName(resultEventGetPageVO.getEqFullName()).geom(point).depth(resultEventGetPageVO.getEqDepth().toString()).
+                    magnitude(resultEventGetPageVO.getEqMagnitude()).
+                    occurrenceTime(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
+                    .pac("").type("").province("").city("").district("").isDeleted(0).build();
+
+            BeanUtils.copyProperties(resultEventGetPageVO, eqList);
+
+            // 存入数据库
+            eqListService.save(eqList);
+            log.info("触发的数据已经同步到 eqlist 表中 -> : ok");
+
+
+        }
 
     }
 

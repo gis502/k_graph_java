@@ -31,9 +31,22 @@ public class SeismicAssessmentProcessesService {
     public AssessmentBatch getSeismicAssessmentProcesses(String event) {
 
         String jsonString = thirdPartyCommonApi.getSeismicEventGetBatchByGet(event);
+        if (jsonString == null || jsonString.isEmpty()) {
+            log.error("API 返回的 JSON 为空");
+            return null; // 或者抛出异常
+        }
 
         ResultEventGetBatchDTO resultEventGetBatchDTO = JsonParser.parseJson(jsonString, ResultEventGetBatchDTO.class);
+        if (resultEventGetBatchDTO == null) {
+            log.error("JSON 解析失败，返回 null");
+            return null; // 或者抛出异常
+        }
+
         List<ResultEventGetBatchVO> eventGetBatchDTOData = resultEventGetBatchDTO.getData();
+        if (eventGetBatchDTOData == null || eventGetBatchDTOData.isEmpty()) {
+            log.warn("API 返回的 data 为空");
+            return null;
+        }
 
         for (ResultEventGetBatchVO resultEventGetBatchVO : eventGetBatchDTOData){
 
