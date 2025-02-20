@@ -98,8 +98,6 @@ public class ThirdPartyCommonApi {
 
         String res = httpClientService.doGet(token, "/eqevent/getBatch", jsonBody);
 
-        log.info("第三方返回的数据：" + res);
-
         return res;
     }
 

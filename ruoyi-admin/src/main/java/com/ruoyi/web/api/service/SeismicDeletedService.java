@@ -3,15 +3,11 @@ package com.ruoyi.web.api.service;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.exception.DeleteDataException;
 import com.ruoyi.common.exception.ThirdPartyApiException;
-import com.ruoyi.system.domain.dto.EqEventDTO;
-import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.query.EqEventQuery;
 import com.ruoyi.system.service.impl.*;
 import com.ruoyi.web.api.ThirdPartyCommonApi;
 import com.ruoyi.web.core.utils.JsonParser;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.dialect.Ingres9Dialect;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

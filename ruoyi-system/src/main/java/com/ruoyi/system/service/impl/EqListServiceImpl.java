@@ -205,4 +205,27 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
         return lasttime;
     }
+
+
+    /**
+     * @author: xiaodemos
+     * @date: 2025/2/12 13:44
+     * @description: 返回最新一条手动触发的地震数据
+     * @return: 返回EqList对象
+     */
+    public EqList findRecentSeismicData() {
+        LambdaQueryWrapper<EqList> wrapper = Wrappers.lambdaQuery(EqList.class);
+        wrapper.eq(EqList::getIsDeleted, 0)
+                // 需要加入一个手动触发的条件
+                .eq(EqList::getSource, "2")
+                .orderByDesc(EqList::getOccurrenceTime)
+                .last("LIMIT 1");
+
+        EqList eqList = eqListMapper.selectOne(wrapper);
+
+        return eqList;
+
+    }
+
+
 }

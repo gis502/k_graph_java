@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.system;
 
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.system.domain.bto.QueryParams;
@@ -14,6 +16,8 @@ import com.ruoyi.web.api.ThirdPartyCommonApi;
 import com.ruoyi.web.api.service.SeismicAssessmentProcessesService;
 import com.ruoyi.web.api.service.SeismicDeletedService;
 import com.ruoyi.web.api.service.SeismicReassessmentService;
+import com.ruoyi.web.api.task.MapServerTask;
+import com.ruoyi.web.api.task.ReportServerTask;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -59,6 +63,12 @@ public class ThirdPartyApiController {
     private SeismicAssessmentProcessesService assessmentProcessesService;
     @Resource
     private SeismicDeletedService seismicDeletedService;
+
+    @Resource
+    private MapServerTask mapServerTask;
+    @Resource
+    private ReportServerTask reportServerTask;
+
 
     /**
      * @param params 触发的地震数据
@@ -182,6 +192,7 @@ public class ThirdPartyApiController {
     public AjaxResult eqEventOutputMapData(@RequestParam("eqid") String eqid,
                                            @RequestParam("eqqueueId") String eqqueueId) {
 
+        // 修改这个接口，
         EqEventDTO dto = new EqEventDTO();
         dto.setEqid(eqid);
         dto.setEqqueueId(eqqueueId);
@@ -216,9 +227,8 @@ public class ThirdPartyApiController {
      * @description: 获取评估中的进度条
      * @return: 返回评估结果的进度条
      */
-
     @GetMapping("/eq/processes")
-    public AjaxResult eqEventGetProcessesData(@RequestParam("eqid") String event) {
+    public AjaxResult eqEventGetProcessesData(@RequestParam("event") String event) {
 
         AssessmentBatch batch = assessmentProcessesService.getSeismicAssessmentProcesses(event);
 
@@ -247,14 +257,31 @@ public class ThirdPartyApiController {
     /**
      * @author: xiaodemos
      * @date: 2024/12/12 17:15
-     * @description: 拼接成 日期 地震 震级 的字符串
-     * @return: 返回拼接的数据
+     * @description: 修改单场地震信息并重新评估
      */
     public AjaxResult eqEventGetSelectData() {
 
         // eqListService.eqEventGetSelectData();
 
         return AjaxResult.success();
+    }
+
+    @GetMapping("/eq/map/start")
+    public AjaxResult eqEventPollingGetMaptData(@RequestParam("eqId") String eqId, @RequestParam("eqqueueId") String eqqueueId) {
+
+        mapServerTask.startTask(eqId, eqqueueId);
+
+        return AjaxResult.success("专题图正在评估产出中...");
+
+    }
+
+    @GetMapping("/eq/report/start")
+    public AjaxResult eqEventPollingGetReportData(@RequestParam("eqId") String eqId, @RequestParam("eqqueueId") String eqqueueId) {
+
+        reportServerTask.startTask(eqId, eqqueueId);
+
+        return AjaxResult.success("灾情报告正在评估产出中...");
+
     }
 
 }

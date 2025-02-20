@@ -1,7 +1,6 @@
 package com.ruoyi.web.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruoyi.common.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -73,7 +72,7 @@ public class ThirdPartyHttpClients {
 
             httpPost.setConfig(requestConfig);
 
-            log.info("开始发送http post请求...{}",entity);
+            log.info("开始发送http post请求...");
             response = httpClient.execute(httpPost);
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -182,7 +181,6 @@ public class ThirdPartyHttpClients {
      * @return 转换后的查询字符串
      */
     public String convertJsonToQueryString(JSONObject jsonBody) {
-        log.info("开始将json对象转换为查询字符串...");
         StringBuilder queryString = new StringBuilder();
 
         // 定义日期时间格式化器
