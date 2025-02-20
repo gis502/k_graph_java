@@ -15,6 +15,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -32,7 +33,7 @@ import java.util.*;
  */
 @Service
 public class SismiceMergencyAssistanceService {
-    @Resource
+    @Autowired
     private YaanResidentPopulationDensityMapper yaanResidentPopulationDensityMapper;
 
     @Resource
@@ -50,7 +51,7 @@ public class SismiceMergencyAssistanceService {
     @Resource
     private YaanProvinceCityMapper yaanProvinceCityMapper;
 
-    @Resource
+    @Autowired
     private YaanVillageAndCommunityMapper yaanVillageAndCommunityMapper;
 
     @Resource
