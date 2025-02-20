@@ -54,11 +54,13 @@ public class OrthophotoImageController {
     //搜索
     @GetMapping("/queryEq")
     public AjaxResult queryEq(@RequestParam(value = "queryValue", required = false) String queryValue) {
-        System.out.println("啊啊啊啊啊啊啊啊啊啊啊"+queryValue);
+        System.out.println("查询输入值"+queryValue);
         LambdaQueryWrapper<OrthophotoImage> wrapper = new LambdaQueryWrapper<>();
         if (queryValue != null && !queryValue.trim().isEmpty()) {
             wrapper
                     .like(OrthophotoImage::getName, queryValue)
+                    .or()
+                    .like(OrthophotoImage::getLabel, queryValue)
                     .or()
                     .like(OrthophotoImage::getPath, queryValue)
                     .or()
@@ -82,6 +84,9 @@ public class OrthophotoImageController {
 
         if (orthophotoImage.getPath() != null && !orthophotoImage.getPath().trim().isEmpty()) {
             wrapper.like(OrthophotoImage::getPath, orthophotoImage.getPath());
+        }
+        if (orthophotoImage.getLabel() != null && !orthophotoImage.getLabel().trim().isEmpty()) {
+            wrapper.like(OrthophotoImage::getLabel, orthophotoImage.getLabel());
         }
 
 //         处理 create_time 字段，使用本地时区时间格式化和范围查询
