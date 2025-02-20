@@ -132,18 +132,16 @@ public class SeismicTriggerService {
 //            // 数据插入到第三方数据库成功后，插入到本地数据库
             getWithSave(params, eqqueueId);
 //            //异步获取辅助决策报告值班表
-            handleAssessmentReportAssessment(params, eqqueueId);
+//            handleAssessmentReportAssessment(params, eqqueueId);
 
             // 调用 tableFile 方法--异步获取辅助决策报告(一)
-            seismicTableTriggerService.tableFile(params, eqqueueId);
+//            seismicTableTriggerService.tableFile(params, eqqueueId);
 
             // 调用 file 方法--异步获取辅助决策（二）报告结果
-            sismiceMergencyAssistanceService.file(params, eqqueueId);
-
-
+//            sismiceMergencyAssistanceService.file(params, eqqueueId);
 
 //            // 异步进行地震影响场灾损评估
-            sismiceMergencyAssistanceService.file(params, eqqueueId);
+//            sismiceMergencyAssistanceService.file(params, eqqueueId);
             // 异步进行地震影响场灾损评估
             handleSeismicYxcEventAssessment(params, eqqueueId);
             // 异步进行乡镇级评估
@@ -1193,7 +1191,8 @@ public class SeismicTriggerService {
         // 构造文件路径
         String fileName = timePart + eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
-        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
+//        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
+        String filePath = "/data/image" + fileName;
         // 设置页面边距
         setPageMargins(document, filePath);
 

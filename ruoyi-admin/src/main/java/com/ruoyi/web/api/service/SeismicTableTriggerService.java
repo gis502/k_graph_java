@@ -1703,7 +1703,8 @@ public class SeismicTableTriggerService {
         // 构造文件路径
         String fileName = formattedTime + "级地震（辅助决策信息一）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
-        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
+//        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
+        String filePath = "/data/image"+ fileName;
         // 设置页面边距
         setPageMargins(document, filePath);
         // 获取所有段落并设置格式
