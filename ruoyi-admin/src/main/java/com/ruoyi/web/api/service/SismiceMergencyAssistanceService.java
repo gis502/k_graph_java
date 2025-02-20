@@ -33,7 +33,7 @@ import java.util.*;
  */
 @Service
 public class SismiceMergencyAssistanceService {
-    @Autowired
+    @Resource
     private YaanResidentPopulationDensityMapper yaanResidentPopulationDensityMapper;
 
     @Resource
@@ -51,7 +51,7 @@ public class SismiceMergencyAssistanceService {
     @Resource
     private YaanProvinceCityMapper yaanProvinceCityMapper;
 
-    @Autowired
+    @Resource
     private YaanVillageAndCommunityMapper yaanVillageAndCommunityMapper;
 
     @Resource

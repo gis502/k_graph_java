@@ -47,6 +47,12 @@ public class OrthophotoImage {
     @TableId(value = "uuid", type = IdType.NONE)
     private String uuid;
 
+    @TableField(value = "lat")
+    private float lat;
+
+    @TableField(value = "lon")
+    private float lon;
+
 
     // 在保存前检查UUID是否为空，如果为空则自动生成
     public void generateUuidIfNotPresent() {

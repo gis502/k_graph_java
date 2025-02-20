@@ -62,6 +62,10 @@ public class OrthophotoImageController {
                     .or()
                     .like(OrthophotoImage::getLabel, queryValue)
                     .or()
+                    .like(OrthophotoImage::getLat, queryValue)
+                    .or()
+                    .like(OrthophotoImage::getLon, queryValue)
+                    .or()
                     .like(OrthophotoImage::getPath, queryValue)
                     .or()
                     .apply("TO_CHAR(create_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + queryValue + "%");
@@ -88,7 +92,6 @@ public class OrthophotoImageController {
         if (orthophotoImage.getLabel() != null && !orthophotoImage.getLabel().trim().isEmpty()) {
             wrapper.like(OrthophotoImage::getLabel, orthophotoImage.getLabel());
         }
-
 //         处理 create_time 字段，使用本地时区时间格式化和范围查询
 //        if (orthophotoImage.getCreateTime() != null) {
 //            // 将 LocalDateTime 视为 UTC 时间并转换为本地时区
