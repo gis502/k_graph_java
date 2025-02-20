@@ -5,31 +5,25 @@ import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.mapper.*;
 import lombok.SneakyThrows;
-import org.apache.poi.xwpf.usermodel.*;
-import org.apache.xmlbeans.XmlCursor;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.io.WKTReader;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
-import org.springframework.stereotype.Service;
-
-
-import javax.annotation.Resource;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
+import org.springframework.stereotype.Service;
 
-
+import javax.annotation.Resource;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author: xiaodemos
@@ -755,47 +749,53 @@ public class SismiceMergencyAssistanceService {
 
 
         // --------遍历查询地震造成的损伤、损失----------------
+        // 获取查询结果
         List<AssessmentResult> loss = assessmentResultMapper.selectList(null);
 
         // 初始化累加变量
         int totalDeath = 0; // 总死亡人数
-        double totalEconomicLoss = 0; // 总经济损失（万元）
-        double totalBuildingDamage = 0; // 总建筑破坏面积（万平方米）
+        BigDecimal totalEconomicLoss = BigDecimal.ZERO; // 总经济损失（万元）
+        BigDecimal totalBuildingDamage = BigDecimal.ZERO; // 总建筑破坏面积（万平方米）
 
         System.out.println("event的值为：" + event);
 
-        // 遍历匹配 `eqid` 的所有记录，并进行累加
+        // 遍历匹配 eqid 并累加
         for (AssessmentResult material : loss) {
-            if (event != null && event.equals(material.getEqid())) { // 确保 eqid 匹配
-                if (material.getDeath() != null) {
-                    totalDeath += material.getDeath(); // 累加死亡人数
-                }
-                if (material.getEconomicLoss() != null && !material.getEconomicLoss().trim().isEmpty()) {
-                    try {
-                        totalEconomicLoss += Double.parseDouble(material.getEconomicLoss().trim());
-                    } catch (NumberFormatException e) {
-                        System.err.println("警告: 无法解析 economicLoss = " + material.getEconomicLoss());
-                    }
-                }
+            if (event != null && event.equals(material.getEqid())) {
+                // 打印匹配到的记录
+                System.out.println("匹配到的数据: " + material);
 
-                if (material.getBuildingDamage() != null && !material.getBuildingDamage().trim().isEmpty()) {
-                    try {
-                        totalBuildingDamage += Double.parseDouble(material.getBuildingDamage().trim());
-                    } catch (NumberFormatException e) {
-                        System.err.println("警告: 无法解析 buildingDamage = " + material.getBuildingDamage());
-                    }
-                }
+                totalDeath += Optional.ofNullable(material.getDeath()).orElse(0);
+
+                totalEconomicLoss = totalEconomicLoss.add(
+                        Optional.ofNullable(material.getEconomicLoss())
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .map(BigDecimal::new)
+                                .orElse(BigDecimal.ZERO)
+                );
+
+                totalBuildingDamage = totalBuildingDamage.add(
+                        Optional.ofNullable(material.getBuildingDamage())
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .map(BigDecimal::new)
+                                .orElse(BigDecimal.ZERO)
+                );
             }
         }
 
-        // 输出结果（可选）
+
+        // 输出结果
         System.out.println("****总死亡人数：" + totalDeath + " 人****");
         System.out.println("****总经济损失：" + totalEconomicLoss + " 万元****");
         System.out.println("****总建筑破坏面积：" + totalBuildingDamage + " 万平方米****");
 
-        // 动态生成结果字符串
-        String fuJinTownResult = generateResultString(totalDeath, totalEconomicLoss, totalBuildingDamage);
+        // 生成结果字符串
+        String fuJinTownResult = generateResultString(totalDeath, totalEconomicLoss.doubleValue(), totalBuildingDamage.doubleValue());
+
         System.out.println(fuJinTownResult);
+
 
 
 
@@ -1803,7 +1803,7 @@ public class SismiceMergencyAssistanceService {
         String combinedResult1 = result + fuJinTownResult + panduan + jianyi + cuoshi ;
         System.out.println("合并字段完成：" + combinedResult1);
         System.out.println("-----------------------------将要开始进行书写word文档阶段-----------------------");
-//        WordExporter(title,result,fuJinTownResult,panduan,jianyi,cuoshi,formattedTime,eqName,eqMagnitude);
+        WordExporter(title,result,fuJinTownResult,panduan,jianyi,cuoshi,formattedTime,eqName,eqMagnitude);
     }
 
 
@@ -2856,7 +2856,7 @@ public class SismiceMergencyAssistanceService {
         // 构造文件路径
         String fileName = formattedTime + eqName +"发生" + eqMagnitude +  "级地震（辅助决策信息二）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
-        String filePath = "C:/Users/Smile/Desktop/" + fileName;
+        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 
         System.out.println("word文档已在桌面");
 

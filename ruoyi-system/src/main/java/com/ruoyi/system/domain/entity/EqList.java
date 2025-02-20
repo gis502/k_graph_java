@@ -12,8 +12,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.n52.jackson.datatype.jts.GeometryDeserializer;
 import org.n52.jackson.datatype.jts.GeometrySerializer;
 
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -24,7 +22,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@TableName("eqlist")
+@TableName(value = "eqlist")
 public class EqList {
     // 地震唯一标识符
     @TableId(value = "eqid" )
@@ -79,7 +77,15 @@ public class EqList {
     private String type;
     @TableField(value = "is_deleted")
     private Integer isDeleted;
-
+    // 区县
+    @TableField(value = "district")
+    private String district;
+    // 省份
+    @TableField(value = "province")
+    private String province;
+    // 城市
+    @TableField(value = "city")
+    private String city;
 
 
 
