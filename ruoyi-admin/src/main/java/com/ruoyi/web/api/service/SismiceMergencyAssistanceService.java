@@ -15,7 +15,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -503,172 +503,172 @@ public class SismiceMergencyAssistanceService {
         //---------------涉及我市行政村（社区）xxx万户，常住人口约xx万人。------------------------------------------
 
 
-        List<YaanVillageAndCommunity> quantity = yaanVillageAndCommunityMapper.selectList(null);
-
-
-        Map<String, Double> villageAndCommunityDistances = new LinkedHashMap<>();
-
-        // 获取所有村（社区）的户数（风普）和常住人口（风普），并一一对应存储
-        List<Map<String, Object>> data = new ArrayList<>();
-        for (YaanVillageAndCommunity villageAndCommunity : quantity) {
-
-
-            Geometry geom = villageAndCommunity.getGeom();
-            if (geom != null && geom instanceof Point) {
-                // 获取政府县区的经纬度
-                Point villageAndCommunityPoint = (Point) geom;
-                double villageAndCommunityLat = villageAndCommunityPoint.getY(); // 纬度
-                double villageAndCommunityLon = villageAndCommunityPoint.getX(); // 经度
-
-                // 计算震中到县区点的距离（单位：米）
-                double distanceToCountyTown = calculateDistance(latitude, longitude, villageAndCommunityLat, villageAndCommunityLon);
-
-                // 存储县区名称及其震中距
-                villageAndCommunityDistances.put(villageAndCommunity.getVillageOrCommunity(), distanceToCountyTown);
-            }
-
-
-            Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put("villageOrCommunity", villageAndCommunity.getVillageOrCommunity()); // 村（社区）名称
-            dataMap.put("numberOfHouseholdsOrFengpu", villageAndCommunity.getNumberOfHouseholdsOrFengpu()); // 户数
-            dataMap.put("residentPopulationFengpu", villageAndCommunity.getResidentPopulationFengpu()); // 常住人口
-            data.add(dataMap);
-        }
-
-        System.out.println("打印所有村（社区）的户数（风普）和常住人口（风普）前7个数据:" );
-        // 打印前7个数据（如果数据不足7个，则打印全部）
-        int seven = Math.min(7, data.size()); // 确保不会超出索引范围
-        for (int i = 0; i < seven; i++) {
-            System.out.println("第"+i+"个："+data.get(i));
-        }
-
-        // 存储乡镇名称、震中距和计算后的烈度
-        Map<String, Double> all = new LinkedHashMap<>();
-
-        // 遍历计算每个乡镇的烈度
-        for (Map.Entry<String, Double> entry : villageAndCommunityDistances.entrySet()) {
-            String townName = entry.getKey();  // 乡镇名称
-            double distance = entry.getValue(); // 震中距（D）
-
-            // 计算 X 的值
-            double X = (eqMagnitude > 5.5) ? 0.4 : 0.6;
-
-            // 计算烈度 I
-            double intensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distance + 24)) - X;
-
-            // 确保烈度不小于 0
-            intensity = Math.max(intensity, 0);
-
-            // 将烈度值四舍五入为整数
-            intensity = Math.round(intensity);
-
-            // 存入 Map
-            all.put(townName, intensity);
-        }
-
-
-        System.out.println("打印所有村（社区）的户数（风普）和常住人口（风普）前7个数据的烈度:");
-        List<String> keys = new ArrayList<>(all.keySet()); // 将 Map 的键转换为列表
-        int sevens = Math.min(11, keys.size()); // 确保不会超出索引范围
-        for (int i = 0; i < sevens; i++) {
-            String key = keys.get(i); // 获取第 i 个键
-            Double intensity = all.get(key); // 通过键获取烈度
-            System.out.println("第" + (i + 1) + "个：" + key + " 的烈度为 " + intensity);
-        }
-
-        // 计算 6 度以上（包含 6 度）的总户数
-        double totalHouseholdsAbove6 = data.stream()
-                .filter(map -> {
-                    // 获取当前乡镇的名称
-                    String villageOrCommunity = (String) map.get("villageOrCommunity");
-
-                    // 获取该乡镇的烈度
-                    Double intensity = all.get(villageOrCommunity);
-
-                    // 确保烈度不为空，并且大于等于 6
-                    return intensity != null && intensity >= 6;
-                })
-                .mapToDouble(map -> {
-                    Object value = map.get("numberOfHouseholdsOrFengpu");
-                    if (value == null) return 0.0;
-                    return (value instanceof Number) ? ((Number) value).doubleValue() : 0.0;
-                })
-                .sum();
-
-        //使用 mapToDouble() 取出户数 numberOfHouseholdsOrFengpu。
-        //使用 sum() 计算总户数。
-
-        System.out.println("6 度以上的总户数：" + totalHouseholdsAbove6);  //L19
-
-
-
-        // 格式化输出
-        String formattedHouseholds;
-        if (totalHouseholdsAbove6 > 10000) {
-            formattedHouseholds = String.format("%.2f万户", totalHouseholdsAbove6 / 10000);
-        } else {
-            formattedHouseholds = (int) totalHouseholdsAbove6 + "户";
-        }
-
-        System.out.println("格式后 6 度以上的户数：" + formattedHouseholds);   //M19
-
-
-        // 计算 6 度以上（包含 6 度）的总常住人口
-        double totalPopulationAbove6 = data.stream()
-                .filter(map -> {
-                    // 获取当前乡镇名称
-                    String villageOrCommunity = (String) map.get("villageOrCommunity");
-
-                    // 获取该乡镇的烈度
-                    Double intensity = all.get(villageOrCommunity);
-
-                    // 确保烈度不为空，并且大于等于 6
-                    return intensity != null && intensity >= 6;
-                })
-                .mapToDouble(map -> {
-                    Object value = map.get("residentPopulationFengpu");
-                    if (value == null) return 0.0;
-                    return (value instanceof Number) ? ((Number) value).doubleValue() : 0.0;
-                })
-                .sum();
-
-        System.out.println("6 度以上的总常住人口：" + totalPopulationAbove6);  //N19
-
-
-        // 格式化输出
-        String formattedPopulation;
-        if (totalPopulationAbove6 > 10000) {
-            formattedPopulation = String.format("%.2f万人", totalPopulationAbove6 / 10000);
-        } else {
-            formattedPopulation = (int) totalPopulationAbove6 + "人";
-        }
-
-        System.out.println("格式后 6 度以上的常住人口：" + formattedPopulation);  //O19
-
-
-
-
-        // 计算 6 度以上（包含 6 度）的村（社区）数量
-        long numberOfCommunityAbove6 = data.stream()
-                .filter(map -> {
-                    // 获取当前村（社区）的名称
-                    String villageOrCommunity = (String) map.get("villageOrCommunity");
-
-                    // 获取该村（社区）的烈度
-                    Double intensity = all.get(villageOrCommunity);
-
-                    // 确保烈度不为空，并且大于等于 6
-                    return intensity != null && intensity >= 6;
-                })
-                .count();
-
-        System.out.println("6 度以上的村（社区）数量：" + numberOfCommunityAbove6);   //K19
+//        List<YaanVillageAndCommunity> quantity = yaanVillageAndCommunityMapper.selectList(null);
+//
+//
+//        Map<String, Double> villageAndCommunityDistances = new LinkedHashMap<>();
+//
+//        // 获取所有村（社区）的户数（风普）和常住人口（风普），并一一对应存储
+//        List<Map<String, Object>> data = new ArrayList<>();
+//        for (YaanVillageAndCommunity villageAndCommunity : quantity) {
+//
+//
+//            Geometry geom = villageAndCommunity.getGeom();
+//            if (geom != null && geom instanceof Point) {
+//                // 获取政府县区的经纬度
+//                Point villageAndCommunityPoint = (Point) geom;
+//                double villageAndCommunityLat = villageAndCommunityPoint.getY(); // 纬度
+//                double villageAndCommunityLon = villageAndCommunityPoint.getX(); // 经度
+//
+//                // 计算震中到县区点的距离（单位：米）
+//                double distanceToCountyTown = calculateDistance(latitude, longitude, villageAndCommunityLat, villageAndCommunityLon);
+//
+//                // 存储县区名称及其震中距
+//                villageAndCommunityDistances.put(villageAndCommunity.getVillageOrCommunity(), distanceToCountyTown);
+//            }
+//
+//
+//            Map<String, Object> dataMap = new HashMap<>();
+//            dataMap.put("villageOrCommunity", villageAndCommunity.getVillageOrCommunity()); // 村（社区）名称
+//            dataMap.put("numberOfHouseholdsOrFengpu", villageAndCommunity.getNumberOfHouseholdsOrFengpu()); // 户数
+//            dataMap.put("residentPopulationFengpu", villageAndCommunity.getResidentPopulationFengpu()); // 常住人口
+//            data.add(dataMap);
+//        }
+//
+//        System.out.println("打印所有村（社区）的户数（风普）和常住人口（风普）前7个数据:" );
+//        // 打印前7个数据（如果数据不足7个，则打印全部）
+//        int seven = Math.min(7, data.size()); // 确保不会超出索引范围
+//        for (int i = 0; i < seven; i++) {
+//            System.out.println("第"+i+"个："+data.get(i));
+//        }
+//
+//        // 存储乡镇名称、震中距和计算后的烈度
+//        Map<String, Double> all = new LinkedHashMap<>();
+//
+//        // 遍历计算每个乡镇的烈度
+//        for (Map.Entry<String, Double> entry : villageAndCommunityDistances.entrySet()) {
+//            String townName = entry.getKey();  // 乡镇名称
+//            double distance = entry.getValue(); // 震中距（D）
+//
+//            // 计算 X 的值
+//            double X = (eqMagnitude > 5.5) ? 0.4 : 0.6;
+//
+//            // 计算烈度 I
+//            double intensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distance + 24)) - X;
+//
+//            // 确保烈度不小于 0
+//            intensity = Math.max(intensity, 0);
+//
+//            // 将烈度值四舍五入为整数
+//            intensity = Math.round(intensity);
+//
+//            // 存入 Map
+//            all.put(townName, intensity);
+//        }
+//
+//
+//        System.out.println("打印所有村（社区）的户数（风普）和常住人口（风普）前7个数据的烈度:");
+//        List<String> keys = new ArrayList<>(all.keySet()); // 将 Map 的键转换为列表
+//        int sevens = Math.min(11, keys.size()); // 确保不会超出索引范围
+//        for (int i = 0; i < sevens; i++) {
+//            String key = keys.get(i); // 获取第 i 个键
+//            Double intensity = all.get(key); // 通过键获取烈度
+//            System.out.println("第" + (i + 1) + "个：" + key + " 的烈度为 " + intensity);
+//        }
+//
+//        // 计算 6 度以上（包含 6 度）的总户数
+//        double totalHouseholdsAbove6 = data.stream()
+//                .filter(map -> {
+//                    // 获取当前乡镇的名称
+//                    String villageOrCommunity = (String) map.get("villageOrCommunity");
+//
+//                    // 获取该乡镇的烈度
+//                    Double intensity = all.get(villageOrCommunity);
+//
+//                    // 确保烈度不为空，并且大于等于 6
+//                    return intensity != null && intensity >= 6;
+//                })
+//                .mapToDouble(map -> {
+//                    Object value = map.get("numberOfHouseholdsOrFengpu");
+//                    if (value == null) return 0.0;
+//                    return (value instanceof Number) ? ((Number) value).doubleValue() : 0.0;
+//                })
+//                .sum();
+//
+//        //使用 mapToDouble() 取出户数 numberOfHouseholdsOrFengpu。
+//        //使用 sum() 计算总户数。
+//
+//        System.out.println("6 度以上的总户数：" + totalHouseholdsAbove6);  //L19
+//
+//
+//
+//        // 格式化输出
+//        String formattedHouseholds;
+//        if (totalHouseholdsAbove6 > 10000) {
+//            formattedHouseholds = String.format("%.2f万户", totalHouseholdsAbove6 / 10000);
+//        } else {
+//            formattedHouseholds = (int) totalHouseholdsAbove6 + "户";
+//        }
+//
+//        System.out.println("格式后 6 度以上的户数：" + formattedHouseholds);   //M19
+//
+//
+//        // 计算 6 度以上（包含 6 度）的总常住人口
+//        double totalPopulationAbove6 = data.stream()
+//                .filter(map -> {
+//                    // 获取当前乡镇名称
+//                    String villageOrCommunity = (String) map.get("villageOrCommunity");
+//
+//                    // 获取该乡镇的烈度
+//                    Double intensity = all.get(villageOrCommunity);
+//
+//                    // 确保烈度不为空，并且大于等于 6
+//                    return intensity != null && intensity >= 6;
+//                })
+//                .mapToDouble(map -> {
+//                    Object value = map.get("residentPopulationFengpu");
+//                    if (value == null) return 0.0;
+//                    return (value instanceof Number) ? ((Number) value).doubleValue() : 0.0;
+//                })
+//                .sum();
+//
+//        System.out.println("6 度以上的总常住人口：" + totalPopulationAbove6);  //N19
+//
+//
+//        // 格式化输出
+//        String formattedPopulation;
+//        if (totalPopulationAbove6 > 10000) {
+//            formattedPopulation = String.format("%.2f万人", totalPopulationAbove6 / 10000);
+//        } else {
+//            formattedPopulation = (int) totalPopulationAbove6 + "人";
+//        }
+//
+//        System.out.println("格式后 6 度以上的常住人口：" + formattedPopulation);  //O19
+//
+//
+//
+//
+//        // 计算 6 度以上（包含 6 度）的村（社区）数量
+//        long numberOfCommunityAbove6 = data.stream()
+//                .filter(map -> {
+//                    // 获取当前村（社区）的名称
+//                    String villageOrCommunity = (String) map.get("villageOrCommunity");
+//
+//                    // 获取该村（社区）的烈度
+//                    Double intensity = all.get(villageOrCommunity);
+//
+//                    // 确保烈度不为空，并且大于等于 6
+//                    return intensity != null && intensity >= 6;
+//                })
+//                .count();
+//
+//        System.out.println("6 度以上的村（社区）数量：" + numberOfCommunityAbove6);   //K19
 
 
         // 变量示例
-        //int numberOfCommunityAbove6 = 25; // 6 度及以上的行政村（社区）数量
-        //String formattedHouseholds = "1.53万户"; // 已格式化的户数
-        //String formattedPopulation = "2.35万人"; // 已格式化的常住人口
+        int numberOfCommunityAbove6 = 0; // 6 度及以上的行政村（社区）数量
+        String formattedHouseholds = "1.53万户"; // 已格式化的户数
+        String formattedPopulation = "2.35万人"; // 已格式化的常住人口
 
         // 生成 communityStatement
         String communityStatement;
@@ -755,8 +755,10 @@ public class SismiceMergencyAssistanceService {
 
         // 初始化累加变量
         int totalDeath = 0; // 总死亡人数
+        int injury = 0; //受伤人数
         BigDecimal totalEconomicLoss = BigDecimal.ZERO; // 总经济损失（万元）
         BigDecimal totalBuildingDamage = BigDecimal.ZERO; // 总建筑破坏面积（万平方米）
+
 
         System.out.println("event的值为：" + event);
 
@@ -767,6 +769,7 @@ public class SismiceMergencyAssistanceService {
                 System.out.println("匹配到的数据: " + material);
 
                 totalDeath += Optional.ofNullable(material.getDeath()).orElse(0);
+                injury += Optional.ofNullable(material.getInjury()).orElse(0);
 
                 totalEconomicLoss = totalEconomicLoss.add(
                         Optional.ofNullable(material.getEconomicLoss())
@@ -789,11 +792,19 @@ public class SismiceMergencyAssistanceService {
 
         // 输出结果
         System.out.println("****总死亡人数：" + totalDeath + " 人****");
+        System.out.println("****总受伤人数：" + injury + " 人****");
         System.out.println("****总经济损失：" + totalEconomicLoss + " 万元****");
+        BigDecimal totalEconomicLossTwo = totalEconomicLoss.divide(new BigDecimal("10000"), 2, RoundingMode.HALF_UP);
+        System.out.println("****总经济损失：" + totalEconomicLossTwo + " 亿元****");
         System.out.println("****总建筑破坏面积：" + totalBuildingDamage + " 万平方米****");
+        // 计算总建筑破坏面积（平方公里）
+        BigDecimal totalBuildingDamageTwo = totalBuildingDamage.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+
+        System.out.println("****总建筑破坏面积：" + totalBuildingDamageTwo + " 平方公里****");
+
 
         // 生成结果字符串
-        String fuJinTownResult = generateResultString(totalDeath, totalEconomicLoss.doubleValue(), totalBuildingDamage.doubleValue());
+        String fuJinTownResult = generateResultString(totalDeath,injury, totalEconomicLossTwo.doubleValue(), totalBuildingDamageTwo.doubleValue());
 
         System.out.println(fuJinTownResult);
 
@@ -807,9 +818,18 @@ public class SismiceMergencyAssistanceService {
         String category;  //D31
 
         // 判断 eqName 对应的字段
-        if (eqName.contains("雅安市")) {
+        if (eqName.contains("雅安市") ||
+                eqName.contains("名山区") ||
+                eqName.contains("宝兴县") ||
+                eqName.contains("雨城区") ||
+                eqName.contains("芦山县") ||
+                eqName.contains("天全县") ||
+                eqName.contains("荥经县") ||
+                eqName.contains("汉源县") ||
+                eqName.contains("石棉县"))
+        {
             category = "雅安本地地震";
-        } else if (eqName.contains("阿坝州") || eqName.contains("甘孜州") || eqName.contains("眉山市") ||
+        }else if (eqName.contains("阿坝州") || eqName.contains("甘孜州") || eqName.contains("眉山市") ||
                 eqName.contains("成都市") || eqName.contains("凉山州") || eqName.contains("乐山市")) {
             category = "邻近市州地震";
         } else {
@@ -832,7 +852,16 @@ public class SismiceMergencyAssistanceService {
         //震中附近乡镇计算
         if (eqName.contains("四川")) {
 
-            if (eqAddr.contains("雅安市")) {
+            if (eqAddr.contains("雅安市") ||
+                    eqAddr.contains("名山区") ||
+                    eqAddr.contains("宝兴县") ||
+                    eqAddr.contains("雨城区") ||
+                    eqAddr.contains("芦山县") ||
+                    eqAddr.contains("天全县") ||
+                    eqAddr.contains("荥经县") ||
+                    eqAddr.contains("汉源县") ||
+                    eqAddr.contains("石棉县"))
+            {
                 //显示文字，震中距离雅安市边界约distance公里，就将上传的经纬度latitude, longitude和雅安市行政边界表yaan_administrative_boundary计算每个震中距离找出最小值
 
                 System.out.println( "------------------eqAddr内有雅安市，进入雅安市的烈度计算---------------------:"+ eqAddr);
@@ -1841,7 +1870,7 @@ public class SismiceMergencyAssistanceService {
     /**
      * 根据总死亡人数、总经济损失和总建筑破坏面积生成结果字符串
      */
-    private static String generateResultString(int totalDeath, double totalEconomicLoss, double totalBuildingDamage) {
+    private static String generateResultString(int totalDeath,int injury,double totalEconomicLoss, double totalBuildingDamage) {
         // 处理死亡人数
         String deathResult = "死亡X～X（按±30%浮动）人";
         if (totalDeath > 0) {
@@ -1850,12 +1879,20 @@ public class SismiceMergencyAssistanceService {
             deathResult = "死亡" +totalDeath+ "（按±30%浮动）人";
         }
 
+        // 处理死亡人数
+        String injuryResult = "重伤X～X（按±30%浮动）人";
+        if (injury > 0) {
+//            int lowerInjury = (int) Math.round(injury * 0.7); // 下限：-30%
+//            int upperInjury = (int) Math.round(injury * 1.3); // 上限：+30%
+            injuryResult = "受伤" +injury+ "（按±30%浮动）人";
+        }
+
         // 处理建筑破坏面积
-        String buildingDamageResult = "总建筑破坏面积X～X（按±30%浮动）万平方米";
+        String buildingDamageResult = "房屋损毁X～X（按±30%浮动）间";
         if (totalBuildingDamage > 0) {
 //            double lowerBuildingDamage = Math.round(totalBuildingDamage * 0.7 * 100) / 100.0; // 下限：-30%，保留两位小数
 //            double upperBuildingDamage = Math.round(totalBuildingDamage * 1.3 * 100) / 100.0; // 上限：+30%，保留两位小数/
-            buildingDamageResult = "总建筑破坏面积" + totalBuildingDamage+ "（按±30%浮动）万平方米";
+            buildingDamageResult = "总建筑破坏面积" + totalBuildingDamage+ "（按±30%浮动）平方公里";
         }
 
         // 处理经济损失
@@ -1867,7 +1904,7 @@ public class SismiceMergencyAssistanceService {
         }
 
         // 拼接最终结果
-        return "预估全市" + deathResult + "，" + buildingDamageResult + "，" + economicLossResult + "。";
+        return "预估全市" + deathResult + "，" + injuryResult + "，"  + buildingDamageResult + "，" + economicLossResult + "。";
     }
 
 
@@ -2857,8 +2894,8 @@ public class SismiceMergencyAssistanceService {
         // 构造文件路径
         String fileName = formattedTime + eqName +"发生" + eqMagnitude +  "级地震（辅助决策信息二）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
-//        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
-        String filePath = "/data/image" + fileName;
+        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
+//        String filePath = "/data/image" + fileName;
 
         System.out.println("word文档已在桌面");
 
