@@ -179,7 +179,6 @@ public class Constants
     // 部署了换这个地址
     public static final String PROMOTION_URL_HEAD = "http://59.213.183.7/jcpt"; // 浏览图片的地址
     public static final String PROMOTION_DOWNLOAD_PATH = "/data/image"; // 下载图片的地址
-//    public static final String PROMOTION_INVOKE_URL_HEAD = "http://172.26.86.31:18101"; //第三方接口
     public static final String PROMOTION_INVOKE_URL_HEAD = "http://59.213.183.83:18101"; //最新第三方接口
 
 }
