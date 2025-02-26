@@ -1192,7 +1192,7 @@ public class SeismicTriggerService {
         String fileName = timePart + eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
-        String filePath = "/data/image" + fileName;
+        String filePath = Constants.PROMOTION_DOWNLOAD_PATH + fileName;
         // 设置页面边距
         setPageMargins(document, filePath);
 

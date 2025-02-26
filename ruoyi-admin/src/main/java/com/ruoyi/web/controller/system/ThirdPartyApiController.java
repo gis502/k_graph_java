@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.bto.QueryParams;
 import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.*;
@@ -33,7 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 
 /**
@@ -63,7 +66,6 @@ public class ThirdPartyApiController {
     private SeismicAssessmentProcessesService assessmentProcessesService;
     @Resource
     private SeismicDeletedService seismicDeletedService;
-
     @Resource
     private MapServerTask mapServerTask;
     @Resource
@@ -91,14 +93,16 @@ public class ThirdPartyApiController {
      * @param params 触发的地震数据
      * @author: xiaodemos
      * @date: 2024/12/7 19:39
-     * @description: 重新启动评估
+     * @description: 修改单场地震信息并重新评估，如果不修改地震信息，则除地震事件编码以外的参数可以不传或为null
      */
     @PostMapping("/reassessment")
     public AjaxResult eqEventReassessment(@RequestBody EqEventReassessmentDTO params) {
-
-        CompletableFuture<Void> future = seismicReassessmentService.seismicEventReassessment(params);
-
-        log.info("重新评估地震异步执行成功 {}", future);
+        // 进行参数验证
+        if ( params == null ) {
+            return AjaxResult.error(MessageConstants.PARAMS_ISNULL);
+        }
+        // 重新评估地震数据
+        seismicReassessmentService.seismicEventReassessment(params);
 
         return AjaxResult.success(MessageConstants.SEISMIC_REASSESSMENT_SUCCESS);
     }
@@ -191,8 +195,6 @@ public class ThirdPartyApiController {
     @GetMapping("/eq/output/map")
     public AjaxResult eqEventOutputMapData(@RequestParam("eqid") String eqid,
                                            @RequestParam("eqqueueId") String eqqueueId) {
-
-        // 修改这个接口，
         EqEventDTO dto = new EqEventDTO();
         dto.setEqid(eqid);
         dto.setEqqueueId(eqqueueId);
@@ -252,18 +254,6 @@ public class ThirdPartyApiController {
         seismicDeletedService.SeismicEventDelete(query);
 
         return AjaxResult.success(MessageConstants.SEISMIC_DELETED_SUCCESS);
-    }
-
-    /**
-     * @author: xiaodemos
-     * @date: 2024/12/12 17:15
-     * @description: 修改单场地震信息并重新评估
-     */
-    public AjaxResult eqEventGetSelectData() {
-
-        // eqListService.eqEventGetSelectData();
-
-        return AjaxResult.success();
     }
 
     @GetMapping("/eq/map/start")

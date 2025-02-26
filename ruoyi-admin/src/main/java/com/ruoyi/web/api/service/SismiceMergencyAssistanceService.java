@@ -1,6 +1,7 @@
 package com.ruoyi.web.api.service;
 
 
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.mapper.*;
@@ -1834,7 +1835,6 @@ public class SismiceMergencyAssistanceService {
 
         return distance;
 
-
     }
 
 
@@ -1917,13 +1917,6 @@ public class SismiceMergencyAssistanceService {
 
         return response.toString();
     }
-
-
-
-
-
-
-
 
     //判断 1.指挥部建议  H31 /headquarters
     public static String earthquakeResponse(String cityOrState, String suggestion, String countyOrDistrict, String earthquakeName) {
@@ -2858,7 +2851,7 @@ public class SismiceMergencyAssistanceService {
         String fileName = formattedTime + eqName +"发生" + eqMagnitude +  "级地震（辅助决策信息二）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
-        String filePath = "/data/image" + fileName;
+        String filePath = Constants.PROMOTION_DOWNLOAD_PATH + fileName;
 
         System.out.println("word文档已在桌面");
 
@@ -2896,7 +2889,6 @@ public class SismiceMergencyAssistanceService {
         pageSize.setH(BigInteger.valueOf((long) (29.7 * 567))); // 高度 29.7厘米
 
     }
-
 
 }
 
