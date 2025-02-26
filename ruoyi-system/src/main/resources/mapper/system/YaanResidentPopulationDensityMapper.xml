@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YaanResidentPopulationDensityMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.YaanResidentPopulationDensity">
+    <!--@mbg.generated-->
+    <!--@Table yaan_resident_population_density-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="original_number" jdbcType="VARCHAR" property="originalNumber" />
+    <result column="zoning_code" jdbcType="VARCHAR" property="zoningCode" />
+    <result column="city_or_state" jdbcType="VARCHAR" property="cityOrState" />
+    <result column="county_or_district" jdbcType="VARCHAR" property="countyOrDistrict" />
+    <result column="city_and_county" jdbcType="VARCHAR" property="cityAndCounty" />
+    <result column="permanent_population" jdbcType="VARCHAR" property="permanentPopulation" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="population_density" jdbcType="VARCHAR" property="populationDensity" />
+    <result column="county_introduction" jdbcType="VARCHAR" property="countyIntroduction" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, original_number, zoning_code, city_or_state, county_or_district, city_and_county,
+    permanent_population, area, population_density, county_introduction
+  </sql>
+</mapper>

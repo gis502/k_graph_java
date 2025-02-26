@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YaanVillageAndCommunityMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.YaanVillageAndCommunity">
+    <!--@mbg.generated-->
+    <!--@Table yaan_village_and_community-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="statistics_area_code" jdbcType="VARCHAR" property="statisticsAreaCode" />
+    <result column="urban_and_rural_classification_code" jdbcType="INTEGER" property="urbanAndRuralClassificationCode" />
+    <result column="county_or_district" jdbcType="VARCHAR" property="countyOrDistrict" />
+    <result column="township_or_street" jdbcType="VARCHAR" property="townshipOrStreet" />
+    <result column="village_or_community" jdbcType="VARCHAR" property="villageOrCommunity" />
+    <result column="number_of_households_or_fengpu" jdbcType="INTEGER" property="numberOfHouseholdsOrFengpu" />
+    <result column="resident_population_fengpu" jdbcType="INTEGER" property="residentPopulationFengpu" />
+    <result column="geom" jdbcType="OTHER" property="geom" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, statistics_area_code, urban_and_rural_classification_code, county_or_district,
+    township_or_street, village_or_community, number_of_households_or_fengpu, resident_population_fengpu,
+    geom
+  </sql>
+</mapper>
