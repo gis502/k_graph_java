@@ -1331,6 +1331,10 @@ public class SeismicTableTriggerService {
 
         // 创建一个 XWPFDocument 对象
         XWPFDocument document = new XWPFDocument();
+        // 拆分成两个变量
+        String datePart = formattedTime.substring(0, 11);       // "2025年02月04日"
+        String timePart = formattedTime.substring(5, 17); // "02月04日02时19分"
+
 
         // 第一行：对内掌握，黑体三号，右对齐
         XWPFParagraph firstParagraph = document.createParagraph();
@@ -1702,7 +1706,7 @@ public class SeismicTableTriggerService {
         descriptionParagraph1.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
 
         // 构造文件路径
-        String fileName = formattedTime + "级地震（辅助决策信息一）.docx";
+        String fileName =  timePart + eqAddr + "发生" + eqMagnitude + "级地震（辅助决策信息一）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
         String filePath = Constants.PROMOTION_DOWNLOAD_PATH + fileName;
