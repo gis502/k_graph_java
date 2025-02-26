@@ -74,8 +74,6 @@ public class FileUtils {
         // fileName = fileName.substring(fileUrl.indexOf("/profile") + "/profile".length());
 
         // 拼接 baseSavePath 和 fileUrl 来形成完整的文件保存路径
-
-
         String saveDir = baseSavePath + fileUrl;
         // 将 fileUrl 中的 '/' 替换为平台兼容的文件分隔符，并确保路径的正确性
         saveDir = saveDir.replace("/", File.separator);

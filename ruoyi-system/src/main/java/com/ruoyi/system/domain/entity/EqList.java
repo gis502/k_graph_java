@@ -87,6 +87,4 @@ public class EqList {
     @TableField(value = "city")
     private String city;
 
-
-
 }

@@ -11,6 +11,7 @@ import com.ruoyi.system.domain.entity.AssessmentBatch;
 import com.ruoyi.system.domain.entity.AssessmentIntensity;
 import com.ruoyi.system.domain.entity.AssessmentResult;
 import com.ruoyi.system.domain.entity.EqList;
+import com.ruoyi.system.domain.query.EqEventQuery;
 import com.ruoyi.system.domain.vo.ResultEventGetPageVO;
 import com.ruoyi.system.domain.vo.ResultEventGetResultTownVO;
 import com.ruoyi.system.service.impl.*;
@@ -50,6 +51,9 @@ public class SeismicReassessmentService {
     private AssessmentIntensityServiceImpl assessmentIntensityService;
     @Resource
     private AssessmentOutputServiceImpl assessmentOutputService;
+    @Resource
+    private SeismicDeletedService seismicDeletedService;
+
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
     @Resource
     private SeismicAssessmentProcessesService assessmentProcessesService;
@@ -57,13 +61,24 @@ public class SeismicReassessmentService {
     @Async // 参数改为 EqEventReassessmentDTO params
     public CompletableFuture<Void> seismicEventReassessment(EqEventReassessmentDTO params) {
 
-        log.info("正在保存地震重新评估数据...");
-
         String eqqueueId = null;
 
         try {
 
-            // 正式地震没有在第三方数据库中，需要重新触发到对方的数据库中
+            // 查询批次表的当前批次
+            Integer batchVersion = assessmentBatchService.gainBatchVersion(params);
+
+            if (batchVersion == null) {
+                throw new ResultNullPointException(MessageConstants.RETURN_IS_EMPTY);
+            }
+
+            // 对原有的数据进行删除，重新评估
+            Boolean deleted = seismicDeletedService.SeismicEventDelete(EqEventQuery.builder()
+                    .event(params.getEvent())
+                    .build());
+            if (!deleted) {
+                throw new ParamsIsEmptyException(MessageConstants.SEISMIC_DELETED_ERROR);
+            }
 
             // 把前端上传的数据保存到第三方数据库中
             eqqueueId = handleThirdPartySeismicReassessment(params);
@@ -75,7 +90,7 @@ public class SeismicReassessmentService {
             }
 
             // 数据插入到第三方数据库成功后，插入到本地数据库
-            getWithSave(params, eqqueueId);
+            getWithSave(params, eqqueueId, batchVersion);
 
             // 异步进行地震影响场灾损评估
             handleSeismicYxcEventAssessment(params, eqqueueId);
@@ -116,7 +131,6 @@ public class SeismicReassessmentService {
             log.info("正在重试保存乡镇级评估数据...");
             handleTownLevelAssessment(params, eqqueueId);       // 对乡镇级的灾损评估数据进行保存重试
         }
-
 
         updateEventState(params.getEvent(), eqqueueId, 2);    // 修改批次表中的地震状态
 
@@ -192,14 +206,7 @@ public class SeismicReassessmentService {
      * @date: 2024/11/26 17:07
      * @description: 需要把字段转换成保存数据到我们的数据库中
      */
-    public void getWithSave(EqEventReassessmentDTO params, String eqqueueId) {
-
-        // 查询批次表的当前批次
-        Integer batchVersion = assessmentBatchService.gainBatchVersion(params);
-
-        if (batchVersion == null) {
-            throw new ResultNullPointException(MessageConstants.RETURN_IS_EMPTY);
-        }
+    public void getWithSave(EqEventReassessmentDTO params, String eqqueueId,int batchVersion) {
 
         AssessmentBatch batch = AssessmentBatch.builder()
                 .eqqueueId(eqqueueId)
@@ -273,13 +280,9 @@ public class SeismicReassessmentService {
 
             String fileJsonstring = thirdPartyCommonApi.getSeismicEventGetYxcByGet(eventGetYxcDTO);
 
-            log.info("事件编码 -> {}", params.getEvent());
-
             Double progress = getEventProgress(params.getEvent());
 
-            while (progress < 20.00) {
-
-                log.info("当前进度: {}%，等待达到20%再继续", progress);
+            while (progress < 10.00) {
 
                 Thread.sleep(4000);  // 9秒后重新请求
 
@@ -294,8 +297,6 @@ public class SeismicReassessmentService {
                 saveIntensity(params, filePath, eqqueueId, "geojson");  // 把数据插入到己方数据库
 
                 FileUtils.downloadFile(filePath, Constants.PROMOTION_DOWNLOAD_PATH);     // 下载文件并保存到本地
-
-                log.info("下载并且保存geojson文件成功");
 
                 return CompletableFuture.completedFuture(null);
             }
@@ -334,11 +335,9 @@ public class SeismicReassessmentService {
 
             Double progress = getEventProgress(params.getEvent());
 
-            while (progress < 40.00) {
+            while (progress < 25.00) {
 
-                log.info("当前进度: {}%，等待达到40%再继续", progress);
-
-                Thread.sleep(9000);  // 9秒后重新请求
+                Thread.sleep(4000);  // 9秒后重新请求
 
                 progress = getEventProgress(params.getEvent());
 
@@ -355,8 +354,6 @@ public class SeismicReassessmentService {
             if (eventGetResultTownDTOData.size() != MessageConstants.RESULT_ZERO) {
 
                 saveTownResult(eventGetResultTownDTOData);  // 保存到己方数据库
-
-                log.info("保存乡镇结果成功");
 
                 return CompletableFuture.completedFuture(null);
             }
