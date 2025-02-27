@@ -17,6 +17,9 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1274,9 +1277,9 @@ public class SeismicTableTriggerService {
             String combinedResult2 = "初步估算，" + roundedIntensityResult + roundedIntensityResult1 + roundedIntensityResult2 + villagesName + countyTown;
             System.out.println(combinedResult2);
             if (eqAddr.contains("雅安市")) {
-                WordExporter(combinedResult11, combinedResult2, formattedTime,table1,table2,eqMagnitude, eqAddr,zhuResult1);
+                WordExporter(combinedResult11, combinedResult2, formattedTime,table1,table2,eqMagnitude, eqAddr,zhuResult1,params);
             }else{
-                WordExporter(combinedResult12, combinedResult2, formattedTime,table1,table2,eqMagnitude,eqAddr,zhuResult1);
+                WordExporter(combinedResult12, combinedResult2, formattedTime,table1,table2,eqMagnitude,eqAddr,zhuResult1,params);
             }
         }
 
@@ -1307,7 +1310,14 @@ public class SeismicTableTriggerService {
     }
 
     @SneakyThrows
-    private void WordExporter(String combinedResult1,String combinedResult2,String formattedTime, List<List<String>> tableData1, List<List<String>> tableData2, Double eqMagnitude, String eqAddr,String zhuResult) {
+    private void WordExporter(String combinedResult1,
+                              String combinedResult2,
+                              String formattedTime,
+                              List<List<String>> tableData1,
+                              List<List<String>> tableData2,
+                              Double eqMagnitude,
+                              String eqAddr,String zhuResult,
+                              EqEventTriggerDTO params) {
 //        System.out.println("combinedResult1 的数据: " + combinedResult1);
 //        System.out.println("formattedTime 的数据: " + formattedTime);
 //        // 打印 tableData1 的数据
@@ -1709,7 +1719,12 @@ public class SeismicTableTriggerService {
         String fileName =  timePart + eqAddr + "发生" + eqMagnitude + "级地震（辅助决策信息一）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
-        String filePath = Constants.PROMOTION_DOWNLOAD_PATH + fileName;
+
+        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+                "/EqProduct/" + params.getEvent()
+                + "/1/本地产品/灾情报告/"
+                + fileName;
+
         // 设置页面边距
         setPageMargins(document, filePath);
         // 获取所有段落并设置格式
@@ -1718,13 +1733,8 @@ public class SeismicTableTriggerService {
             paragraph1.setSpacingBefore(0);  // 设置段前间距为0
             paragraph1.setSpacingAfter(0);   // 设置段后间距为0
         }
-
         // 写入文件
-        try (FileOutputStream out = new FileOutputStream(filePath)){
-            document.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        writeToDocument(document, filePath);
     }
     public void setPageMargins(XWPFDocument document, String filePath) throws IOException {
         // 获取页面设置对象
@@ -1738,6 +1748,40 @@ public class SeismicTableTriggerService {
         pageMargins.setLeft(2.8 * 567.6);  // 左边距 2.8厘米转换为Twips
         pageMargins.setRight(2.6 * 567.6);  // 右边距 2.6厘米转换为Twips
 //         保存修改
-        document.getDocument().save(new File(filePath));
+        File file = new File(filePath);
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                document.getDocument().save(file);
+
+            } else {
+                System.err.println("目录创建失败: " + parentDir.getAbsolutePath());
+                return;
+            }
+        }
     }
+
+    public void writeToDocument(XWPFDocument document, String filePath) {
+
+        // 创建父目录
+        File file = new File(filePath);
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("目录创建成功: " + parentDir.getAbsolutePath());
+            } else {
+                System.err.println("目录创建失败: " + parentDir.getAbsolutePath());
+                return;
+            }
+        }
+
+        // 写入文件
+        try (FileOutputStream out = new FileOutputStream(filePath)) {
+            document.write(out);
+            System.out.println("文件写入成功: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

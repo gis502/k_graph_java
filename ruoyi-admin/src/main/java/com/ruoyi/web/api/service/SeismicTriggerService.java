@@ -130,22 +130,21 @@ public class SeismicTriggerService {
             }
 
 //            // 数据插入到第三方数据库成功后，插入到本地数据库
-            getWithSave(params, eqqueueId);
+//            getWithSave(params, eqqueueId);
 //            //异步获取辅助决策报告值班表
-//            handleAssessmentReportAssessment(params, eqqueueId);
+            handleAssessmentReportAssessment(params, eqqueueId);
 
             // 调用 tableFile 方法--异步获取辅助决策报告(一)
-//            seismicTableTriggerService.tableFile(params, eqqueueId);
+            seismicTableTriggerService.tableFile(params, eqqueueId);
 
             // 调用 file 方法--异步获取辅助决策（二）报告结果
-//            sismiceMergencyAssistanceService.file(params, eqqueueId);
+            sismiceMergencyAssistanceService.file(params, eqqueueId);
 
 //            // 异步进行地震影响场灾损评估
-//            sismiceMergencyAssistanceService.file(params, eqqueueId);
             // 异步进行地震影响场灾损评估
-            handleSeismicYxcEventAssessment(params, eqqueueId);
+//            handleSeismicYxcEventAssessment(params, eqqueueId);
             // 异步进行乡镇级评估
-            handleTownLevelAssessment(params, eqqueueId);
+//            handleTownLevelAssessment(params, eqqueueId);
 
             // 检查评估结果的数据是否成功
             retrySaving(params, eqqueueId);
@@ -933,9 +932,9 @@ public class SeismicTriggerService {
                 String combinedResult1 = "初步估算，" + roundedIntensityResult + roundedIntensityResult1 + roundedIntensityResult2 + villagesName + countyTown;
                 System.out.println(combinedResult1);
             if (eqAddr.contains("雅安市")) {
-                WordExporter(combinedResult11, combinedResult1, formattedTime, eqMagnitude, eqAddr);
+                WordExporter(combinedResult11, combinedResult1, formattedTime, eqMagnitude, eqAddr,params);
             }else{
-                WordExporter(combinedResult12, combinedResult1, formattedTime, eqMagnitude, eqAddr);
+                WordExporter(combinedResult12, combinedResult1, formattedTime, eqMagnitude, eqAddr,params);
             }
             }
         }
@@ -967,7 +966,7 @@ public class SeismicTriggerService {
 
     }
 
-    private void WordExporter(String combinedResult1, String combinedResult2, String formattedTime, Double eqMagnitude, String eqAddr) throws IOException {
+    private void WordExporter(String combinedResult1, String combinedResult2, String formattedTime, Double eqMagnitude, String eqAddr,EqEventTriggerDTO params) throws IOException {
 
         // 创建一个 XWPFDocument 对象
         XWPFDocument document = new XWPFDocument();
@@ -1191,17 +1190,40 @@ public class SeismicTriggerService {
         String fileName = timePart + eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
-        String filePath = Constants.PROMOTION_DOWNLOAD_PATH + fileName;
+        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+                "/EqProduct/" + params.getEvent()
+                + "/1/本地产品/灾情报告/"
+                + fileName;
+
         // 设置页面边距
         setPageMargins(document, filePath);
+        // 写入文件
+        writeToDocument(document, filePath);
 
+    }
+
+    public void writeToDocument(XWPFDocument document, String filePath) {
+
+        // 创建父目录
+        File file = new File(filePath);
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("目录创建成功: " + parentDir.getAbsolutePath());
+            } else {
+                System.err.println("目录创建失败: " + parentDir.getAbsolutePath());
+                return;
+            }
+        }
 
         // 写入文件
         try (FileOutputStream out = new FileOutputStream(filePath)) {
             document.write(out);
+            System.out.println("文件写入成功: " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     //     设置页面边距
@@ -1217,7 +1239,17 @@ public class SeismicTriggerService {
         pageMargins.setLeft(2.8 * 567.6);  // 左边距 2.8厘米转换为Twips
         pageMargins.setRight(2.6 * 567.6);  // 右边距 2.6厘米转换为Twips
 //         保存修改
-        document.getDocument().save(new File(filePath));
+        File file = new File(filePath);
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                document.getDocument().save(file);
+
+            } else {
+                System.err.println("目录创建失败: " + parentDir.getAbsolutePath());
+                return;
+            }
+        }
     }
 
     /**

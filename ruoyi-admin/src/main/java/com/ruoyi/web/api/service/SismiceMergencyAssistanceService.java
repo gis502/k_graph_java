@@ -19,6 +19,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -119,10 +120,9 @@ public class SismiceMergencyAssistanceService {
     }
 
 
-
     //开始据条件判断输出语句
     @SneakyThrows
-    public void file(EqEventTriggerDTO params, String eqqueueId){
+    public void file(EqEventTriggerDTO params, String eqqueueId) {
         System.out.println("前端构建文本传的参数" + params);
         String event = params.getEvent();  //深度   N3
         String eqName = params.getEqName();  //名字
@@ -132,9 +132,6 @@ public class SismiceMergencyAssistanceService {
         Double longitude = params.getLongitude();  //经度  H3
         Double eqMagnitude = params.getEqMagnitude();  //震级  I3
         Double eqDepth = params.getEqDepth();  //深度   N3
-
-
-
 
         //***********************************************************************************************
 
@@ -183,9 +180,6 @@ public class SismiceMergencyAssistanceService {
         System.out.println("Jiuzhaigou QA: " + QA_Jiuzhaigou + ", QB: " + QB_Jiuzhaigou + ", QC: " + QC_Jiuzhaigou + ", QD: " + QD_Jiuzhaigou);
         System.out.println("Changning QA: " + QA_Changning + ", QB: " + QB_Changning + ", QC: " + QC_Changning + ", QD: " + QD_Changning);
         System.out.println("Luding QA: " + QA_Luding + ", QB: " + QB_Luding + ", QC: " + QC_Luding + ", QD: " + QD_Luding);
-
-
-
 
 
         // 计算各地区的 QAB, QBC, QCD, QAD
@@ -239,14 +233,11 @@ public class SismiceMergencyAssistanceService {
         System.out.println("Luding Area 计算结果: " + ludingArea);
 
 
-
-
-
         // 示例输入
-        String lushan ; // 假设数据来自外部输入
-        String wenchuan ;
+        String lushan; // 假设数据来自外部输入
+        String wenchuan;
         String jiuzhaigou;
-        String changning ;
+        String changning;
         String luding;
 
 
@@ -275,8 +266,6 @@ public class SismiceMergencyAssistanceService {
         } else {
             luding = "否";
         }
-
-
 
 
         // 打印这5个值
@@ -342,7 +331,6 @@ public class SismiceMergencyAssistanceService {
         System.out.println(monthDay);
 
 
-
         // --------遍历查询雅安市人口密度----------------
         List<YaanResidentPopulationDensity> density = yaanResidentPopulationDensityMapper.selectList(null);
 
@@ -367,7 +355,7 @@ public class SismiceMergencyAssistanceService {
         System.out.println("市/州：" + cityOrState);  //  市/州 输出：甘孜州  K3
 
 
-        String newCountyOrDistrict = " " ;
+        String newCountyOrDistrict = " ";
         newCountyOrDistrict = countyOrDistrict.replace("区", "").replace("县", "");
         System.out.println("去除县/区后的县/区字段：" + newCountyOrDistrict);  // 输出：泸定
 
@@ -418,7 +406,6 @@ public class SismiceMergencyAssistanceService {
 
 
         System.out.println("地理：" + geography);
-
 
 
         // 查询雅安市所有乡镇
@@ -498,7 +485,6 @@ public class SismiceMergencyAssistanceService {
         for (Map.Entry<String, Double> entry : sortedList0) {
             System.out.printf("%s | %.2f%n", entry.getKey(), entry.getValue());
         }
-
 
 
         //---------------涉及我市行政村（社区）xxx万户，常住人口约xx万人。------------------------------------------
@@ -689,7 +675,6 @@ public class SismiceMergencyAssistanceService {
         //--------- 构建基础描述----------
 
 
-
         String result;
 
         // 先判断震中是否在四川
@@ -735,12 +720,7 @@ public class SismiceMergencyAssistanceService {
         }
 
 
-
-
         System.out.println("第一段：" + result);
-
-
-
 
 
         //***********************************************************************************************
@@ -805,11 +785,9 @@ public class SismiceMergencyAssistanceService {
 
 
         // 生成结果字符串
-        String fuJinTownResult = generateResultString(totalDeath,injury, totalEconomicLossTwo.doubleValue(), totalBuildingDamageTwo.doubleValue());
+        String fuJinTownResult = generateResultString(totalDeath, injury, totalEconomicLossTwo.doubleValue(), totalBuildingDamageTwo.doubleValue());
 
         System.out.println(fuJinTownResult);
-
-
 
 
         //***********************************************************************************************
@@ -827,27 +805,25 @@ public class SismiceMergencyAssistanceService {
                 eqName.contains("天全县") ||
                 eqName.contains("荥经县") ||
                 eqName.contains("汉源县") ||
-                eqName.contains("石棉县"))
-        {
+                eqName.contains("石棉县")) {
             category = "雅安本地地震";
-        }else if (eqName.contains("阿坝州") || eqName.contains("甘孜州") || eqName.contains("眉山市") ||
+        } else if (eqName.contains("阿坝州") || eqName.contains("甘孜州") || eqName.contains("眉山市") ||
                 eqName.contains("成都市") || eqName.contains("凉山州") || eqName.contains("乐山市")) {
             category = "邻近市州地震";
         } else {
             category = "外地地震";  // 其他情况归为外地地震   //？？？
         }
 
-        System.out.println( "属于哪个位置的地震（category）:"+ category);
+        System.out.println("属于哪个位置的地震（category）:" + category);
         //------------判断------------------
 
         int maxIntensity = 0;   //  最大烈度 初始为0       B20 无"度"字
         int outside = 0;//   辖区外地震雅安最大烈度     F19
 
         //如果是不是雅安市内的
-        double   big = 0; //外地地震雅安最大烈度8度及以上时，筛选7度及以上县个数   J26
-        double   middle = 0; //外地地震雅安最大烈度7度及以上时，筛选6度、7度县个数  K26
-        double   small = 0;  //外地地震雅安最大烈度6度及以上时，筛选5度、6度县个数   L26
-
+        double big = 0; //外地地震雅安最大烈度8度及以上时，筛选7度及以上县个数   J26
+        double middle = 0; //外地地震雅安最大烈度7度及以上时，筛选6度、7度县个数  K26
+        double small = 0;  //外地地震雅安最大烈度6度及以上时，筛选5度、6度县个数   L26
 
 
         //震中附近乡镇计算
@@ -861,11 +837,10 @@ public class SismiceMergencyAssistanceService {
                     eqAddr.contains("天全县") ||
                     eqAddr.contains("荥经县") ||
                     eqAddr.contains("汉源县") ||
-                    eqAddr.contains("石棉县"))
-            {
+                    eqAddr.contains("石棉县")) {
                 //显示文字，震中距离雅安市边界约distance公里，就将上传的经纬度latitude, longitude和雅安市行政边界表yaan_administrative_boundary计算每个震中距离找出最小值
 
-                System.out.println( "------------------eqAddr内有雅安市，进入雅安市的烈度计算---------------------:"+ eqAddr);
+                System.out.println("------------------eqAddr内有雅安市，进入雅安市的烈度计算---------------------:" + eqAddr);
                 // ------------计算震中距离雅安市边界的最小距离----------------
 
                 // 查询雅安市行政边界的所有点或多边形（geom字段）
@@ -886,7 +861,7 @@ public class SismiceMergencyAssistanceService {
                             double boundaryLon = boundaryPoint.getX(); // 经度
 
                             // 计算震中到乡镇点的距离（单位：米）
-                            double distanceToCountyTown = calculateDistance(latitude, longitude,  boundaryLat, boundaryLon);
+                            double distanceToCountyTown = calculateDistance(latitude, longitude, boundaryLat, boundaryLon);
                             // 更新最小距离
                             if (distanceToCountyTown < minBoundaryDistance) {
                                 minBoundaryDistance = distanceToCountyTown;
@@ -917,7 +892,7 @@ public class SismiceMergencyAssistanceService {
                         double villageLon = villagePoint.getX(); // 经度
 
                         // 计算震中到乡镇点的距离（单位：米）
-                        double distanceToVillage =  calculateDistance(latitude, longitude,  villageLat, villageLon);
+                        double distanceToVillage = calculateDistance(latitude, longitude, villageLat, villageLon);
 
                         // 更新最小距离
                         if (distanceToVillage < minVillageDistance) {
@@ -927,7 +902,7 @@ public class SismiceMergencyAssistanceService {
                 }
 
 
-                System.out.println("计算取整后辖区外地震雅安最大烈度roundedIntensity1所用距离为:  " );
+                System.out.println("计算取整后辖区外地震雅安最大烈度roundedIntensity1所用距离为:  ");
                 System.out.println("距离雅安市边界的最小距离 minDistanceInKm: " + minDistanceInKm);
                 System.out.println("计算取整后最大烈度（烈度衰减公式长轴计算结果）minVillageDistance所用距离为: ");
                 System.out.println("震中到乡镇点的最小距离 roundedIntensity2:" + minVillageDistance);
@@ -945,7 +920,7 @@ public class SismiceMergencyAssistanceService {
                     // 震级大于5.5时使用这个公式
                     intensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(0.1 + 24)) - 0.4;
                     intensity1 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minDistanceInKm + 24)) - 0.4;
-                    intensity2 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10( minVillageDistance + 24)) - 0.4;
+                    intensity2 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minVillageDistance + 24)) - 0.4;
 
                 } else {
                     // 震级小于或等于5.5时使用这个公式
@@ -975,7 +950,6 @@ public class SismiceMergencyAssistanceService {
                 System.out.println("maxIntensity烈度选取：roundedIntensity2取整后最大烈度（烈度衰减公式长轴计算结果）: " + roundedIntensity2);
 
             }
-
 
 
             //不在雅安市地震
@@ -1192,7 +1166,6 @@ public class SismiceMergencyAssistanceService {
                 System.out.println("outside烈度选取：roundedIntensity3取整后雅安市所有乡镇距离乡镇最小距离: " + roundedIntensity1);
 
 
-
                 // 如果最大烈度大于等于 6 度，计算所有乡镇的震中距以及烈度
                 if (maxIntensity >= 6) {
                     // 查询雅安市所有乡镇（yaan_villages表）
@@ -1283,13 +1256,13 @@ public class SismiceMergencyAssistanceService {
 
         String disasterLevel = "";  //C31
 
-        if("没有该地人口密度信息".equals(populationDensity) ){
+        if ("没有该地人口密度信息".equals(populationDensity)) {
             disasterLevel = "";
-        }else {
+        } else {
             // 将字符串类型的populationDensity转换为int
             int populationDensityInt = Integer.parseInt(populationDensity);  // 字符串转换为整数
             // 检查人口密度和震级，根据条件返回灾害等级
-            if (populationDensityInt >= 200  ) {
+            if (populationDensityInt >= 200) {
                 if (eqMagnitude >= 3.5 && eqMagnitude < 4.0) {
                     disasterLevel = "属有感地震。";
                 } else if (eqMagnitude >= 4.0 && eqMagnitude < 5.0) {
@@ -1300,10 +1273,10 @@ public class SismiceMergencyAssistanceService {
                     disasterLevel = "按照地震灾害事件分级，属重大地震灾害。";
                 } else if (eqMagnitude >= 7.0) {
                     disasterLevel = "按照地震灾害事件分级，属特别重大地震灾害。";
-                }else{
+                } else {
                     disasterLevel = "";
                 }
-            }else{
+            } else {
                 if (eqMagnitude >= 3.5 && eqMagnitude < 4.5) {
                     disasterLevel = "属有感地震。";
                 } else if (eqMagnitude >= 4.5 && eqMagnitude < 5.5) {
@@ -1314,17 +1287,18 @@ public class SismiceMergencyAssistanceService {
                     disasterLevel = "按照地震灾害事件分级，属重大地震灾害。";
                 } else if (eqMagnitude >= 7.5) {
                     disasterLevel = "按照地震灾害事件分级，属特别重大地震灾害。";
-                }else{
+                } else {
                     disasterLevel = "";
                 }
             }
-        };
+        }
+        ;
 
 
         System.out.println("灾害等级:" + disasterLevel);
 
-        String panduan =String.format("本次地震是%s，%s综合判断：本次地震对我市%s。",
-                category,disasterLevel,influence
+        String panduan = String.format("本次地震是%s，%s综合判断：本次地震对我市%s。",
+                category, disasterLevel, influence
 
         );
         System.out.println(panduan);
@@ -1368,15 +1342,15 @@ public class SismiceMergencyAssistanceService {
                 } else {
                     suggestion = "启动外地地震应急响应";
                 }
-            }else if ((outside == 6.0 && big == 0.0) || outside == 5.0 || big == 1.0) {
+            } else if ((outside == 6.0 && big == 0.0) || outside == 5.0 || big == 1.0) {
                 suggestion = "启动强有感地震应急响应";
-            }else if (big >= 2) {
+            } else if (big >= 2) {
                 suggestion = "启动市级地震灾害一级应急响应";
             } else if (middle >= 2) {
                 suggestion = "启动市级地震灾害二级应急响应";
             } else if (small >= 2) {
                 suggestion = "启动市级地震灾害三级应急响应";
-            }else{
+            } else {
                 suggestion = "应急响应无符合启动条件";   //？？
             }
 
@@ -1387,20 +1361,20 @@ public class SismiceMergencyAssistanceService {
         // 输出建议
         System.out.println("应急响应建议: " + suggestion);
 
-        String response ;
+        String response;
 
         if ("不启动地震应急响应".equals(suggestion)) {
-            response  =  " ";
+            response = " ";
         } else {
             // 去掉suggestion中的“启动”
             String suggestionWithoutStart = suggestion.replace("启动", "");
-            response  =  "建议按照《雅安市地震应急预案》" + suggestionWithoutStart + "处置措施开展应急处置。";
+            response = "建议按照《雅安市地震应急预案》" + suggestionWithoutStart + "处置措施开展应急处置。";
         }
-        System.out.println("响应:"+response);  // Output: 按照《雅安市地震应急预案》市级地震灾害一级应急响应处置措施开展应急处置
+        System.out.println("响应:" + response);  // Output: 按照《雅安市地震应急预案》市级地震灾害一级应急响应处置措施开展应急处置
 
 
         // 计算应急响应的详细内容
-        String plan = generateResponse(cityOrState, suggestion, outside, big, middle, small, eqMagnitude,countyOrDistrict,populationDensity);
+        String plan = generateResponse(cityOrState, suggestion, outside, big, middle, small, eqMagnitude, countyOrDistrict, populationDensity);
 
         // 检查 maxIntensity 是否小于 0，如果是，设置为 0
         if (maxIntensity < 0) {
@@ -1447,7 +1421,7 @@ public class SismiceMergencyAssistanceService {
                 double villageLon = villagePoint.getX(); // 经度
 
                 // 计算震中到乡镇点的距离（单位：米）
-                double distanceToVillage1 =  calculateDistance(latitude, longitude, villageLat, villageLon);
+                double distanceToVillage1 = calculateDistance(latitude, longitude, villageLat, villageLon);
 
                 // 计算震中到乡镇点的距离（单位：米）
 
@@ -1459,7 +1433,7 @@ public class SismiceMergencyAssistanceService {
             }
         }
 
-        System.out.println(  "最近的雅安政府乡镇名称"  + nearestVillage1);    //????不太确定YaanVillages表名，数据库没开
+        System.out.println("最近的雅安政府乡镇名称" + nearestVillage1);    //????不太确定YaanVillages表名，数据库没开
 
 
         //String  countyOrDistrict  县/区   输出eg:泸定县  F26  L3
@@ -1483,7 +1457,7 @@ public class SismiceMergencyAssistanceService {
                     measure = "以" + cityOrState + "政府为主开展应急处置";
                 } else if (eqMagnitude >= 6.0) {
                     measure = "以省政府为主开展应急处置，并接受省抗震救灾指挥部的领导与指挥";
-                }else{
+                } else {
                     measure = "无此应急响应情况，未定义应急处置建议";   //??
                 }
             } else {
@@ -1493,7 +1467,7 @@ public class SismiceMergencyAssistanceService {
                     measure = "以" + cityOrState + "政府为主开展应急处置";
                 } else if (eqMagnitude >= 6.5) {
                     measure = "以省政府为主开展应急处置，并接受省抗震救灾指挥部的领导与指挥";
-                }else{
+                } else {
                     measure = "无此应急响应情况，未定义应急处置建议";  //??
                 }
             }
@@ -1530,9 +1504,9 @@ public class SismiceMergencyAssistanceService {
 
         //1.指挥部建议  H31
 
-        String earthquakeName  =  "“" + monthDay + "”" + newCountyOrDistrict + eqMagnitude + "级地震";  // N29
+        String earthquakeName = "“" + monthDay + "”" + newCountyOrDistrict + eqMagnitude + "级地震";  // N29
 
-        String headquarters = earthquakeResponse( cityOrState,  suggestion,  countyOrDistrict,  earthquakeName) ;
+        String headquarters = earthquakeResponse(cityOrState, suggestion, countyOrDistrict, earthquakeName);
 
         System.out.println("1.指挥部建议 :" + headquarters);  // 输出相应的响应信息
 
@@ -1540,7 +1514,7 @@ public class SismiceMergencyAssistanceService {
 
         //3.应急支援建议  J31
 
-        String support =supportFunction(  cityOrState,  eqMagnitude,  cityOrState,  suggestion);
+        String support = supportFunction(cityOrState, eqMagnitude, cityOrState, suggestion);
 
 
         System.out.println("3.应急支援建议 :" + support);  // 输出相应的响应信息
@@ -1551,7 +1525,7 @@ public class SismiceMergencyAssistanceService {
         //(1) I29 有破坏县区（6-12度）
 
         // 模拟查询雅安市政府相关的县区镇（yaan_county_town表）
-        List<YaanCountyTown> countyTownList1 =yaanCountyTownMapper.selectList(null);  //????不太确定YaanCountyTown表名，数据库没开
+        List<YaanCountyTown> countyTownList1 = yaanCountyTownMapper.selectList(null);  //????不太确定YaanCountyTown表名，数据库没开
 
         // 用 Map 存储所有政府县区名称及其对应的震中距
         Map<String, Double> countyTownDistances = new LinkedHashMap<>();
@@ -1702,7 +1676,7 @@ public class SismiceMergencyAssistanceService {
         }
 
         // 计算最大烈度点
-        String maximumIntensityPoint = generateDestroy2(sortedList,sortedList2, maxIntensity);
+        String maximumIntensityPoint = generateDestroy2(sortedList, sortedList2, maxIntensity);
 
         // 输出结果
         System.out.println("最大烈度点：" + maximumIntensityPoint);
@@ -1720,16 +1694,16 @@ public class SismiceMergencyAssistanceService {
         //String maximumIntensityPoint 为  J29
 
 
-        String transportation =transportationFunction( cityOrState,  eqMagnitude,  cityOrState,
-                 countyOrDistrict,  suggestion,
-                 category,  destroy,  maximumIntensityPoint)   ;
+        String transportation = transportationFunction(cityOrState, eqMagnitude, cityOrState,
+                countyOrDistrict, suggestion,
+                category, destroy, maximumIntensityPoint);
 
 
         System.out.println("4.交通处置建议:" + transportation);  // 输出相应的响应信息
 
         //2.灾情收集建议  I31  放在4下面，因为4有maximumIntensityPoint  **
 
-        String disasterCollection =disasterCollectionFunction(  maxIntensityWithUnit,  maximumIntensityPoint);
+        String disasterCollection = disasterCollectionFunction(maxIntensityWithUnit, maximumIntensityPoint);
 
 
         System.out.println("2.灾情收集建议 :" + disasterCollection);  // 输出相应的响应信息
@@ -1741,15 +1715,15 @@ public class SismiceMergencyAssistanceService {
 
         //6.灾情公开建议  M31
 
-        String disasterMadepublic  = "无";
+        String disasterMadepublic = "无";
 
         // 判断是否为市级地震灾害响应
         if (suggestion.equals("启动市级地震灾害三级应急响应") ||
                 suggestion.equals("启动市级地震灾害二级应急响应") ||
                 suggestion.equals("启动市级地震灾害一级应急响应")) {
-            disasterMadepublic  = "尽快向社会公开震情、灾情等，统筹“12345”政务服务便民热线，建立抗震救灾服务热线，及时回应抗震救灾相关咨询";
+            disasterMadepublic = "尽快向社会公开震情、灾情等，统筹“12345”政务服务便民热线，建立抗震救灾服务热线，及时回应抗震救灾相关咨询";
         } else {
-            disasterMadepublic  = "无";
+            disasterMadepublic = "无";
         }
 
         System.out.println("6.灾情公开建议：" + disasterMadepublic);  // 输出相应的响应信息
@@ -1763,7 +1737,7 @@ public class SismiceMergencyAssistanceService {
                 maxIntensityWithUnit.equals("6度") || maxIntensityWithUnit.equals("7度") || maxIntensityWithUnit.equals("8度") ||
                 maxIntensityWithUnit.equals("9度") || maxIntensityWithUnit.equals("10度") || maxIntensityWithUnit.equals("11度") ||
                 maxIntensityWithUnit.equals("12度")) {
-            publicOpinion ="做好舆情监控和引导工作，防止我市出现地震谣传";
+            publicOpinion = "做好舆情监控和引导工作，防止我市出现地震谣传";
         } else {
             publicOpinion = "无";
         }
@@ -1814,7 +1788,7 @@ public class SismiceMergencyAssistanceService {
 
 
         // 调用处理方法
-        String connect = generateSuggestion(advice,measure, headquarters, disasterCollection, support, transportation, dangerSource, disasterMadepublic, publicOpinion);
+        String connect = generateSuggestion(advice, measure, headquarters, disasterCollection, support, transportation, dangerSource, disasterMadepublic, publicOpinion);
         System.out.println("**" + result);
 
         // 处置措施建议字符串
@@ -1823,20 +1797,18 @@ public class SismiceMergencyAssistanceService {
                 connect
         );
 
-        System.out.println( "最终处置措施建议" + cuoshi);
-
+        System.out.println("最终处置措施建议" + cuoshi);
 
 
         //***********************************************************************************************
 
 
         // 合并所有字符串
-        String combinedResult1 = result + fuJinTownResult + panduan + jianyi + cuoshi ;
+        String combinedResult1 = result + fuJinTownResult + panduan + jianyi + cuoshi;
         System.out.println("合并字段完成：" + combinedResult1);
         System.out.println("-----------------------------将要开始进行书写word文档阶段-----------------------");
-        WordExporter(title,result,fuJinTownResult,panduan,jianyi,cuoshi,formattedTime,eqName,eqMagnitude);
+        WordExporter(title, result, fuJinTownResult, panduan, jianyi, cuoshi, formattedTime, eqName, eqMagnitude, params);
     }
-
 
 
     //计算震中距离
@@ -1871,13 +1843,13 @@ public class SismiceMergencyAssistanceService {
     /**
      * 根据总死亡人数、总经济损失和总建筑破坏面积生成结果字符串
      */
-    private static String generateResultString(int totalDeath,int injury,double totalEconomicLoss, double totalBuildingDamage) {
+    private static String generateResultString(int totalDeath, int injury, double totalEconomicLoss, double totalBuildingDamage) {
         // 处理死亡人数
         String deathResult = "死亡X～X（按±30%浮动）人";
         if (totalDeath > 0) {
 //            int lowerDeath = (int) Math.round(totalDeath * 0.7); // 下限：-30%
 //            int upperDeath = (int) Math.round(totalDeath * 1.3); // 上限：+30%
-            deathResult = "死亡" +totalDeath+ "（按±30%浮动）人";
+            deathResult = "死亡" + totalDeath + "（按±30%浮动）人";
         }
 
         // 处理死亡人数
@@ -1885,7 +1857,7 @@ public class SismiceMergencyAssistanceService {
         if (injury > 0) {
 //            int lowerInjury = (int) Math.round(injury * 0.7); // 下限：-30%
 //            int upperInjury = (int) Math.round(injury * 1.3); // 上限：+30%
-            injuryResult = "受伤" +injury+ "（按±30%浮动）人";
+            injuryResult = "受伤" + injury + "（按±30%浮动）人";
         }
 
         // 处理建筑破坏面积
@@ -1893,7 +1865,7 @@ public class SismiceMergencyAssistanceService {
         if (totalBuildingDamage > 0) {
 //            double lowerBuildingDamage = Math.round(totalBuildingDamage * 0.7 * 100) / 100.0; // 下限：-30%，保留两位小数
 //            double upperBuildingDamage = Math.round(totalBuildingDamage * 1.3 * 100) / 100.0; // 上限：+30%，保留两位小数/
-            buildingDamageResult = "总建筑破坏面积" + totalBuildingDamage+ "（按±30%浮动）平方公里";
+            buildingDamageResult = "总建筑破坏面积" + totalBuildingDamage + "（按±30%浮动）平方公里";
         }
 
         // 处理经济损失
@@ -1905,15 +1877,14 @@ public class SismiceMergencyAssistanceService {
         }
 
         // 拼接最终结果
-        return "预估全市" + deathResult + "，" + injuryResult + "，"  + buildingDamageResult + "，" + economicLossResult + "。";
+        return "预估全市" + deathResult + "，" + injuryResult + "，" + buildingDamageResult + "，" + economicLossResult + "。";
     }
-
 
 
     /**
      * 生成应急响应描述
      */
-    private static String generateResponse(String cityOrState, String suggestion, int outside, double big, double middle, double small, double eqMagnitude,String countyOrDistrict,String populationDensity ) {
+    private static String generateResponse(String cityOrState, String suggestion, int outside, double big, double middle, double small, double eqMagnitude, String countyOrDistrict, String populationDensity) {
 
         // 初始化响应描述
         StringBuilder response = new StringBuilder();
@@ -1949,18 +1920,12 @@ public class SismiceMergencyAssistanceService {
             } else if ("启动外地地震应急响应".equals(suggestion)) {
                 response.append(String.format(" 2、震级：%.1f级；3、我市最大地震烈度：%d度。", eqMagnitude, outside));
             }
-        }else{
+        } else {
             response.append(String.format(" 2、震级：%.1f级；3、震中%s人口密度约%s人/平方公里。", eqMagnitude, countyOrDistrict, populationDensity));
         }
 
         return response.toString();
     }
-
-
-
-
-
-
 
 
     //判断 1.指挥部建议  H31 /headquarters
@@ -2107,6 +2072,7 @@ public class SismiceMergencyAssistanceService {
         // 3. 如果没有符合条件的乡镇，则返回 "无"，否则返回拼接的字符串
         return validTowns.isEmpty() ? "无" : String.join("、", validTowns);
     }
+
     //判断  4.交通处置建议 （2） 前置  G7--G14 , I7---I14
     public static String generateDestroy2(List<Map.Entry<String, Double>> sortedList,
                                           List<Map.Entry<String, Double>> sortedList2,
@@ -2157,8 +2123,8 @@ public class SismiceMergencyAssistanceService {
 
     //判断 4.交通处置建议  最终结果   k31/transportation
     public static String transportationFunction(String cityOrState, Double eqMagnitude, String neighboringCityOrState,
-                                        String countyOrDistrict, String suggestion,
-                                        String category, String destroy, String maximumIntensityPoint) {
+                                                String countyOrDistrict, String suggestion,
+                                                String category, String destroy, String maximumIntensityPoint) {
 
         // 处理 "雅安市" 情况
         if (cityOrState.equals("雅安市")) {
@@ -2203,8 +2169,6 @@ public class SismiceMergencyAssistanceService {
 
         return "无"; // 兜底返回值
     }
-
-
 
 
     //判断  5.危险源处置建议  dangerSource/L31
@@ -2331,7 +2295,7 @@ public class SismiceMergencyAssistanceService {
 
 
     //判断  9.特殊时段处置建议   advice/P31的方法
-    public static String generateAdvice(String cityOrState, String event, String suggestion, String  maxIntensity, double eqMagnitude) {
+    public static String generateAdvice(String cityOrState, String event, String suggestion, String maxIntensity, double eqMagnitude) {
         StringBuilder advice = new StringBuilder();
 
         // 正值春节假日的判断
@@ -2413,15 +2377,12 @@ public class SismiceMergencyAssistanceService {
     }
 
     //设置样式，生成文档
-    private void WordExporter( String title,String result,String fuJinTownResult,String panduan,String jianyi,String cuoshi,String formattedTime, String eqName, Double eqMagnitude) {
+    private void WordExporter(String title, String result, String fuJinTownResult, String panduan, String jianyi, String cuoshi, String formattedTime, String eqName, Double eqMagnitude, EqEventTriggerDTO params) throws IOException {
 
         System.out.println("开始写word文档");
 
         // 创建一个 XWPFDocument 对象
         XWPFDocument document = new XWPFDocument();
-
-        // 设置页面边距
-        setPageMargins(document);
 
         // 第一行：对内掌握，黑体三号，右对齐
         XWPFParagraph firstParagraph = document.createParagraph();
@@ -2460,13 +2421,13 @@ public class SismiceMergencyAssistanceService {
         secondRun.setColor("FF0000");  // 红色
 
         // 空1行，仿宋_GB2312的16号字体，段落居中
-        XWPFParagraph emptyParagraphSong  = document.createParagraph();
-        emptyParagraphSong .setAlignment(ParagraphAlignment.CENTER); // 段落居中
+        XWPFParagraph emptyParagraphSong = document.createParagraph();
+        emptyParagraphSong.setAlignment(ParagraphAlignment.CENTER); // 段落居中
         emptyParagraphSong.setSpacingBetween(2);// 设置2倍行距
         emptyParagraphSong.setSpacingBefore(0); // 段前0倍行距
         emptyParagraphSong.setSpacingAfter(0); // 段后0行距
         // 设置字体样式
-        XWPFRun newRunSong = emptyParagraphSong .createRun();
+        XWPFRun newRunSong = emptyParagraphSong.createRun();
         newRunSong.setText(" ");
         newRunSong.setFontFamily("仿宋_GB2312"); // 字体
         newRunSong.setFontSize(16); // 字号16
@@ -2521,12 +2482,11 @@ public class SismiceMergencyAssistanceService {
         // 注意：这里的下划线是通过文本模拟的，如果需要真正的线条，请使用Apache POI的绘图功能
 
 
-
         // 空1行，华文行楷22号字体，段落居中
         XWPFParagraph emptyParagraphHua = document.createParagraph();
         emptyParagraphHua.setSpacingBetween(1);// 设置1倍行距
         emptyParagraphHua.setAlignment(ParagraphAlignment.CENTER); // 段落居中
-        emptyParagraphHua.setSpacingBefore((int) (16 * 20 *1.1 )); // 段前1.1倍行距
+        emptyParagraphHua.setSpacingBefore((int) (16 * 20 * 1.1)); // 段前1.1倍行距
         emptyParagraphHua.setSpacingAfter(0); // 段后0行距
         // 设置字体样式
         XWPFRun newRunHua = emptyParagraphHua.createRun();
@@ -2550,7 +2510,7 @@ public class SismiceMergencyAssistanceService {
         // 创建一个新的段落
         XWPFParagraph decisionInfoParagraph = document.createParagraph();
         decisionInfoParagraph.setAlignment(ParagraphAlignment.CENTER);        // 设置段落居中对齐
-        emptyParagraphHua.setSpacingBefore((int) (16 * 20 )); // 段前0.75倍行距
+        emptyParagraphHua.setSpacingBefore((int) (16 * 20)); // 段前0.75倍行距
         decisionInfoParagraph.setSpacingAfter(0); // 段后0行距
         XWPFRun decisionInfoRun = decisionInfoParagraph.createRun();        // 创建一个运行来添加文本
         decisionInfoRun.setText("（辅助决策信息二）");
@@ -2568,7 +2528,6 @@ public class SismiceMergencyAssistanceService {
         newRunHei.setFontSize(16); // 字号16
 
 
-
         //*****************************************开始填入自动生成内容****************************************************************
 
         // 创建一个新的段落--------第一个标题
@@ -2579,11 +2538,9 @@ public class SismiceMergencyAssistanceService {
         earthquakeInfoParagraph.setSpacingBefore(0);//设置段前间距为0
         earthquakeInfoParagraph.setSpacingAfter(0);//设置段后间距为0
         XWPFRun earthquakeInfoRun = earthquakeInfoParagraph.createRun();
-        earthquakeInfoRun.setText("    "+ "一、震区基本情况");  //前面有4个空格
+        earthquakeInfoRun.setText("    " + "一、震区基本情况");  //前面有4个空格
         earthquakeInfoRun.setFontFamily("黑体");
         earthquakeInfoRun.setFontSize(16); // 设置字号为三号（对应16磅）
-
-
 
 
         // 第一段正文内容
@@ -2601,7 +2558,7 @@ public class SismiceMergencyAssistanceService {
 
         // 设置字体样式
         XWPFRun newRun = oneText.createRun();
-        newRun.setText("    "+result); // 设置文本内容
+        newRun.setText("    " + result); // 设置文本内容
         newRun.setFontFamily("仿宋_GB2312"); // 字体
         newRun.setFontSize(16); // 三号字体（16磅）
 
@@ -2614,7 +2571,7 @@ public class SismiceMergencyAssistanceService {
         disasterInfoParagraph.setSpacingBefore(0);//设置段前间距为0
         disasterInfoParagraph.setSpacingAfter(0);//设置段后间距为0
         XWPFRun disasterInfoRun = disasterInfoParagraph.createRun();
-        disasterInfoRun.setText("    "+ "二、雅安震情灾情");
+        disasterInfoRun.setText("    " + "二、雅安震情灾情");
         disasterInfoRun.setFontFamily("黑体");
         disasterInfoRun.setFontSize(16); // 设置字号为16磅（注意：三号字号通常对应16磅，但这里直接使用了16磅）
 
@@ -2635,7 +2592,7 @@ public class SismiceMergencyAssistanceService {
 
         // 设置字体样式
         XWPFRun newRun2 = oneText2.createRun();
-        newRun2.setText("    "+fuJinTownResult); // 设置文本内容
+        newRun2.setText("    " + fuJinTownResult); // 设置文本内容
         newRun2.setFontFamily("仿宋_GB2312"); // 字体
         newRun2.setFontSize(16); // 三号字体（16磅）
         newRun2.setColor("FF0000"); // 字体颜色：红色
@@ -2649,7 +2606,7 @@ public class SismiceMergencyAssistanceService {
         emergencyResponseParagraph.setSpacingBefore(0);//设置段前间距为0
         emergencyResponseParagraph.setSpacingAfter(0);//设置段后间距为0
         XWPFRun emergencyResponseRun = emergencyResponseParagraph.createRun();
-        emergencyResponseRun.setText("    "+ "三、应急处置建议");
+        emergencyResponseRun.setText("    " + "三、应急处置建议");
         emergencyResponseRun.setFontFamily("黑体");
         emergencyResponseRun.setFontSize(16); // 设置字号为16磅（注意：三号字号通常对应16磅,这里直接指定了磅值）
 
@@ -2669,7 +2626,7 @@ public class SismiceMergencyAssistanceService {
 
         // 设置字体样式
         XWPFRun newRun3 = oneText3.createRun();
-        newRun3.setText("    "+panduan); // 设置文本内容
+        newRun3.setText("    " + panduan); // 设置文本内容
         newRun3.setFontFamily("仿宋_GB2312"); // 字体
         newRun3.setFontSize(16); // 三号字体（16磅）
 
@@ -2690,10 +2647,9 @@ public class SismiceMergencyAssistanceService {
 
         // 设置字体样式
         XWPFRun newRun4 = oneText4.createRun();
-        newRun4.setText("    "+jianyi); // 设置文本内容
+        newRun4.setText("    " + jianyi); // 设置文本内容
         newRun4.setFontFamily("仿宋_GB2312"); // 字体
         newRun4.setFontSize(16); // 三号字体（16磅）
-
 
 
         // 第五段正文内容
@@ -2712,7 +2668,7 @@ public class SismiceMergencyAssistanceService {
 
         // 设置字体样式
         XWPFRun newRun5 = oneText5.createRun();
-        newRun5.setText("    "+cuoshi); // 设置文本内容
+        newRun5.setText("    " + cuoshi); // 设置文本内容
         newRun5.setFontFamily("仿宋_GB2312"); // 字体
         newRun5.setFontSize(16); // 三号字体（16磅）
 
@@ -2720,12 +2676,12 @@ public class SismiceMergencyAssistanceService {
         //*****************************************填入自动生成内容结束****************************************************************
 
         // 空1行，仿宋_GB2312的16号字体，段落居中
-        XWPFParagraph emptyParagraphSong1  = document.createParagraph();
-        emptyParagraphSong1 .setAlignment(ParagraphAlignment.LEFT); // 段落居中
+        XWPFParagraph emptyParagraphSong1 = document.createParagraph();
+        emptyParagraphSong1.setAlignment(ParagraphAlignment.LEFT); // 段落居中
         emptyParagraphSong1.setSpacingBetween(2.5);// 设置2.5倍行距
         emptyParagraphSong1.setSpacingAfter(0); // 段后0行距
         // 设置字体样式
-        XWPFRun newRunSong1 = emptyParagraphSong1 .createRun();
+        XWPFRun newRunSong1 = emptyParagraphSong1.createRun();
         newRunSong1.setText(" ");
         newRunSong1.setFontFamily("仿宋_GB2312"); // 字体
         newRunSong1.setFontSize(16); // 字号16
@@ -2747,17 +2703,17 @@ public class SismiceMergencyAssistanceService {
 
         // 设置字体样式
         XWPFRun newRun6 = oneText6.createRun();
-        newRun6.setText("    "+"附件：地震影响场分布图"); // 设置文本内容
+        newRun6.setText("    " + "附件：地震影响场分布图"); // 设置文本内容
         newRun6.setFontFamily("仿宋_GB2312"); // 字体
         newRun6.setFontSize(16); // 三号字体（16磅）
 
         // 空1行，仿宋_GB2312的16号字体，段落居中
-        XWPFParagraph emptyParagraphSong2  = document.createParagraph();
-        emptyParagraphSong2 .setAlignment(ParagraphAlignment.LEFT); // 段落居中
+        XWPFParagraph emptyParagraphSong2 = document.createParagraph();
+        emptyParagraphSong2.setAlignment(ParagraphAlignment.LEFT); // 段落居中
         emptyParagraphSong2.setSpacingBetween(2.75);// 设置2.75倍行距
         emptyParagraphSong2.setSpacingAfter(0); // 段后0行距
         // 设置字体样式
-        XWPFRun newRunSong2 = emptyParagraphSong2 .createRun();
+        XWPFRun newRunSong2 = emptyParagraphSong2.createRun();
         newRunSong2.setText(" ");
         newRunSong2.setFontFamily("仿宋_GB2312"); // 字体
         newRunSong2.setFontSize(16); // 字号16
@@ -2778,17 +2734,17 @@ public class SismiceMergencyAssistanceService {
 
         // 设置字体样式
         XWPFRun newRun7 = oneText7.createRun();
-        newRun7.setText("    "+"雅安市应急管理局值班电话：0835-2220001，卫星电话：17406544731。"); // 设置文本内容
+        newRun7.setText("    " + "雅安市应急管理局值班电话：0835-2220001，卫星电话：17406544731。"); // 设置文本内容
         newRun7.setFontFamily("仿宋_GB2312"); // 字体
         newRun7.setFontSize(16); // 三号字体（16磅）
 
         // 空1行，仿宋_GB2312的16号字体，段落居中
-        XWPFParagraph emptyParagraphSong3  = document.createParagraph();
-        emptyParagraphSong3 .setAlignment(ParagraphAlignment.LEFT); // 段落居中
+        XWPFParagraph emptyParagraphSong3 = document.createParagraph();
+        emptyParagraphSong3.setAlignment(ParagraphAlignment.LEFT); // 段落居中
         // 模拟单倍行距（一般情况下1倍行距是240 TWIPS，适当设置行距）
         emptyParagraphSong3.setSpacingBetween(2.1);// 设置2.1倍行距
         // 设置字体样式
-        XWPFRun newRunSong3 = emptyParagraphSong3 .createRun();
+        XWPFRun newRunSong3 = emptyParagraphSong3.createRun();
         newRunSong3.setText(" ");
         newRunSong3.setFontFamily("仿宋_GB2312"); // 字体
         newRunSong3.setFontSize(16); // 字号16
@@ -2810,15 +2766,14 @@ public class SismiceMergencyAssistanceService {
 
         // 设置字体样式
         XWPFRun newRun8 = oneText8.createRun();
-        newRun8.setText("    "+"（本期送：市政府领导、局领导、局机关各科室。）"); // 设置文本内容
+        newRun8.setText("    " + "（本期送：市政府领导、局领导、局机关各科室。）"); // 设置文本内容
         newRun8.setFontFamily("仿宋_GB2312"); // 字体
         newRun8.setFontSize(16); // 三号字体（16磅）
 
 
-
         // 空1行，仿宋_GB2312的16号字体，段落居中
-        XWPFParagraph emptyParagraphSong4  = document.createParagraph();
-        emptyParagraphSong4 .setAlignment(ParagraphAlignment.LEFT); // 段落居左
+        XWPFParagraph emptyParagraphSong4 = document.createParagraph();
+        emptyParagraphSong4.setAlignment(ParagraphAlignment.LEFT); // 段落居左
         // 模拟单倍行距（一般情况下1倍行距是240 TWIPS，适当设置行距）
         emptyParagraphSong4.setSpacingBefore(240); // 设置段前行距为240 TWIPS（1倍行距）
         emptyParagraphSong4.setSpacingAfter(240);  // 设置段后行距为240 TWIPS（1倍行距）
@@ -2875,7 +2830,7 @@ public class SismiceMergencyAssistanceService {
         newRun10.setFontSize(20); // 20号
 
         // 空1行，仿宋_GB2312的16号字体，段落居中
-        XWPFParagraph emptyParagraphSong5  = document.createParagraph();
+        XWPFParagraph emptyParagraphSong5 = document.createParagraph();
         emptyParagraphSong5.setAlignment(ParagraphAlignment.CENTER); // 段落居左
         // 模拟单倍行距（一般情况下1倍行距是240 TWIPS，适当设置行距）
         emptyParagraphSong5.setSpacingBefore(240); // 设置段前行距为240 TWIPS（1倍行距）
@@ -2893,26 +2848,26 @@ public class SismiceMergencyAssistanceService {
         System.out.println("写word文档结束");
 
         // 构造文件路径
-        String fileName = formattedTime + eqName +"发生" + eqMagnitude +  "级地震（辅助决策信息二）.docx";
+        String fileName = formattedTime + eqName + "发生" + eqMagnitude + "级地震（辅助决策信息二）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 //        String filePath = "/data/image" + fileName;
-        String filePath = Constants.PROMOTION_DOWNLOAD_PATH + fileName;
+        // 查询灾情报告图片的存储方式 D:\EqProduct\209c053a-44ad-4924-95b3-086dfce0b57e\1\本地产品\灾情报告
 
-
-        System.out.println("word文档已在桌面");
+        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+                "/EqProduct/" + params.getEvent()
+                + "/1/本地产品/灾情报告/"
+                + fileName;
+        // 设置页面边距
+        setPageMargins(document,filePath);
 
         // 写入文件
-        try (FileOutputStream out = new FileOutputStream(filePath)) {
-            document.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        writeToDocument(document, filePath);
     }
 
 
     //设置文件页边距，纸张大小
-    public void setPageMargins(XWPFDocument document) {
+    public void setPageMargins(XWPFDocument document,String filePath) throws IOException {
         // 获取页面属性
         CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
         CTPageMar pageMar = sectPr.addNewPgMar();
@@ -2935,8 +2890,46 @@ public class SismiceMergencyAssistanceService {
         pageSize.setW(BigInteger.valueOf((long) (21 * 567))); // 宽度 21厘米
         pageSize.setH(BigInteger.valueOf((long) (29.7 * 567))); // 高度 29.7厘米
 
+
+        //         保存修改
+        File file = new File(filePath);
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                document.getDocument().save(file);
+
+            } else {
+                System.err.println("目录创建失败: " + parentDir.getAbsolutePath());
+                return;
+            }
+        }
+
     }
 
+
+    public void writeToDocument(XWPFDocument document, String filePath) {
+
+        // 创建父目录
+        File file = new File(filePath);
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("目录创建成功: " + parentDir.getAbsolutePath());
+            } else {
+                System.err.println("目录创建失败: " + parentDir.getAbsolutePath());
+                return;
+            }
+        }
+
+        // 写入文件
+        try (FileOutputStream out = new FileOutputStream(filePath)) {
+            document.write(out);
+            System.out.println("文件写入成功: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
 

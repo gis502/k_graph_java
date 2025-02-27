@@ -96,7 +96,7 @@ public class SeismicMapDownloadService {
             e.printStackTrace();
         }
 
-        return new ArrayList<>(-1);
+        return new ArrayList<>();
     }
 
 
@@ -158,7 +158,7 @@ public class SeismicMapDownloadService {
 
         }
 
-        return new ArrayList<>(-1);
+        return new ArrayList<>();
     }
 
     /**
