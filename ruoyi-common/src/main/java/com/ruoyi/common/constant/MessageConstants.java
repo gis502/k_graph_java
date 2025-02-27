@@ -16,7 +16,7 @@ public class MessageConstants {
     public static final String ZTT_ASYNC_EXECUTE_ERROR = "专题图 在进行灾损评估的异步执行任务时出错";
     public static final String BG_ASYNC_EXECUTE_ERROR = "灾情报告 在进行灾损评估的异步执行任务时出错";
     public static final String THIRD_PARTY_API_ERROR = "调用第三方接口时失败";
-    public static final String SEISMIC_DELETED_ERROR = "删除地震数据失败";
+    public static final String SEISMIC_DELETED_ERROR = "第三方数据库数据与本地数据库数据不同步（测试数据已删除）";
     public static final String SEISMIC_TRIGGER_ERROR = "地震模拟失败";
     public static final String SEISMIC_DELETED_SUCCESS = "地震删除成功";
     public static final String SEISMIC_ASSESSMENT_TIMEOUT = "评估超时结束";

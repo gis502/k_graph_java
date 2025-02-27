@@ -50,6 +50,12 @@ public class SeismicDeletedService {
         boolean isDeleted = JsonParser.parseJsonToBooleanField(flag);
 
         if (!isDeleted) {
+            // 如果对方为空数据，也需要删除我们的数据，因为这些数据属于脏数据
+            batchFlag = assessmentBatchService.deletedBatchData(params.getEvent());
+            intensityFlag = assessmentIntensityService.deletedIntensityData(params.getEvent());
+            outputFlag = assessmentOutputService.deletedOutputData(params.getEvent());
+            townResultFlag = assessmentResultService.deletedTownResultData(params.getEvent());
+            eqListFlag = eqListService.deletedEqListData(params.getEvent());
             throw new ThirdPartyApiException(MessageConstants.SEISMIC_DELETED_ERROR);
         }
 
@@ -69,5 +75,25 @@ public class SeismicDeletedService {
         }
 
     }
+
+    public Boolean SeismicEventReassessment(EqEventQuery params) {
+
+        try {
+
+            batchFlag = assessmentBatchService.deletedBatchData(params.getEvent());
+            intensityFlag = assessmentIntensityService.deletedIntensityData(params.getEvent());
+            outputFlag = assessmentOutputService.deletedOutputData(params.getEvent());
+            townResultFlag = assessmentResultService.deletedTownResultData(params.getEvent());
+            eqListFlag = eqListService.deletedEqListData(params.getEvent());
+
+            return batchFlag && intensityFlag && outputFlag && townResultFlag && eqListFlag;
+
+        } catch (DeleteDataException e) {
+            e.printStackTrace();
+            throw new DeleteDataException(MessageConstants.SEISMIC_DELETED_ERROR);
+        }
+
+    }
+
 
 }

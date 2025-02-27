@@ -65,6 +65,8 @@ public class SeismicReassessmentService {
 
         try {
 
+            System.out.println("修改参数 {} ->" + params);
+
             // 查询批次表的当前批次
             Integer batchVersion = assessmentBatchService.gainBatchVersion(params);
 
@@ -73,9 +75,10 @@ public class SeismicReassessmentService {
             }
 
             // 对原有的数据进行删除，重新评估
-            Boolean deleted = seismicDeletedService.SeismicEventDelete(EqEventQuery.builder()
+            EqEventQuery query = EqEventQuery.builder()
                     .event(params.getEvent())
-                    .build());
+                    .build();
+            Boolean deleted = seismicDeletedService.SeismicEventReassessment(query);
             if (!deleted) {
                 throw new ParamsIsEmptyException(MessageConstants.SEISMIC_DELETED_ERROR);
             }
@@ -206,7 +209,7 @@ public class SeismicReassessmentService {
      * @date: 2024/11/26 17:07
      * @description: 需要把字段转换成保存数据到我们的数据库中
      */
-    public void getWithSave(EqEventReassessmentDTO params, String eqqueueId,int batchVersion) {
+    public void getWithSave(EqEventReassessmentDTO params, String eqqueueId, int batchVersion) {
 
         AssessmentBatch batch = AssessmentBatch.builder()
                 .eqqueueId(eqqueueId)
@@ -225,8 +228,6 @@ public class SeismicReassessmentService {
         }
 
         log.info("重新评估的数据已经同步到批次表中 -> : ok");
-
-        // TODO 目前先修改同一场地震，等部署完再改为修改也作新增处理
 
         EqEventGetPageDTO dto = EqEventGetPageDTO.builder().event(params.getEvent()).build();
 

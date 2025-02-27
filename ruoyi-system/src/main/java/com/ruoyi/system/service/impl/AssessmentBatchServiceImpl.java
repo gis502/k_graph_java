@@ -107,6 +107,7 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
         AssessmentBatch assessmentBatch = assessmentBatchMapper.selectOne(wrapper);
 
         return assessmentBatch.getBatch();
+
     }
 
     /**

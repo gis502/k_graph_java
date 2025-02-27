@@ -147,7 +147,6 @@ public class SeismicTriggerService {
             // 异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
 
-
             // 检查评估结果的数据是否成功
             retrySaving(params, eqqueueId);
 

@@ -149,13 +149,12 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
      */
     public void updateEqList(EqList params) {
 
-        QueryWrapper<EqList> wrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
 
-        wrapper.eq("eq_id", params.getEqid());
+        wrapper.eq(EqList::getEqid, params.getEqid());
 
         eqListMapper.update(params, wrapper);
 
-        log.info("修改地震信息成功");
     }
 
     //获取excel上传地震事件列表
@@ -166,9 +165,9 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         // 创建 QueryWrapper 用于排序
-        QueryWrapper<EqList> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_deleted", 0)
-                .orderByDesc("occurrence_time"); // 按 OccurrenceTime 字段升序排序
+        LambdaQueryWrapper<EqList> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(EqList::getIsDeleted, 0)
+                .orderByDesc(EqList::getOccurrenceTime); // 按 OccurrenceTime 字段升序排序
 
         List<EqList> eqLists = eqListMapper.selectList(queryWrapper);
 
