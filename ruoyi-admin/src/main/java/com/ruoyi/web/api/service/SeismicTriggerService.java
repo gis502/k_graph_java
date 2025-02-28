@@ -130,7 +130,12 @@ public class SeismicTriggerService {
             }
 
 //            // 数据插入到第三方数据库成功后，插入到本地数据库
-//            getWithSave(params, eqqueueId);
+            getWithSave(params, eqqueueId);
+
+            // 异步进行地震影响场灾损评估
+            handleSeismicYxcEventAssessment(params, eqqueueId);
+            // 异步进行乡镇级评估
+            handleTownLevelAssessment(params, eqqueueId);
 //            //异步获取辅助决策报告值班表
             handleAssessmentReportAssessment(params, eqqueueId);
 
@@ -139,12 +144,6 @@ public class SeismicTriggerService {
 
             // 调用 file 方法--异步获取辅助决策（二）报告结果
             sismiceMergencyAssistanceService.file(params, eqqueueId);
-
-//            // 异步进行地震影响场灾损评估
-            // 异步进行地震影响场灾损评估
-//            handleSeismicYxcEventAssessment(params, eqqueueId);
-            // 异步进行乡镇级评估
-//            handleTownLevelAssessment(params, eqqueueId);
 
             // 检查评估结果的数据是否成功
             retrySaving(params, eqqueueId);
