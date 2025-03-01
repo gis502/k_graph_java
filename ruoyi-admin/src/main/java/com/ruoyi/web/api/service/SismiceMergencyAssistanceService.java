@@ -2849,15 +2849,15 @@ public class SismiceMergencyAssistanceService {
 
         // 构造文件路径
         String fileName = formattedTime + eqName + "发生" + eqMagnitude + "级地震（辅助决策信息二）.docx";
-//        String filePath = "C:/Users/Smile/Desktop/" + fileName;
+        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 //        String filePath = "/data/image" + fileName;
         // 查询灾情报告图片的存储方式 D:\EqProduct\209c053a-44ad-4924-95b3-086dfce0b57e\1\本地产品\灾情报告
 
-        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
-                "/EqProduct/" + params.getEvent()
-                + "/1/本地产品/灾情报告/"
-                + fileName;
+//        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+//                "/EqProduct/" + params.getEvent()
+//                + "/1/本地产品/灾情报告/"
+//                + fileName;
         // 设置页面边距
         setPageMargins(document,filePath);
 
