@@ -230,9 +230,13 @@ public class ThirdPartyApiController {
      * @return: 返回评估结果的进度条
      */
     @GetMapping("/eq/processes")
-    public AjaxResult eqEventGetProcessesData(@RequestParam("event") String event) {
+    public AjaxResult eqEventGetProcessesData(@RequestParam("event") String event,@RequestParam("eqqueueId") String eqqueueId) {
 
-        AssessmentBatch batch = assessmentProcessesService.getSeismicAssessmentProcesses(event);
+        AssessmentBatch batch = assessmentProcessesService.getSeismicAssessmentProcesses(event,eqqueueId);
+
+        if ( batch == null) {
+            return null;
+        }
 
         return AjaxResult.success(batch.getProgress());
 

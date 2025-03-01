@@ -123,20 +123,21 @@ public class SeismicTriggerService {
 
             System.out.println("解析后的 eqqueueId：" + eqqueueId + "，长度：" + eqqueueId.length());
 
-
-//             如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
+            // 如果返回的结果是一个空字符串，表示数据已经插入成功，否则抛出异常，事务回滚
             if (StringUtils.isEmpty(eqqueueId)) {
                 throw new ParamsIsEmptyException(MessageConstants.SEISMIC_TRIGGER_ERROR);
             }
 
-//            // 数据插入到第三方数据库成功后，插入到本地数据库
+            // 数据插入到第三方数据库成功后，插入到本地数据库
             getWithSave(params, eqqueueId);
 
             // 异步进行地震影响场灾损评估
             handleSeismicYxcEventAssessment(params, eqqueueId);
+
             // 异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
-//            //异步获取辅助决策报告值班表
+
+            //异步获取辅助决策报告值班表
             handleAssessmentReportAssessment(params, eqqueueId);
 
             // 调用 tableFile 方法--异步获取辅助决策报告(一)
@@ -1187,12 +1188,12 @@ public class SeismicTriggerService {
 
         // 构造文件路径
         String fileName = timePart + eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
-        String filePath = "C:/Users/Smile/Desktop/" + fileName;
+//        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
-//        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
-//                "/EqProduct/" + params.getEvent()
-//                + "/1/本地产品/灾情报告/"
-//                + fileName;
+        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+                "/EqProduct/" + params.getEvent()
+                + "/1/本地产品/灾情报告/"
+                + fileName;
 
         // 设置页面边距
         setPageMargins(document, filePath);
@@ -1332,17 +1333,13 @@ public class SeismicTriggerService {
 
             String fileJsonstring = thirdPartyCommonApi.getSeismicEventGetYxcByGet(eventGetYxcDTO);
 
-            log.info("事件编码 -> {}", params.getEvent());
-
-            Double progress = getEventProgress(params.getEvent());
+            Double progress = getEventProgress(params.getEvent(),eqqueueId);
 
             while (progress < 10.00) {
 
-                log.info("当前进度: {}%，等待达到20%再继续", progress);
-
                 Thread.sleep(4000);  // 9秒后重新请求
 
-                progress = getEventProgress(params.getEvent());
+                progress = getEventProgress(params.getEvent(),eqqueueId);
 
             }
             fileJsonstring = thirdPartyCommonApi.getSeismicEventGetYxcByGet(eventGetYxcDTO);
@@ -1385,18 +1382,15 @@ public class SeismicTriggerService {
 
             EqEventGetResultTownDTO eqEventGetResultTownDTO = EqEventGetResultTownDTO.builder().event(params.getEvent()).eqqueueId(eqqueueId).build();
 
-
             String seismicEventResultTown = thirdPartyCommonApi.getSeismicEventGetGetResultTownByGet(eqEventGetResultTownDTO);
 
-            Double progress = getEventProgress(params.getEvent());
+            Double progress = getEventProgress(params.getEvent(),eqqueueId);
 
             while (progress < 25.00) {
 
-                log.info("当前进度: {}%，等待达到40%再继续", progress);
+                Thread.sleep(4000);  // 4秒后重新请求
 
-                Thread.sleep(4000);  // 9秒后重新请求
-
-                progress = getEventProgress(params.getEvent());
+                progress = getEventProgress(params.getEvent(),eqqueueId);
 
             }
 
@@ -1438,7 +1432,15 @@ public class SeismicTriggerService {
         List<AssessmentResult> saveList = new ArrayList<>();
 
         for (ResultEventGetResultTownVO res : eventResult) {
-            AssessmentResult assessmentResult = AssessmentResult.builder().id(UUID.randomUUID().toString()).eqqueueId(res.getEqqueueId()).eqid(res.getEvent()).batch(res.getBatch()).eqName(res.getEqName()).inty(res.getInty()).pac(res.getPac()).pacName(res.getPacName()).buildingDamage(String.valueOf(res.getBuildingDamage())).pop(res.getPop()).death(res.getDeath()).missing(res.getMissing()).injury(res.getInjury()).buriedCount(res.getBuriedCount()).resetNumber(res.getResetNumber()).economicLoss(String.valueOf(res.getEconomicLoss())).build();
+            AssessmentResult assessmentResult = AssessmentResult.builder()
+                    .id(UUID.randomUUID().toString())
+                    .eqqueueId(res.getEqqueueId())
+                    .eqid(res.getEvent()).batch(res.getBatch())
+                    .eqName(res.getEqName()).inty(res.getInty())
+                    .pac(res.getPac())
+                    .pacName(res.getPacName())
+                    .buildingDamage(String.valueOf(res.getBuildingDamage()))
+                    .pop(res.getPop()).death(res.getDeath()).missing(res.getMissing()).injury(res.getInjury()).buriedCount(res.getBuriedCount()).resetNumber(res.getResetNumber()).economicLoss(String.valueOf(res.getEconomicLoss())).build();
 
             //BeanUtils.copyProperties(res, assessmentResult);
 
@@ -1505,14 +1507,28 @@ public class SeismicTriggerService {
             // 记录解析结果
             log.info("地址解析结果 -> 省: {}, 市: {}, 区/县: {},剩余地址", provinceCity[0], provinceCity[1], provinceCity[2],provinceCity[3]);
 
-            // TODO 修改数据库字段与dto保持一致可以优化这段代码
-            EqList eqList = EqList.builder().eqid(resultEventGetPageVO.getEvent()).eqqueueId(eqqueueId).earthquakeName(resultEventGetPageVO.getEqName()).
-                    earthquakeFullName(resultEventGetPageVO.getEqFullName()).geom(point).depth(resultEventGetPageVO.getEqDepth().toString()).
-                    magnitude(resultEventGetPageVO.getEqMagnitude()).
-                    occurrenceTime(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
-                    .pac("").type("").province(provinceCity[0]).city(provinceCity[1]).district(provinceCity[2]).isDeleted(0).build();
-
-            BeanUtils.copyProperties(resultEventGetPageVO, eqList);
+            EqList eqList = EqList.builder()
+                    .eqid(resultEventGetPageVO.getEvent())
+                    .eqqueueId(eqqueueId)
+                    .earthquakeName(resultEventGetPageVO.getEqName())
+                    .earthquakeFullName(resultEventGetPageVO.getEqFullName())
+                    .eqAddr(resultEventGetPageVO.getEqAddr())
+                    .geom(point)
+                    .intensity("")
+                    .magnitude(resultEventGetPageVO.getEqMagnitude())
+                    .depth(resultEventGetPageVO.getEqDepth().toString())
+                    .occurrenceTime(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
+                    .eqType(resultEventGetPageVO.getEqType())
+                    .source("2")
+                    .eqAddrCode(resultEventGetPageVO.getEqAddrCode())
+                    .townCode(resultEventGetPageVO.getTownCode())
+                    .pac("")
+                    .type("")
+                    .province(provinceCity[0])
+                    .city(provinceCity[1])
+                    .district(provinceCity[2])
+                    .isDeleted(0)
+                    .build();
 
             // 存入数据库
             eqListService.save(eqList);
@@ -1521,24 +1537,35 @@ public class SeismicTriggerService {
         } catch (Exception e) {
             log.error("地址拆分失败，地震名称: {}, 错误信息: {}", eqAddr, e.getMessage());
 
-            // TODO 修改数据库字段与dto保持一致可以优化这段代码
-            EqList eqList = EqList.builder().eqid(resultEventGetPageVO.getEvent()).eqqueueId(eqqueueId).earthquakeName(resultEventGetPageVO.getEqName()).
-                    earthquakeFullName(resultEventGetPageVO.getEqFullName()).geom(point).depth(resultEventGetPageVO.getEqDepth().toString()).
-                    magnitude(resultEventGetPageVO.getEqMagnitude()).
-                    occurrenceTime(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
-                    .pac("").type("").province("").city("").district("").isDeleted(0).build();
-
-            BeanUtils.copyProperties(resultEventGetPageVO, eqList);
+            EqList eqList = EqList.builder()
+                    .eqid(resultEventGetPageVO.getEvent())
+                    .eqqueueId(eqqueueId)
+                    .earthquakeName(resultEventGetPageVO.getEqName())
+                    .earthquakeFullName(resultEventGetPageVO.getEqFullName())
+                    .eqAddr(resultEventGetPageVO.getEqAddr())
+                    .geom(point)
+                    .intensity("")
+                    .magnitude(resultEventGetPageVO.getEqMagnitude())
+                    .depth(resultEventGetPageVO.getEqDepth().toString())
+                    .occurrenceTime(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
+                    .eqType(resultEventGetPageVO.getEqType())
+                    .source("2")
+                    .eqAddrCode(resultEventGetPageVO.getEqAddrCode())
+                    .townCode(resultEventGetPageVO.getTownCode())
+                    .pac("")
+                    .type("")
+                    .province("")
+                    .city("")
+                    .district("")
+                    .isDeleted(0)
+                    .build();
 
             // 存入数据库
             eqListService.save(eqList);
-            log.info("触发的数据已经同步到 eqlist 表中 -> : ok");
-
 
         }
 
     }
-
 
     /**
      * @param eqId      事件编码
@@ -1559,9 +1586,12 @@ public class SeismicTriggerService {
      * @description: 根据Id查询这场评估结果的进度
      * @return: 返回批次进度
      */
-    public Double getEventProgress(String eqId) {
+    public Double getEventProgress(String eqId,String eqqueueId) {
 
-        AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId);
+        AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId,eqqueueId);
+        if (processes == null) {
+            return null;
+        }
         return processes.getProgress();
     }
 

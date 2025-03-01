@@ -34,14 +34,19 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
      * @description: 根据Id查询事件编码的评估批次进度
      * @return: 返回评估进度
      */
-    public AssessmentBatch selectBatchProgressByEqId(String eqid) {
+    public AssessmentBatch selectBatchProgressByEqId(String eqid,String eqqueueId) {
 
         LambdaQueryWrapper<AssessmentBatch> wrapper = Wrappers
                 .lambdaQuery(AssessmentBatch.class)
                 .eq(AssessmentBatch::getEqid, eqid)
+                .eq(AssessmentBatch::getEqqueueId, eqqueueId)
                 .eq(AssessmentBatch::getIsDeleted, 0);
 
         AssessmentBatch assessmentBatch = assessmentBatchMapper.selectOne(wrapper);
+
+        if (assessmentBatch == null){
+            return null;
+        }
 
         log.info("本地数据库查询到的进度信息：{}", assessmentBatch);
 

@@ -1,5 +1,8 @@
 package com.ruoyi.web.api.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.jhlabs.image.LifeFilter;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
 import com.ruoyi.common.exception.*;
@@ -78,6 +81,7 @@ public class SeismicReassessmentService {
             EqEventQuery query = EqEventQuery.builder()
                     .event(params.getEvent())
                     .build();
+
             Boolean deleted = seismicDeletedService.SeismicEventReassessment(query);
             if (!deleted) {
                 throw new ParamsIsEmptyException(MessageConstants.SEISMIC_DELETED_ERROR);
@@ -197,7 +201,7 @@ public class SeismicReassessmentService {
                 .file(filePath)
                 .eqid(params.getEvent())
                 .fileType(fileType)
-                .localFile(Constants.PROMOTION_INVOKE_URL_HEAD + filePath)
+                .localFile(Constants.PROMOTION_URL_HEAD + filePath)
                 .build();
 
         asyncIntensity = assessmentIntensityService.save(assessmentIntensity);
@@ -281,13 +285,13 @@ public class SeismicReassessmentService {
 
             String fileJsonstring = thirdPartyCommonApi.getSeismicEventGetYxcByGet(eventGetYxcDTO);
 
-            Double progress = getEventProgress(params.getEvent());
+            Double progress = getEventProgress(params.getEvent(),eqqueueId);
 
             while (progress < 10.00) {
 
                 Thread.sleep(4000);  // 9秒后重新请求
 
-                progress = getEventProgress(params.getEvent());
+                progress = getEventProgress(params.getEvent(),eqqueueId);
 
             }
             fileJsonstring = thirdPartyCommonApi.getSeismicEventGetYxcByGet(eventGetYxcDTO);
@@ -334,13 +338,13 @@ public class SeismicReassessmentService {
 
             String seismicEventResultTown = thirdPartyCommonApi.getSeismicEventGetGetResultTownByGet(eqEventGetResultTownDTO);
 
-            Double progress = getEventProgress(params.getEvent());
+            Double progress = getEventProgress(params.getEvent(),eqqueueId);
 
             while (progress < 25.00) {
 
                 Thread.sleep(4000);  // 9秒后重新请求
 
-                progress = getEventProgress(params.getEvent());
+                progress = getEventProgress(params.getEvent(),eqqueueId);
 
             }
 
@@ -412,9 +416,10 @@ public class SeismicReassessmentService {
      * @description: 根据Id查询这场评估结果的进度
      * @return: 返回批次进度
      */
-    public Double getEventProgress(String eqId) {
+    public Double getEventProgress(String eqId,String eqqueueId) {
 
-        AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId);
+        AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId,eqqueueId);
+
         return processes.getProgress();
     }
 
