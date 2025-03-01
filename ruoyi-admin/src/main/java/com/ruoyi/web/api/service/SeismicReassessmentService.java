@@ -28,6 +28,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -252,9 +254,21 @@ public class SeismicReassessmentService {
                 .eqqueueId(eqqueueId)
                 .earthquakeName(resultEventGetPageVO.getEqName())
                 .earthquakeFullName(resultEventGetPageVO.getEqFullName())
+                .eqAddr(resultEventGetPageVO.getEqAddr())
                 .geom(point)
-                .depth(resultEventGetPageVO.getEqDepth().toString())
+                .intensity("")
                 .magnitude(resultEventGetPageVO.getEqMagnitude())
+                .depth(resultEventGetPageVO.getEqDepth().toString())
+                //.occurrenceTime(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
+                .eqType(resultEventGetPageVO.getEqType())
+                .source("2")
+                .eqAddrCode(resultEventGetPageVO.getEqAddrCode())
+                .townCode(resultEventGetPageVO.getTownCode())
+                .pac("")
+                .type("")
+                //.province(provinceCity[0])
+                //.city(provinceCity[1])
+                //.district(provinceCity[2])
                 .isDeleted(0)
                 .build();
 
@@ -388,9 +402,15 @@ public class SeismicReassessmentService {
         for (ResultEventGetResultTownVO res : eventResult) {
             AssessmentResult assessmentResult = AssessmentResult.builder()
                     .id(UUID.randomUUID().toString())
-                    .eqid(res.getEvent())
-                    .build();
-            BeanUtils.copyProperties(res, assessmentResult);
+                    .eqqueueId(res.getEqqueueId())
+                    .eqid(res.getEvent()).batch(res.getBatch())
+                    .eqName(res.getEqName()).inty(res.getInty())
+                    .pac(res.getPac())
+                    .pacName(res.getPacName())
+                    .buildingDamage(String.valueOf(res.getBuildingDamage()))
+                    .pop(res.getPop()).death(res.getDeath()).missing(res.getMissing()).injury(res.getInjury()).buriedCount(res.getBuriedCount()).resetNumber(res.getResetNumber()).economicLoss(String.valueOf(res.getEconomicLoss())).build();
+
+            //BeanUtils.copyProperties(res, assessmentResult);
 
             saveList.add(assessmentResult);
         }

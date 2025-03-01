@@ -109,6 +109,9 @@ public class AssessmentBatchServiceImpl extends ServiceImpl<AssessmentBatchMappe
 
         LambdaQueryWrapper<AssessmentBatch> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(AssessmentBatch::getEqid, params.getEvent());
+        wrapper.orderByDesc(AssessmentBatch::getBatch);
+        wrapper.last("LIMIT 1");
+
         AssessmentBatch assessmentBatch = assessmentBatchMapper.selectOne(wrapper);
 
         return assessmentBatch.getBatch();
