@@ -1188,12 +1188,12 @@ public class SeismicTriggerService {
 
         // 构造文件路径
         String fileName = timePart + eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
-//        String filePath = "C:/Users/Smile/Desktop/" + fileName;
+        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
-        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
-                "/EqProduct/" + params.getEvent()
-                + "/1/本地产品/灾情报告/"
-                + fileName;
+//        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+//                "/EqProduct/" + params.getEvent()
+//                + "/1/本地产品/灾情报告/"
+//                + fileName;地震影响场分布图地震影响场分布图
 
         // 设置页面边距
         setPageMargins(document, filePath);
