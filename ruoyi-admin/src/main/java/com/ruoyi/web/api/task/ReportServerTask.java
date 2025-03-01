@@ -67,13 +67,12 @@ public class ReportServerTask {
                 log.info("获取最新的eqid、eqqueueid -> {}, {}", eqId, eqqueueId);
 
                 // 是否已经评估完成过
-                AssessmentBatch assessmentBatch = assessmentBatchService.selectBatchProgressByEqId(eqId);
+                AssessmentBatch assessmentBatch = assessmentBatchService.selectBatchProgressByEqId(eqId,eqqueueId);
                 log.info("获取评估进度 -> {}", assessmentBatch.getProgress());
 
                 // 检查是否超时（20 分钟）、是否评估状态为已完成、是否评估进度为 100%
                 if (Duration.between(startTime, Instant.now()).toMinutes() >= 20
-                        || assessmentBatch.getState() == 1
-                        || assessmentBatch.getProgress() == 100) {
+                        || assessmentBatch.getState() == 1) {
                     log.info("任务完成或超时，停止执行");
                     stopTask(); // 停止任务
                     return;
@@ -84,11 +83,12 @@ public class ReportServerTask {
                 log.info("获取第三方接口报告数据 -> {}", reportsData);
 
                 // 获取评估进度
-                Double progress = reportDownloadService.getEventProgress(eqId);
+                Double progress = reportDownloadService.getEventProgress(eqId,eqqueueId);
 
                 if (reportsData != null) {
                     // 如果进度达到 100%，停止任务
                     if (progress >= 100) {
+                        updateEventState(eqId,eqqueueId,1);
                         log.info("评估进度达到 100%，停止任务");
                         stopTask(); // 停止任务
                         return;
@@ -115,4 +115,9 @@ public class ReportServerTask {
             log.info("定时任务已停止");
         }
     }
+
+    public void updateEventState(String eqId, String eqqueueId, int state) {
+        assessmentBatchService.updateBatchState(eqId, eqqueueId, state);
+    }
+
 }

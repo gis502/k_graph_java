@@ -15,22 +15,22 @@ public class ResultEventGetPageVO {
 
     @JsonProperty("event")
     private String event;
-    @JsonProperty("eqTime")
-    private String eqTime;
-    @JsonProperty("eqAddr")
-    private String eqAddr;
+    @JsonProperty("eqName")
+    private String eqName;
+    @JsonProperty("eqFullName")
+    private String eqFullName;
     @JsonProperty("longitude")
     private Double longitude;
     @JsonProperty("latitude")
     private Double latitude;
-    @JsonProperty("eqMagnitude")
-    private String eqMagnitude;
     @JsonProperty("eqDepth")
     private Double eqDepth;
-    @JsonProperty("eqFullName")
-    private String eqFullName;
-    @JsonProperty("eqName")
-    private String eqName;
+    @JsonProperty("eqTime")
+    private String eqTime;
+    @JsonProperty("eqMagnitude")
+    private String eqMagnitude;
+    @JsonProperty("eqAddr")
+    private String eqAddr;
     @JsonProperty("eqType")
     private String eqType;
     @JsonProperty("eqAddrCode")

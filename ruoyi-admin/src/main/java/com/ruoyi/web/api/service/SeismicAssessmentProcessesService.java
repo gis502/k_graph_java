@@ -28,7 +28,7 @@ public class SeismicAssessmentProcessesService {
     @Resource
     private AssessmentBatchServiceImpl assessmentBatchService;
     // 获取进度条
-    public AssessmentBatch getSeismicAssessmentProcesses(String event) {
+    public AssessmentBatch getSeismicAssessmentProcesses(String event,String eqqueueId) {
 
         String jsonString = thirdPartyCommonApi.getSeismicEventGetBatchByGet(event);
         if (jsonString == null || jsonString.isEmpty()) {
@@ -58,7 +58,7 @@ public class SeismicAssessmentProcessesService {
         }
 
         // 直接返回查询批次的进度条
-        return assessmentBatchService.selectBatchProgressByEqId(event);
+        return assessmentBatchService.selectBatchProgressByEqId(event,eqqueueId);
     }
 
 }

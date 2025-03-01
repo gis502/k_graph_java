@@ -195,7 +195,7 @@ public class SeismicMapDownloadService {
                     .fileExtension(res.getFileExtension())
                     .fileSize(res.getFileSize())
                     .sourceFile(res.getSourceFile())
-                    .localSourceFile(Constants.PROMOTION_INVOKE_URL_HEAD + res.getSourceFile())
+                    .localSourceFile(Constants.PROMOTION_URL_HEAD + res.getSourceFile())
                     .remark(res.getRemark())
                     .size(res.getSize())
                     .type("1")
@@ -240,7 +240,7 @@ public class SeismicMapDownloadService {
                     .fileExtension(res.getFileExtension())
                     .fileSize(res.getFileSize())
                     .sourceFile(res.getSourceFile())
-                    .localSourceFile(Constants.PROMOTION_INVOKE_URL_HEAD + res.getSourceFile())
+                    .localSourceFile(Constants.PROMOTION_URL_HEAD + res.getSourceFile())
                     .remark(res.getRemark())
                     .type("2")
                     .size(res.getSize())
@@ -328,9 +328,9 @@ public class SeismicMapDownloadService {
      * @description: 获取评估结果进度条
      * @return: 返回一个当前地震评估的进度百分比
      */
-    public Double getEventProgress(String eqId) {
+    public Double getEventProgress(String eqId,String eqqueueId) {
 
-        AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId);
+        AssessmentBatch processes = assessmentProcessesService.getSeismicAssessmentProcesses(eqId,eqqueueId);
         return processes.getProgress();
     }
 
