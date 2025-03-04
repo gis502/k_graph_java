@@ -53,7 +53,7 @@ public class SeismicTableTriggerService {
 
     //接入杜科的辅助决策报告
     @SneakyThrows
-    public void tableFile(EqEventTriggerDTO params, String eqqueueId) {
+    public void tableFile(EqEventTriggerDTO params) {
         System.out.println("前端构建文本传的参数" + params);
         String eqName = params.getEqName();
         String eqTime = params.getEqTime();

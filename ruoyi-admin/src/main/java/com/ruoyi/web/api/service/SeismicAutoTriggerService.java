@@ -37,7 +37,11 @@ public class SeismicAutoTriggerService {
     @Resource
     private EqListServiceImpl eqListService;
     @Resource
-    private SeismicReassessmentService seismicReassessmentService;
+    private SismiceMergencyAssistanceService sismiceMergencyAssistanceService;
+    @Resource
+    private SeismicTableTriggerService seismicTableTriggerService;
+    @Resource
+    private SeismicTriggerService  seismicTriggerService;
 
     /**
      * @author: xiaodemos
@@ -85,6 +89,11 @@ public class SeismicAutoTriggerService {
                     .eqAddrCode("").townCode("").pac(datum.getPac()).type(datum.getType()).isDeleted(0).build();
 
             eqListService.save(eqList);
+
+            EqList seismic = eqListService.getById(datum.getEqid());
+
+            // 生成辅助决策报告
+            productionAssistanceReport(seismic);
         }
 
         // 自动评估正式地震数据
@@ -216,6 +225,35 @@ public class SeismicAutoTriggerService {
         //       .build());
 
         // return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * @author:  xiaodemos
+     * @date:  2025/3/1 21:42
+     * @description:  生成接入正式地震的辅助决策报告
+     * @param seismic 地震信息
+     */
+    public void productionAssistanceReport(EqList seismic){
+
+        EqEventTriggerDTO dto = new EqEventTriggerDTO();
+        dto.setEvent(seismic.getEqid());
+        dto.setEqName(seismic.getEarthquakeName());
+        // dto.setEqTime(String.valueOf(seismic.getOccurrenceTime()));
+        dto.setEqAddr(seismic.getEqAddr());
+        dto.setLongitude(seismic.getGeom().getCoordinate().x);
+        dto.setLatitude(seismic.getGeom().getCoordinate().y);
+        dto.setEqMagnitude(Double.valueOf(seismic.getMagnitude()));
+        dto.setEqDepth(Double.valueOf(seismic.getDepth()));
+
+        //异步获取辅助决策报告值班表
+        seismicTriggerService.handleAssessmentReportAssessment(dto);
+
+        // 调用 tableFile 方法--异步获取辅助决策报告(一)
+        seismicTableTriggerService.tableFile(dto);
+
+        // 调用 file 方法--异步获取辅助决策（二）报告结果
+        sismiceMergencyAssistanceService.file(dto);
+
     }
 
 }

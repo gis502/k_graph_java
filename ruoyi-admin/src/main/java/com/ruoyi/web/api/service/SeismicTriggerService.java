@@ -138,13 +138,13 @@ public class SeismicTriggerService {
             handleTownLevelAssessment(params, eqqueueId);
 
             //异步获取辅助决策报告值班表
-            handleAssessmentReportAssessment(params, eqqueueId);
+            handleAssessmentReportAssessment(params);
 
             // 调用 tableFile 方法--异步获取辅助决策报告(一)
-            seismicTableTriggerService.tableFile(params, eqqueueId);
+            seismicTableTriggerService.tableFile(params);
 
             // 调用 file 方法--异步获取辅助决策（二）报告结果
-            sismiceMergencyAssistanceService.file(params, eqqueueId);
+            sismiceMergencyAssistanceService.file(params);
 
             // 检查评估结果的数据是否成功
             retrySaving(params, eqqueueId);
@@ -164,7 +164,7 @@ public class SeismicTriggerService {
 
     //接入杜科的辅助决策报告
     @SneakyThrows
-    private void handleAssessmentReportAssessment(EqEventTriggerDTO params, String eqqueueId) {
+    public void handleAssessmentReportAssessment(EqEventTriggerDTO params) {
         System.out.println("前端构建文本传的参数" + params);
         String eqName = params.getEqName();
         String eqTime = params.getEqTime();

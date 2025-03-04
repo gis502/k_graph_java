@@ -59,10 +59,17 @@ public class SeismicReassessmentService {
     @Resource
     private SeismicDeletedService seismicDeletedService;
 
+    @Resource
+    private SeismicTableTriggerService seismicTableTriggerService;
+    @Resource
+    private SismiceMergencyAssistanceService sismiceMergencyAssistanceService;
+
     private boolean asyncIntensity = false, asyncTown = false, asyncOutputMap = false, asyncOutputReport = false;
     @Resource
     private SeismicAssessmentProcessesService assessmentProcessesService;
 
+    @Resource
+    private SeismicTriggerService  seismicTriggerService;
     @Async // 参数改为 EqEventReassessmentDTO params
     public CompletableFuture<Void> seismicEventReassessment(EqEventReassessmentDTO params) {
 
@@ -106,6 +113,28 @@ public class SeismicReassessmentService {
 
             // 异步进行乡镇级评估
             handleTownLevelAssessment(params, eqqueueId);
+
+            // 查询单场地震信息
+            EqList seismic = eqListService.getById(params.getEvent());
+
+            EqEventTriggerDTO dto = new EqEventTriggerDTO();
+            dto.setEvent(seismic.getEqid());
+            dto.setEqName(seismic.getEarthquakeName());
+            dto.setEqTime(seismic.getOccurrenceTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            dto.setEqAddr(seismic.getEqAddr());
+            dto.setLongitude(seismic.getGeom().getCoordinate().x);
+            dto.setLatitude(seismic.getGeom().getCoordinate().y);
+            dto.setEqMagnitude(Double.valueOf(seismic.getMagnitude()));
+            dto.setEqDepth(Double.valueOf(seismic.getDepth()));
+
+            //异步获取辅助决策报告值班表
+            seismicTriggerService.handleAssessmentReportAssessment(dto);
+
+            // 调用 tableFile 方法--异步获取辅助决策报告(一)
+            seismicTableTriggerService.tableFile(dto);
+
+            // 调用 file 方法--异步获取辅助决策（二）报告结果
+            sismiceMergencyAssistanceService.file(dto);
 
             // 检查评估结果的数据是否成功
             retrySaving(params, eqqueueId);

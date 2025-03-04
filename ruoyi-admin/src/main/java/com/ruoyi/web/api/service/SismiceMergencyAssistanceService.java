@@ -122,7 +122,7 @@ public class SismiceMergencyAssistanceService {
 
     //开始据条件判断输出语句
     @SneakyThrows
-    public void file(EqEventTriggerDTO params, String eqqueueId) {
+    public void file(EqEventTriggerDTO params) {
         System.out.println("前端构建文本传的参数" + params);
         String event = params.getEvent();  //深度   N3
         String eqName = params.getEqName();  //名字
