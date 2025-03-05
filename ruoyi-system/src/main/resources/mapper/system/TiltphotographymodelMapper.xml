@@ -13,11 +13,12 @@
         <result column="rze" jdbcType="SMALLINT" property="rze"/>
         <result column="tze" jdbcType="SMALLINT" property="tze"/>
         <result column="model_size" jdbcType="VARCHAR" property="modelSize"/>
+        <result column="geom" jdbcType="OTHER" property="geom"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        name, path, rz, tz, time, uuid, rze, tze, model_size
+        name, path, rz, tz, time, uuid, rze, tze, model_size,geom
     </sql>
 
     <select id="selectAllModel" resultType="com.ruoyi.system.domain.entity.Tiltphotographymodel">
