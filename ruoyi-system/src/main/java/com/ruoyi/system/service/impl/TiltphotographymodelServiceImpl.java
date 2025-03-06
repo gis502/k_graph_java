@@ -1,6 +1,9 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.utils.uuid.UUID;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,9 +23,8 @@ public class TiltphotographymodelServiceImpl extends ServiceImpl<Tiltphotography
 
     @Override
     public List<Tiltphotographymodel> selectAllModel() {
+
         List<Tiltphotographymodel> models = tiltphotographymodelMapper.selectAllModel();
-        // 打印每个模型的大小
-//        System.out.println("获取的数据: " + models);
 
         return models;
     }
