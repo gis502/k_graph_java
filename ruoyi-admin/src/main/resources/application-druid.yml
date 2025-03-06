@@ -19,7 +19,7 @@ spring:
 #                 username: postgres
 #                 password: yaangis@2024
             master:
-                 url: jdbc:postgresql://47.92.216.173:7654/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+                 url: jdbc:postgresql://47.92.216.173:7654/yaan0304?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
                  username: postgres
                  password: zhangsan
 #            master:
