@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AssessmentJueceMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.system.domain.entity.AssessmentJuece">
+    <!--@mbg.generated-->
+    <!--@Table assessment_juece-->
+    <id column="id" jdbcType="OTHER" property="id" />
+    <result column="eqid" jdbcType="VARCHAR" property="eqid" />
+    <result column="eqqueue_id" jdbcType="VARCHAR" property="eqqueueId" />
+    <result column="pro_time" jdbcType="TIMESTAMP" property="proTime" />
+    <result column="source_file" jdbcType="VARCHAR" property="sourceFile" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, eqid, eqqueue_id, pro_time, source_file
+  </sql>
+</mapper>

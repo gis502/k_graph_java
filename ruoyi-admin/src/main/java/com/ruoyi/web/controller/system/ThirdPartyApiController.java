@@ -9,10 +9,7 @@ import com.ruoyi.system.domain.bto.QueryParams;
 import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.domain.query.EqEventQuery;
-import com.ruoyi.system.service.impl.AssessmentIntensityServiceImpl;
-import com.ruoyi.system.service.impl.AssessmentOutputServiceImpl;
-import com.ruoyi.system.service.impl.AssessmentResultServiceImpl;
-import com.ruoyi.system.service.impl.EqListServiceImpl;
+import com.ruoyi.system.service.impl.*;
 import com.ruoyi.web.api.ThirdPartyCommonApi;
 import com.ruoyi.web.api.service.SeismicAssessmentProcessesService;
 import com.ruoyi.web.api.service.SeismicDeletedService;
@@ -60,6 +57,9 @@ public class ThirdPartyApiController {
     private AssessmentIntensityServiceImpl assessmentIntensityService;
     @Resource
     private AssessmentOutputServiceImpl assessmentOutputService;
+
+    @Resource
+    private AssessmentJueceServiceImpl assessmentJueceService;
     @Resource
     private EqListServiceImpl eqListService;
     @Resource
@@ -218,6 +218,17 @@ public class ThirdPartyApiController {
         dto.setEqid(eqid);
         dto.setEqqueueId(eqqueueId);
         List<AssessmentOutput> outputs = assessmentOutputService.eqEventOutputReportData(dto);
+
+        return AjaxResult.success(outputs);
+    }
+    // 批量查询辅助决策
+    @GetMapping("/eq/output/juece")
+    public AjaxResult eqEventOutputFuZhuData(@RequestParam("eqid") String eqid,
+                                              @RequestParam("eqqueueId") String eqqueueId) {
+        EqEventDTO dto = new EqEventDTO();
+        dto.setEqid(eqid);
+        dto.setEqqueueId(eqqueueId);
+        List<AssessmentJuece> outputs = assessmentJueceService.eqEventOutputJueCeData(dto);
 
         return AjaxResult.success(outputs);
     }
