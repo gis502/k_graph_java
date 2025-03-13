@@ -1,15 +1,21 @@
 package com.ruoyi.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.system.domain.dto.PlotRequest;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.service.impl.EmergencyResponseInfoServiceImpl;
 import com.ruoyi.system.service.impl.NewsServiceImpl;
 import com.ruoyi.system.service.impl.RescueActionCasualtiesServiceImpl;
 import com.ruoyi.system.service.impl.RescueTeamServiceImpl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/timeLine")
@@ -33,6 +39,11 @@ public class TimeLineController {
         return emergencyResponseInfoService.getByEqid(eqid);
     }
 
+    @PostMapping("/saveEmergencyResponse")
+    public boolean saveEmergencyResponse(@RequestBody EmergencyResponseInfo data) {
+//        System.out.println("saveEmergencyResponse"+data);
+        return emergencyResponseInfoService.save(data);
+    }
     // ----人员伤亡
     @GetMapping("/rescueActionCasualties")
     public List<RescueActionCasualties> getRescueActionCasualties(@RequestParam("eqid") String eqid) {
