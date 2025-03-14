@@ -312,7 +312,7 @@ public class SismiceMergencyAssistanceService {
         Date parsedDate = inputFormat.parse(eqTime);
 
         // 1.创建 SimpleDateFormat 对象，用于格式化为目标格式  MM月dd日HH时mm分
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MM月dd日HH时mm分");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy年MM月dd日HH时mm分ss秒");
 
         // 格式化 Date 对象为目标格式的字符串
         String formattedTime = outputFormat.format(parsedDate);
@@ -1807,7 +1807,7 @@ public class SismiceMergencyAssistanceService {
         String combinedResult1 = result + fuJinTownResult + panduan + jianyi + cuoshi;
         System.out.println("合并字段完成：" + combinedResult1);
         System.out.println("-----------------------------将要开始进行书写word文档阶段-----------------------");
-        WordExporter(title, result, fuJinTownResult, panduan, jianyi, cuoshi, formattedTime, eqName, eqMagnitude, params);
+        WordExporter(title, result, fuJinTownResult, panduan, jianyi, cuoshi, formattedTime,eqAddr ,eqName, eqMagnitude, params);
     }
 
 
@@ -2377,7 +2377,7 @@ public class SismiceMergencyAssistanceService {
     }
 
     //设置样式，生成文档
-    private void WordExporter(String title, String result, String fuJinTownResult, String panduan, String jianyi, String cuoshi, String formattedTime, String eqName, Double eqMagnitude, EqEventTriggerDTO params) throws IOException {
+    private void WordExporter(String title, String result, String fuJinTownResult, String panduan, String jianyi, String cuoshi, String formattedTime,String eqAddr, String eqName, Double eqMagnitude, EqEventTriggerDTO params) throws IOException {
 
         System.out.println("开始写word文档");
 
@@ -2848,7 +2848,7 @@ public class SismiceMergencyAssistanceService {
         System.out.println("写word文档结束");
 
         // 构造文件路径
-        String fileName = formattedTime + eqName + "发生" + eqMagnitude + "级地震（辅助决策信息二）.docx";
+        String fileName = formattedTime + eqAddr + "发生" + eqMagnitude + "级地震（辅助决策信息二）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 //        String filePath = "/data/image" + fileName;

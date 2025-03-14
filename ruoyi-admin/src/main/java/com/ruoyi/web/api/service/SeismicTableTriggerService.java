@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -320,6 +321,16 @@ public class SeismicTableTriggerService {
             row.add(String.valueOf(estimatedIntensities2.get(i))); // 预估烈度
             row.add(SeismicFortificationIntensity2.get(i)); // 一般建筑设防烈度
             table2.add(row);
+        }
+        // 按照震中距（第三列）进行排序（提取数值后排序）
+        table2.sort(Comparator.comparingInt(o -> {
+            String numStr = o.get(2).replaceAll("[^0-9]", ""); // 提取数字
+            return numStr.isEmpty() ? 0 : Integer.parseInt(numStr); // 避免空字符串错误
+        }));
+
+        // 重新调整序号（从第二行开始，跳过表头）
+        for (int i = 1; i < table2.size(); i++) {
+            table2.get(i).set(0, String.valueOf(i)); // 从 1 开始编号
         }
 
         // 震中附近乡镇计算
@@ -1278,9 +1289,9 @@ public class SeismicTableTriggerService {
             String combinedResult2 = "初步估算，" + roundedIntensityResult + roundedIntensityResult1 + roundedIntensityResult2 + villagesName + countyTown;
             System.out.println(combinedResult2);
             if (eqAddr.contains("雅安市")) {
-                WordExporter(combinedResult11, combinedResult2, formattedTime,table1,table2,eqMagnitude, eqAddr,zhuResult1,params);
+                WordExporter(combinedResult11, combinedResult2, formattedTime,table1,table2,eqMagnitude, eqName,eqAddr,zhuResult1,params);
             }else{
-                WordExporter(combinedResult12, combinedResult2, formattedTime,table1,table2,eqMagnitude,eqAddr,zhuResult1,params);
+                WordExporter(combinedResult12, combinedResult2, formattedTime,table1,table2,eqMagnitude,eqName,eqAddr,zhuResult1,params);
             }
         }
 
@@ -1317,7 +1328,9 @@ public class SeismicTableTriggerService {
                               List<List<String>> tableData1,
                               List<List<String>> tableData2,
                               Double eqMagnitude,
-                              String eqAddr,String zhuResult,
+                              String eqAddr,
+                              String eqName,
+                              String zhuResult,
                               EqEventTriggerDTO params) {
 //        System.out.println("combinedResult1 的数据: " + combinedResult1);
 //        System.out.println("formattedTime 的数据: " + formattedTime);
@@ -1717,7 +1730,7 @@ public class SeismicTableTriggerService {
         descriptionParagraph1.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
 
         // 构造文件路径
-        String fileName =  formattedTime + eqAddr + "发生" + eqMagnitude + "级地震（辅助决策信息一）.docx";
+        String fileName =  formattedTime + eqName + "发生" + eqMagnitude + "级地震（辅助决策信息一）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 

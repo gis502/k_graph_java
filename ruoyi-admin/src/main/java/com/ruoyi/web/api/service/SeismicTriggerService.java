@@ -936,9 +936,9 @@ public class SeismicTriggerService {
                 String combinedResult1 = "初步估算，" + roundedIntensityResult + roundedIntensityResult1 + roundedIntensityResult2 + villagesName + countyTown;
                 System.out.println(combinedResult1);
             if (eqAddr.contains("雅安市")) {
-                WordExporter(combinedResult11, combinedResult1, formattedTime, eqMagnitude, eqAddr,params);
+                WordExporter(combinedResult11, combinedResult1, formattedTime, eqMagnitude,eqName,eqAddr,params);
             }else{
-                WordExporter(combinedResult12, combinedResult1, formattedTime, eqMagnitude, eqAddr,params);
+                WordExporter(combinedResult12, combinedResult1, formattedTime, eqMagnitude,eqName, eqAddr,params);
             }
             }
         }
@@ -970,7 +970,7 @@ public class SeismicTriggerService {
 
     }
 
-    private void WordExporter(String combinedResult1, String combinedResult2, String formattedTime, Double eqMagnitude, String eqAddr,EqEventTriggerDTO params) throws IOException {
+    private void WordExporter(String combinedResult1, String combinedResult2, String formattedTime, Double eqMagnitude,String eqName, String eqAddr,EqEventTriggerDTO params) throws IOException {
 
         // 创建一个 XWPFDocument 对象
         XWPFDocument document = new XWPFDocument();
@@ -1191,7 +1191,7 @@ public class SeismicTriggerService {
         }
 
         // 构造文件路径
-        String fileName = formattedTime+ eqAddr + "发生" + eqMagnitude + "级地震（值班信息）.docx";
+        String fileName = formattedTime+ eqName + "发生" + eqMagnitude + "级地震（值班信息）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 //        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
