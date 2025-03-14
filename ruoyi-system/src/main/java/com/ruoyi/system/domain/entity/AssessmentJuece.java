@@ -32,4 +32,7 @@ public class AssessmentJuece {
      */
     @TableField(value = "source_file")
     private String sourceFile;
+
+    @TableField(value = "file_name")
+    private String fileName;
 }

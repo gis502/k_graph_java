@@ -1,26 +1,22 @@
 package com.ruoyi.web.controller.system;
 
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.MessageConstants;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.bto.QueryParams;
 import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.domain.query.EqEventQuery;
 import com.ruoyi.system.service.impl.*;
-import com.ruoyi.web.api.ThirdPartyCommonApi;
 import com.ruoyi.web.api.service.SeismicAssessmentProcessesService;
 import com.ruoyi.web.api.service.SeismicDeletedService;
 import com.ruoyi.web.api.service.SeismicReassessmentService;
 import com.ruoyi.web.api.task.MapServerTask;
 import com.ruoyi.web.api.task.ReportServerTask;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.web.api.service.SeismicTriggerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,10 +26,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 
 /**
@@ -232,6 +230,19 @@ public class ThirdPartyApiController {
 
         return AjaxResult.success(outputs);
     }
+
+
+    @GetMapping("/eq/output/jueceLocal")
+    public AjaxResult eqEventOutputFuZhuLocalData(@RequestParam("eqid") String eqid,
+                                              @RequestParam("eqqueueId") String eqqueueId) {
+        EqEventDTO dto = new EqEventDTO();
+        dto.setEqid(eqid);
+        dto.setEqqueueId(eqqueueId);
+        List<AssessmentJuece> outputs = assessmentJueceService.eqEventOutputJueCeData(dto);
+
+        return AjaxResult.success(outputs);
+    }
+
 
     /**
      * @param event 地震事件编码

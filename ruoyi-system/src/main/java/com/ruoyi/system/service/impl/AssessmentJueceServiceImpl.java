@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.utils.uuid.UUID;
 import com.ruoyi.system.domain.dto.EqEventDTO;
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
-import com.ruoyi.system.domain.entity.AssessmentOutput;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.system.domain.entity.AssessmentJuece;
@@ -25,13 +24,14 @@ public class AssessmentJueceServiceImpl extends ServiceImpl<AssessmentJueceMappe
     @Resource
     private AssessmentJueceMapper assessmentJueceMapper;
     @Override
-    public void saveAssessmentJuece(EqEventTriggerDTO params, String sourceFile) {
+    public void saveAssessmentJuece(EqEventTriggerDTO params, String sourceFile, String fileName) {
         AssessmentJuece assessment = new AssessmentJuece();
         assessment.setId(UUID.randomUUID().toString()); // 生成 UUID
         assessment.setEqid(params.getEvent()); // eqid 对应 event
         assessment.setEqqueueId(params.getEvent() + "01"); // eqqueue_id 对应 event+01
         assessment.setProTime(Timestamp.valueOf(LocalDateTime.parse(params.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).toLocalDateTime());
         assessment.setSourceFile(sourceFile); // source_file 对应 sourceFile
+        assessment.setFileName(fileName);
 
         this.save(assessment); // MyBatis-Plus 提供的保存方法
     }

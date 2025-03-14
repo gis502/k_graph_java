@@ -174,6 +174,8 @@ public class Constants
     public static final String USER_AGENT = "Mozilla/5.0";
     public static final String PROMOTION_URL_HEAD = "http://10.16.7.69/zaisunimage";
     public static final String PROMOTION_DOWNLOAD_PATH = "D:/third-party-download";
+    //
+    public static final String VBA_DOWNLOAD_PATH = "/juece";
     public static final String PROMOTION_INVOKE_URL_HEAD = "http://10.16.7.69/zaisun";
 
 

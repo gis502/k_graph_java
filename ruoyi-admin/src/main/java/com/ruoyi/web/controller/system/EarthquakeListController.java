@@ -418,16 +418,16 @@ public class EarthquakeListController {
     //关于态势标会5.0级以上的模糊查询
     @GetMapping("/queryName")
     public AjaxResult queryName(@RequestParam(value = "inputData", required = false) String inputData) {
-        LambdaQueryWrapper<EarthquakeList> wrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
         if (inputData != null && !inputData.trim().isEmpty()) {
             wrapper
-                    .like(EarthquakeList::getEarthquakeName, inputData)
+                    .like(EqList::getEarthquakeName, inputData)
                     .or()
-                    .like(EarthquakeList::getMagnitude, inputData)
+                    .like(EqList::getMagnitude, inputData)
                     .or()
                     .apply("TO_CHAR(occurrence_time, 'YYYY-MM-DD HH24:MI:SS') LIKE {0}", "%" + inputData + "%");
         }
-        List<EarthquakeList> resultList = earthquakeListService.list(wrapper);
+        List<EqList> resultList = eqListService.list(wrapper);
         return AjaxResult.success(resultList);
     }
 

@@ -4,6 +4,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.AssessmentJueceService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
@@ -17,9 +18,6 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,6 +48,9 @@ public class SeismicTableTriggerService {
 
     @Resource
     private YaanProvinceCityMapper yaanProvinceCityMapper;
+
+    @Resource
+    private AssessmentJueceService assessmentJueceService;
 
     //接入杜科的辅助决策报告
     @SneakyThrows
@@ -1716,14 +1717,22 @@ public class SeismicTableTriggerService {
         descriptionParagraph1.setFirstLineIndent(560); // 2个字符大约是560twips（1字符 = 280twips）
 
         // 构造文件路径
-        String fileName =  timePart + eqAddr + "发生" + eqMagnitude + "级地震（辅助决策信息一）.docx";
+        String fileName =  formattedTime + eqAddr + "发生" + eqMagnitude + "级地震（辅助决策信息一）.docx";
 //        String filePath = "C:/Users/Smile/Desktop/" + fileName;
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 
-        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+//        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+//                "/EqProduct/" + params.getEvent()
+//                + "/1/本地产品/灾情报告/"
+//                + fileName;
+        String sourceFile = "/EqProduct/" + params.getEvent()
+                + "/1/本地产品/灾情报告/"
+                + fileName;
+        String filePath = Constants.VBA_DOWNLOAD_PATH +
                 "/EqProduct/" + params.getEvent()
                 + "/1/本地产品/灾情报告/"
                 + fileName;
+        assessmentJueceService.saveAssessmentJuece(params, sourceFile, fileName);
 
         // 设置页面边距
         setPageMargins(document, filePath);

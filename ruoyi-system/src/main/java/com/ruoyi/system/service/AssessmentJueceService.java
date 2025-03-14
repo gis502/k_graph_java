@@ -10,7 +10,7 @@ import java.util.List;
 public interface AssessmentJueceService extends IService<AssessmentJuece>{
 
 
-    void saveAssessmentJuece(EqEventTriggerDTO params, String sourceFile);
+    void saveAssessmentJuece(EqEventTriggerDTO params, String sourceFile, String fileName);
 
     List<AssessmentJuece> eqEventOutputJueCeData(EqEventDTO dto);
 }

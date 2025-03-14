@@ -5,6 +5,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.entity.*;
 import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.AssessmentJueceService;
 import lombok.SneakyThrows;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -61,6 +62,9 @@ public class SismiceMergencyAssistanceService {
 
     @Resource
     private EarthquakeListMapper earthquakeListMapper;
+
+    @Resource
+    private AssessmentJueceService assessmentJueceService;
 
     // 函数计算公式
     // 计算 QX 的函数
@@ -652,10 +656,6 @@ public class SismiceMergencyAssistanceService {
         System.out.println("6 度以上的村（社区）数量：" + numberOfCommunityAbove6);   //K19
 
 
-        // 变量示例
-//        int numberOfCommunityAbove6 = 0; // 6 度及以上的行政村（社区）数量
-//        String formattedHouseholds = "1.53万户"; // 已格式化的户数
-//        String formattedPopulation = "2.35万人"; // 已格式化的常住人口
 
         // 生成 communityStatement
         String communityStatement;
@@ -2814,20 +2814,20 @@ public class SismiceMergencyAssistanceService {
 
 
         // 第十段正文内容
-        XWPFParagraph oneText10 = document.createParagraph();
-        oneText10.setAlignment(ParagraphAlignment.CENTER); // 居中对齐
-
-        // 设置段前间距为1.5倍行距，段后间距为0
-        oneText10.setSpacingBetween(1.2);// 设置1.2倍行距
-        oneText10.setSpacingBefore(0); // 段前1.5倍行距
-// oneText10.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
-        oneText10.setSpacingAfter(0); // 段后0行距
-
-        // 设置字体样式
-        XWPFRun newRun10 = oneText10.createRun();
-        newRun10.setText("地震影响场分布图"); // 设置文本内容
-        newRun10.setFontFamily("方正小标宋简体"); // 字体
-        newRun10.setFontSize(20); // 20号
+//        XWPFParagraph oneText10 = document.createParagraph();
+//        oneText10.setAlignment(ParagraphAlignment.CENTER); // 居中对齐
+//
+//        // 设置段前间距为1.5倍行距，段后间距为0
+//        oneText10.setSpacingBetween(1.2);// 设置1.2倍行距
+//        oneText10.setSpacingBefore(0); // 段前1.5倍行距
+//// oneText10.setSpacingBefore((int) (16 * 20 * 1.5)); // 段前1.5倍行距（注释掉的代码保持一致）
+//        oneText10.setSpacingAfter(0); // 段后0行距
+//
+//        // 设置字体样式
+//        XWPFRun newRun10 = oneText10.createRun();
+//        newRun10.setText("地震影响场分布图"); // 设置文本内容
+//        newRun10.setFontFamily("方正小标宋简体"); // 字体
+//        newRun10.setFontSize(20); // 20号
 
         // 空1行，仿宋_GB2312的16号字体，段落居中
         XWPFParagraph emptyParagraphSong5 = document.createParagraph();
@@ -2853,14 +2853,18 @@ public class SismiceMergencyAssistanceService {
 //        String filePath = "D:/桌面夹/桌面/demo/" + fileName;
 //        String filePath = "/data/image" + fileName;
         // 查询灾情报告图片的存储方式 D:\EqProduct\209c053a-44ad-4924-95b3-086dfce0b57e\1\本地产品\灾情报告
-
-        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+//        String filePath = Constants.PROMOTION_DOWNLOAD_PATH +
+////                "/EqProduct/" + params.getEvent()
+////                + "/1/本地产品/灾情报告/"
+////                + fileName;
+        String sourceFile = "/EqProduct/" + params.getEvent()
+                + "/1/本地产品/灾情报告/"
+                + fileName;
+        String filePath = Constants.VBA_DOWNLOAD_PATH +
                 "/EqProduct/" + params.getEvent()
                 + "/1/本地产品/灾情报告/"
                 + fileName;
-        String sourFile= "/EqProduct/" + params.getEvent()
-                + "/1/本地产品/灾情报告/"
-                + fileName;
+        assessmentJueceService.saveAssessmentJuece(params, sourceFile, fileName);
 
         // 设置页面边距
         setPageMargins(document,filePath);

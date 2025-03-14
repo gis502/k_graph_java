@@ -13,6 +13,8 @@ ruoyi:
   # 验证码类型 math 数字计算 char 字符验证
   captchaType: char
 
+
+
 amap:
   key: 7b0b64174ef6951cc6ee669de03e4f59
 
