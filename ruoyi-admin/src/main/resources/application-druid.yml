@@ -14,25 +14,12 @@ spring:
         driverClassName: org.postgresql.Driver
         druid:
 #             主库数据源
-#            master:
-#                 url: jdbc:postgresql://172.26.86.64:54329/yaan0118?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-#                 username: postgres
-#                 password: yaangis@2024
             master:
-                 url: jdbc:postgresql://47.92.216.173:7654/aky?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+                 url: jdbc:postgresql://39.106.228.188:5432/yaan_0325?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
                  username: postgres
-                 password: zhangsan
-#            master:
-
-#                url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-#                username: postgres
-#                password: root
+                 password: gisGIS502gis502502
             # 从库数据源
             slave:
-#                enabled: true
-#                url: jdbc:postgresql://47.92.216.173:7655/ruoyi?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
-#                username: postgres
-#                password: zhangsan
 #                 enabled: true
 #                 url: jdbc:postgresql://localhost:5432/yaan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
 #                 username: postgres
