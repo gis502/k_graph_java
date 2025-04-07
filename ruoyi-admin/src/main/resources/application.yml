@@ -25,6 +25,7 @@ server:
   servlet:
     # 应用的访问路径
     context-path: /
+  max-http-header-size: 32768
   tomcat:
     # tomcat的URI编码
     uri-encoding: UTF-8
@@ -36,6 +37,8 @@ server:
       # Tomcat启动初始化的线程数，默认值10
       min-spare: 100
     basedir: logistics/tomcat
+    relaxed-query-chars: '|,{,},[,],^,`,<,>,\'  # 允许的特殊字符
+    relaxed-path-chars: '|,{,},[,],^,`,<,>,\'   # 允许路径中的特殊字符
 
 # 日志配置
 logging:
@@ -94,7 +97,9 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
-
+  web:
+    resources:
+      add-mappings: false
 #MQTT客户端
 publish:
   mqtt:
@@ -170,4 +175,8 @@ xss:
 third-party:
   username: test
   password: Open#Api2025!
+
+#deepseek接口密钥
+api:
+  password: sk-ed3b110675514f96a50b5c39190739ac
 
