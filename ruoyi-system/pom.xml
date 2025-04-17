@@ -151,7 +151,16 @@
             <version>1.20.0</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.huaban</groupId>
+            <artifactId>jieba-analysis</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <!-- neo4j -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-neo4j</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

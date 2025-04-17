@@ -1,7 +1,10 @@
 package com.ruoyi.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ruoyi.system.domain.dto.EqEventDTO;
+import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.entity.EqList;
+import com.ruoyi.system.mapper.EqListMapper;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,9 @@ public class EarthquakeListServiceImpl extends ServiceImpl<EarthquakeListMapper,
 
     @Resource
     private EarthquakeListMapper earthquakeListMapper;
+
+    @Resource
+    private EqListMapper eqListMapper;
 
     @Override
     public List<String> getExcelUploadEarthquake() {

@@ -10,14 +10,21 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.system.domain.bto.QueryParams;
 import com.ruoyi.system.domain.dto.EqEventDTO;
+import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.dto.ResultEqListDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.IEqListService;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -35,6 +42,12 @@ import java.util.Map;
 @Service
 @Slf4j
 public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> implements IEqListService {
+
+    private final Neo4jClient neo4jClient;
+
+    public EqListServiceImpl(Neo4jClient neo4jClient) {
+        this.neo4jClient = neo4jClient;
+    }
 
     @Resource
     private EqListMapper eqListMapper;
@@ -225,6 +238,85 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         return eqList;
 
     }
+
+    private static final String PYTHON_API_URL = "http://localhost:5000/process";  // Python 服务 URL
+
+    public void addNewEq(EqEventTriggerDTO eqEventTriggerDTO) {
+
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Point point = geometryFactory.createPoint(new Coordinate(eqEventTriggerDTO.getLongitude(), eqEventTriggerDTO.getLatitude()));
+
+        EqList eqList = EqList.builder()
+                .eqid(eqEventTriggerDTO.getEvent())
+                .earthquakeName(eqEventTriggerDTO.getEqAddr())
+                .geom(point)
+                .intensity("")
+                .magnitude(String.valueOf(eqEventTriggerDTO.getEqMagnitude()))
+                .depth(eqEventTriggerDTO.getEqDepth().toString())
+                .occurrenceTime(LocalDateTime.parse(eqEventTriggerDTO.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))     //这里是上传dto时保存的地震时间
+                .eqType("Z")
+                .source("2")
+                .pac("")
+                .type("")
+                .isDeleted(0)
+                .build();
+
+        eqListMapper.insert(eqList);
+
+
+        String eqName = eqEventTriggerDTO.getEqAddr() + eqEventTriggerDTO.getEqMagnitude() + "级地震";
+        String eqid = eqList.getEqid();
+
+        // 八大分类节点
+        List<String> categories = List.of(
+                "地震震情信息", "地震灾情信息", "应急指挥协调信息",
+                "应急决策信息", "应急处置信息", "态势标绘",
+                "灾害现场动态信息", "社会反应动态信息"
+        );
+
+        // 1. 创建 eqName 节点
+        String createEqNameNode = String.format(
+                "MERGE (eq:Event {name: '%s', eqid: '%s'})", eqName, eqid
+        );
+        neo4jClient.query(createEqNameNode).run();
+
+        // 2. 创建“震后生成”节点
+        String createAfterNode = String.format(
+                "MERGE (after:Generate {name: '震后生成', eqid: '%s'})", eqid
+        );
+        neo4jClient.query(createAfterNode).run();
+
+        // 3. 创建 eqName ➡ 包含 ➡ 震后生成
+        String linkEqToAfter = String.format(
+                "MATCH (eq:Event {name: '%s', eqid: '%s'}), (after:Generate {name: '震后生成', eqid: '%s'}) " +
+                        "MERGE (eq)-[:包含 {eqid: '%s'}]->(after)", eqName, eqid, eqid, eqid
+        );
+        neo4jClient.query(linkEqToAfter).run();
+
+        // 4. 创建八大分类节点，并连接“震后生成”
+        for (String cat : categories) {
+            String createCatNode = String.format(
+                    "MERGE (c:Category {name: '%s', eqid: '%s'})", cat, eqid
+            );
+            neo4jClient.query(createCatNode).run();
+
+            String linkAfterToCat = String.format(
+                    "MATCH (after:Generate {name: '震后生成', eqid: '%s'}), (c:Category {name: '%s', eqid: '%s'}) " +
+                            "MERGE (after)-[:包含 {eqid: '%s'}]->(c)", eqid, cat, eqid, eqid
+            );
+            neo4jClient.query(linkAfterToCat).run();
+        }
+
+        System.out.println("✅ 图谱构建完成：" + eqName);
+
+
+
+
+
+    }
+
+
 
 
 }

@@ -1,10 +1,9 @@
 package com.ruoyi.web.controller.system;
 
+
 import org.neo4j.driver.types.Relationship;
 import org.springframework.data.neo4j.core.Neo4jClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +37,6 @@ public class GraphController {
                 })
                 .all());
     }
-
-
 }
 
 

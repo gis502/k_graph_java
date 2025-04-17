@@ -4,9 +4,7 @@ package com.ruoyi.web.controller.system;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.system.domain.dto.EqFormDto;
-import com.ruoyi.system.domain.dto.GeometryDTO;
-import com.ruoyi.system.domain.dto.ResultEqListDTO;
+import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.mapper.EqListMapper;
@@ -297,6 +295,11 @@ public class EarthquakeListController {
     public List<EarthquakeList> getNearbyEarthquakes(@RequestBody GeometryDTO geometryDTO) {
         Point point = geometryDTO.getPoint();
         return earthquakeListService.getEarthquakesWithinDistance(point, 1000.0);
+    }
+
+    @PostMapping("/addNewEq")
+    public void addNewEq(@RequestBody EqEventTriggerDTO eqEventTriggerDTO) {
+        eqListService.addNewEq(eqEventTriggerDTO);
     }
 
     @PostMapping("/addEq")

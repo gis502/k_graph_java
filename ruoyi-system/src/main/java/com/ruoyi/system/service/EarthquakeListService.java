@@ -1,5 +1,7 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.system.domain.dto.EqEventDTO;
+import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.locationtech.jts.geom.Geometry;
@@ -13,7 +15,6 @@ public interface EarthquakeListService extends IService<EarthquakeList>{
     List<EarthquakeList> getEarthquakesWithinDistance(Geometry point, double v);
 
     List<EarthquakeList> selectAllEq();
-
 
     List<EarthquakeList> getGeomById(String id);
 }
