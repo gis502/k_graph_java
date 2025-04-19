@@ -124,6 +124,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <!--rabbitmq-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <!--引入kafka依赖-->
         <dependency>
             <groupId>org.springframework.kafka</groupId>

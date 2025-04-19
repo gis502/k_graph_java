@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.annotation.RepeatSubmit;
+import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.system.domain.dto.AssessmentOutputDTO;
 import com.ruoyi.system.domain.dto.EqEventDTO;
 import com.ruoyi.system.domain.entity.AssessmentIntensity;
 import com.ruoyi.system.domain.entity.AssessmentOutput;
@@ -12,10 +14,13 @@ import com.ruoyi.system.mapper.AssessmentOutputMapper;
 import com.ruoyi.system.service.IAssessmentBatchService;
 import com.ruoyi.system.service.IAssessmentOutputService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author: xiaodemos
@@ -109,5 +114,13 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
         return outputList;
     }
 
+    
+
+    @RabbitListener(queues = "thematic.map")
+    public void receive(AssessmentOutputDTO dto) {
+        // 打印日志
+
+        log.info("rabbitmq 接收到 {}消息 ...",dto.getFileName());
+    }
 
 }

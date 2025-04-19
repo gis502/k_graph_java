@@ -21,7 +21,7 @@ amap:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 8081
   servlet:
     # 应用的访问路径
     context-path: /
@@ -100,6 +100,17 @@ spring:
   web:
     resources:
       add-mappings: false
+  # rabbitmq 配置
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: xiaodemos
+    password: 1234
+    #虚拟host 可以不设置,使用server默认host
+    virtual-host: /xiaodemos
+    #消息确认配置项
+    publisher-returns: true #确认消息已发送到队列(Queue)
+    publisher-confirm-type: correlated
 #MQTT客户端
 publish:
   mqtt:
