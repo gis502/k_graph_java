@@ -1,9 +1,13 @@
 package com.ruoyi.system.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 /**
  * @author: xiaodemos
@@ -44,6 +48,15 @@ public class AssessmentOutput {
     private String size; // 专题图尺寸（A3）
     @TableField(value = "type")
     private String type; // 产出类型（1:专题图，2：报告）
+    // 创建时间
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(fill = FieldFill.INSERT, value = "create_time")
+    private LocalDateTime createTime;
+
+    // 修改时间
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(fill = FieldFill.UPDATE, value = "update_time")
+    private LocalDateTime updateTime;
     @TableField(value = "is_deleted")
     private Integer isDeleted;
 

@@ -20,7 +20,7 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static com.ruoyi.common.constant.Constants.PROMOTION_INVOKE_URL_HEAD;
+import static com.ruoyi.common.constant.Constants.*;
 
 /**
  * @author: xiaodemos
@@ -55,7 +55,7 @@ public class ThirdPartyHttpClients {
         try {
 
 //            HttpPost httpPost = new HttpPost(http://10.16.7.69/zaisun+ "/api/open" + url);
-            HttpPost httpPost = new HttpPost(PROMOTION_INVOKE_URL_HEAD + "/api/open" + url);
+            HttpPost httpPost = new HttpPost(PROMOTION_INVOKE_URL_HEAD_NEW + "/api/open" + url);
 
             log.info("设置http post请求参数...");
 
@@ -137,9 +137,9 @@ public class ThirdPartyHttpClients {
 
             if (jsonBody != null) {
                 // 拼接URL，将参数添加到URL的查询部分
-                fullUrl = PROMOTION_INVOKE_URL_HEAD+"/api/open" + url + "?" + queryParams;
+                fullUrl = PROMOTION_INVOKE_URL_HEAD_NEW+"/api/open" + url + "?" + queryParams;
             } else {
-                fullUrl = PROMOTION_INVOKE_URL_HEAD+"/api/open" + url;
+                fullUrl = PROMOTION_INVOKE_URL_HEAD_NEW+"/api/open" + url;
             }
 
             HttpGet httpGet = new HttpGet(fullUrl);

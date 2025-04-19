@@ -1,19 +1,17 @@
 package com.ruoyi.system.service.impl;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.common.annotation.DataSource;
+import com.ruoyi.common.enums.DataSourceType;
+import com.ruoyi.common.exception.base.BaseException;
 import com.ruoyi.common.utils.bean.BeanUtils;
-import com.ruoyi.system.domain.bto.QueryParams;
-import com.ruoyi.system.domain.dto.EqEventDTO;
-import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
-import com.ruoyi.system.domain.dto.ResultEqListDTO;
-import com.ruoyi.system.domain.entity.EarthquakeList;
+import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.EqList;
+import com.ruoyi.system.domain.vo.ResultEqListVO;
 import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.IEqListService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +21,16 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author: xiaodemos
@@ -51,6 +50,9 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
     @Resource
     private EqListMapper eqListMapper;
+
+    @Resource
+    private RestTemplate restTemplate;
 
     /**
      * @param event 地震事件编码
@@ -303,6 +305,114 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         System.out.println(result);
     }
 
+    @Async
+    @Override
+    @Transactional  // 确保两者操作在同一个事务中
+    public void trigger(TriggerDTO triggerDTO) {
+
+        // 抛出异常
+        if (triggerDTO == null) {
+            throw new BaseException("地震参数有误");
+        }
+
+        // 获取授权
+        String authUrl = "http://localhost:8080/api/open/auth";
+        // 设置请求头
+        HttpHeaders authHeaders = new HttpHeaders();
+        authHeaders.set("Content-Type", "application/json");
+        // 设置请求体
+        JSONObject authBody = new JSONObject();
+        authBody.put("username", "admin");
+        authBody.put("password", "admin123");
+        HttpEntity<JSONObject> authEntity = new HttpEntity<>(authBody, authHeaders);
+        // 发送请求
+        ResponseEntity<String> authResponse = restTemplate.exchange(authUrl, HttpMethod.POST, authEntity, String.class);
+
+        // 抛出异常
+        if (authResponse.getStatusCode() != HttpStatus.OK) {
+            throw new BaseException("获取灾损评估接口授权失败");
+        }
+
+        // 获取token
+        String authResponseBody = authResponse.getBody();
+        JSONObject data = JSONObject.parseObject(authResponseBody);
+        String token = data.getString("token");
+
+        // 请求 trigger 接口
+        String triggerUrl = "http://localhost:8080/api/open/eq/trigger";
+        HttpHeaders baseHeaders = new HttpHeaders();
+        baseHeaders.set("Content-Type", "application/json");
+        baseHeaders.set("Authorization", "Bearer " + token);
+
+        // 设置请求体
+        JSONObject triggerBody = new JSONObject();
+        triggerBody.put("eqName", triggerDTO.getEqName());
+        triggerBody.put("eqAddr",  triggerDTO.getEqAddr());
+        triggerBody.put("eqTime", triggerDTO.getEqTime());
+        triggerBody.put("longitude", triggerDTO.getLongitude());
+        triggerBody.put("latitude", triggerDTO.getLatitude());
+        triggerBody.put("eqDepth", triggerDTO.getEqDepth());
+        triggerBody.put("magnitude", triggerDTO.getMagnitude());
+        triggerBody.put("eqType", triggerDTO.getEqType());
+
+        HttpEntity<JSONObject> triggerEntity = new HttpEntity<>(triggerBody, baseHeaders);
+        // 发送请求
+        ResponseEntity<String> triggerResponse = restTemplate.exchange(triggerUrl, HttpMethod.POST, triggerEntity, String.class);
+        String triggerResponseBody = triggerResponse.getBody();
+        log.info("触发地震：{}",triggerResponseBody);
+
+        // 获取从库最新的一条数据
+        String currentlyUrl = "http://localhost:8080/api/open/eq/currently";
+        HttpEntity<JSONObject> currentlyEntity = new HttpEntity<>(baseHeaders);
+        // 发送请求
+        ResponseEntity<String> currentlyResponse = restTemplate.exchange(currentlyUrl, HttpMethod.GET, currentlyEntity, String.class);
+        String currentlyResponseBody = currentlyResponse.getBody();
+        // 解析json
+        EqListResultDTO eqListResultDTO = parseJson(currentlyResponseBody, EqListResultDTO.class);
+        ResultEqListVO eqListVO = eqListResultDTO.getData();
+        log.info("最新地震：{}",eqListVO);
+
+        // 同步数据到主库
+        asyncMaster(eqListVO);
+    }
+
+    public void asyncMaster(ResultEqListVO eqListVO){
+
+        try{
+
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Point point = geometryFactory.createPoint(new Coordinate(eqListVO.getLongitude(), eqListVO.getLatitude()));
+
+            EqList eqList = EqList.builder()
+                    .eqid(eqListVO.getEqId())
+                    .earthquakeName(eqListVO.getEqAddr())
+                    .geom(point)
+                    .intensity(eqListVO.getIntensity().toString())
+                    .magnitude(String.valueOf(eqListVO.getMagnitude()))
+                    .depth(eqListVO.getEqDepth().toString())
+                    .occurrenceTime(LocalDateTime.parse(eqListVO.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                    .eqType(eqListVO.getEqType())
+                    .source("2")
+                    .pac("")
+                    .type("")
+                    .isDeleted(0)
+                    .build();
+
+            eqListMapper.insert(eqList);
+            log.info("✅ 同步到主表成功");
+
+            String eqName = eqListVO.getEqAddr() + eqListVO.getMagnitude() + "级地震";
+            String eqid = eqList.getEqid();
+
+            String result = pythonServiceClient.sendDataToPython(eqName, eqid);
+
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("同步到主表失败");
+            throw new BaseException("同步到主表失败");
+        }
+    }
 
     public static class pythonServiceClient {
 
@@ -322,6 +432,23 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
             // 获取并返回 Python 服务的响应
             return response.getBody();
+        }
+    }
+
+    /**
+     * 通用的 JSON 解析方法
+     * @param jsonBody 需要反序列化的 JSON 字符串
+     * @param clazz      目标类型的 Class 对象
+     * @param <T>        目标类型的类型参数
+     * @return 反序列化后的对象，如果解析失败则返回 null
+     */
+    public static  <T> T parseJson(String jsonBody, Class<T> clazz) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(jsonBody, clazz);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

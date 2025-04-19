@@ -46,8 +46,10 @@ public class IdentityAuthentication {
 
         // 以json格式传入参数
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("username", "test");
-        jsonObject.put("password", "Open#Api2025!");
+//        jsonObject.put("username", "test");
+//        jsonObject.put("password", "Open#Api2025!");
+        jsonObject.put("username", "admin");
+        jsonObject.put("password", "admin123");
 
         try {
             String res = httpClientService.doPost("", "/auth", jsonObject);
@@ -55,11 +57,11 @@ public class IdentityAuthentication {
             // 解析 JSON 字符串为 JSONObject
             JSONObject data = JSONObject.parseObject(res).getJSONObject("data");
 
-            int expireIn = data.getInteger("expire_in");
+            int expireIn = 29;
             String token = data.getString("token");
 
             log.info("获取到的token为：" + token);
-            log.info("token有效期为：" + expireIn);
+            log.info("token有效期为：{} 分钟" + expireIn);
 
             storeTokenInRedis(token, expireIn);
 
@@ -81,7 +83,7 @@ public class IdentityAuthentication {
      */
     private void storeTokenInRedis(String token, int expireIn) {
         // 设置 token 和过期时间
-        cacheTemplate.opsForValue().set("token", token, expireIn, TimeUnit.SECONDS);
+        cacheTemplate.opsForValue().set("token", token, expireIn, TimeUnit.MINUTES);
     }
 
     /**

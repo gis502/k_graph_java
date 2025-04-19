@@ -130,6 +130,7 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
+
         <!--引入kafka依赖-->
         <dependency>
             <groupId>org.springframework.kafka</groupId>
@@ -166,6 +167,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-neo4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
         </dependency>
     </dependencies>
 

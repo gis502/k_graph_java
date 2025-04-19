@@ -1,26 +1,26 @@
 package com.ruoyi.system.service.impl;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ruoyi.common.annotation.RepeatSubmit;
-import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.common.annotation.DataSource;
+import com.ruoyi.common.enums.DataSourceType;
+import com.ruoyi.common.exception.base.BaseException;
 import com.ruoyi.system.domain.dto.AssessmentOutputDTO;
 import com.ruoyi.system.domain.dto.EqEventDTO;
-import com.ruoyi.system.domain.entity.AssessmentIntensity;
 import com.ruoyi.system.domain.entity.AssessmentOutput;
-import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.mapper.AssessmentOutputMapper;
-import com.ruoyi.system.service.IAssessmentBatchService;
 import com.ruoyi.system.service.IAssessmentOutputService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author: xiaodemos
@@ -34,7 +34,8 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
 
     @Resource
     private AssessmentOutputMapper assessmentOutputMapper;
-
+    @Resource
+    private RestTemplate restTemplate;
 
     /**
      * @param event 事件编码
@@ -114,13 +115,59 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
         return outputList;
     }
 
-    
 
     @RabbitListener(queues = "thematic.map")
     public void receive(AssessmentOutputDTO dto) {
         // 打印日志
 
-        log.info("rabbitmq 接收到 {}消息 ...",dto.getFileName());
+        log.info("rabbitmq 接收到 {}消息 ...", dto.getFileName());
     }
 
+    @Override
+    public String gainMap(String eqId, String eqqueueId) {
+
+        // 抛出异常
+        if (eqId == null && eqqueueId == null) {
+            throw new BaseException("eqId 不能为空");
+        }
+
+        // 获取授权
+        String authUrl = "http://localhost:8080/api/open/auth";
+        // 设置请求头
+        HttpHeaders authHeaders = new HttpHeaders();
+        authHeaders.set("Content-Type", "application/json");
+        // 设置请求体
+        JSONObject authBody = new JSONObject();
+        authBody.put("username", "admin");
+        authBody.put("password", "admin123");
+        HttpEntity<JSONObject> authEntity = new HttpEntity<>(authBody, authHeaders);
+        // 发送请求
+        ResponseEntity<String> authResponse = restTemplate.exchange(authUrl, HttpMethod.POST, authEntity, String.class);
+        // 抛出异常
+        if (authResponse.getStatusCode() != HttpStatus.OK) {
+            throw new BaseException("获取灾损评估接口授权失败");
+        }
+
+        // 获取token
+        String authResponseBody = authResponse.getBody();
+        JSONObject data = JSONObject.parseObject(authResponseBody);
+        String token = data.getString("token");
+
+        // 请求 专题图 接口
+        String outputUrl = "http://localhost:8080/api/open/eq/getMap";
+        HttpHeaders baseHeaders = new HttpHeaders();
+        baseHeaders.set("Content-Type", "application/json");
+        baseHeaders.set("Authorization", "Bearer " + token);
+
+        // 设置请求体
+        JSONObject outputBody = new JSONObject();
+        outputBody.put("eqId", eqId);
+        outputBody.put("eqqueueId", eqqueueId);
+
+        HttpEntity<JSONObject> outputEntity = new HttpEntity<>(outputBody, baseHeaders);
+        // 发送请求
+        ResponseEntity<String> outputResponse = restTemplate.exchange(outputUrl, HttpMethod.POST, outputEntity, String.class);
+
+        return outputResponse.getBody();
+    }
 }

@@ -28,13 +28,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.ruoyi.common.enums.BusinessType;
+
 @Validated
 @RestController
 @RequestMapping("/system")
 public class EarthquakeListController {
     @Resource
     private EarthquakeListService earthquakeListService;
-
 
     @Resource
     private IEqListService eqListService;
@@ -46,7 +46,6 @@ public class EarthquakeListController {
         List<String> data = earthquakeListService.getExcelUploadEarthquake();
         return data;
     }
-
 
 
 //    @PostMapping("/addEq")
@@ -144,6 +143,7 @@ public class EarthquakeListController {
                 .orderByDesc(EarthquakeList::getOccurrenceTime);
         return earthquakeListService.list(QueryWrapper);
     }
+
     @GetMapping("/queryEqList")
     public List<EqList> queryEqList(@RequestParam(value = "queryValue", required = false) String queryValue) {
         System.out.println(queryValue);
@@ -174,7 +174,7 @@ public class EarthquakeListController {
     public List<EarthquakeList> fromEq(@RequestBody EqFormDto queryDTO) {
         LambdaQueryWrapper<EarthquakeList> queryWrapper = new LambdaQueryWrapper<>();
 
-        System.out.println("55555555555555"+ queryDTO);
+        System.out.println("55555555555555" + queryDTO);
         // 按名称模糊查询
         if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
             queryWrapper.like(EarthquakeList::getEarthquakeName, queryDTO.getEarthquakeName());
@@ -189,12 +189,11 @@ public class EarthquakeListController {
 //            OffsetDateTime endTime = convertToOffsetDateTime(queryDTO.getEndTime());
 
 
-
             //做了时区转换，向前一天   eg:31---->30
 //            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
 //            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
 
-            queryWrapper.between(EarthquakeList::getOccurrenceTime,queryDTO.getStartTime() ,queryDTO.getEndTime() );
+            queryWrapper.between(EarthquakeList::getOccurrenceTime, queryDTO.getStartTime(), queryDTO.getEndTime());
         }
 
         // 验证并添加震级筛选条件
@@ -222,11 +221,12 @@ public class EarthquakeListController {
 
         return earthquakeListService.list(queryWrapper);
     }
+
     @PostMapping("/fromEqList")
     public List<EqList> fromEqList(@RequestBody EqFormDto queryDTO) {
         LambdaQueryWrapper<EqList> queryWrapper = new LambdaQueryWrapper<>();
 
-        System.out.println("55555555555555"+ queryDTO);
+        System.out.println("55555555555555" + queryDTO);
         // 按名称模糊查询
         if (queryDTO.getEarthquakeName() != null && !queryDTO.getEarthquakeName().isEmpty()) {
             queryWrapper.like(EqList::getEarthquakeName, queryDTO.getEarthquakeName());
@@ -241,12 +241,11 @@ public class EarthquakeListController {
 //            OffsetDateTime endTime = convertToOffsetDateTime(queryDTO.getEndTime());
 
 
-
             //做了时区转换，向前一天   eg:31---->30
 //            LocalDateTime startTime = LocalDateTime.parse(queryDTO.getStartTime(), formatter);
 //            LocalDateTime endTime = LocalDateTime.parse(queryDTO.getEndTime(), formatter);
 
-            queryWrapper.between(EqList::getOccurrenceTime,queryDTO.getStartTime() ,queryDTO.getEndTime() );
+            queryWrapper.between(EqList::getOccurrenceTime, queryDTO.getStartTime(), queryDTO.getEndTime());
         }
 
         // 验证并添加震级筛选条件
@@ -274,6 +273,7 @@ public class EarthquakeListController {
 
         return eqListService.list(queryWrapper);
     }
+
     // 辅助方法，用于检查是否为有效数值
     private boolean isValidNumeric(String value) {
         return value != null && !value.trim().isEmpty() && value.matches("-?\\d+(\\.\\d+)?");
@@ -295,6 +295,18 @@ public class EarthquakeListController {
     public List<EarthquakeList> getNearbyEarthquakes(@RequestBody GeometryDTO geometryDTO) {
         Point point = geometryDTO.getPoint();
         return earthquakeListService.getEarthquakesWithinDistance(point, 1000.0);
+    }
+
+
+    @PostMapping("/trigger")
+    public AjaxResult trigger(@RequestBody TriggerDTO triggerDTO) {
+        try {
+            eqListService.trigger(triggerDTO);
+            return AjaxResult.success("地震启动成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AjaxResult.error("地震启动失败");
+        }
     }
 
     @PostMapping("/addNewEq")
@@ -359,7 +371,6 @@ public class EarthquakeListController {
         }
 
 
-
         // 创建 GeometryFactory
         GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -411,6 +422,7 @@ public class EarthquakeListController {
     public List<EarthquakeList> getGeomById(@RequestParam(value = "id") String id) {
         return earthquakeListService.getGeomById(id);
     }
+
     @GetMapping("getGeomByEqListId")
     public List<EqList> getGeomByEqListId(@RequestParam(value = "id") String id) {
         QueryWrapper<EqList> eqListQueryWrapper = new QueryWrapper<>();

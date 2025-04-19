@@ -15,7 +15,7 @@ import com.ruoyi.common.enums.DataSourceType;
  *
  * @author ruoyi
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited

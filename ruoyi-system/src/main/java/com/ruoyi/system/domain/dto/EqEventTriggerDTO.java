@@ -32,6 +32,8 @@ public class EqEventTriggerDTO {
     private String eqType;  //地震类型（Z正式，Y演练，T测试）
 
 
+
+
  // To convert the DTO to JSONObject
     public JSONObject toJSONObject() {
         // Create a JSONObject using FastJSON

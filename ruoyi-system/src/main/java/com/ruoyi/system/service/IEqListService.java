@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.system.domain.dto.EqEventTriggerDTO;
+import com.ruoyi.system.domain.dto.TriggerDTO;
 import com.ruoyi.system.domain.entity.EqList;
 
 import java.time.LocalDateTime;
@@ -13,4 +14,6 @@ public interface IEqListService extends IService<EqList> {
     String findLastNomalEventTime();
 
     void addNewEq(EqEventTriggerDTO eqEventTriggerDTO);
+
+    void trigger(TriggerDTO triggerDTO);
 }

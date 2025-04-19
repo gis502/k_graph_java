@@ -177,6 +177,7 @@ public class Constants
     //
     public static final String VBA_DOWNLOAD_PATH = "/juece";
     public static final String PROMOTION_INVOKE_URL_HEAD = "http://10.16.7.69/zaisun";
+    public static final String PROMOTION_INVOKE_URL_HEAD_NEW = "http://localhost:8080";
 
 
     // 部署了换这个地址
