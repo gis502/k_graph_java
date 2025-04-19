@@ -89,7 +89,7 @@ public class IdentityAuthentication {
      * @date: 2024/11/22 12:41
      * @description: 每五分钟执行一次定时任务，刷新token
      */
-    @Scheduled(fixedRate = 300000)
+//    @Scheduled(fixedRate = 300000)
     public void scheduleTokenRefresh() {
 
         log.info("Scheduled task started: refreshing token...");

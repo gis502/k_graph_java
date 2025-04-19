@@ -106,7 +106,7 @@ public class DatabaseBackup {
                 .body(resource);
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
     public void backupAndDownload() {
         String backupFileName = DB_NAME + "_backup_" + System.currentTimeMillis() + ".backup";
         String backupFilePath = BACKUP_PATH + backupFileName;

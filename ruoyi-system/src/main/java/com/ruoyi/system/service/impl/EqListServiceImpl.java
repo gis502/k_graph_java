@@ -262,61 +262,67 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
                 .isDeleted(0)
                 .build();
 
-        eqListMapper.insert(eqList);
+//        eqListMapper.insert(eqList);
 
 
         String eqName = eqEventTriggerDTO.getEqAddr() + eqEventTriggerDTO.getEqMagnitude() + "级地震";
         String eqid = eqList.getEqid();
-
-        // 八大分类节点
-        List<String> categories = List.of(
-                "地震震情信息", "地震灾情信息", "应急指挥协调信息",
-                "应急决策信息", "应急处置信息", "态势标绘",
-                "灾害现场动态信息", "社会反应动态信息"
-        );
-
-        // 1. 创建 eqName 节点
-        String createEqNameNode = String.format(
-                "MERGE (eq:Event {name: '%s', eqid: '%s'})", eqName, eqid
-        );
-        neo4jClient.query(createEqNameNode).run();
-
-        // 2. 创建“震后生成”节点
-        String createAfterNode = String.format(
-                "MERGE (after:Generate {name: '震后生成', eqid: '%s'})", eqid
-        );
-        neo4jClient.query(createAfterNode).run();
-
-        // 3. 创建 eqName ➡ 包含 ➡ 震后生成
-        String linkEqToAfter = String.format(
-                "MATCH (eq:Event {name: '%s', eqid: '%s'}), (after:Generate {name: '震后生成', eqid: '%s'}) " +
-                        "MERGE (eq)-[:包含 {eqid: '%s'}]->(after)", eqName, eqid, eqid, eqid
-        );
-        neo4jClient.query(linkEqToAfter).run();
-
-        // 4. 创建八大分类节点，并连接“震后生成”
-        for (String cat : categories) {
-            String createCatNode = String.format(
-                    "MERGE (c:Category {name: '%s', eqid: '%s'})", cat, eqid
-            );
-            neo4jClient.query(createCatNode).run();
-
-            String linkAfterToCat = String.format(
-                    "MATCH (after:Generate {name: '震后生成', eqid: '%s'}), (c:Category {name: '%s', eqid: '%s'}) " +
-                            "MERGE (after)-[:包含 {eqid: '%s'}]->(c)", eqid, cat, eqid, eqid
-            );
-            neo4jClient.query(linkAfterToCat).run();
-        }
-
-        System.out.println("✅ 图谱构建完成：" + eqName);
+//
+//        // 八大分类节点
+//        List<String> categories = List.of(
+//                "地震震情信息", "地震灾情信息", "应急指挥协调信息",
+//                "应急决策信息", "应急处置信息", "态势标绘",
+//                "灾害现场动态信息", "社会反应动态信息"
+//        );
+//
+//        // 1. 创建 eqName 节点
+//        String createEqNameNode = String.format(
+//                "MERGE (eq:Event {name: '%s', eqid: '%s'})", eqName, eqid
+//        );
+//        neo4jClient.query(createEqNameNode).run();
+//
+//        // 2. 创建八大分类节点，并连接“震后生成”
+//        for (String cat : categories) {
+//            String createCatNode = String.format(
+//                    "MERGE (c:Category {name: '%s', eqid: '%s'})", cat, eqid
+//            );
+//            neo4jClient.query(createCatNode).run();
+//
+//            String linkAfterToCat = String.format(
+//                    "MATCH (eq:Event {name: '%s', eqid: '%s'}), (c:Category {name: '%s', eqid: '%s'}) " +
+//                            "MERGE (eq)-[:包含 {eqid: '%s'}]->(c)", eqName, eqid, cat, eqid, eqid
+//            );
+//            neo4jClient.query(linkAfterToCat).run();
+//        }
+//
+//        System.out.println("✅ 图谱构建完成：" + eqName);
 
 
+        String result = pythonServiceClient.sendDataToPython(eqName, eqid);
 
-
-
+        System.out.println(result);
     }
 
 
+    public static class pythonServiceClient {
 
+        private static final String PYTHON_API_URL = "http://localhost:5000/process";  // Python 服务 URL
+
+        public static String sendDataToPython(String eqName, String eqid) {
+            // 构建请求体，发送数据到 Python 服务
+            String requestData = String.format("{\"eqName\": \"%s\", \"eqid\": \"%s\"}", eqName, eqid);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);  // 设置内容类型为 JSON
+
+            HttpEntity<String> entity = new HttpEntity<>(requestData, headers);  // 包装请求体和头部信息
+
+            // 创建 RestTemplate 发送 HTTP 请求
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(PYTHON_API_URL, HttpMethod.POST, entity, String.class);
+
+            // 获取并返回 Python 服务的响应
+            return response.getBody();
+        }
+    }
 
 }

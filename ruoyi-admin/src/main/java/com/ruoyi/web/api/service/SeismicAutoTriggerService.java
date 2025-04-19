@@ -48,7 +48,7 @@ public class SeismicAutoTriggerService {
      * @date: 2025/1/11 16:43
      * @description: 自动触发地震，每2分钟进行正式地震数据的同步
      */
-    @Scheduled(fixedRate = 120000)  // 2分钟同步一次数据
+//    @Scheduled(fixedRate = 120000)  // 2分钟同步一次数据
     public void autoGainSeismicData() {
 
         log.info("开始进行同步正式地震数据...");
