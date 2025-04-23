@@ -52,4 +52,7 @@ public class ResultEqListVO {
     @JsonProperty("latitude")
     private Double latitude;
 
+    @JsonProperty("fullName")
+    private String fullName;
+
 }

@@ -72,6 +72,6 @@ spring:
     uri: bolt://localhost:7687
     authentication:
       username: neo4j
-      password: gisGIS502
+      password: neo4j123456
     pool:
       metrics-enabled: true

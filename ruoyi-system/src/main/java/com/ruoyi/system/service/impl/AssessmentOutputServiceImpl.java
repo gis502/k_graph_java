@@ -115,14 +115,6 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
         return outputList;
     }
 
-
-    @RabbitListener(queues = "thematic.map")
-    public void receive(AssessmentOutputDTO dto) {
-        // 打印日志
-
-        log.info("rabbitmq 接收到 {}消息 ...", dto.getFileName());
-    }
-
     @Override
     public String gainMap(String eqId, String eqqueueId) {
 
@@ -169,5 +161,6 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
         ResponseEntity<String> outputResponse = restTemplate.exchange(outputUrl, HttpMethod.POST, outputEntity, String.class);
 
         return outputResponse.getBody();
+
     }
 }

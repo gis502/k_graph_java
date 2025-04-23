@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.http.*;
+import org.springframework.integration.annotation.Gateway;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -53,6 +54,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
     @Resource
     private RestTemplate restTemplate;
+    private static final String PYTHON_API_URL = "http://localhost:5000/process";  // Python 服务 URL
 
     /**
      * @param event 地震事件编码
@@ -89,7 +91,6 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         wrapper.orderByDesc(EqList::getOccurrenceTime);
 
         List<EqList> eqLists = eqListMapper.selectList(wrapper);
-
         List<ResultEqListDTO> dtos = new ArrayList<>(); //创建Dto对象
 
         for (EqList record : eqLists) {
@@ -241,7 +242,6 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
     }
 
-    private static final String PYTHON_API_URL = "http://localhost:5000/process";  // Python 服务 URL
 
     public void addNewEq(EqEventTriggerDTO eqEventTriggerDTO) {
 
@@ -300,14 +300,12 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 //        System.out.println("✅ 图谱构建完成：" + eqName);
 
 
-        String result = pythonServiceClient.sendDataToPython(eqName, eqid);
+        sendDataToPython(eqName, eqid);
 
-        System.out.println(result);
     }
 
     @Async
     @Override
-    @Transactional  // 确保两者操作在同一个事务中
     public void trigger(TriggerDTO triggerDTO) {
 
         // 抛出异常
@@ -347,7 +345,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         // 设置请求体
         JSONObject triggerBody = new JSONObject();
         triggerBody.put("eqName", triggerDTO.getEqName());
-        triggerBody.put("eqAddr",  triggerDTO.getEqAddr());
+        triggerBody.put("eqAddr", triggerDTO.getEqAddr());
         triggerBody.put("eqTime", triggerDTO.getEqTime());
         triggerBody.put("longitude", triggerDTO.getLongitude());
         triggerBody.put("latitude", triggerDTO.getLatitude());
@@ -359,7 +357,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         // 发送请求
         ResponseEntity<String> triggerResponse = restTemplate.exchange(triggerUrl, HttpMethod.POST, triggerEntity, String.class);
         String triggerResponseBody = triggerResponse.getBody();
-        log.info("触发地震：{}",triggerResponseBody);
+        log.info("触发地震：{}", triggerResponseBody);
 
         // 获取从库最新的一条数据
         String currentlyUrl = "http://localhost:8080/api/open/eq/currently";
@@ -370,22 +368,26 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         // 解析json
         EqListResultDTO eqListResultDTO = parseJson(currentlyResponseBody, EqListResultDTO.class);
         ResultEqListVO eqListVO = eqListResultDTO.getData();
-        log.info("最新地震：{}",eqListVO);
+        eqListVO.setFullName(triggerDTO.getFullName());
+        log.info("最新地震：{}", eqListVO);
 
         // 同步数据到主库
         asyncMaster(eqListVO);
     }
 
-    public void asyncMaster(ResultEqListVO eqListVO){
+    public void asyncMaster(ResultEqListVO eqListVO) {
 
-        try{
+        try {
 
             GeometryFactory geometryFactory = new GeometryFactory();
             Point point = geometryFactory.createPoint(new Coordinate(eqListVO.getLongitude(), eqListVO.getLatitude()));
 
             EqList eqList = EqList.builder()
                     .eqid(eqListVO.getEqId())
+                    .eqqueueId(eqListVO.getEqqueueId())
                     .earthquakeName(eqListVO.getEqAddr())
+                    .earthquakeFullName(eqListVO.getEqFullName())
+                    .eqAddr(eqListVO.getEqAddr())
                     .geom(point)
                     .intensity(eqListVO.getIntensity().toString())
                     .magnitude(String.valueOf(eqListVO.getMagnitude()))
@@ -393,20 +395,24 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
                     .occurrenceTime(LocalDateTime.parse(eqListVO.getEqTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                     .eqType(eqListVO.getEqType())
                     .source("2")
+                    .eqAddrCode("")
+                    .townCode("")
                     .pac("")
                     .type("")
                     .isDeleted(0)
                     .build();
 
-            eqListMapper.insert(eqList);
-            log.info("✅ 同步到主表成功");
+            int inserted = eqListMapper.insert(eqList);
+            if (inserted > 0){
 
-            String eqName = eqListVO.getEqAddr() + eqListVO.getMagnitude() + "级地震";
+                log.info("✅ 同步到主表成功");
+            }
+
+            String eqName = eqListVO.getFullName();
             String eqid = eqList.getEqid();
 
-            String result = pythonServiceClient.sendDataToPython(eqName, eqid);
+            sendDataToPython(eqName, eqid);
 
-            System.out.println(result);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("同步到主表失败");
@@ -414,35 +420,35 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         }
     }
 
-    public static class pythonServiceClient {
+    public void sendDataToPython(String eqName, String eqid) {
+        // 构建请求体，发送数据到 Python 服务
 
-        private static final String PYTHON_API_URL = "http://localhost:5000/process";  // Python 服务 URL
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("fullName", eqName);
+        requestBody.put("eqid", eqid);
 
-        public static String sendDataToPython(String eqName, String eqid) {
-            // 构建请求体，发送数据到 Python 服务
-            String requestData = String.format("{\"eqName\": \"%s\", \"eqid\": \"%s\"}", eqName, eqid);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);  // 设置内容类型为 JSON
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);  // 设置内容类型为 JSON
 
-            HttpEntity<String> entity = new HttpEntity<>(requestData, headers);  // 包装请求体和头部信息
+        HttpEntity<JSONObject> entity = new HttpEntity<>(requestBody, headers);  // 包装请求体和头部信息
 
-            // 创建 RestTemplate 发送 HTTP 请求
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.exchange(PYTHON_API_URL, HttpMethod.POST, entity, String.class);
+        // 创建 RestTemplate 发送 HTTP 请求
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(PYTHON_API_URL, HttpMethod.POST, entity, String.class);
 
-            // 获取并返回 Python 服务的响应
-            return response.getBody();
-        }
+        // 获取并返回 Python 服务的响应
+        System.out.println(response.getBody());
     }
+
 
     /**
      * 通用的 JSON 解析方法
      * @param jsonBody 需要反序列化的 JSON 字符串
-     * @param clazz      目标类型的 Class 对象
-     * @param <T>        目标类型的类型参数
+     * @param clazz    目标类型的 Class 对象
+     * @param <T>      目标类型的类型参数
      * @return 反序列化后的对象，如果解析失败则返回 null
      */
-    public static  <T> T parseJson(String jsonBody, Class<T> clazz) {
+    public static <T> T parseJson(String jsonBody, Class<T> clazz) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(jsonBody, clazz);
