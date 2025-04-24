@@ -69,9 +69,9 @@ spring:
             multi-statement-allow: true
   # neo4j数据库配置
   neo4j:
-    uri: bolt://localhost:7687
-    authentication:
-      username: neo4j
-      password: neo4j123456
+    uri: bolt://39.106.228.188:7687
+#    authentication:
+#      username: neo4j
+#      password: neo4j123456
     pool:
       metrics-enabled: true

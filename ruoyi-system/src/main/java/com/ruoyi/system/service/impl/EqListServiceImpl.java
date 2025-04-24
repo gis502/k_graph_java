@@ -9,9 +9,11 @@ import com.ruoyi.common.annotation.DataSource;
 import com.ruoyi.common.enums.DataSourceType;
 import com.ruoyi.common.exception.base.BaseException;
 import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.system.domain.CloudWords;
 import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.EqList;
 import com.ruoyi.system.domain.vo.ResultEqListVO;
+import com.ruoyi.system.mapper.CloudWordsMapper;
 import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.IEqListService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,9 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
     public EqListServiceImpl(Neo4jClient neo4jClient) {
         this.neo4jClient = neo4jClient;
     }
+
+    @Resource
+    private CloudWordsMapper cloudWordsMapper;
 
     @Resource
     private EqListMapper eqListMapper;
@@ -403,7 +408,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
                     .build();
 
             int inserted = eqListMapper.insert(eqList);
-            if (inserted > 0){
+            if (inserted > 0) {
 
                 log.info("✅ 同步到主表成功");
             }
@@ -437,12 +442,24 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         ResponseEntity<String> response = restTemplate.exchange(PYTHON_API_URL, HttpMethod.POST, entity, String.class);
 
         // 获取并返回 Python 服务的响应
-        System.out.println(response.getBody());
+        getCloudWords(response.getBody(), eqid);
     }
 
+    public void getCloudWords(String content, String eqid) {
+        // 直接保存到数据库中，eqid、eqqueueid、result
+        CloudWords cloudWords = new CloudWords();
+        cloudWords.setEqid(eqid);
+        cloudWords.setEqqueueId(eqid + "01");
+        cloudWords.setResult(content);
+        int inserted = cloudWordsMapper.insert(cloudWords);
+        if (inserted > 0){
+            log.info("✅ 词云插入数据库成功");
+        }
+    }
 
     /**
      * 通用的 JSON 解析方法
+     *
      * @param jsonBody 需要反序列化的 JSON 字符串
      * @param clazz    目标类型的 Class 对象
      * @param <T>      目标类型的类型参数

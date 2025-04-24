@@ -1,19 +1,31 @@
 package com.ruoyi.web.controller.system;
 
 
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.system.domain.CloudWords;
 import com.ruoyi.system.domain.dto.*;
 import com.ruoyi.system.domain.entity.EarthquakeList;
 import com.ruoyi.system.domain.entity.EqList;
+import com.ruoyi.system.domain.vo.ResultEqListVO;
+import com.ruoyi.system.mapper.CloudWordsMapper;
 import com.ruoyi.system.mapper.EqListMapper;
+import com.ruoyi.system.service.CloudWordsService;
 import com.ruoyi.system.service.EarthquakeListService;
 import com.ruoyi.system.service.IEqListService;
+import com.ruoyi.system.service.impl.CloudWordsServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
@@ -28,7 +40,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.ruoyi.common.enums.BusinessType;
+import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/system")
@@ -40,6 +54,11 @@ public class EarthquakeListController {
     private IEqListService eqListService;
     @Resource
     private EqListMapper eqListMapper;
+
+    @Resource
+    private RestTemplate restTemplate;
+    @Resource
+    private CloudWordsMapper cloudWordsService;
 
     @GetMapping("/getExcelUploadEarthquake")
     public List<String> selectEarthquakeList() {
@@ -444,6 +463,24 @@ public class EarthquakeListController {
         }
         List<EqList> resultList = eqListService.list(wrapper);
         return AjaxResult.success(resultList);
+    }
+
+
+    @GetMapping("/cloudword")
+    public AjaxResult getRecentlyEqCloud(@RequestParam("eqid") String eqid) {
+
+         QueryWrapper wrapper = new QueryWrapper();
+         wrapper.eq("eqid", eqid);
+        return AjaxResult.success(cloudWordsService.selectList(wrapper));
+    }
+    public static <T> T parseJson(String jsonBody, Class<T> clazz) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(jsonBody, clazz);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
