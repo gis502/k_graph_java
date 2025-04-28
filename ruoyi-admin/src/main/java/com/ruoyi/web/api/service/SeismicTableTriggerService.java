@@ -1741,10 +1741,7 @@ public class SeismicTableTriggerService {
         String sourceFile = "/EqProduct/" + params.getEvent()
                 + "/1/本地产品/灾情报告/"
                 + fileName;
-        String filePath = Constants.VBA_DOWNLOAD_PATH +
-                "/EqProduct/" + params.getEvent()
-                + "/1/本地产品/灾情报告/"
-                + fileName;
+        String filePath = Constants.PROMOTION_DOWNLOAD_PATH + "/辅助决策/" + "/灾情报告/" + fileName;
         assessmentJueceService.saveAssessmentJuece(params, sourceFile, fileName);
 
         // 设置页面边距
