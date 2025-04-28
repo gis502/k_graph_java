@@ -328,6 +328,17 @@ public class EarthquakeListController {
         }
     }
 
+    @PostMapping("/autoTrigger")
+    public AjaxResult autoTrigger() {
+        try {
+            eqListService.autoTrigger();
+            return AjaxResult.success("地震自动启动成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AjaxResult.error("地震自动启动失败");
+        }
+     }
+
     @PostMapping("/addNewEq")
     public void addNewEq(@RequestBody EqEventTriggerDTO eqEventTriggerDTO) {
         eqListService.addNewEq(eqEventTriggerDTO);
@@ -464,6 +475,7 @@ public class EarthquakeListController {
         List<EqList> resultList = eqListService.list(wrapper);
         return AjaxResult.success(resultList);
     }
+
 
 
     @GetMapping("/cloudword")

@@ -2,12 +2,17 @@ package com.ruoyi.system.service.impl;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ruoyi.common.annotation.DataSource;
 import com.ruoyi.common.enums.DataSourceType;
 import com.ruoyi.common.exception.base.BaseException;
+import com.ruoyi.common.utils.UniqueComparedUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.system.domain.CloudWords;
 import com.ruoyi.system.domain.dto.*;
@@ -16,6 +21,8 @@ import com.ruoyi.system.domain.vo.ResultEqListVO;
 import com.ruoyi.system.mapper.CloudWordsMapper;
 import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.IEqListService;
+import com.ruoyi.system.service.ISysDictTypeService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -25,15 +32,20 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.http.*;
 import org.springframework.integration.annotation.Gateway;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static com.ruoyi.common.utils.UniqueComparedUtils.generateHash;
 
 /**
  * @author: xiaodemos
@@ -60,6 +72,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
     @Resource
     private RestTemplate restTemplate;
     private static final String PYTHON_API_URL = "http://localhost:5000/process";  // Python 服务 URL
+    private static final String LISTENER_URL = "http://localhost:5000/auto_fetch_earthquake_data";
 
     /**
      * @param event 地震事件编码
@@ -91,14 +104,14 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
      */
     public List<ResultEqListDTO> eqEventGetList() {
 
-        LambdaQueryWrapper<EqList> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(EqList::getIsDeleted, 0);
-        wrapper.orderByDesc(EqList::getOccurrenceTime);
+        QueryWrapper<EqList> wrapper = new QueryWrapper<>();
+        wrapper.eq("is_deleted", 0);
+        wrapper.orderByDesc("occurrence_time");
 
         List<EqList> eqLists = eqListMapper.selectList(wrapper);
         List<ResultEqListDTO> dtos = new ArrayList<>(); //创建Dto对象
 
-        for (EqList record : eqLists) {
+        for (EqList record: eqLists) {
 
             Geometry geom = record.getGeom();
             double longitude = geom.getCoordinate().x;
@@ -309,10 +322,9 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
     }
 
-    @Async
+    @SneakyThrows
     @Override
     public void trigger(TriggerDTO triggerDTO) {
-
         // 抛出异常
         if (triggerDTO == null) {
             throw new BaseException("地震参数有误");
@@ -364,20 +376,29 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         String triggerResponseBody = triggerResponse.getBody();
         log.info("触发地震：{}", triggerResponseBody);
 
-        // 获取从库最新的一条数据
-        String currentlyUrl = "http://localhost:8080/api/open/eq/currently";
-        HttpEntity<JSONObject> currentlyEntity = new HttpEntity<>(baseHeaders);
-        // 发送请求
-        ResponseEntity<String> currentlyResponse = restTemplate.exchange(currentlyUrl, HttpMethod.GET, currentlyEntity, String.class);
-        String currentlyResponseBody = currentlyResponse.getBody();
-        // 解析json
-        EqListResultDTO eqListResultDTO = parseJson(currentlyResponseBody, EqListResultDTO.class);
-        ResultEqListVO eqListVO = eqListResultDTO.getData();
-        eqListVO.setFullName(triggerDTO.getFullName());
-        log.info("最新地震：{}", eqListVO);
 
-        // 同步数据到主库
-        asyncMaster(eqListVO);
+        while(true){
+
+            // 获取从库最新的一条数据
+            String currentlyUrl = "http://localhost:8080/api/open/eq/currently";
+            HttpEntity<JSONObject> currentlyEntity = new HttpEntity<>(baseHeaders);
+            // 发送请求
+            ResponseEntity<String> currentlyResponse = restTemplate.exchange(currentlyUrl, HttpMethod.GET, currentlyEntity, String.class);
+            String currentlyResponseBody = currentlyResponse.getBody();
+            // 解析json
+            EqListResultDTO eqListResultDTO = parseJson(currentlyResponseBody, EqListResultDTO.class);
+            ResultEqListVO eqListVO = eqListResultDTO.getData();
+            if (eqListVO != null){
+                eqListVO.setFullName(triggerDTO.getFullName());
+                log.info("最新地震：{}", eqListVO);
+
+                // 同步数据到主库
+                asyncMaster(eqListVO);
+                break;
+            }
+            Thread.sleep(5000);
+            System.out.println("eqlist为空！！！！！！！！！");
+        }
     }
 
     public void asyncMaster(ResultEqListVO eqListVO) {
@@ -409,14 +430,12 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
             int inserted = eqListMapper.insert(eqList);
             if (inserted > 0) {
-
                 log.info("✅ 同步到主表成功");
+                String eqName = eqListVO.getFullName();
+                String eqid = eqListVO.getEqId();
+                sendDataToPython(eqName, eqid);
+
             }
-
-            String eqName = eqListVO.getFullName();
-            String eqid = eqList.getEqid();
-
-            sendDataToPython(eqName, eqid);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -442,7 +461,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         ResponseEntity<String> response = restTemplate.exchange(PYTHON_API_URL, HttpMethod.POST, entity, String.class);
 
         // 获取并返回 Python 服务的响应
-        getCloudWords(response.getBody(), eqid);
+        //getCloudWords(response.getBody(), eqid);
     }
 
     public void getCloudWords(String content, String eqid) {
@@ -452,8 +471,87 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         cloudWords.setEqqueueId(eqid + "01");
         cloudWords.setResult(content);
         int inserted = cloudWordsMapper.insert(cloudWords);
-        if (inserted > 0){
+        if (inserted > 0) {
             log.info("✅ 词云插入数据库成功");
+        }
+    }
+
+    // 需要异步、需要定时器
+    @Async
+    @Scheduled(cron = "0 0 0 1/15 * ?")
+    // @Scheduled(cron = "59 * * * * ?") // 用于测试
+    @Override
+    @SneakyThrows
+    public void autoTrigger() {
+        // 1.调用 python 爬虫服务
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);  // 设置内容类型为 JSON
+        HttpEntity<JSONObject> entity = new HttpEntity<>(headers);  // 包装请求体和头部信息
+        // 创建 RestTemplate 发送 HTTP 请求
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(LISTENER_URL, HttpMethod.POST, entity, String.class);
+        String responseBody = response.getBody();
+        System.out.println(responseBody);
+        // 解析数据
+        Gson gson = new Gson();
+        // Define the TypeToken for your list of AutoExtractSeismicDTO objects
+        TypeToken<List<AutoExtractSeismicDTO>> listType = new TypeToken<List<AutoExtractSeismicDTO>>() {
+        };
+
+        // Parse the JSON response body into a list of AutoExtractSeismicDTO objects
+        List<AutoExtractSeismicDTO> extractSeismicDTOList = gson.fromJson(responseBody, listType.getType());
+
+        System.out.println("gson获取到的数据：" + extractSeismicDTOList);
+
+        // 2.判断是否存在这个数据 把数据进行对比
+        List<EqList> eqList = eqListMapper.selectList(null);
+        // 3.如果存在，则舍弃
+        Set<String> existingData = new HashSet<>();
+        for (EqList eq : eqList) {
+            String key = eq.getOccurrenceTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "_" + eq.getEqAddr();
+            existingData.add(key);  // 使用 occurrence_time 和 eq_addr 组合成唯一键
+        }
+
+        System.out.println("eqlist中存在的数据"+existingData);
+
+        // 4.遍历 extractSeismicDTOList，将存在的数据从其中移除
+        for (int i = 0; i < extractSeismicDTOList.size(); i++) {
+            AutoExtractSeismicDTO extractSeismicDTO = extractSeismicDTOList.get(i);
+            String key = extractSeismicDTO.getTime() + "_" + extractSeismicDTO.getLocation();
+            // 如果该数据已经存在于数据库中，则从 extractSeismicDTOList 中移除
+            if (existingData.contains(key)) {
+                extractSeismicDTOList.remove(i);
+                i--; // 调整索引，因为移除了一个元素
+            }
+        }
+
+        // 5.剩下的数据就是数据库中不存在的数据，进行插入操作
+        for (AutoExtractSeismicDTO newExtractSeismicDTO : extractSeismicDTOList) {
+            // 调用 trigger 接口
+            TriggerDTO triggerdto = new TriggerDTO();
+
+            // 提取时间字段并格式化 9月5日四川省雅安市芦山县地震
+            LocalDateTime eqTime = LocalDateTime.parse(newExtractSeismicDTO.getTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // 提取月份和日期
+            int month = eqTime.getMonthValue();
+            int day = eqTime.getDayOfMonth();
+            // 将省份拼接成完整的省市区县
+            String location = newExtractSeismicDTO.getLocation();
+            // 设置 fullName 字段
+            String fullName = month + "月" + day + "日" + location + "地震";
+
+            triggerdto.setEqName(newExtractSeismicDTO.getLocation() + newExtractSeismicDTO.getMagnitude());
+            triggerdto.setEqAddr(newExtractSeismicDTO.getLocation());
+            triggerdto.setFullName(fullName);
+            triggerdto.setEqDepth(newExtractSeismicDTO.getDepth());
+            triggerdto.setLatitude(newExtractSeismicDTO.getLatitude());
+            triggerdto.setLongitude(newExtractSeismicDTO.getLongitude());
+            triggerdto.setEqTime(eqTime);
+            triggerdto.setMagnitude(newExtractSeismicDTO.getMagnitude());
+            triggerdto.setEqType("Z");
+
+            trigger(triggerdto);
         }
     }
 
@@ -472,6 +570,25 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private boolean isHashExists(String hash) {
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("hash", hash);
+        List<EqList> list = eqListMapper.selectList(wrapper);
+        if (list == null) {
+            return false;
+        }
+        return true;
+    }
+
+    private void saveDataWithHash(String content) {
+        String hash = generateHash(content);
+        if (!isHashExists(hash)) {
+            EqList eqlist = EqList.builder()
+                    // 震级、时间、经纬度、深度、震发位置名称
+                    .build();
         }
     }
 

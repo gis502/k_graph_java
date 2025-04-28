@@ -15,5 +15,6 @@ public interface IEqListService extends IService<EqList> {
 
     void addNewEq(EqEventTriggerDTO eqEventTriggerDTO);
 
-    void trigger(TriggerDTO triggerDTO);
+    void trigger(TriggerDTO triggerDTO) throws InterruptedException;
+    void autoTrigger() throws InterruptedException;
 }
