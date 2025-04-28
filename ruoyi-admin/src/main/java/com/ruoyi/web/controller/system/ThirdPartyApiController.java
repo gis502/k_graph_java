@@ -233,10 +233,10 @@ public class ThirdPartyApiController {
 
 
     @GetMapping("/eq/output/jueceLocal")
-    public AjaxResult eqEventOutputFuZhuLocalData(@RequestParam("eqid") String eqid,
+    public AjaxResult eqEventOutputFuZhuLocalData(@RequestParam("eqId") String eqId,
                                               @RequestParam("eqqueueId") String eqqueueId) {
         EqEventDTO dto = new EqEventDTO();
-        dto.setEqid(eqid);
+        dto.setEqid(eqId);
         dto.setEqqueueId(eqqueueId);
         List<AssessmentJuece> outputs = assessmentJueceService.eqEventOutputJueCeData(dto);
 

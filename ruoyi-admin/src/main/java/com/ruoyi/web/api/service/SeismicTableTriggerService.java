@@ -19,10 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -57,6 +54,7 @@ public class SeismicTableTriggerService {
     @SneakyThrows
     public void tableFile(EqEventTriggerDTO params) {
         System.out.println("前端构建文本传的参数" + params);
+        String event = params.getEvent();
         String eqName = params.getEqName();
         String eqTime = params.getEqTime();
         String eqAddr = params.getEqAddr();
@@ -184,6 +182,9 @@ public class SeismicTableTriggerService {
                     CountyTownIntensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distanceToCountyTown + 24)) - 0.6;
                 }
                 int CountyTownRoundedIntensity = (int) Math.round(CountyTownIntensity);
+                if (CountyTownRoundedIntensity<0){
+                    CountyTownRoundedIntensity=0;
+                }
 
                 // 将预估烈度转换为带单位的字符串
                 estimatedIntensities.add(CountyTownRoundedIntensity + "度"); // 添加单位“度”
@@ -294,6 +295,9 @@ public class SeismicTableTriggerService {
                     villageIntensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distanceToVillage + 24)) - 0.6;
                 }
                 int villageRoundedIntensity = (int) Math.round(villageIntensity);
+                if (villageRoundedIntensity < 0) {
+                    villageRoundedIntensity = 0;
+                }
 
                 // 将预估烈度转换为带单位的字符串
                 estimatedIntensities2.add(villageRoundedIntensity + "度"); // 添加单位“度”
@@ -377,7 +381,7 @@ public class SeismicTableTriggerService {
                 }
             }
             // 生成返回的附近乡镇结果字符串
-            String fuJinTownResult = "震中距判断：震中位于" + nearestTown + "附近，";
+            String fuJinTownResult = "震中距判断：震中位于" + nearestTown + "附近。";
             System.out.println(fuJinTownResult);
             //*****************************************************
 
@@ -424,7 +428,7 @@ public class SeismicTableTriggerService {
                 // 计算后的最小距离（单位：公里）
                 minDistanceInKm = minBoundaryDistance;  // 转换为公里
                 // 生成返回的行政边界距离结果
-                String fuJinBoundaryResult = "距离雅安市边界约 " + String.format("%.1f", minDistanceInKm) + " 公里，";
+                String fuJinBoundaryResult = "震中距离雅安市边界约 " + String.format("%.1f", minDistanceInKm) + " 公里，";
                 System.out.println(fuJinBoundaryResult);
 
                 // 查询雅安市所有乡镇（yaan_villages表）
@@ -444,7 +448,7 @@ public class SeismicTableTriggerService {
                         double villageLon = villagePoint.getX(); // 经度
 
                         // 计算震中到乡镇点的距离（单位：米）
-                        double distanceToVillage =  calculateDistance(uploadLat, uploadLon, villageLat, villageLon);
+                        double distanceToVillage=  calculateDistance(uploadLat, uploadLon, villageLat, villageLon);
 
                         // 更新最小距离
                         if (distanceToVillage < minVillageDistance) {
@@ -455,7 +459,7 @@ public class SeismicTableTriggerService {
                 }
 
                 // 生成返回的乡镇距离结果
-                String fuJinVillageResult = "距离雅安市" + nearestVillage + "政府约" + String.format("%.1f", minVillageDistance) + "公里，";
+                String fuJinVillageResult = "震中距离雅安市" + nearestVillage + "政府约" + String.format("%.1f", minVillageDistance) + "公里，";
                 System.out.println(fuJinVillageResult);
 
                 // 查询雅安市政府相关的乡镇（yaan_county_town表）
@@ -463,10 +467,11 @@ public class SeismicTableTriggerService {
 
                 double minCountyTownDistance = Double.MAX_VALUE;
                 String nearestCountyTown = "";
-
                 // 特殊的政府乡镇距离变量
                 double yaanCityGovDistance = Double.MAX_VALUE;
                 double sichuanProvGovDistance = Double.MAX_VALUE;
+                double yaanMinCountyTownDistance=0;
+                String yaanNearestCountyTown="";
 
                 // 遍历所有政府相关的乡镇，计算与上传经纬度的距离
                 for (YaanCountyTown countyTown : countyTownList) {
@@ -479,7 +484,7 @@ public class SeismicTableTriggerService {
                         double countyTownLon = countyTownPoint.getX(); // 经度
 
                         // 计算震中到乡镇点的距离（单位：米）
-                        double distanceToCountyTown =  calculateDistance(uploadLat, uploadLon, countyTownLat, countyTownLon);
+                        double distanceToCountyTown = calculateDistance(uploadLat, uploadLon, countyTownLat, countyTownLon);
 
                         // 单独处理雅安市政府和四川省政府的情况
                         if ("雅安市政府".equals(countyTown.getCountyTownName())) {
@@ -491,21 +496,28 @@ public class SeismicTableTriggerService {
                             if (distanceToCountyTown < minCountyTownDistance) {
                                 minCountyTownDistance = distanceToCountyTown;
                                 nearestCountyTown = countyTown.getCountyTownName(); // 获取最近的政府乡镇名称
+                                String prefix = nearestCountyTown.length() >= 3 ? nearestCountyTown.substring(0, 3) : nearestCountyTown;
+                                if (eqAddr.contains(prefix)) {
+                                    yaanMinCountyTownDistance=distanceToCountyTown;
+                                    yaanNearestCountyTown = countyTown.getCountyTownName();
+                                }
                             }
                         }
                     }
                 }
-
-                // 生成最终输出文字
-                String fuJinCountyTownResult = String.format(
-                        "距离雅安市" + nearestCountyTown + "约%.1f公里，距离雅安市政府约%.1f公里，距离四川省政府约%.1f公里。",
-                        minCountyTownDistance, yaanCityGovDistance, sichuanProvGovDistance
-                );
+                //如果eqAddr包含nearestCountyTown取前三个字，那就展示xxxx
+                String prefix1 = nearestCountyTown.length() >= 3 ? nearestCountyTown.substring(0, 3) : nearestCountyTown;
+                String fuJinCountyTownResult;
+                if (!eqAddr.contains(prefix1)) {
+                    fuJinCountyTownResult= String.format("距离雅安市" + yaanNearestCountyTown +"约%.1f公里,距离雅安市" + nearestCountyTown + "约%.1f公里，距离雅安市政府约%.1f公里，距离四川省政府约%.1f公里。",yaanMinCountyTownDistance,minCountyTownDistance, yaanCityGovDistance, sichuanProvGovDistance);
+                }else {
+                    fuJinCountyTownResult= String.format("距离雅安市" + nearestCountyTown + "约%.1f公里，距离雅安市政府约%.1f公里，距离四川省政府约%.1f公里。", minCountyTownDistance, yaanCityGovDistance, sichuanProvGovDistance);
+                }
                 // 生成返回的政府乡镇距离结果
                 System.out.println(fuJinCountyTownResult);
 
                 // 合并所有字符串
-                combinedResult11 = result + fuJinTownResult  + fuJinBoundaryResult + fuJinVillageResult + fuJinCountyTownResult;
+                combinedResult11 = result + fuJinTownResult   + fuJinVillageResult + fuJinCountyTownResult;
                 System.out.println(combinedResult11);
 
 
@@ -522,7 +534,7 @@ public class SeismicTableTriggerService {
                     // 震级大于5.5时使用这个公式
                     intensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(0.1 + 24)) - 0.4;
                     intensity1 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minDistanceInKm + 24)) - 0.4;
-                    intensity2 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10( minVillageDistance + 24)) - 0.4;
+                    intensity2 = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(minVillageDistance + 24)) - 0.4;
 
                 } else {
                     // 震级小于或等于5.5时使用这个公式
@@ -533,7 +545,11 @@ public class SeismicTableTriggerService {
                 int roundedIntensity = (int) Math.round(intensity);
                 int roundedIntensity1 = (int) Math.round(intensity1);
                 int roundedIntensity2 = (int) Math.round(intensity2);
-
+                if(roundedIntensity<0||roundedIntensity1<0||roundedIntensity2<0){
+                    roundedIntensity=0;
+                    roundedIntensity1=0;
+                    roundedIntensity2=0;
+                }
 
 
                 // 初始化标志，判断是否所有乡镇和村庄的烈度都与 roundedIntensity 相等
@@ -569,12 +585,15 @@ public class SeismicTableTriggerService {
                         }
 
                         int CountyTownRoundedIntensity = (int) Math.round(CountyTownIntensity);
+                        if (CountyTownRoundedIntensity<0){
+                            CountyTownRoundedIntensity=0;
+                        }
 
                         // 打印调试信息，查看烈度计算是否正确
-                        System.out.println("县镇: " + countyTown.getCountyTownName() + ", 计算烈度: " + CountyTownRoundedIntensity + ", roundedIntensity: " + roundedIntensity);
+                        System.out.println("县镇: " + countyTown.getCountyTownName() + ", 计算烈度: " + CountyTownRoundedIntensity + ", roundedIntensity: " + roundedIntensity2);
 
                         // 比较计算出的烈度与 roundedIntensity 是否相等
-                        if (CountyTownRoundedIntensity == roundedIntensity) {
+                        if (CountyTownRoundedIntensity == roundedIntensity2) {
                             // 如果烈度相等，将当前乡镇的名称添加到 CountyTown 字符串
                             if (CountyTown.length() > 0) {
                                 CountyTown.append("、");
@@ -603,12 +622,15 @@ public class SeismicTableTriggerService {
                             VillageIntensity = 7.3568 + 1.278 * eqMagnitude - (5.0655 * Math.log10(distanceToVillage + 24)) - 0.6;
                         }
                         int VillageRoundedIntensity = (int) Math.round(VillageIntensity);
+                        if (VillageRoundedIntensity<0){
+                            VillageRoundedIntensity=0;
+                        }
 
                         // 打印调试信息，查看烈度计算是否正确
-                        System.out.println("村庄: " + village.getVillagesName() + ", 计算烈度: " + VillageRoundedIntensity + ", roundedIntensity: " + roundedIntensity);
+                        System.out.println("村庄: " + village.getVillagesName() + ", 计算烈度: " + VillageRoundedIntensity + ", roundedIntensity: " + roundedIntensity2);
 
                         // 比较计算出的烈度与 roundedIntensity 是否相等
-                        if (VillageRoundedIntensity == roundedIntensity) {
+                        if (VillageRoundedIntensity == roundedIntensity2) {
                             // 如果烈度相等，将当前村庄的名称添加到 VillageNames 字符串
                             if (VillageNames.length() > 0) {
                                 VillageNames.append("、");
@@ -639,7 +661,7 @@ public class SeismicTableTriggerService {
 
                 // 如果最终结果为空，说明没有任何匹配项，输出 "无匹配乡镇或村庄"
                 if (finalResult.length() == 0) {
-                    finalResult.append("(无匹配乡镇或村庄)");
+                    finalResult.append("(无匹配县区或乡镇)");
                 }
 
                 // 输出最终的结果
@@ -648,38 +670,30 @@ public class SeismicTableTriggerService {
 
 
 
-                // 注：StringBuilder
                 StringBuilder zhuResult = new StringBuilder();
 
-                // 根据烈度生成描述
-                for (int i = 1; i <= roundedIntensity; i++) {
-                    zhuResult.append("地震烈度").append(i).append("度主要现象为：");
-                    if (i == 0 || i == 1) {
-                        zhuResult.append("仅仪器能记录到，人一般无感。");
-                    } else if (i == 2) {
-                        zhuResult.append("敏感的人在完全静止中有感。");
-                    } else if (i == 3) {
-                        zhuResult.append("室内少数静止中的人有感，悬挂物轻微摆动。");
-                    } else if (i == 4) {
-                        zhuResult.append("室内大多数人有感，悬挂物摆动，不稳定器皿作响。");
-                    } else if (i == 5) {
-                        zhuResult.append("室外大多数人有感，门窗作响，不稳定器物摇动或翻倒，个别房屋墙壁抹灰出现裂缝。");
-                    } else if (i == 6) {
-                        zhuResult.append("人站立不稳，家具移动，简陋棚舍损坏，个别房屋轻微破坏。");
-                    } else if (i == 7) {
-                        zhuResult.append("多数房屋轻微破坏，少数家具倾倒，单砖建筑损坏，地表出现裂缝及喷沙冒水。");
-                    } else if (i == 8) {
-                        zhuResult.append("房屋不同程度破坏，少数严重破坏，多数家具倾倒或移位，路基塌方，地下管道破裂。");
-                    } else if (i == 9) {
-                        zhuResult.append("大多数房屋严重破坏，少数倾倒，滑坡、塌方多见。");
-                    } else if (i == 10) {
-                        zhuResult.append("大多数房屋毁坏，道路毁坏，山石大量崩塌，水面大浪扑岸。");
-                    } else if (i == 11) {
-                        zhuResult.append("绝大多数房屋毁坏，路基堤岸大段崩毁，地表产生很大变化。");
-                    } else if (i == 12) {
-                        zhuResult.append("房屋几乎全部毁坏，地面剧烈变化，山河改观。");
+                // 注：主烈度（B20）
+                zhuResult.append("地震烈度").append(roundedIntensity2)
+                        .append("主要现象为：").append(getIntensityDescription(roundedIntensity2));
+
+                // 如果评定烈度（D20）不等于主烈度（B20）
+                if (roundedIntensity != roundedIntensity2) {
+                    if (eqAddr != null && eqAddr.contains("雅安市")) {
+                        // 雅安市，直接输出 D20
+                        zhuResult.append("地震烈度").append(roundedIntensity)
+                                .append("主要现象为：").append(getIntensityDescription(roundedIntensity));
+                    } else {
+                        // 不是雅安市，且 D20 ≠ F19 且 F19 ≠ B20
+                        if (roundedIntensity != roundedIntensity1 && roundedIntensity1 != roundedIntensity2) {
+                            zhuResult.append("地震烈度").append(roundedIntensity1)
+                                    .append("主要现象为：").append(getIntensityDescription(roundedIntensity1));
+                        }
+                        // 再输出 D20
+                        zhuResult.append("地震烈度").append(roundedIntensity)
+                                .append("主要现象为：").append(getIntensityDescription(roundedIntensity));
                     }
                 }
+
 
 
                 System.out.println(zhuResult.toString());
@@ -749,16 +763,16 @@ public class SeismicTableTriggerService {
                 }
 
                 // 计算后的最小距离（单位：公里）
-                double minDistanceInKm1 = minBoundaryDistance1;  // 转换为公里
+                minDistanceInKm = minBoundaryDistance1;  // 转换为公里
                 // 生成返回的行政边界距离结果
-                String fuJinBoundaryResult1 = "距离雅安市边界约 " + String.format("%.1f", minDistanceInKm1) + " 公里，";
+                String fuJinBoundaryResult1 = "震中距离雅安市边界约 " + String.format("%.1f", minDistanceInKm) + " 公里，";
                 System.out.println(fuJinBoundaryResult1);
 
                 // 查询雅安市所有乡镇（yaan_villages表）
                 List<YaanVillages> villageList1 = yaanVillagesMapper.selectList(null);
 
                 // 初始化最小距离
-                double minVillageDistance1 = Double.MAX_VALUE;
+                minVillageDistance = Double.MAX_VALUE;
                 String nearestVillage1 = "";
 
                 // 遍历所有乡镇，计算与上传经纬度的距离
@@ -771,20 +785,20 @@ public class SeismicTableTriggerService {
                         double villageLon = villagePoint.getX(); // 经度
 
                         // 计算震中到乡镇点的距离（单位：米）
-                        double distanceToVillage1 =  calculateDistance(uploadLat, uploadLon, villageLat, villageLon);
+                        double distanceToVillage2 =  calculateDistance(uploadLat, uploadLon, villageLat, villageLon);
 
                         // 计算震中到乡镇点的距离（单位：米）
 
                         // 更新最小距离
-                        if (distanceToVillage1 < minVillageDistance1) {
-                            minVillageDistance1 = distanceToVillage1;
+                        if (distanceToVillage2 < minVillageDistance) {
+                            minVillageDistance = distanceToVillage2;
                             nearestVillage1 = village.getVillagesName();  // 获取最近的乡镇名称
                         }
                     }
                 }
 
                 // 生成返回的乡镇距离结果
-                String fuJinVillageResult1 = "距离雅安市"+nearestVillage1+"政府约"+String.format("%.1f", minVillageDistance1) + "公里，";
+                String fuJinVillageResult1 = "距离雅安市"+nearestVillage1+"政府约"+String.format("%.1f", minVillageDistance) + "公里，";
                 System.out.println(fuJinVillageResult1);
 
                 // 查询雅安市政府相关的乡镇（yaan_county_town表）
@@ -873,7 +887,7 @@ public class SeismicTableTriggerService {
                 System.out.println(fuJinCityResult1);
 
                 // 合并所有字符串
-                combinedResult12 = result + fuJinTownResult + fuJinCityResult1 + fuJinBoundaryResult1 + fuJinVillageResult1 + fuJinCountyTownResult1;
+                combinedResult12 = result + fuJinTownResult + fuJinBoundaryResult1 + fuJinVillageResult1 +fuJinCityResult1 + fuJinCountyTownResult1;
                 System.out.println(combinedResult12);
 
                 System.out.println("101010101010");
@@ -915,6 +929,7 @@ public class SeismicTableTriggerService {
             StringBuilder VillageNames = new StringBuilder();
             double distanceToCountyTown;
             double distanceToVillage;
+            countyTownList = yaanCountyTownMapper.selectList(null);
 
             // 遍历所有政府相关的乡镇，计算与上传经纬度的距离
             for (YaanCountyTown countyTown : countyTownList) {
@@ -944,15 +959,15 @@ public class SeismicTableTriggerService {
                     }
 
                     // 打印调试信息，查看烈度计算是否正确
-                    System.out.println("县镇: " + countyTown.getCountyTownName() + ", 计算烈度: " + CountyTownRoundedIntensity + ", roundedIntensity: " + roundedIntensity);
+                    System.out.println("县镇: " + countyTown.getCountyTownName() + ", 计算烈度: " + CountyTownRoundedIntensity + ", roundedIntensity: " + roundedIntensity2);
 
                     // 比较计算出的烈度与 roundedIntensity 是否相等
-                    if (CountyTownRoundedIntensity == roundedIntensity) {
+                    if (CountyTownRoundedIntensity == roundedIntensity2) {
                         // 如果烈度相等，将当前乡镇的名称添加到 CountyTown 字符串
                         if (CountyTown.length() > 0) {
                             CountyTown.append("、");
                         }
-                        CountyTown.append(countyTown.getCountyTownName()); // 将乡镇名称添加到结果中
+                        CountyTown.append(countyTown.getCountyTownName().substring(0, Math.min(3, countyTown.getCountyTownName().length())));// 将县区名称添加到结果中
                         countyTownsMatchCount++; // 增加匹配计数
                     }
                 }
@@ -1047,11 +1062,11 @@ public class SeismicTableTriggerService {
             }
             //拼接文字
             if (hasIntensity1Or0) {
-                if (CountyTownResult1.length() > 0 && !CountyTownResult1.toString().contains("特别敏感人有轻微震感")) {
-                    CountyTownResult1.append("特别敏感人有轻微震感");
+                if (CountyTownResult1.length() > 0 && !CountyTownResult1.toString().contains("无明显震感")) {
+                    CountyTownResult1.append("无明显震感");
                 }
             } else if (CountyTownResult1.length() == 0) {
-                CountyTownResult1.append("无明显震感");
+                CountyTownResult1.append("没有事件");
             }
 
             if (hasIntensity2) {
@@ -1059,7 +1074,7 @@ public class SeismicTableTriggerService {
                     CountyTownResult2.append("轻微有震感");
                 }
             } else if (CountyTownResult2.length() == 0) {
-                CountyTownResult2.append("无明显震感");
+                CountyTownResult2.append("没有事件");
             }
 
             if (hasIntensity3Or4) {
@@ -1067,7 +1082,7 @@ public class SeismicTableTriggerService {
                     CountyTownResult3.append("震感明显");
                 }
             } else if (CountyTownResult3.length() == 0) {
-                CountyTownResult3.append("无明显震感");
+                CountyTownResult3.append("没有事件");
             }
 
             if (hasIntensity5) {
@@ -1075,7 +1090,7 @@ public class SeismicTableTriggerService {
                     CountyTownResult4.append("震感强烈");
                 }
             } else if (CountyTownResult4.length() == 0) {
-                CountyTownResult4.append("无明显震感");
+                CountyTownResult4.append("没有事件");
             }
 
             if (hasIntensity6To12) {
@@ -1083,8 +1098,9 @@ public class SeismicTableTriggerService {
                     CountyTownResult5.append("可能有房屋破坏和人员伤亡");
                 }
             } else if (CountyTownResult5.length() == 0) {
-                CountyTownResult5.append("无明显震感");
+                CountyTownResult5.append("没有事件");
             }
+
 
             // 输出最终结果
             System.out.println("CountyTownResult1: " + CountyTownResult1.toString());
@@ -1097,31 +1113,15 @@ public class SeismicTableTriggerService {
 
             // 拼接到FinalCountyTown
             // 检查是否有任何结果非“无”或“无明显震感”
-            if (!CountyTownResult1.toString().contains("无")) {
+            if (!CountyTownResult5.toString().contains("没有")) {
                 if (isFirst) {
                     FinalCountyTown.append("我市");
                     isFirst = false; // 只在第一次拼接时添加"我市"
                 }
-                FinalCountyTown.append(CountyTownResult1).append("，");
+                FinalCountyTown.append(CountyTownResult5).append("，");
             }
 
-            if (!CountyTownResult2.toString().contains("无")) {
-                if (isFirst) {
-                    FinalCountyTown.append("我市");
-                    isFirst = false;
-                }
-                FinalCountyTown.append(CountyTownResult2).append("，");
-            }
-
-            if (!CountyTownResult3.toString().contains("无")) {
-                if (isFirst) {
-                    FinalCountyTown.append("我市");
-                    isFirst = false;
-                }
-                FinalCountyTown.append(CountyTownResult3).append("，");
-            }
-
-            if (!CountyTownResult4.toString().contains("无")) {
+            if (!CountyTownResult4.toString().contains("没有")) {
                 if (isFirst) {
                     FinalCountyTown.append("我市");
                     isFirst = false;
@@ -1129,16 +1129,42 @@ public class SeismicTableTriggerService {
                 FinalCountyTown.append(CountyTownResult4).append("，");
             }
 
-            if (!CountyTownResult5.toString().contains("无")) {
+            if (!CountyTownResult3.toString().contains("没有")) {
                 if (isFirst) {
                     FinalCountyTown.append("我市");
                     isFirst = false;
                 }
-                FinalCountyTown.append(CountyTownResult5).append("，");
+                FinalCountyTown.append(CountyTownResult3).append("，");
+            }
+
+            if (!CountyTownResult2.toString().contains("没有")) {
+                if (isFirst) {
+                    FinalCountyTown.append("我市");
+                    isFirst = false;
+                }
+                FinalCountyTown.append(CountyTownResult2).append("，");
+            }
+
+            if (!CountyTownResult1.toString().contains("没有")) {
+                if (isFirst) {
+                    FinalCountyTown.append("我市");
+                    isFirst = false;
+                }
+                FinalCountyTown.append(CountyTownResult1).append("，");
             }
             boolean allNoFeeling=false;
             // 检查每个 CountyTownResultX，并拼接
-            if (CountyTownResult1.toString().equals("无明显震感")&& CountyTownResult2.toString().equals("无明显震感")&& CountyTownResult3.toString().equals("无明显震感")&& CountyTownResult4.toString().equals("无明显震感")&& CountyTownResult5.toString().equals("无明显震感")) {
+            if (
+                    CountyTownResult1.toString().contains("汉源县") &&
+                            CountyTownResult1.toString().contains("荥经县") &&
+                            CountyTownResult1.toString().contains("天全县") &&
+                            CountyTownResult1.toString().contains("芦山县") &&
+                            CountyTownResult1.toString().contains("雨城区") &&
+                            CountyTownResult1.toString().contains("宝兴县") &&
+                            CountyTownResult1.toString().contains("名山区") &&
+                            CountyTownResult1.toString().contains("石棉县") &&
+                            CountyTownResult1.toString().contains("无明显震感")
+            ) {
                 allNoFeeling=true;
             }
             // 如果所有县镇结果都是 "无明显震感"，只保留 "我市无明显震感"
@@ -1154,8 +1180,10 @@ public class SeismicTableTriggerService {
             // 输出最终结果
             System.out.println("FinalCountyTown: " + FinalCountyTown.toString());
 
+            // 查询雅安市所有乡镇（yaan_villages表）
+            List<YaanVillages> villageList2= yaanVillagesMapper.selectList(null);
             // 遍历所有村庄，计算与上传经纬度的距离
-            for (YaanVillages village : villageList) {
+            for (YaanVillages village : villageList2) {
                 Geometry geom = village.getGeom();
                 if (geom != null && geom instanceof Point) {
                     Point villagePoint = (Point) geom;
@@ -1176,10 +1204,10 @@ public class SeismicTableTriggerService {
                     if (VillageRoundedIntensity<0){
                         VillageRoundedIntensity=0;
                     }
-                    System.out.println("乡镇:"+village.getVillagesName()+" 烈度： "+VillageRoundedIntensity+"  比较烈度：  "+roundedIntensity);
+                    System.out.println("乡镇:"+village.getVillagesName()+" 烈度： "+VillageRoundedIntensity+"  比较烈度：  "+roundedIntensity2);
 
                     // 比较计算出的烈度与 roundedIntensity 是否相等
-                    if (VillageRoundedIntensity == roundedIntensity) {
+                    if (VillageRoundedIntensity == roundedIntensity2) {
                         // 如果烈度相等，将当前村庄的名称添加到 VillageNames 字符串
                         if (VillageNames.length() > 0) {
                             VillageNames.append("、");
@@ -1196,60 +1224,82 @@ public class SeismicTableTriggerService {
             // 如果所有乡镇和村庄的烈度都与 roundedIntensity 相等，则输出 "全境"
             if (countyTownsMatchCount == countyTownList.size() && villagesMatchCount == villageList.size()) {
                 finalResult.append("(主要涉及全境)。");
-            } else {
-                // 否则拼接符合条件的乡镇和村庄名称
+            }  else {
+                // 否则拼接符合条件的县区和乡镇名称
                 if (CountyTown.length() > 0) {
                     finalResult.append(CountyTown);
                 }
-                if (VillageNames.length() > 0) {
-                    if (finalResult.length() > 0) {
-                        finalResult.append("、");
-                    }
+                else
+                {
                     finalResult.append(VillageNames);
                 }
             }
 
             // 如果最终结果为空，说明没有任何匹配项，输出 "无匹配乡镇或村庄"
             if (finalResult.length() == 0) {
-                finalResult.append("(无匹配乡镇或村庄)。");
+                finalResult.append("(无匹配县区或乡镇)。");
             }
 
             // 输出最终的结果
             System.out.println(finalResult);
 
 
-            // 注：StringBuilder
             StringBuilder zhuResult = new StringBuilder();
 
-            // 根据烈度生成描述
-            for (int i = 1; i <= roundedIntensity; i++) {
-                zhuResult.append("地震烈度").append(i).append("度主要现象为：");
-                if (i == 0 || i == 1) {
-                    zhuResult.append("仅仪器能记录到，人一般无感。");
-                } else if (i == 2) {
-                    zhuResult.append("敏感的人在完全静止中有感。");
-                } else if (i == 3) {
-                    zhuResult.append("室内少数静止中的人有感，悬挂物轻微摆动。");
-                } else if (i == 4) {
-                    zhuResult.append("室内大多数人有感，悬挂物摆动，不稳定器皿作响。");
-                } else if (i == 5) {
-                    zhuResult.append("室外大多数人有感，门窗作响，不稳定器物摇动或翻倒，个别房屋墙壁抹灰出现裂缝。");
-                } else if (i == 6) {
-                    zhuResult.append("人站立不稳，家具移动，简陋棚舍损坏，个别房屋轻微破坏。");
-                } else if (i == 7) {
-                    zhuResult.append("多数房屋轻微破坏，少数家具倾倒，单砖建筑损坏，地表出现裂缝及喷沙冒水。");
-                } else if (i == 8) {
-                    zhuResult.append("房屋不同程度破坏，少数严重破坏，多数家具倾倒或移位，路基塌方，地下管道破裂。");
-                } else if (i == 9) {
-                    zhuResult.append("大多数房屋严重破坏，少数倾倒，滑坡、塌方多见。");
-                } else if (i == 10) {
-                    zhuResult.append("大多数房屋毁坏，道路毁坏，山石大量崩塌，水面大浪扑岸。");
-                } else if (i == 11) {
-                    zhuResult.append("绝大多数房屋毁坏，路基堤岸大段崩毁，地表产生很大变化。");
-                } else if (i == 12) {
-                    zhuResult.append("房屋几乎全部毁坏，地面剧烈变化，山河改观。");
+            // 注：主烈度（B20）
+            zhuResult.append("地震烈度").append(roundedIntensity2)
+                    .append("主要现象为：").append(getIntensityDescription(roundedIntensity2));
+
+            // 如果评定烈度（D20）不等于主烈度（B20）
+            if (roundedIntensity != roundedIntensity2) {
+                if (eqAddr != null && eqAddr.contains("雅安市")) {
+                    // 雅安市，直接输出 D20
+                    zhuResult.append("地震烈度").append(roundedIntensity)
+                            .append("主要现象为：").append(getIntensityDescription(roundedIntensity));
+                } else {
+                    // 不是雅安市，且 D20 ≠ F19 且 F19 ≠ B20
+                    if (roundedIntensity != roundedIntensity1 && roundedIntensity1 != roundedIntensity2) {
+                        zhuResult.append("地震烈度").append(roundedIntensity1)
+                                .append("主要现象为：").append(getIntensityDescription(roundedIntensity1));
+                    }
+                    // 再输出 D20
+                    zhuResult.append("地震烈度").append(roundedIntensity)
+                            .append("主要现象为：").append(getIntensityDescription(roundedIntensity));
                 }
             }
+
+
+
+
+//            // 根据烈度生成描述
+//            for (int i = 1; i <= roundedIntensity; i++) {
+//                zhuResult.append("地震烈度").append(i).append("度主要现象为：");
+//                if (i == 0 || i == 1) {
+//                    zhuResult.append("仅仪器能记录到，人一般无感。");
+//                } else if (i == 2) {
+//                    zhuResult.append("敏感的人在完全静止中有感。");
+//                } else if (i == 3) {
+//                    zhuResult.append("室内少数静止中的人有感，悬挂物轻微摆动。");
+//                } else if (i == 4) {
+//                    zhuResult.append("室内大多数人有感，悬挂物摆动，不稳定器皿作响。");
+//                } else if (i == 5) {
+//                    zhuResult.append("室外大多数人有感，门窗作响，不稳定器物摇动或翻倒，个别房屋墙壁抹灰出现裂缝。");
+//                } else if (i == 6) {
+//                    zhuResult.append("人站立不稳，家具移动，简陋棚舍损坏，个别房屋轻微破坏。");
+//                } else if (i == 7) {
+//                    zhuResult.append("多数房屋轻微破坏，少数家具倾倒，单砖建筑损坏，地表出现裂缝及喷沙冒水。");
+//                } else if (i == 8) {
+//                    zhuResult.append("房屋不同程度破坏，少数严重破坏，多数家具倾倒或移位，路基塌方，地下管道破裂。");
+//                } else if (i == 9) {
+//                    zhuResult.append("大多数房屋严重破坏，少数倾倒，滑坡、塌方多见。");
+//                } else if (i == 10) {
+//                    zhuResult.append("大多数房屋毁坏，道路毁坏，山石大量崩塌，水面大浪扑岸。");
+//                } else if (i == 11) {
+//                    zhuResult.append("绝大多数房屋毁坏，路基堤岸大段崩毁，地表产生很大变化。");
+//                } else if (i == 12) {
+//                    zhuResult.append("房屋几乎全部毁坏，地面剧烈变化，山河改观。");
+//                }
+//            }
 
             // 最后打印结果
             System.out.println(zhuResult.toString());
@@ -1271,7 +1321,7 @@ public class SeismicTableTriggerService {
             String villagesName = new String();
 
             // 判断 finalResult 是否包含特定内容
-            if (finalResult.toString().contains("无匹配乡镇或村庄") || finalResult.toString().contains("主要涉及全境")) {
+            if (finalResult.toString().contains("无匹配县区或乡镇") || finalResult.toString().contains("主要涉及全境")) {
                 // 如果包含 "无匹配乡镇或村庄" 或 "主要涉及全境"，直接打印无匹配乡镇或村庄
                 System.out.println(finalResult.toString());
                 villagesName = finalResult.toString();
@@ -1288,8 +1338,10 @@ public class SeismicTableTriggerService {
             System.out.println(zhuResult1);
             String combinedResult2 = "初步估算，" + roundedIntensityResult + roundedIntensityResult1 + roundedIntensityResult2 + villagesName + countyTown;
             System.out.println(combinedResult2);
+            String combinedResult3 = "初步估算，" + roundedIntensityResult  + roundedIntensityResult2 + villagesName + countyTown;
+            System.out.println(combinedResult3);
             if (eqAddr.contains("雅安市")) {
-                WordExporter(combinedResult11, combinedResult2, formattedTime,table1,table2,eqMagnitude, eqName,eqAddr,zhuResult1,params);
+                WordExporter(combinedResult11, combinedResult3, formattedTime,table1,table2,eqMagnitude, eqName,eqAddr,zhuResult1,params);
             }else{
                 WordExporter(combinedResult12, combinedResult2, formattedTime,table1,table2,eqMagnitude,eqName,eqAddr,zhuResult1,params);
             }
@@ -1297,6 +1349,25 @@ public class SeismicTableTriggerService {
 
 
     }
+
+    public String getIntensityDescription(int intensity) {
+        switch (intensity) {
+            case 1: return "仅仪器能记录到，人一般无感。";
+            case 2: return "敏感的人在完全静止中有感。";
+            case 3: return "室内少数静止中的人有感，悬挂物轻微摆动。";
+            case 4: return "室内大多数人有感，悬挂物摆动，不稳定器皿作响。";
+            case 5: return "室外大多数人有感，门窗作响，不稳定器物摇动或翻倒，个别房屋墙壁抹灰出现裂缝。";
+            case 6: return "人站立不稳，家具移动，简陋棚舍损坏，个别房屋轻微破坏。";
+            case 7: return "多数房屋轻微破坏，少数家具倾倒，单砖建筑损坏，地表出现裂缝及喷沙冒水。";
+            case 8: return "房屋不同程度破坏，少数严重破坏，多数家具倾倒或移位，路基塌方，地下管道破裂。";
+            case 9: return "大多数房屋严重破坏，少数倾倒，滑坡、塌方多见。";
+            case 10: return "大多数房屋毁坏，道路毁坏，山石大量崩塌，水面大浪扑岸。";
+            case 11: return "绝大多数房屋毁坏，路基堤岸大段崩毁，地表产生很大变化。";
+            case 12: return "房屋几乎全部毁坏，地面剧烈变化，山河改观。";
+            default: return "无有效描述。";
+        }
+    }
+
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final double R = 6371; // 地球半径，单位：公里
 
@@ -1332,25 +1403,6 @@ public class SeismicTableTriggerService {
                               String eqName,
                               String zhuResult,
                               EqEventTriggerDTO params) {
-//        System.out.println("combinedResult1 的数据: " + combinedResult1);
-//        System.out.println("formattedTime 的数据: " + formattedTime);
-//        // 打印 tableData1 的数据
-//        System.out.println("TableData1:");
-//        for (List<String> row : tableData1) {
-//            for (String cell : row) {
-//                System.out.print(cell + "\t"); // 使用制表符分隔单元格内容
-//            }
-//            System.out.println(); // 换行，表示一行结束
-//        }
-
-//        // 打印 tableData2 的数据
-//        System.out.println("TableData2:");
-//        for (List<String> row : tableData2) {
-//            for (String cell : row) {
-//                System.out.print(cell + "\t"); // 使用制表符分隔单元格内容
-//            }
-//            System.out.println(); // 换行，表示一行结束
-//        }
 
 
         // 创建一个 XWPFDocument 对象
@@ -1398,7 +1450,7 @@ public class SeismicTableTriggerService {
         Date date = originalFormat.parse(formattedTime);
         // 格式化为目标格式并存入 currentFormattedTime
         String currentFormattedTime = targetFormat.format(date);
-        thirdRun.setText("雅安市应急管理局" + "          " + currentFormattedTime);  // 10个空格 + formattedTime
+        thirdRun.setText("雅安市应急管理局" + "                    " + currentFormattedTime);  // 10个空格 + formattedTime
         thirdRun.setFontFamily("仿宋_GB2312"); // 仿宋_GB2312
         thirdRun.setFontSize(16); // 三号字体
 
@@ -1435,15 +1487,15 @@ public class SeismicTableTriggerService {
         fourthRun.setFontFamily("方正小标宋简体"); // 设置字体为仿宋_GB2312
         fourthRun.setFontSize(22); // 设置字体大小为二号（22号字体）
 
-        // 创建（辅助决策信息一）行
-        XWPFParagraph Paragraph5 = document.createParagraph();
-        fourthParagraph.setAlignment(ParagraphAlignment.CENTER); // 设置居中对齐
+        // 创建第五行：（辅助决策信息一）
+        XWPFParagraph fifthBefore =  document.createParagraph(); // 创建新的段落
+        fifthBefore.setAlignment(ParagraphAlignment.CENTER); // 设置居中对齐
         // 创建运行并插入文本
-        XWPFRun Run5 = fourthParagraph.createRun();
+        XWPFRun fifthRunBefore = fifthBefore.createRun();
         // 设置文本内容
-        Run5.setText("（辅助决策信息一）");
-        Run5.setFontFamily("方正小标宋简体"); // 设置字体为仿宋_GB2312
-        Run5.setFontSize(22); // 设置字体大小为二号（22号字体）
+        fifthRunBefore.setText("（辅助决策信息一）");
+        fifthRunBefore.setFontFamily("方正小标宋简体"); // 设置字体为方正小标宋简体
+        fifthRunBefore.setFontSize(22); // 设置字体大小为二号（22号字体）
 
         // 创建第五行：一、震情情况
         XWPFParagraph fifthParagraph = document.createParagraph();
@@ -1741,7 +1793,10 @@ public class SeismicTableTriggerService {
         String sourceFile = "/EqProduct/" + params.getEvent()
                 + "/1/本地产品/灾情报告/"
                 + fileName;
-        String filePath = Constants.PROMOTION_DOWNLOAD_PATH + "/辅助决策/" + "/灾情报告/" + fileName;
+        String filePath = Constants.VBA_DOWNLOAD_PATH +
+                "/EqProduct/" + params.getEvent()
+                + "/1/本地产品/灾情报告/"
+                + fileName;
         assessmentJueceService.saveAssessmentJuece(params, sourceFile, fileName);
 
         // 设置页面边距

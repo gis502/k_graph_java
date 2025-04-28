@@ -43,8 +43,9 @@ public class AssessmentOutputController {
         }
     }
 
-    @GetMapping("/system/getReport")
+    @PostMapping("/system/getReport")
     public String getReport(@RequestBody EqEventTriggerDTO params){
+        System.out.println("params"+params);
         // 调用 tableFile 方法--异步获取辅助决策报告(一)
         seismicTableTriggerService.tableFile(params);
         return "ok";

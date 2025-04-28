@@ -16,7 +16,7 @@ import com.ruoyi.system.mapper.EqListMapper;
 import com.ruoyi.system.service.CloudWordsService;
 import com.ruoyi.system.service.EarthquakeListService;
 import com.ruoyi.system.service.IEqListService;
-import com.ruoyi.system.service.impl.CloudWordsServiceImpl;
+//import com.ruoyi.system.service.impl.CloudWordsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface IAssessmentOutputService extends IService<AssessmentOutput> {
     String gainMap(String eqId,String eqqueueId);
+
+    String gainOutMap(String eqId, String eqqueueId);
 }

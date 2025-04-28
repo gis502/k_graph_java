@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 /**
  * @author: xiaodemos
  * @date: 2024-11-23 15:49
@@ -34,7 +35,7 @@ public class EqEventTriggerDTO {
 
 
 
- // To convert the DTO to JSONObject
+    // To convert the DTO to JSONObject
     public JSONObject toJSONObject() {
         // Create a JSONObject using FastJSON
         JSONObject jsonObject = new JSONObject();
@@ -58,4 +59,3 @@ public class EqEventTriggerDTO {
     }
 
 }
-

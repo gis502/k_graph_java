@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.annotation.DataSource;
 import com.ruoyi.common.enums.DataSourceType;
 import com.ruoyi.common.exception.base.BaseException;
@@ -20,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: xiaodemos
@@ -162,5 +166,30 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
 
         return outputResponse.getBody();
 
+    }
+
+    @Override
+    public String gainOutMap(String eqId, String eqqueueId) {
+        try {
+            List<Map<String, Object>> list = new ArrayList<>();
+
+            Map<String, Object> map1 = new HashMap<>();
+            map1.put("theme", "震后道路损毁情况");
+            map1.put("imgUrl", "C:/Users/Smile/Desktop/profile/震区地震动峰值加速度区划图.jpg");
+
+            Map<String, Object> map2 = new HashMap<>();
+            map2.put("theme", "震后建筑物倒塌分析");
+            map2.put("imgUrl", "C:/Users/Smile/Desktop/profile/震区交通图.jpg");
+
+            list.add(map1);
+            list.add(map2);
+
+            // 用 Jackson 转成 JSON 字符串
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "[]"; // 出错就返回一个空数组
+        }
     }
 }

@@ -27,6 +27,8 @@ public class PlotIconmanagementController {
 
     @PostMapping("/getploticon")
     public AjaxResult getploticon() {
+        List<PlotIconmanagement> list = plotIconmanagementService.list();
+        System.out.println("list = "+ list);
         return AjaxResult.success(plotIconmanagementService.list());
     }
 
