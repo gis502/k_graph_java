@@ -6,6 +6,8 @@ import com.ruoyi.system.mapper.YaanVillagesMapper;
 import com.ruoyi.system.domain.entity.YaanVillages;
 import com.ruoyi.system.service.YaanVillagesService;
 @Service
-public class YaanVillagesServiceImpl extends ServiceImpl<YaanVillagesMapper, YaanVillages> implements YaanVillagesService{
+public class YaanVillagesServiceImpl extends
+        ServiceImpl<YaanVillagesMapper, YaanVillages>
+        implements YaanVillagesService{
 
 }

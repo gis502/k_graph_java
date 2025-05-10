@@ -2074,9 +2074,7 @@ public class SismiceMergencyAssistanceService {
     }
 
     //判断  4.交通处置建议 （2） 前置  G7--G14 , I7---I14
-    public static String generateDestroy2(List<Map.Entry<String, Double>> sortedList,
-                                          List<Map.Entry<String, Double>> sortedList2,
-                                          double maxIntensityWithUnit) {
+    public static String generateDestroy2(List<Map.Entry<String, Double>> sortedList, List<Map.Entry<String, Double>> sortedList2, double maxIntensityWithUnit) {
         //注释：如果最大烈度点在乡镇，而非县城（一般本地地震），最大烈度点选择乡镇。
         //     如果全市都达到最大烈度，那么全境（判断技巧第一个E7等于最大烈度和E14等于最大烈度），
         //     如果县区的最大烈度等于最大烈度，最大烈度为**县、**县，否则为**乡镇。

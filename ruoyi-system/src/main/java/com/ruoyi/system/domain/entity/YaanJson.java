@@ -18,7 +18,7 @@ public class YaanJson {
     @TableField(value = "adcode")
     private Integer adcode;
 
-    @TableField(value = "\"name\"")
+    @TableField(value = "name")
     private String name;
 
     @TableField(value = "center")
@@ -30,7 +30,7 @@ public class YaanJson {
     @TableField(value = "childrennu")
     private Integer childrennu;
 
-    @TableField(value = "\"level\"")
+    @TableField(value = "level")
     private String level;
 
     @TableField(value = "parent")

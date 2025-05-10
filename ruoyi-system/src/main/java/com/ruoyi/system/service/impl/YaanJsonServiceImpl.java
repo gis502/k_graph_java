@@ -35,8 +35,6 @@ public class YaanJsonServiceImpl extends ServiceImpl<YaanJsonMapper, YaanJson> i
         String rescounty = null;
         String flag = "f";
         String searchPointGeom = "POINT(" + lon + " " + lat + ")";
-//        System.out.println(searchPointGeom);
-//        System.out.println("searchPointGeom");
         List<String> CountyArr = List.of("雨城区", "名山区", "荥经县", "汉源县", "石棉县", "天全县", "芦山县", "宝兴县");
         for (int i = 0; i < CountyArr.size(); i++) {
             flag = yaanJsonMapper.getPlotBelongCounty(searchPointGeom, CountyArr.get(i));

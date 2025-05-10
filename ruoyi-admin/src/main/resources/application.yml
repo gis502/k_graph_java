@@ -112,7 +112,7 @@ spring:
       add-mappings: false
   # rabbitmq 配置
   rabbitmq:
-    host: localhost
+    host: 39.106.228.188
     port: 5672
     username: xiaodemos
     password: 1234

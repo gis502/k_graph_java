@@ -129,7 +129,6 @@ public class SeismicTableTriggerService {
         // 特殊政府名称
         String yaanCityGovName = "雅安市政府";
         String sichuanProvGovName = "四川省政府";
-
         // 遍历所有政府相关的乡镇，计算震中距
         for (YaanCountyTown countyTown : countyTownTableList1) {
             Geometry geom = countyTown.getGeom();
@@ -160,7 +159,6 @@ public class SeismicTableTriggerService {
                 distanceColumn1.add("N/A");
             }
         }
-
         // 预估烈度：
         // 存储预估烈度
         List<String> estimatedIntensities = new ArrayList<>(); // 修改为 List<String> 以存储带单位的字符串
@@ -326,16 +324,7 @@ public class SeismicTableTriggerService {
             row.add(SeismicFortificationIntensity2.get(i)); // 一般建筑设防烈度
             table2.add(row);
         }
-        // 按照震中距（第三列）进行排序（提取数值后排序）
-        table2.sort(Comparator.comparingInt(o -> {
-            String numStr = o.get(2).replaceAll("[^0-9]", ""); // 提取数字
-            return numStr.isEmpty() ? 0 : Integer.parseInt(numStr); // 避免空字符串错误
-        }));
 
-        // 重新调整序号（从第二行开始，跳过表头）
-        for (int i = 1; i < table2.size(); i++) {
-            table2.get(i).set(0, String.valueOf(i)); // 从 1 开始编号
-        }
 
         // 震中附近乡镇计算
         if (eqName.contains("四川")) {
@@ -505,6 +494,7 @@ public class SeismicTableTriggerService {
                         }
                     }
                 }
+
                 //如果eqAddr包含nearestCountyTown取前三个字，那就展示xxxx
                 String prefix1 = nearestCountyTown.length() >= 3 ? nearestCountyTown.substring(0, 3) : nearestCountyTown;
                 String fuJinCountyTownResult;
@@ -731,6 +721,23 @@ public class SeismicTableTriggerService {
                 System.out.println(zhuResult1);
             }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //不在雅安市地震
             if (!eqAddr.contains("雅安市")){
 
@@ -892,6 +899,32 @@ public class SeismicTableTriggerService {
 
                 System.out.println("101010101010");
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             //                初步评估 公式部分
 
@@ -1060,6 +1093,7 @@ public class SeismicTableTriggerService {
                     }
                 }
             }
+
             //拼接文字
             if (hasIntensity1Or0) {
                 if (CountyTownResult1.length() > 0 && !CountyTownResult1.toString().contains("无明显震感")) {
@@ -1268,38 +1302,6 @@ public class SeismicTableTriggerService {
                 }
             }
 
-
-
-
-//            // 根据烈度生成描述
-//            for (int i = 1; i <= roundedIntensity; i++) {
-//                zhuResult.append("地震烈度").append(i).append("度主要现象为：");
-//                if (i == 0 || i == 1) {
-//                    zhuResult.append("仅仪器能记录到，人一般无感。");
-//                } else if (i == 2) {
-//                    zhuResult.append("敏感的人在完全静止中有感。");
-//                } else if (i == 3) {
-//                    zhuResult.append("室内少数静止中的人有感，悬挂物轻微摆动。");
-//                } else if (i == 4) {
-//                    zhuResult.append("室内大多数人有感，悬挂物摆动，不稳定器皿作响。");
-//                } else if (i == 5) {
-//                    zhuResult.append("室外大多数人有感，门窗作响，不稳定器物摇动或翻倒，个别房屋墙壁抹灰出现裂缝。");
-//                } else if (i == 6) {
-//                    zhuResult.append("人站立不稳，家具移动，简陋棚舍损坏，个别房屋轻微破坏。");
-//                } else if (i == 7) {
-//                    zhuResult.append("多数房屋轻微破坏，少数家具倾倒，单砖建筑损坏，地表出现裂缝及喷沙冒水。");
-//                } else if (i == 8) {
-//                    zhuResult.append("房屋不同程度破坏，少数严重破坏，多数家具倾倒或移位，路基塌方，地下管道破裂。");
-//                } else if (i == 9) {
-//                    zhuResult.append("大多数房屋严重破坏，少数倾倒，滑坡、塌方多见。");
-//                } else if (i == 10) {
-//                    zhuResult.append("大多数房屋毁坏，道路毁坏，山石大量崩塌，水面大浪扑岸。");
-//                } else if (i == 11) {
-//                    zhuResult.append("绝大多数房屋毁坏，路基堤岸大段崩毁，地表产生很大变化。");
-//                } else if (i == 12) {
-//                    zhuResult.append("房屋几乎全部毁坏，地面剧烈变化，山河改观。");
-//                }
-//            }
 
             // 最后打印结果
             System.out.println(zhuResult.toString());
