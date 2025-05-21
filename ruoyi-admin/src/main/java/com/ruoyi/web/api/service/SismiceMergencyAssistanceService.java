@@ -124,6 +124,30 @@ public class SismiceMergencyAssistanceService {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //开始据条件判断输出语句
     @SneakyThrows
     public void file(EqEventTriggerDTO params) {
@@ -1809,6 +1833,51 @@ public class SismiceMergencyAssistanceService {
         System.out.println("-----------------------------将要开始进行书写word文档阶段-----------------------");
         WordExporter(title, result, fuJinTownResult, panduan, jianyi, cuoshi, formattedTime,eqAddr ,eqName, eqMagnitude, params);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     //计算震中距离

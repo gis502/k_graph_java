@@ -71,8 +71,8 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
 
     @Resource
     private RestTemplate restTemplate;
-    private static final String PYTHON_API_URL = "http://localhost:5000/process";  // Python 服务 URL
-    private static final String LISTENER_URL = "http://localhost:5000/auto_fetch_earthquake_data";
+    private static final String PYTHON_API_URL = "http://39.106.228.188:5000/process";  // Python 服务 URL
+    private static final String LISTENER_URL = "http://39.106.228.188:5000/auto_fetch_earthquake_data";
 
     /**
      * @param event 地震事件编码
@@ -331,7 +331,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         }
 
         // 获取授权
-        String authUrl = "http://localhost:8080/api/open/auth";
+        String authUrl = "http://39.106.228.188:8080/api/open/auth";
         // 设置请求头
         HttpHeaders authHeaders = new HttpHeaders();
         authHeaders.set("Content-Type", "application/json");
@@ -354,7 +354,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         String token = data.getString("token");
 
         // 请求 trigger 接口
-        String triggerUrl = "http://localhost:8080/api/open/eq/trigger";
+        String triggerUrl = "http://39.106.228.188:8080/api/open/eq/trigger";
         HttpHeaders baseHeaders = new HttpHeaders();
         baseHeaders.set("Content-Type", "application/json");
         baseHeaders.set("Authorization", "Bearer " + token);
@@ -380,7 +380,7 @@ public class EqListServiceImpl extends ServiceImpl<EqListMapper, EqList> impleme
         while(true){
 
             // 获取从库最新的一条数据
-            String currentlyUrl = "http://localhost:8080/api/open/eq/currently";
+            String currentlyUrl = "http://39.106.228.188:8080/api/open/eq/currently";
             HttpEntity<JSONObject> currentlyEntity = new HttpEntity<>(baseHeaders);
             // 发送请求
             ResponseEntity<String> currentlyResponse = restTemplate.exchange(currentlyUrl, HttpMethod.GET, currentlyEntity, String.class);

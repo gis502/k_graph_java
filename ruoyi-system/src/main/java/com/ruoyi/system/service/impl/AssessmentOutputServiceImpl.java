@@ -128,7 +128,7 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
         }
 
         // 获取授权
-        String authUrl = "http://localhost:8080/api/open/auth";
+        String authUrl = "http://assessment.free.idcfengye.com/api/open/auth";
         // 设置请求头
         HttpHeaders authHeaders = new HttpHeaders();
         authHeaders.set("Content-Type", "application/json");
@@ -150,7 +150,7 @@ public class AssessmentOutputServiceImpl extends ServiceImpl<AssessmentOutputMap
         String token = data.getString("token");
 
         // 请求 专题图 接口
-        String outputUrl = "http://localhost:8080/api/open/eq/getMap";
+        String outputUrl = "http://assessment.free.idcfengye.com/api/open/eq/getMap";
         HttpHeaders baseHeaders = new HttpHeaders();
         baseHeaders.set("Content-Type", "application/json");
         baseHeaders.set("Authorization", "Bearer " + token);
